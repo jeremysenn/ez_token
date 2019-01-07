@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get 'barcode'
       get 'send_barcode_link_sms_message'
       get 'send_barcode_sms_message'
+      get 'find_by_barcode'
     end
     collection do
       post 'send_sms_message'
@@ -27,6 +28,7 @@ Rails.application.routes.draw do
     end
     collection do
       post 'quick_pay'
+      post 'quick_purchase'
     end
   end
   resources :sms_messages

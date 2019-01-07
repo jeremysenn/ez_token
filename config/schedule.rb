@@ -24,9 +24,9 @@ set :environment, 'development'
 
 every :reboot do
   # CentOS VM
-  job_type :application, "cd /usr/local/Ruby/payment_atm && :task :output"
+  job_type :application, "cd /usr/local/Ruby/ez_token && :task :output"
   # Mac Mini
-#  job_type :application, "cd /Users/jeremy/Ruby/payment_atm && :task :output"
+#  job_type :application, "cd /Users/jeremy/Ruby/ez_token && :task :output"
   
   application "rails server" # Start application server
 #  application "bundle exec sidekiq -c 5" # Start background workers

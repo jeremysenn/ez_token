@@ -20,4 +20,5 @@
 //= require rails-ujs
 //= require turbolinks
 //= require Chart.min
+//= require zxing-js.min
 //= require_tree .

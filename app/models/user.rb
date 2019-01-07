@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # :registerable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable, :timeoutable
        
-  ROLES = %w[admin basic payee].freeze
+  ROLES = %w[admin basic consumer payee vendor].freeze
        
   belongs_to :company
   belongs_to :customer, optional: true
@@ -13,7 +13,9 @@ class User < ApplicationRecord
   
   scope :admin, -> { where(role: "admin") }
   scope :basic, -> { where(role: "basic") }
+  scope :consumer, -> { where(role: "consumer") }
   scope :payee, -> { where(role: "payee") }
+  scope :payee, -> { where(role: "vendor") }
   
   before_create :search_for_payee_match
   after_create :send_confirmation_sms_message
@@ -37,8 +39,16 @@ class User < ApplicationRecord
     role == "basic"
   end
   
+  def consumer?
+    role == "consumer"
+  end
+  
   def payee?
     role == "payee"
+  end
+  
+  def vendor?
+    role == "vendor"
   end
   
   def search_for_payee_match
@@ -49,7 +59,7 @@ class User < ApplicationRecord
       self.company_id = payee.company_id
     else
       if self.role.blank?
-        self.role = "basic"
+        self.role = "consumer"
       end
     end
   end
@@ -59,9 +69,9 @@ class User < ApplicationRecord
 #      SendCaddySmsWorker.perform_async(cell_phone_number, id, self.CustomerID, self.ClubCompanyNbr, message_body)
       confirmation_link = "#{Rails.application.routes.default_url_options[:host]}/users/confirmation?confirmation_token=#{confirmation_token}"
       unless temporary_password.blank?
-        message = "Confirm your PaymentATM account by clicking the link below. Your temporary password is: #{temporary_password} #{confirmation_link}"
+        message = "Confirm your account by clicking the link below. Your temporary password is: #{temporary_password} #{confirmation_link}"
       else
-        message = "Confirm your PaymentATM account by clicking the link below. #{confirmation_link}"
+        message = "Confirm your account by clicking the link below. #{confirmation_link}"
       end
       client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
       client.call(:send_sms, message: { Phone: phone, Msg: "#{message}"})
@@ -72,7 +82,7 @@ class User < ApplicationRecord
   def send_new_phone_number_confirmation_sms_message
     unless phone.blank?
       confirmation_link = "#{Rails.application.routes.default_url_options[:host]}/users/confirmation?confirmation_token=#{confirmation_token}"
-      message = "Confirm the change to your PaymentATM account by clicking the link below.  #{confirmation_link}"
+      message = "Confirm the change to your account by clicking the link below.  #{confirmation_link}"
       client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
       client.call(:send_sms, message: { Phone: phone, Msg: "#{message}"})
       self.confirmed_at = nil

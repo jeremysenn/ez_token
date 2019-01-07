@@ -9,7 +9,7 @@ if Rails.env == "production" || Rails.env == "staging" || Rails.env == "developm
 
   Rails.application.config.middleware.use ExceptionNotification::Rack,
   :email => {
-    :sender_address => %{"Payment ATM Exception Notifier" <notifier@tranact.com>},
+    :sender_address => %{"ezToken Exception Notifier" <notifier@tranact.com>},
     :exception_recipients => %w{jeremy@tranact.com shark@tranact.com}
   },
   ignore_exceptions: exceptions

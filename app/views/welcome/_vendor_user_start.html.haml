@@ -1,0 +1,50 @@
+.content-wrapper
+  .container.col-xs-12.col-sm-12.col-md-3
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        <strong>ez</strong>Token
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title Quick Purchase
+          .box-tools.pull-right
+            -#
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                %i.fa.fa-minus
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+                %i.fa.fa-times
+        .box-body{:id => "purchase_details"}
+          = form_tag quick_purchase_transactions_path, id: 'quick_purchase_form', method: 'post', class: 'form-horizontal' do |f|
+            = hidden_field_tag :to_account_id, current_user.customer.account.id
+            .input-group.mb-3
+              .input-group-prepend
+                %span.input-group-text $
+              = number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
+              .input-group-append
+                %span.input-group-text .00
+            %p{id: 'consumer_details'}
+              = hidden_field_tag :barcode_number
+              = hidden_field_tag :from_account_id
+            %a.btn.btn-default{id: 'open_consumer_qrcode_scanner_button', href: "#qrcode_scanner_modal", "data-target" => "#qrcode_scanner_modal", "data-toggle" => "modal"}
+              %i.fa.fa-qrcode
+              Scan QR Code
+            %div{id: "scan_spinner", style: 'display:none;'}
+              %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+            %button.btn.btn-primary{id: 'quick_purchase_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}, style: 'display: none;'} 
+              Submit
+          
+          .modal.fade{id: "qrcode_scanner_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+            .modal-dialog.modal-sm{:role => "document"}
+              .modal-content
+                .modal-header
+                  Scan QR Code
+                  = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
+                .modal-body
+                  %video#video{:style => "border: 1px solid green; width: 100%; height: auto;"}
+
+                .modal-footer
+                  %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

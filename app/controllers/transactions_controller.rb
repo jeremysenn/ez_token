@@ -126,7 +126,7 @@ class TransactionsController < ApplicationController
     @amount = params[:amount]
     @receipt_number = params[:receipt_number]
     @note = params[:note]
-    @device_id = params[:device_id]
+#    @device_id = params[:device_id]
     @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
     @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: 6)
     response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number)
@@ -142,6 +142,20 @@ class TransactionsController < ApplicationController
       redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
     else
       redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code: #{error_code}"
+    end
+  end
+  
+  def quick_purchase
+    amount = params[:amount]
+    to_account_id = params[:to_account_id]
+    from_account_id = params[:from_account_id]
+    unless amount.blank? or to_account_id.blank? or from_account_id.blank?
+      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+    end
+    unless response.to_i > 0
+      redirect_to root_path, notice: 'Quick Purchase submitted.'
+    else
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Purchase. Error code: #{response}."
     end
   end
 

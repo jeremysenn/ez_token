@@ -5,7 +5,7 @@ class WelcomeController < ApplicationController
   
   def index
     if user_signed_in?
-      if current_user.payee?
+      if current_user.payee? or current_user.consumer?
         if not current_user.temporary_password.blank?
           flash[:error] = "You must update your password."
           redirect_to edit_registration_path(current_user)

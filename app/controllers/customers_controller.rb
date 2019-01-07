@@ -1,7 +1,7 @@
 class CustomersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_customer, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message, :barcode]
-  load_and_authorize_resource
+  load_and_authorize_resource :except => [:find_by_barcode]
 #  skip_load_resource only: :barcode
   
   helper_method :customers_sort_column, :customers_sort_direction
@@ -189,6 +189,18 @@ class CustomersController < ApplicationController
   def send_barcode_sms_message
     @customer.send_barcode_sms_message
     redirect_back fallback_location: @customer, notice: 'Text message sent.'
+  end
+  
+  # GET /customers/123456789/find_by_barcode
+  def find_by_barcode
+    @barcode = CustomerBarcode.find_by(:Barcode => params[:id])
+    unless @barcode.blank?
+      @customer = @barcode.customer
+    end
+    respond_to do |format|
+#      format.json { render :json => @customer }
+      format.json {render json: {"first_name" => @customer.user.first_name, "last_name" => @customer.user.last_name, "balance" => @customer.balance, "account_id" => @customer.account.id} }
+    end
   end
   
   private

@@ -16,6 +16,7 @@ class Customer < ActiveRecord::Base
   has_many :sms_messages
   has_many :payments, :foreign_key => "CustomerID"
   
+  scope :consumer, -> { where(GroupID: 16) }
   scope :anonymous, -> { where(GroupID: 15) }
   scope :members, -> { where(GroupID: 14) }
   scope :payees, -> { where(GroupID: 13) }

@@ -143,6 +143,64 @@ class Ability
         user == user_record
       end
       
+    elsif user.consumer?
+      
+      # Customers
+      ############
+      can :manage, Customer do |customer|
+        user.customer == customer
+      end
+      cannot :index, Customer
+      
+      # SmsMessages
+      ############
+      can :manage, SmsMessage do |sms_message|
+        user.customer == sms_message.customer
+      end
+      cannot :index, SmsMessage
+      
+      # Transactions
+      ############
+      can :manage, Transaction do |transaction|
+        user.customer.id == transaction.custID
+      end
+      cannot :index, Transaction
+      
+      # Users
+      ############
+      can :manage, User do |user_record|
+        user == user_record
+      end
+      
+    elsif user.vendor?
+      
+      # Customers
+      ############
+      can :manage, Customer do |customer|
+        user.customer == customer
+      end
+      cannot :index, Customer
+      
+      # SmsMessages
+      ############
+      can :manage, SmsMessage do |sms_message|
+        user.customer == sms_message.customer
+      end
+      cannot :index, SmsMessage
+      
+      # Transactions
+      ############
+      can :manage, Transaction do |transaction|
+        user.customer.id == transaction.custID
+      end
+      cannot :index, Transaction
+      
+      # Users
+      ############
+      can :manage, User do |user_record|
+        user == user_record
+      end
+      
     end
     
   end

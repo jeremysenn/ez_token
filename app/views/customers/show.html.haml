@@ -12,10 +12,10 @@
             %a{href: edit_customer_path(@customer), class: 'btn btn-default'}
               %i.fa.fa-edit
               Edit
-      - else
+      - elsif current_user.consumer?
         %h1
           %i.fa.fa-male
-          = @customer.full_name
+          = current_user.full_name
         %p.text-muted
           Balance
           = number_to_currency(@account.balance)
@@ -23,7 +23,6 @@
   %section.content
     / Default box
     .row
-      -# unless browser.device.mobile? and current_user.payee?
       .col-md-3
         / Profile Image
         .box.box-primary
@@ -32,14 +31,12 @@
               %i.fa.fa-edit.fa-lg
           .box-body.box-profile
             .text-center
-              -#
-                %img.profile-user-img.img-responsive.img-circle{:alt => "User profile picture", :src => "../../dist/img/user4-128x128.jpg"}/
               - unless @customer.avatar.blank?
                 = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')
               - else
                 = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
             %h3.profile-username.text-center
-              = @customer.full_name
+              = current_user.consumer? ? current_user.full_name : @customer.full_name
               - if @customer.anonymous?
                 .text-danger Anonymous Payee
             %p.text-muted.text-center
@@ -47,24 +44,28 @@
               %br
               Balance
               = number_to_currency(@account.balance)
-
-            %ul.list-group.list-group-unbordered
-              %li.list-group-item
+            -#
+              %ul.list-group.list-group-unbordered
+                %li.list-group-item
+                  %b 
+                    %i.fa.fa-dollar.margin-r-5
+                    Payments
+                  %a.pull-right= "#{@payment_transactions.blank? ? 0 : @payment_transactions.count}"
+                %li.list-group-item
+                  %b 
+                    %i.fa.fa-money.margin-r-5
+                    Withdrawals
+                  %a.pull-right= "#{@withdrawal_transactions.blank? ? 0 : @withdrawal_transactions.count}"
+                %li.list-group-item
+                  %b 
+                    %i.fa.fa-comments.margin-r-5
+                    Messages
+                  %a.pull-right= "#{@sms_messages.blank? ? 0 : @sms_messages.count}"
+            - if current_user.consumer? and @account.balance > 0
+              %a.btn.btn-success.btn-block{href: barcode_customer_path(current_user.customer), target: '_blank'}
                 %b 
-                  %i.fa.fa-dollar.margin-r-5
-                  Payments
-                %a.pull-right= "#{@payment_transactions.blank? ? 0 : @payment_transactions.count}"
-              %li.list-group-item
-                %b 
-                  %i.fa.fa-money.margin-r-5
-                  Withdrawals
-                %a.pull-right= "#{@withdrawal_transactions.blank? ? 0 : @withdrawal_transactions.count}"
-              %li.list-group-item
-                %b 
-                  %i.fa.fa-comments.margin-r-5
-                  Messages
-                %a.pull-right= "#{@sms_messages.blank? ? 0 : @sms_messages.count}"
-            
+                  %i.fa.fa-check-square
+                  Quick Pay
             - if current_user.admin? and not @customer.anonymous?
               %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
                 %b 
@@ -119,26 +120,13 @@
                 %i.fa.fa-envelope.margin-r-5
                 Email
               %p.text-muted
-                - unless @customer.email.blank?
-                  - if current_user.admin?
-                    = mail_to(@customer.email)
-                  - else
-                    = @customer.email
-                - else
-                  None
+                = current_user.consumer? ? current_user.email : @customer.email
               %hr/
               %strong
                 %i.fa.fa-mobile.margin-r-5
                 Phone
               %p.text-muted
-                - unless @customer.phone.blank?
-                  - if current_user.admin?
-                    %a{href: "tel:#{@customer.phone}"}
-                      = @customer.phone
-                  - else
-                    = @customer.phone
-                - else
-                  None
+                = current_user.consumer? ? current_user.phone : @customer.phone
               - if current_user.admin?
                 %hr/
                 %strong
