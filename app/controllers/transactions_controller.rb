@@ -149,13 +149,24 @@ class TransactionsController < ApplicationController
     amount = params[:amount]
     to_account_id = params[:to_account_id]
     from_account_id = params[:from_account_id]
+    customer_barcode_id = params[:customer_barcode_id]
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
       response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+      unless response.blank?
+        response_code = response[:return]
+        unless response_code.to_i > 0
+          @customer_barcode = CustomerBarcode.find(customer_barcode_id)
+          @transaction = Transaction.find(response[:tran_id])
+          @customer_barcode.update_attributes(TranID: @transaction.id, Used: 1)
+        else
+          error_code = response_code
+        end
+      end
     end
-    unless response.to_i > 0
-      redirect_to root_path, notice: 'Quick Purchase submitted.'
+    unless @transaction.blank?
+      redirect_to root_path, notice: "Quick Purchase submitted. Transaction ID #{@transaction.id}"
     else
-      redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Purchase. Error code: #{response}."
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Purchase. Error code: #{error_code.blank? ? 'Unknown' : error_code}."
     end
   end
 

@@ -366,9 +366,10 @@ class Transaction < ActiveRecord::Base
     response = client.call(:ez_cash_txn, message: { FromActID: from_account_id, ToActID: to_account_id, Amount: amount})
     Rails.logger.debug "Response body: #{response.body}"
     unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
-      return response.body[:ez_cash_txn_response][:return]
+#      return response.body[:ez_cash_txn_response][:return]
+      return response.body[:ez_cash_txn_response]
     else
-      return "1"
+      return nil
     end
   end
   

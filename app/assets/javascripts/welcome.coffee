@@ -61,18 +61,23 @@ jQuery ->
         last_name = data.last_name
         balance = parseFloat(data.balance)
         consumer_customer_account_id = data.account_id
+        customer_barcode_id = data.customer_barcode_id
         # alert "Consumer User " + first_name + " " + last_name + ", Balance: " + balance
         $('#consumer_details').append "<p>" + first_name + " " + last_name + "<br> Balance: " + balance + "</p>"
         if balance >= amount
           $('#from_account_id').val consumer_customer_account_id
+          $('#customer_barcode_id').val customer_barcode_id
           $('#quick_purchase_button').show()
         else
           alert "Balance will not cover amount."
           $('#open_consumer_qrcode_scanner_button').hide()
         return
-      error: ->
-        # spinner_icon.hide()
-        alert 'There was a problem finding consumer user.'
+      error: (xhr) ->
+        $('#scan_spinner').hide()
+        error = $.parseJSON(xhr.responseText).error
+        alert error
+        console.log error
+        $('#open_consumer_qrcode_scanner_button').show()
         return
     return
   

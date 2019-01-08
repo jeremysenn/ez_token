@@ -15,6 +15,7 @@ class Customer < ActiveRecord::Base
   has_one :user
   has_many :sms_messages
   has_many :payments, :foreign_key => "CustomerID"
+  has_many :customer_barcodes, :foreign_key => "CustomerID"
   
   scope :consumer, -> { where(GroupID: 16) }
   scope :anonymous, -> { where(GroupID: 15) }

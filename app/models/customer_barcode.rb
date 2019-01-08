@@ -10,6 +10,14 @@ class CustomerBarcode < ActiveRecord::Base
   #     Instance Methods      #
   #############################
   
+  def used?
+    self.Used == 1
+  end
+  
+  def not_used?
+    self.Used == 0
+  end
+  
   #############################
   #     Class Methods      #
   #############################

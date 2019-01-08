@@ -28,6 +28,7 @@
                 %span.input-group-text .00
             %p{id: 'consumer_details'}
               = hidden_field_tag :barcode_number
+              = hidden_field_tag :customer_barcode_id
               = hidden_field_tag :from_account_id
             %a.btn.btn-default{id: 'open_consumer_qrcode_scanner_button', href: "#qrcode_scanner_modal", "data-target" => "#qrcode_scanner_modal", "data-toggle" => "modal"}
               %i.fa.fa-qrcode
