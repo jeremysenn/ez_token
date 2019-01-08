@@ -162,7 +162,7 @@ class Ability
       # Transactions
       ############
       can :manage, Transaction do |transaction|
-        user.customer.id == transaction.custID
+        (user.customer.id == transaction.custID) or (user.customer.account.id == transaction.from_acct_id) or (user.customer.account.id == transaction.to_acct_id)
       end
       cannot :index, Transaction
       

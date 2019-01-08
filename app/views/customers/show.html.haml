@@ -202,13 +202,15 @@
                       %tbody
                         - @payment_transactions.each do |payment_transaction|
                           %tr{class: payment_transaction.reversed? ? 'table-danger' : ''}
-                            %td= link_to payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), payment_transaction
+                            %td
+                              = payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
+                              =# link_to payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), payment_transaction
                             %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
                             %td= number_to_currency(payment_transaction.amt_auth)
                   .pull-right= paginate @payment_transactions, param_name: 'payments'
                 - else
                   %p.text-center None
-
+              
               #checks.tab-pane.fade{"aria-labelledby" => "profile-tab", :role => "tabpanel"}
                 - unless @check_transactions.blank?
                   .table-responsive
