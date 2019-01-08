@@ -15,7 +15,7 @@ class User < ApplicationRecord
   scope :basic, -> { where(role: "basic") }
   scope :consumer, -> { where(role: "consumer") }
   scope :payee, -> { where(role: "payee") }
-  scope :payee, -> { where(role: "vendor") }
+  scope :vendor, -> { where(role: "vendor") }
   
   before_create :search_for_payee_match
   after_create :send_confirmation_sms_message
