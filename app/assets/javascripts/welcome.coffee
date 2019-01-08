@@ -40,6 +40,8 @@ jQuery ->
         console.log 'ZXing code reader reset'
 
       $('#qrcode_scanner_modal').on 'hidden.bs.modal', (e) ->
+        $('#scan_spinner').hide()
+        $('#open_consumer_qrcode_scanner_button').show()
         codeReader.reset()
         console.log 'ZXing code reader reset'
         return
@@ -65,6 +67,7 @@ jQuery ->
         # alert "Consumer User " + first_name + " " + last_name + ", Balance: " + balance
         $('#consumer_details').append "<p>" + first_name + " " + last_name + "<br> Balance: " + balance + "</p>"
         if balance >= amount
+          $('#open_consumer_qrcode_scanner_button').hide()
           $('#from_account_id').val consumer_customer_account_id
           $('#customer_barcode_id').val customer_barcode_id
           $('#quick_purchase_button').show()
