@@ -16,9 +16,10 @@
           = current_user.full_name
           %a{href: edit_customer_path(@customer)}
             %i.fa.fa-pencil
-        %p.text-muted
-          Balance
-          = number_to_currency(@account.balance)
+        -#
+          %p.text-muted
+            Balance
+            = number_to_currency(@account.balance)
       - elsif current_user.vendor?
         %h1
           %i.fa.fa-male
@@ -60,6 +61,9 @@
                   %b 
                     %i.fa.fa-check-square
                     = "#{account.company.name} Code"
+                  %br
+                  %small 
+                    = "Balance #{number_to_currency(account.balance)}"
               = render 'barcode'
             - if current_user.vendor?
               = render 'vendor_quick_purchase'
