@@ -181,7 +181,7 @@ class CustomersController < ApplicationController
       }
       format.json{
         unless @customer.blank?
-          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
+          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, params[:company_id].blank? ? current_user.company_id : params[:company_id], 5)
           render json: {"barcode_string" => @base64_barcode_string}
         else
           render json: { error: ["Error: Problem generating QR Code."] }, status: :unprocessable_entity
@@ -206,7 +206,7 @@ class CustomersController < ApplicationController
   
   # GET /customers/123456789/find_by_barcode
   def find_by_barcode
-    @barcode = CustomerBarcode.find_by(:Barcode => params[:id])
+    @barcode = CustomerBarcode.where(:Barcode => params[:id], :CompanyNumber => current_user.company_id).first
     
     respond_to do |format|
 #      format.json { render :json => @customer }

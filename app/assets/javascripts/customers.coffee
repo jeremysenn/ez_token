@@ -31,9 +31,12 @@ jQuery ->
   $('#show_account_code_button').on 'click', ->
     $('#generating_barcode_spinner').show()
     customer_id = $(this).data( "customer-id" )
+    company_id = $(this).data( "company-id" )
     $.ajax
       url: "/customers/" + customer_id + "/barcode"
       dataType: 'json'
+      data: 
+        company_id: company_id
       success: (data) ->
         $('#generating_barcode_spinner').hide()
         barcode_string = data.barcode_string
