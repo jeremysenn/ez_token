@@ -8,14 +8,23 @@
         %h1
           %i.fa.fa-male
           Payee Profile
-          %small
-            %a{href: edit_customer_path(@customer), class: 'btn btn-default'}
-              %i.fa.fa-edit
-              Edit
+          %a{href: edit_customer_path(@customer)}
+            %i.fa.fa-pencil
       - elsif current_user.consumer?
         %h1
           %i.fa.fa-male
           = current_user.full_name
+          %a{href: edit_customer_path(@customer)}
+            %i.fa.fa-pencil
+        %p.text-muted
+          Balance
+          = number_to_currency(@account.balance)
+      - elsif current_user.vendor?
+        %h1
+          %i.fa.fa-male
+          = current_user.full_name
+          %a{href: edit_customer_path(@customer)}
+            %i.fa.fa-pencil
         %p.text-muted
           Balance
           = number_to_currency(@account.balance)
@@ -27,8 +36,9 @@
         / Profile Image
         .box.box-primary
           .box-tools.pull-right
-            %a.btn.btn-box-tool{href: edit_customer_path(@customer), :type => "button"}
-              %i.fa.fa-edit.fa-lg
+            -#
+              %a.btn.btn-box-tool{href: edit_customer_path(@customer), :type => "button"}
+                %i.fa.fa-edit.fa-lg
           .box-body.box-profile
             .text-center
               - unless @customer.avatar.blank?
@@ -36,43 +46,28 @@
               - else
                 = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
             %h3.profile-username.text-center
-              = current_user.consumer? ? current_user.full_name : @customer.full_name
+              =# current_user.consumer? ? current_user.full_name : @customer.full_name
               - if @customer.anonymous?
                 .text-danger Anonymous Payee
-            %p.text-muted.text-center
-              = "Created #{@customer.CreateDate.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')}"
-              %br
-              Balance
-              = number_to_currency(@account.balance)
-            -#
-              %ul.list-group.list-group-unbordered
-                %li.list-group-item
-                  %b 
-                    %i.fa.fa-dollar.margin-r-5
-                    Payments
-                  %a.pull-right= "#{@payment_transactions.blank? ? 0 : @payment_transactions.count}"
-                %li.list-group-item
-                  %b 
-                    %i.fa.fa-money.margin-r-5
-                    Withdrawals
-                  %a.pull-right= "#{@withdrawal_transactions.blank? ? 0 : @withdrawal_transactions.count}"
-                %li.list-group-item
-                  %b 
-                    %i.fa.fa-comments.margin-r-5
-                    Messages
-                  %a.pull-right= "#{@sms_messages.blank? ? 0 : @sms_messages.count}"
             - if current_user.consumer? and @account.balance > 0
-              %a.btn.btn-success.btn-block{href: barcode_customer_path(current_user.customer), target: '_blank'}
+              -#
+                %a.btn.btn-success.btn-block{href: barcode_customer_path(current_user.customer), target: '_blank'}
+                  %b 
+                    %i.fa.fa-check-square
+                    Show Account Code
+              %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#barcode", "data-customer-id" => @customer.id, id: "show_account_code_button"}
                 %b 
                   %i.fa.fa-check-square
-                  Quick Pay
+                  Show Account Code
+              = render 'barcode'
+            - if current_user.vendor?
+              = render 'vendor_quick_purchase'
             - if current_user.admin? and not @customer.anonymous?
               %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
                 %b 
                   %i.fa.fa-dollar
                   One Time Payment
               - if @account.balance > 0 and not @customer.phone.blank?
-                -# %a.btn.btn-success.btn-block{href: send_barcode_link_sms_message_customer_path(@customer), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Link"}}
                 %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
                   %b 
                     %i.fa.fa-money
@@ -82,93 +77,76 @@
                   %b 
                     %i.fa.fa-comment
                     Send Message
-              -#
-                - if @account.balance > 0 and not @barcode_access_string.blank?
-                  %a.btn.btn-info.btn-block{href: barcode_customer_path(@barcode_access_string), target: '_blank'}
-                    %b 
-                      %i.fa.fa-money
-                      ATM Barcode
               = render 'one_time_payment'
               = render 'sms_message'
-            -#
-              - if current_user.payee? and @account.balance > 0
-                %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#barcode"}
-                  %b 
-                    %i.fa.fa-dollar
-                    Get Paid at ATM!
-                = render 'barcode'
-              - if current_user.payee? and @account.balance > 0 and not @barcode_access_string.blank?
-                %a.btn.btn-success.btn-block{href: barcode_customer_path(@barcode_access_string)}
-                  %b 
-                    %i.fa.fa-money
-                    Get Paid at ATM!
 
           / /.box-body
         / /.box
-        - unless current_user.payee?
-          / Details Box
-          .box.box-primary
-            .box-header.with-border
-              %h3.box-title Info
-              -#
-                .box-tools.pull-right
-                  %button.btn.btn-box-tool{"data-widget" => "collapse", :type => "button"}
-                    %i.fa.fa-minus
-            / /.box-header
-            .box-body
-              %strong
-                %i.fa.fa-envelope.margin-r-5
-                Email
-              %p.text-muted
-                = current_user.consumer? ? current_user.email : @customer.email
-              %hr/
-              %strong
-                %i.fa.fa-mobile.margin-r-5
-                Phone
-              %p.text-muted
-                = current_user.consumer? ? current_user.phone : @customer.phone
-              - if current_user.admin?
+        -#
+          - unless current_user.payee?
+            / Details Box
+            .box.box-primary
+              .box-header.with-border
+                %h3.box-title Info
+                -#
+                  .box-tools.pull-right
+                    %button.btn.btn-box-tool{"data-widget" => "collapse", :type => "button"}
+                      %i.fa.fa-minus
+              / /.box-header
+              .box-body
+                %strong
+                  %i.fa.fa-envelope.margin-r-5
+                  Email
+                %p.text-muted
+                  = current_user.consumer? ? current_user.email : @customer.email
                 %hr/
                 %strong
-                  %i.fa.fa-user.margin-r-5
-                  User Portal
+                  %i.fa.fa-mobile.margin-r-5
+                  Phone
                 %p.text-muted
-                  - unless @customer.user.blank?
-                    - if @customer.user.confirmed?
-                      Sign In Count:
-                      = @customer.user.sign_in_count
-                      %br
-                      Current Sign In At:
-                      = @customer.user.current_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
-                      %br
-                      Last Sign In At:
-                      = @customer.user.last_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
-                      %br
-                      Current Sign In IP:
-                      = @customer.user.current_sign_in_ip
-                      %br
-                      Last Sign In IP:
-                      = @customer.user.last_sign_in_ip
+                  = current_user.consumer? ? current_user.phone : @customer.phone
+                - if current_user.admin?
+                  %hr/
+                  %strong
+                    %i.fa.fa-user.margin-r-5
+                    User Portal
+                  %p.text-muted
+                    - unless @customer.user.blank?
+                      - if @customer.user.confirmed?
+                        Sign In Count:
+                        = @customer.user.sign_in_count
+                        %br
+                        Current Sign In At:
+                        = @customer.user.current_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+                        %br
+                        Last Sign In At:
+                        = @customer.user.last_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+                        %br
+                        Current Sign In IP:
+                        = @customer.user.current_sign_in_ip
+                        %br
+                        Last Sign In IP:
+                        = @customer.user.last_sign_in_ip
+                      - else
+                        .text-danger Waiting for user to confirm account
                     - else
-                      .text-danger Waiting for user to confirm account
-                  - else
-                    Portal user has not been created
-                    - unless @customer.phone.blank?
-                      = form_for(@customer) do |f|
-                        = f.hidden_field :create_payee_user_flag, :value => true
-                        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Invite"}}
-                          %i.fa.fa-comment
-                          Send Invite
-                %hr/
-                %strong
-                  %i.fa.fa-file-text-o.margin-r-5
-                  Notes
-                %p.text-muted
-                  = "EZcash ID: #{@customer.id}"
-                  %br
-                  = "Payee ID: #{@customer.Registration_Source}"
-            / /.box-body
-          / /.box
+                      Portal user has not been created
+                      - unless @customer.phone.blank?
+                        = form_for(@customer) do |f|
+                          = f.hidden_field :create_payee_user_flag, :value => true
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Invite"}}
+                            %i.fa.fa-comment
+                            Send Invite
+                  %hr/
+                  %strong
+                    %i.fa.fa-file-text-o.margin-r-5
+                    Notes
+                  %p.text-muted
+                    = "EZcash ID: #{@customer.id}"
+                    %br
+                    = "Payee ID: #{@customer.Registration_Source}"
+              / /.box-body
+            / /.box
       .col-md-9
         .box.box-primary
           .box-body
@@ -198,18 +176,48 @@
                         %tr
                           %th Date
                           %th Description
+                          - if current_user.consumer?
+                            %th To
+                          - if current_user.vendor?
+                            %th From
                           %th Amount
+                          - if current_user.consumer?
+                            %th
                       %tbody
                         - @payment_transactions.each do |payment_transaction|
                           %tr{class: payment_transaction.reversed? ? 'table-danger' : ''}
                             %td
-                              = payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
-                              =# link_to payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), payment_transaction
+                              =# payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
+                              = link_to payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), payment_transaction
                             %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
+                            - if current_user.consumer?
+                              %td= payment_transaction.to_account_customer.user.blank? ? payment_transaction.to_account_customer.full_name : payment_transaction.to_account_customer.user.full_name
+                            - if current_user.vendor?
+                              %td= payment_transaction.from_account_customer.user.blank? ? payment_transaction.from_account_customer.full_name : payment_transaction.from_account_customer.user.full_name
                             %td= number_to_currency(payment_transaction.amt_auth)
-                  .pull-right= paginate @payment_transactions, param_name: 'payments'
-                - else
-                  %p.text-center None
+                            - if current_user.consumer?
+                              %td
+                                %a{href: "#leave_tip_modal", "data-target" => "#leave_tip_modal", "data-toggle" => "modal"}
+                                  Leave Tip
+                              .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+                                .modal-dialog.modal-sm{:role => "document"}
+                                  .modal-content
+                                    .modal-header
+                                      Leave Tip
+                                      = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
+                                    .modal-body
+                                      = form_tag leave_tip_transactions_path, method: 'post', class: 'form-horizontal' do |f|
+                                        = hidden_field_tag :id, payment_transaction.id
+                                        .input-group.mb-3
+                                          .input-group-prepend
+                                            %span.input-group-text $
+                                          = number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
+                                          .input-group-append
+                                            %span.input-group-text .00
+                                        .modal-footer
+                                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                                            Submit
               
               #checks.tab-pane.fade{"aria-labelledby" => "profile-tab", :role => "tabpanel"}
                 - unless @check_transactions.blank?

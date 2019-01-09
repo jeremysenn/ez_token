@@ -47,5 +47,10 @@
                 .modal-body
                   %video#video{:style => "border: 1px solid green; width: 100%; height: auto;"}
 
-                .modal-footer
-                  %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+                  -# .modal-footer
+                  %hr
+                  %h3
+                    Amount:
+                    %span{id: 'amount_requested'}
+
+                    -# %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

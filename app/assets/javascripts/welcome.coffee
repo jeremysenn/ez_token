@@ -65,12 +65,14 @@ jQuery ->
         consumer_customer_account_id = data.account_id
         customer_barcode_id = data.customer_barcode_id
         # alert "Consumer User " + first_name + " " + last_name + ", Balance: " + balance
-        $('#consumer_details').append "<p>" + first_name + " " + last_name + "<br> Balance: " + balance + "</p>"
+        $('#consumer_details').append "<p>" + first_name + " " + last_name + "<br> Balance: OK </p>"
         if balance >= amount
           $('#open_consumer_qrcode_scanner_button').hide()
           $('#from_account_id').val consumer_customer_account_id
           $('#customer_barcode_id').val customer_barcode_id
+          $("#amount").prop("readonly", true);
           $('#quick_purchase_button').show()
+          $('#quick_purchase_cancel_button').show()
         else
           alert "Balance will not cover amount."
           $('#open_consumer_qrcode_scanner_button').hide()
@@ -87,6 +89,7 @@ jQuery ->
   $('#purchase_details').on 'click', '#open_consumer_qrcode_scanner_button', (e) ->
     amount = parseFloat($('#amount').val())
     if amount > 0
+      $('#amount_requested').html "$" + amount
       $('#scan_spinner').show()
       $('#open_consumer_qrcode_scanner_button').hide()
       load_consumer_qrcode_scanner()

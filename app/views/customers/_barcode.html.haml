@@ -6,7 +6,12 @@
           %span{"aria-hidden" => "true"} ×
       .modal-body
         .text-center
-          %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
+          - unless @base64_barcode_string.blank?
+            %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
+          - else
+            %div{id: "generating_barcode_spinner", style: 'display:none;'}
+              %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+            %img{id: 'barcode_contents', :src => "", class: 'img-fluid'}
     / /.modal-content
   / /.modal-dialog
 / /.modal

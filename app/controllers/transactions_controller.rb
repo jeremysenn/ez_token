@@ -169,6 +169,29 @@ class TransactionsController < ApplicationController
       redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Purchase. Error code: #{error_code.blank? ? 'Unknown' : error_code}."
     end
   end
+  
+  def leave_tip
+    amount = params[:amount]
+    original_transaction = Transaction.find(params[:id])
+    to_account_id = original_transaction.to_acct_id
+    from_account_id = original_transaction.from_acct_id
+    unless amount.blank? or to_account_id.blank? or from_account_id.blank?
+      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+      unless response.blank?
+        response_code = response[:return]
+        unless response_code.to_i > 0
+          @transaction = Transaction.find(response[:tran_id])
+        else
+          error_code = response_code
+        end
+      end
+    end
+    unless @transaction.blank?
+      redirect_to root_path, notice: "Tip submitted. Transaction ID #{@transaction.id}"
+    else
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the Tip. Error code: #{error_code.blank? ? 'Unknown' : error_code}."
+    end
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.

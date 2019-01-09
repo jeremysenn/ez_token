@@ -171,10 +171,22 @@ class CustomersController < ApplicationController
 #    else
 #      redirect_back fallback_location: root_path, alert: 'Only the payee has access to that page.'
 #    end
-    unless @customer.blank?
-      @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
-    else
-      redirect_to root_path, alert: 'There was a problem getting barcode.'
+    respond_to do |format|
+      format.html {
+        unless @customer.blank?
+          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
+        else
+          redirect_to root_path, alert: 'There was a problem getting barcode.'
+        end
+      }
+      format.json{
+        unless @customer.blank?
+          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
+          render json: {"barcode_string" => @base64_barcode_string}
+        else
+          render json: { error: ["Error: Problem generating QR Code."] }, status: :unprocessable_entity
+        end
+      }
     end
   end
   
