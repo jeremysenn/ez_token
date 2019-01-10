@@ -208,7 +208,7 @@
                               %td
                                 %a{href: "#leave_tip_modal", "data-target" => "#leave_tip_modal", "data-toggle" => "modal"}
                                   Leave Tip
-                              .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog"}
+                              .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1", "data-backdrop" => "false"}
                                 .modal-dialog.modal-sm{:role => "document"}
                                   .modal-content
                                     .modal-header
