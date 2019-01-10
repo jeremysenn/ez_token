@@ -209,7 +209,7 @@
                                 %a{href: "#leave_tip_modal", "data-target" => "#leave_tip_modal", "data-toggle" => "modal"}
                                   Leave Tip
                   - @payment_transactions.each do |payment_transaction|
-                    .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1", "data-backdrop" => "false"}
+                    .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
                       .modal-dialog.modal-sm{:role => "document"}
                         .modal-content
                           .modal-header
@@ -228,6 +228,8 @@
                                 %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
                                 %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
                                   Submit
+                          %script
+                            $('.modal').on('shown.bs.modal', function() {$(this).find('[autofocus]').first().focus();});
               
               #checks.tab-pane.fade{"aria-labelledby" => "profile-tab", :role => "tabpanel"}
                 - unless @check_transactions.blank?
