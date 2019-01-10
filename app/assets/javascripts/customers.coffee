@@ -28,8 +28,8 @@ jQuery ->
     #  $('#customer_avatar').click()
     ### End Avatar Upload ###
 
-  $('#show_account_code_button').on 'click', ->
-    $('#generating_barcode_spinner').show()
+  $('.show_account_code_button').on 'click', ->
+    $('.generating_barcode_spinner').show()
     customer_id = $(this).data( "customer-id" )
     company_id = $(this).data( "company-id" )
     $.ajax
@@ -38,13 +38,13 @@ jQuery ->
       data: 
         company_id: company_id
       success: (data) ->
-        $('#generating_barcode_spinner').hide()
+        $('.generating_barcode_spinner').hide()
         barcode_string = data.barcode_string
         # $('#barcode_contents').append barcode_string
-        document.getElementById('barcode_contents').setAttribute 'src', "data:image/png;base64," + barcode_string
+        document.getElementById("company_" + company_id + "_barcode_contents").setAttribute 'src', "data:image/png;base64," + barcode_string
         return
       error: (xhr) ->
-        $('#generating_barcode_spinner').hide()
+        $('.generating_barcode_spinner').hide()
         error = $.parseJSON(xhr.responseText).error
         alert error
         console.log error

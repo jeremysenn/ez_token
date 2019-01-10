@@ -54,21 +54,36 @@
               =# current_user.consumer? ? current_user.full_name : @customer.full_name
               - if @customer.anonymous?
                 .text-danger Anonymous Payee
-            - if current_user.consumer? and @account.balance > 0
+            - if current_user.consumer?
               -#
                 %a.btn.btn-success.btn-block{href: barcode_customer_path(current_user.customer), target: '_blank'}
                   %b 
                     %i.fa.fa-check-square
                     Show Account Code
               - current_user.customer.accounts.each do |account|
-                %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#barcode", "data-customer-id" => @customer.id, "data-company-id" => account.CompanyNumber, id: "show_account_code_button"}
-                  %b 
-                    %i.fa.fa-check-square
-                    = "#{account.company.name} Code"
-                  %br
-                  %small 
-                    = "Balance #{number_to_currency(account.balance)}"
-              = render 'barcode'
+                %p
+                  %a.btn.btn-success.btn-block.show_account_code_button{href: "#company_#{account.CompanyNumber}_barcode", "data-toggle" => "modal", "data-target" => "#company_#{account.CompanyNumber}_barcode", "data-customer-id" => @customer.id, "data-company-id" => account.CompanyNumber, id: "show_account_code_button"}
+                    %b 
+                      %i.fa.fa-check-square
+                      = "#{account.company.name} Code"
+                    %br
+                    %small 
+                      = "Balance #{number_to_currency(account.balance)}"
+                %div.modal.fade.in{id: "company_#{account.CompanyNumber}_barcode"}
+                  .modal-dialog.modal-sm{:role => "document"}
+                    .modal-content
+                      .modal-header
+                      .modal-body
+                        .text-center
+                          - unless @base64_barcode_string.blank?
+                            %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
+                          - else
+                            %div{class: "generating_barcode_spinner", style: 'display:none;'}
+                              %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+                            %img{id: "company_#{account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
+                      .modal-footer
+                        = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-secondary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
+              =# render 'barcode'
             - if current_user.vendor?
               = render 'vendor_quick_purchase'
             - if current_user.admin? and not @customer.anonymous?
