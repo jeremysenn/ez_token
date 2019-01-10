@@ -208,25 +208,26 @@
                               %td
                                 %a{href: "#leave_tip_modal", "data-target" => "#leave_tip_modal", "data-toggle" => "modal"}
                                   Leave Tip
-                              .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1", "data-backdrop" => "false"}
-                                .modal-dialog.modal-sm{:role => "document"}
-                                  .modal-content
-                                    .modal-header
-                                      Leave Tip
-                                      = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
-                                    .modal-body
-                                      = form_tag leave_tip_transactions_path, method: 'post', class: 'form-horizontal' do |f|
-                                        = hidden_field_tag :id, payment_transaction.id
-                                        .input-group.mb-3
-                                          .input-group-prepend
-                                            %span.input-group-text $
-                                          = number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
-                                          .input-group-append
-                                            %span.input-group-text .00
-                                        .modal-footer
-                                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
-                                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
-                                            Submit
+                  - @payment_transactions.each do |payment_transaction|
+                    .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1", "data-backdrop" => "false"}
+                      .modal-dialog.modal-sm{:role => "document"}
+                        .modal-content
+                          .modal-header
+                            Leave Tip
+                            = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
+                          .modal-body
+                            = form_tag leave_tip_transactions_path, method: 'post', class: 'form-horizontal' do |f|
+                              = hidden_field_tag :id, payment_transaction.id
+                              .input-group.mb-3
+                                .input-group-prepend
+                                  %span.input-group-text $
+                                = number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
+                                .input-group-append
+                                  %span.input-group-text .00
+                              .modal-footer
+                                %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                                %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                                  Submit
               
               #checks.tab-pane.fade{"aria-labelledby" => "profile-tab", :role => "tabpanel"}
                 - unless @check_transactions.blank?
