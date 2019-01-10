@@ -34,6 +34,10 @@
     / Default box
     .row
       .col-md-3
+        - if current_user.vendor? and browser.device.mobile?
+          %h5.text-muted
+            Balance
+            = number_to_currency(@account.balance)
         / Profile Image
         .box.box-primary
           .box-tools.pull-right
@@ -204,7 +208,7 @@
                               %td
                                 %a{href: "#leave_tip_modal", "data-target" => "#leave_tip_modal", "data-toggle" => "modal"}
                                   Leave Tip
-                              .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+                              .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog"}
                                 .modal-dialog.modal-sm{:role => "document"}
                                   .modal-content
                                     .modal-header

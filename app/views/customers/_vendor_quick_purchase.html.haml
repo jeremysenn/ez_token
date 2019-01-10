@@ -17,7 +17,7 @@
       Scan QR Code
     %div{id: "scan_spinner", style: 'display:none;'}
       %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
-    = link_to "Cancel", nil, id: 'quick_purchase_cancel_button', :onclick => 'history.go(0); return false;', style: 'display: none;', class: 'btn btn-secondary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Cancel"}
+    = link_to "Cancel", nil, id: 'quick_purchase_cancel_button', :onclick => "javascript:window.location.reload()", style: 'display: none;', class: 'btn btn-secondary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Cancel"}
     %button.btn.btn-primary{id: 'quick_purchase_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}, style: 'display: none;'} 
       Submit
 
