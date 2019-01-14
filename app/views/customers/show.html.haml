@@ -45,11 +45,12 @@
               %a.btn.btn-box-tool{href: edit_customer_path(@customer), :type => "button"}
                 %i.fa.fa-edit.fa-lg
           .box-body.box-profile
-            .text-center
-              - unless @customer.avatar.blank?
-                = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')
-              - else
-                = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
+            - unless browser.device.mobile?
+              .text-center
+                - unless @customer.avatar.blank?
+                  = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')
+                - else
+                  = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
             %h3.profile-username.text-center
               =# current_user.consumer? ? current_user.full_name : @customer.full_name
               - if @customer.anonymous?
@@ -62,7 +63,7 @@
                     Show Account Code
               - current_user.customer.accounts.each do |account|
                 %p
-                  %a.btn.btn-success.btn-block.show_account_code_button{href: "#company_#{account.CompanyNumber}_barcode", "data-toggle" => "modal", "data-target" => "#company_#{account.CompanyNumber}_barcode", "data-customer-id" => @customer.id, "data-company-id" => account.CompanyNumber, id: "show_account_code_button"}
+                  %a.btn.btn-success.btn-block.btn-lg.show_account_code_button{href: "#company_#{account.CompanyNumber}_barcode", "data-toggle" => "modal", "data-target" => "#company_#{account.CompanyNumber}_barcode", "data-customer-id" => @customer.id, "data-company-id" => account.CompanyNumber, id: "show_account_code_button"}
                     %b 
                       %i.fa.fa-check-square
                       = "#{account.company.name} Code"
@@ -79,10 +80,10 @@
                             %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
                           - else
                             %div{class: "generating_barcode_spinner", style: 'display:none;'}
-                              %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+                              %i.fa.fa-spinner.fa-spin.fa-3x.fa-fw
                             %img{id: "company_#{account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
                       .modal-footer
-                        = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-secondary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
+                        = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default btn-lg', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
               =# render 'barcode'
             - if current_user.vendor?
               = render 'vendor_quick_purchase'
@@ -177,25 +178,26 @@
             %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
               %li.nav-item
                 %a#payments-tab.nav-link.active{"aria-controls" => "payments", "aria-selected" => "true", "data-toggle" => "tab", :href => "#payments", :role => "tab"} 
-                  %i.fa.fa-dollar
+                  %i.fa.fa-dollar.fa-lg
                   = "Payments" unless browser.device.mobile?
               %li.nav-item
                 %a#checks-tab.nav-link{"aria-controls" => "checks", "aria-selected" => "false", "data-toggle" => "tab", :href => "#checks", :role => "tab"} 
-                  %i.fa.fa-bank
+                  %i.fa.fa-bank.fa-lg
                   = "Checks" unless browser.device.mobile?
               %li.nav-item
                 %a#withdrawals-tab.nav-link{"aria-controls" => "withdrawals", "aria-selected" => "false", "data-toggle" => "tab", :href => "#withdrawals", :role => "tab"} 
-                  %i.fa.fa-money
+                  %i.fa.fa-money.fa-lg
                   = "Withdrawals" unless browser.device.mobile?
               %li.nav-item
                 %a#messages-tab.nav-link{"aria-controls" => "messages", "aria-selected" => "false", "data-toggle" => "tab", :href => "#messages", :role => "tab"} 
-                  %i.fa.fa-comments
+                  %i.fa.fa-comments.fa-lg
                   = "Messages" unless browser.device.mobile?
             #myTabContent.tab-content
               #payments.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                 - unless @payment_transactions.blank?
                   .table-responsive
-                    %table.table.table-striped{class: "#{browser.device.mobile? ? 'table-sm' : ''}"}
+                    -# %table.table.table-striped{class: "#{browser.device.mobile? ? 'table-sm' : ''}"}
+                    %table.table.table-striped
                       %thead
                         %tr
                           %th Date
@@ -302,3 +304,5 @@
                   .pull-right= paginate @sms_messages, param_name: 'messages'
                 - else
                   %p.text-center None
+
+= audio_tag asset_path("cash_register.mp3"), class: "cash_register_chime"

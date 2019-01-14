@@ -58,7 +58,7 @@ jQuery ->
       url: "/customers/" + barcode_number + "/find_by_barcode"
       dataType: 'json'
       success: (data) ->
-        $('#scan_spinner').hide()
+        # $('#scan_spinner').hide()
         first_name = data.first_name
         last_name = data.last_name
         balance = parseFloat(data.balance)
@@ -67,12 +67,16 @@ jQuery ->
         # alert "Consumer User " + first_name + " " + last_name + ", Balance: " + balance
         $('#consumer_details').append "<p>" + first_name + " " + last_name + "<br> Balance: OK </p>"
         if balance >= amount
+          $('#scan_spinner').show()
           $('#open_consumer_qrcode_scanner_button').hide()
           $('#from_account_id').val consumer_customer_account_id
           $('#customer_barcode_id').val customer_barcode_id
           $("#amount").prop("readonly", true);
-          $('#quick_purchase_button').show()
-          $('#quick_purchase_cancel_button').show()
+          # $('#quick_purchase_button').show()
+          # $('#quick_purchase_button').click()
+          # $('#quick_purchase_cancel_button').show()
+          $('#quick_purchase_form').submit()
+          $(".cash_register_chime")[0].play()
         else
           alert "Balance will not cover amount."
           $('#open_consumer_qrcode_scanner_button').hide()

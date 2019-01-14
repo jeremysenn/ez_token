@@ -1,24 +1,25 @@
 %h3 Quick Purchase
+
 %div{:id => "purchase_details"}
   = form_tag quick_purchase_transactions_path, id: 'quick_purchase_form', method: 'post', class: 'form-horizontal' do |f|
     = hidden_field_tag :to_account_id, current_user.customer.account.id
     .input-group.mb-3
       .input-group-prepend
         %span.input-group-text $
-      = number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
+      = number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-xl", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
       .input-group-append
         %span.input-group-text .00
     %p{id: 'consumer_details'}
       = hidden_field_tag :barcode_number
       = hidden_field_tag :customer_barcode_id
       = hidden_field_tag :from_account_id
-    %a.btn.btn-default{id: 'open_consumer_qrcode_scanner_button', href: "#qrcode_scanner_modal", "data-target" => "#qrcode_scanner_modal", "data-toggle" => "modal"}
+    %a.btn.btn-default.btn-lg{id: 'open_consumer_qrcode_scanner_button', href: "#qrcode_scanner_modal", "data-target" => "#qrcode_scanner_modal", "data-toggle" => "modal"}
       %i.fa.fa-qrcode
       Scan QR Code
     %div{id: "scan_spinner", style: 'display:none;'}
       %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
-    = link_to "Cancel", nil, id: 'quick_purchase_cancel_button', :onclick => "javascript:window.location.reload()", style: 'display: none;', class: 'btn btn-secondary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Cancel"}
-    %button.btn.btn-primary{id: 'quick_purchase_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}, style: 'display: none;'} 
+    = link_to "Cancel", nil, id: 'quick_purchase_cancel_button', :onclick => "javascript:window.location.reload()", style: 'display: none;', class: 'btn btn-default btn-lg', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Cancel"}
+    %button.btn.btn-primary.btn-lg{id: 'quick_purchase_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}, style: 'display: none;'} 
       Submit
 
   .modal.fade{id: "qrcode_scanner_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
@@ -33,3 +34,7 @@
           %h3
             Amount:
             %span{id: 'amount_requested'}
+            %span.pull-right
+              = link_to "Cancel", '#', :class => "btn btn-default btn-lg", "data-dismiss" => "modal"
+
+= audio_tag asset_path("cash_register.mp3"), class: "cash_register_chime"
