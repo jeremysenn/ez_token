@@ -57,7 +57,11 @@ class CustomersController < ApplicationController
     @payment_transactions =  Kaminari.paginate_array(@customer.successful_payments).page(params[:payments]).per(10)
     @check_transactions =  Kaminari.paginate_array(@customer.cashed_checks).page(params[:checks]).per(10)
     @sms_messages = @customer.sms_messages.order("created_at DESC").page(params[:messages]).per(10)
-    @account = @customer.accounts.first
+    if params[:account_id].blank?
+      @account = @customer.accounts.first
+    else
+      @account = Account.find(params[:account_id])
+    end
 #    @base64_barcode_string = @customer.barcode_png
 #    unless @customer.barcode_access_string.blank?
 #      @barcode_access_string = @customer.barcode_access_string
@@ -174,14 +178,28 @@ class CustomersController < ApplicationController
     respond_to do |format|
       format.html {
         unless @customer.blank?
-          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
+#          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
+          @base64_barcode_string = @customer.barcode_png
         else
           redirect_to root_path, alert: 'There was a problem getting barcode.'
         end
       }
       format.json{
         unless @customer.blank?
-          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, params[:company_id].blank? ? current_user.company_id : params[:company_id], 5)
+          if params[:company_id].blank?
+            if params[:amount].blank?
+              @base64_barcode_string = @customer.barcode_png
+            else
+              @base64_barcode_string = @customer.barcode_png_with_amount(params[:amount])
+            end
+          else
+            if params[:amount].blank?
+              @base64_barcode_string = @customer.barcode_png_by_company(params[:company_id])
+            else
+              @base64_barcode_string = @customer.barcode_png_with_amount_by_company(params[:amount], params[:company_id])
+            end
+          end
+#          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, params[:company_id].blank? ? current_user.company_id : params[:company_id], 5)
           render json: {"barcode_string" => @base64_barcode_string}
         else
           render json: { error: ["Error: Problem generating QR Code."] }, status: :unprocessable_entity

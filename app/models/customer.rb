@@ -553,9 +553,48 @@ class Customer < ActiveRecord::Base
   
   def barcode_png
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5})
+    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: 0})
     
     Rails.logger.debug "barcode_png response body: #{response.body}"
+    
+    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+      return response.body[:get_customer_barcode_png_response][:return]
+    else
+      return ""
+    end
+  end
+  
+  def barcode_png_by_company(company_id)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: company_id, Scale: 5, amount: 0})
+    
+    Rails.logger.debug "barcode_png_by_company response body: #{response.body}"
+    
+    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+      return response.body[:get_customer_barcode_png_response][:return]
+    else
+      return ""
+    end
+  end
+  
+  def barcode_png_with_amount(amount)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: amount})
+    
+    Rails.logger.debug "barcode_png_with_amount response body: #{response.body}"
+    
+    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+      return response.body[:get_customer_barcode_png_response][:return]
+    else
+      return ""
+    end
+  end
+  
+  def barcode_png_with_amount_by_company(amount, company)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: company, Scale: 5, amount: amount})
+    
+    Rails.logger.debug "barcode_png_with_amount_by_company response body: #{response.body}"
     
     unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
       return response.body[:get_customer_barcode_png_response][:return]

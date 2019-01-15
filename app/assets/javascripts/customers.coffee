@@ -32,11 +32,15 @@ jQuery ->
     $('.generating_barcode_spinner').show()
     customer_id = $(this).data( "customer-id" )
     company_id = $(this).data( "company-id" )
+    account_id = $(this).data( "account-id" )
+    amount = $('#withdrawal_amount').val()
     $.ajax
       url: "/customers/" + customer_id + "/barcode"
       dataType: 'json'
       data: 
         company_id: company_id
+        account_id: account_id
+        amount: amount
       success: (data) ->
         $('.generating_barcode_spinner').hide()
         barcode_string = data.barcode_string
@@ -50,3 +54,48 @@ jQuery ->
         console.log error
         return
     return
+
+  ### Start Consumer QR Code Payment Scanner ###
+  load_consumer_qr_code_payment_scanner = ->
+    codeReader = new (ZXing.BrowserQRCodeReader)
+    console.log 'ZXing code reader initialized'
+    codeReader.getVideoInputDevices().then (videoInputDevices) ->
+      sourceSelect = document.getElementById('sourceSelect')
+      firstDeviceId = videoInputDevices[0].deviceId
+      ###
+      if videoInputDevices.length > 1
+        videoInputDevices.forEach (element) ->
+          sourceOption = document.createElement('option')
+          sourceOption.text = element.label
+          sourceOption.value = element.deviceId
+          sourceSelect.appendChild sourceOption
+          return
+        sourceSelectPanel = document.getElementById('sourceSelectPanel')
+        sourceSelectPanel.style.display = 'block'
+      ###
+      codeReader.decodeFromInputVideoDevice(firstDeviceId, 'video').then((result) ->
+        barcode_number = result.text
+        console.log barcode_number
+        $('#qrcode_scanner_modal').modal('hide')
+        $('#barcode_number').val barcode_number
+        find_consumer_user_by_barcode_ajax()
+        codeReader.reset()
+        console.log 'ZXing code reader reset'
+
+      $('#qr_code_payment_scanner_modal').on 'hidden.bs.modal', (e) ->
+        $('#scan_spinner').hide()
+        $('#open_consumer_qr_code_payment_scanner_button').show()
+        codeReader.reset()
+        console.log 'ZXing code reader reset'
+        return
+
+      ).catch (err) ->
+        console.error err
+      console.log 'Started continuous decode from camera with id ' + firstDeviceId
+      return
+
+  $('#qr_code_payment_details').on 'click', '#open_qr_code_payment_scanner_button', (e) ->
+    $('#scan_spinner').show()
+    $('#open_consumer_qr_code_payment_scanner_button').hide()
+    load_consumer_qr_code_payment_scanner()
+  ### End Consumer QR Code Payment Scanner ###
