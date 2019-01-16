@@ -39,7 +39,7 @@ class Customer < ActiveRecord::Base
 #  validates :PhoneMobile, uniqueness: true
 
   after_commit :create_payee_user, on: [:create]
-#  after_commit :generate_barcode_access_string, on: [:create]
+  after_commit :generate_barcode_access_string, on: [:create]
   after_update :create_payee_user, if: :need_to_create_payee_user?
   after_update :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
       
@@ -564,18 +564,18 @@ class Customer < ActiveRecord::Base
     end
   end
   
-  def barcode_png_by_company(company_id)
-    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: company_id, Scale: 5, amount: 0})
-    
-    Rails.logger.debug "barcode_png_by_company response body: #{response.body}"
-    
-    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
-      return response.body[:get_customer_barcode_png_response][:return]
-    else
-      return ""
-    end
-  end
+#  def barcode_png_by_company(company_id)
+#    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: company_id, Scale: 5, amount: 0})
+#    
+#    Rails.logger.debug "barcode_png_by_company response body: #{response.body}"
+#    
+#    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+#      return response.body[:get_customer_barcode_png_response][:return]
+#    else
+#      return ""
+#    end
+#  end
   
   def barcode_png_with_amount(amount)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")

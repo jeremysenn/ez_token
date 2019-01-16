@@ -2,7 +2,7 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :registerable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable #, :timeoutable
-       
+  
   ROLES = %w[admin basic consumer payee vendor].freeze
        
   belongs_to :company
@@ -101,6 +101,17 @@ class User < ApplicationRecord
     elsif basic?
       company.devices.where(dev_id: device_ids)
     end
+  end
+  
+  def qr_code
+    require 'barby'
+    require 'barby/barcode'
+    require 'barby/barcode/qr_code'
+    require 'barby/outputter/png_outputter'
+
+    barcode = Barby::QrCode.new(customer.barcode_access_string, level: :q, size: 5)
+    base64_output = Base64.encode64(barcode.to_png({ xdim: 5 }))
+    "data:image/png;base64,#{base64_output}"
   end
   
 end

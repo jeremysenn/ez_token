@@ -225,16 +225,28 @@ class CustomersController < ApplicationController
   # GET /customers/123456789/find_by_barcode
   def find_by_barcode
     @barcode = CustomerBarcode.where(:Barcode => params[:id], :CompanyNumber => current_user.company_id).first
-    
+    unless @barcode.blank?
+      @customer = @barcode.customer
+    else
+      @customer = Customer.find_by(barcode_access_string: params[:id])
+    end
+    @account = @customer.accounts.where(CompanyNumber: current_user.company_id).first
     respond_to do |format|
-#      format.json { render :json => @customer }
-      unless @barcode.blank? or @barcode.used?
-        @customer = @barcode.customer
-        format.json {render json: {"first_name" => @customer.user.first_name, "last_name" => @customer.user.last_name, "balance" => @customer.balance, "account_id" => @customer.account.id, "customer_barcode_id" => @barcode.id} }
+      unless @customer.blank? or @account.blank?
+        format.json {render json: {"first_name" => @customer.user.first_name, "last_name" => @customer.user.last_name, "balance" => @account.balance, "account_id" => @account.id, "customer_barcode_id" => @barcode.blank? ? nil : @barcode.id} }
       else
         format.json {render json: { error: ["Error: Customer cannot be found or QR Code has already been used."] }, status: :unprocessable_entity}
       end
     end
+    
+#    respond_to do |format|
+#      unless @barcode.blank? or @barcode.used?
+#        @customer = @barcode.customer
+#        format.json {render json: {"first_name" => @customer.user.first_name, "last_name" => @customer.user.last_name, "balance" => @customer.balance, "account_id" => @customer.account.id, "customer_barcode_id" => @barcode.id} }
+#      else
+#        format.json {render json: { error: ["Error: Customer cannot be found or QR Code has already been used."] }, status: :unprocessable_entity}
+#      end
+#    end
   end
   
   private
