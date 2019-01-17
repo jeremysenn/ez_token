@@ -29,6 +29,7 @@
       %p.text-muted
         Balance
         = number_to_currency(@account.balance)
+    .text-muted= "#{@account.company.name} (#{current_user.role})"
   / Main content
   %section.content
     / Default box
@@ -91,7 +92,7 @@
               .box.box-success.collapsed-box.box-solid
                 %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
                   %h5
-                    %b Transfer
+                    %b Request Payment
                 .box-body
                   = render 'vendor_quick_purchase'
             .box.box-success.collapsed-box.box-solid
@@ -246,14 +247,14 @@
                             %td= number_to_currency(payment_transaction.amt_auth)
                             - if current_user.consumer?
                               %td
-                                %a{href: "#leave_tip_modal", "data-target" => "#leave_tip_modal", "data-toggle" => "modal"}
-                                  Leave Tip
+                                %a{href: "#additional_payment_modal", "data-target" => "#additional_payment_modal", "data-toggle" => "modal"}
+                                  Additional Payment
                   - @payment_transactions.each do |payment_transaction|
-                    .modal.fade{id: "leave_tip_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+                    .modal.fade{id: "additional_payment_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
                       .modal-dialog.modal-sm{:role => "document"}
                         .modal-content
                           .modal-header
-                            Leave Tip
+                            Additional Payment
                             = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
                           .modal-body
                             = form_tag leave_tip_transactions_path, method: 'post', class: 'form-horizontal' do |f|
@@ -270,6 +271,8 @@
                                   Submit
                           %script
                             $('.modal').on('shown.bs.modal', function() {$(this).find('[autofocus]').first().focus();});
+                - else
+                  %p.text-center None
               
               #checks.tab-pane.fade{"aria-labelledby" => "profile-tab", :role => "tabpanel"}
                 - unless @check_transactions.blank?

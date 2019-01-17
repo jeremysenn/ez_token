@@ -4,18 +4,20 @@
     %section.content-header
       = render 'shared/flash_messages'
       %h1
-        = current_user.company.name
+        = current_user.full_name
     / Main content
     %section.content
       / Default box
       .box.box-primary
         .box-header.with-border
           %h3.box-title 
-            = current_user.full_name
-          .box-tools.pull-right
-            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
-              %i.fa.fa-minus
-            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
-              %i.fa.fa-times
+            Accounts
+          -#
+            .box-tools.pull-right
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                %i.fa.fa-minus
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+                %i.fa.fa-times
         .box-body
-          %h3 Redirecting you to your consumer page...
+          - current_user.customer.accounts.each do |account|
+            %p= link_to account.company.name, customer_path(current_user.customer, account_id: account.id)

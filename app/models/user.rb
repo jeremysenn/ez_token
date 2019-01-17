@@ -114,4 +114,8 @@ class User < ApplicationRecord
     "data:image/png;base64,#{base64_output}"
   end
   
+  def buddies
+    company.accounts.debit.where.not(CustomerID: customer)
+  end
+  
 end

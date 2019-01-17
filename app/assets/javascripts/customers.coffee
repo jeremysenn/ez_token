@@ -99,3 +99,15 @@ jQuery ->
     $('#open_consumer_qr_code_payment_scanner_button').hide()
     load_consumer_qr_code_payment_scanner()
   ### End Consumer QR Code Payment Scanner ###
+
+  $('#purchase_details').on 'click', '#open_buddy_search_button', (e) ->
+    amount = parseFloat($('#amount').val())
+    if !amount > 0
+      alert "Amount must be greater than $0"
+      return false
+
+  $('#withdrawal_details').on 'click', '#open_withdrawal_code_button', (e) ->
+    amount = parseFloat($('#withdrawal_amount').val())
+    if !amount > 0
+      alert "Withdrawal amount must be greater than $0"
+      return false

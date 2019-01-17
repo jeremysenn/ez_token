@@ -155,9 +155,9 @@ class TransactionsController < ApplicationController
       unless response.blank?
         response_code = response[:return]
         unless response_code.to_i > 0
+          @transaction = Transaction.find(response[:tran_id])
           unless customer_barcode_id.blank?
             @customer_barcode = CustomerBarcode.find(customer_barcode_id)
-            @transaction = Transaction.find(response[:tran_id])
             @customer_barcode.update_attributes(TranID: @transaction.id, Used: 1)
           end
         else

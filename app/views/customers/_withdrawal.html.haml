@@ -6,9 +6,9 @@
     .input-group-append
       %span.input-group-text .00
   %p
-    %a.btn.btn-default.btn-lg.show_account_code_button{href: "#company_#{@account.CompanyNumber}_barcode", "data-toggle" => "modal", "data-target" => "#company_#{@account.CompanyNumber}_barcode", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, "data-account-id" => @account.id, id: "show_account_code_button"}
+    %a.btn.btn-default.btn-lg.show_account_code_button{href: "#company_#{@account.CompanyNumber}_barcode", "data-toggle" => "modal", "data-target" => "#company_#{@account.CompanyNumber}_barcode", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, "data-account-id" => @account.id, id: "open_withdrawal_code_button"}
       %i.fa.fa-qrcode
-      Create QR Code
+      Create Code
       
   %div.modal.fade.in{id: "company_#{@account.CompanyNumber}_barcode"}
     .modal-dialog.modal-sm{:role => "document"}

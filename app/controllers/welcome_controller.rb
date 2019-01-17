@@ -11,7 +11,9 @@ class WelcomeController < ApplicationController
           redirect_to edit_registration_path(current_user)
         else
           unless current_user.customer.blank?
-            redirect_to current_user.customer
+            unless current_user.customer.accounts.count > 1
+              redirect_to current_user.customer
+            end
           else
             redirect_to users_admin_path(current_user)
           end

@@ -12,6 +12,8 @@ class Account < ActiveRecord::Base
   
   attr_accessor :last_4_of_pan
   
+  scope :debit, -> { where(ActTypeID: 6) }
+  
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
 #  validates :MinBalance, numericality: { :greater_than_or_equal_to => 0 }
@@ -31,6 +33,14 @@ class Account < ActiveRecord::Base
 #  def company
 #    customer.company unless customer.blank?
 #  end
+
+  def customer_user_name
+    unless customer.user.blank?
+      customer.user.full_name
+    else
+      customer.full_name
+    end
+  end
   
   def transactions
 #    transactions = Transaction.where(from_acct_id: decrypted_account_number) + Transaction.where(to_acct_id: decrypted_account_number)
