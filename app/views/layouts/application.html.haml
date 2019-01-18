@@ -28,7 +28,7 @@
           = render 'shared/consumer_user_navbar' 
         - elsif current_user.payee?
           = render 'shared/customer_user_navbar'
-        - elsif current_user.vendor?
+        - elsif current_user.vendor? or current_user.caddy?
           = render 'shared/vendor_user_navbar'
       = yield
       - unless ((params[:controller] == "customers" and params[:action] == "barcode") or (params[:controller] == "transactions" and params[:action] == "quick_pay"))

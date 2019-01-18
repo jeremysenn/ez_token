@@ -313,6 +313,10 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def buddies
+    company.accounts.debit.where.not(CustomerID: self.CustomerID)
+  end
+  
   #############################
   #     Class Methods         #
   #############################

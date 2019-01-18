@@ -105,9 +105,23 @@ jQuery ->
     if !amount > 0
       alert "Amount must be greater than $0"
       return false
+    else
+      $('.request_payment_amount').html "$" + amount
+
+  $('#send_payment_details').on 'click', '#open_send_payment_buddy_search_button', (e) ->
+    amount = parseFloat($('#send_payment_amount').val())
+    account_balance = parseFloat($('#account_balance').val())
+    if amount > 0 && account_balance > amount
+      $('.send_payment_amount').html "$" + amount
+    else
+      alert "Amount must be greater than $0 and your balance must cover the amount."
+      return false
+      
 
   $('#withdrawal_details').on 'click', '#open_withdrawal_code_button', (e) ->
     amount = parseFloat($('#withdrawal_amount').val())
-    if !amount > 0
+    if amount > 0
+      $('.withdrawal_code_amount').html "$" + amount
+    else
       alert "Withdrawal amount must be greater than $0"
       return false

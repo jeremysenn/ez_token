@@ -225,18 +225,23 @@ class CustomersController < ApplicationController
   
   # GET /customers/123456789/find_by_barcode
   def find_by_barcode
-    @barcode = CustomerBarcode.where(:Barcode => params[:id], :CompanyNumber => current_user.company_id).first
+    company_id = params[:company_id]
+    unless company_id.blank?
+      @barcode = CustomerBarcode.where(:Barcode => params[:id], :CompanyNumber => current_user.company_id).first
+    else
+      @barcode = CustomerBarcode.where(:Barcode => params[:id]).first
+    end
     unless @barcode.blank?
       @customer = @barcode.customer
     else
       @customer = Customer.find_by(barcode_access_string: params[:id])
     end
-    @account = @customer.accounts.where(CompanyNumber: current_user.company_id).first
+    @account = @customer.accounts.where(CompanyNumber: company_id).first
     respond_to do |format|
       unless @customer.blank? or @account.blank?
         format.json {render json: {"first_name" => @customer.user.first_name, "last_name" => @customer.user.last_name, "balance" => @account.balance, "account_id" => @account.id, "customer_barcode_id" => @barcode.blank? ? nil : @barcode.id} }
       else
-        format.json {render json: { error: ["Error: Customer cannot be found or QR Code has already been used."] }, status: :unprocessable_entity}
+        format.json {render json: { error: ["Error: Customer cannot be found."] }, status: :unprocessable_entity}
       end
     end
     

@@ -6,15 +6,18 @@
     .input-group-append
       %span.input-group-text .00
   %p
-    %a.btn.btn-default.btn-lg.show_account_code_button{href: "#company_#{@account.CompanyNumber}_barcode", "data-toggle" => "modal", "data-target" => "#company_#{@account.CompanyNumber}_barcode", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, "data-account-id" => @account.id, id: "open_withdrawal_code_button"}
+    %a.btn.btn-default.btn-lg.show_account_code_button{href: "#withdrawal_code", "data-toggle" => "modal", "data-target" => "#withdrawal_code", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, "data-account-id" => @account.id, id: "open_withdrawal_code_button"}
       %i.fa.fa-qrcode
       Create Code
       
-  %div.modal.fade.in{id: "company_#{@account.CompanyNumber}_barcode"}
+  %div.modal.fade.in{id: "withdrawal_code"}
     .modal-dialog.modal-sm{:role => "document"}
       .modal-content
-        .modal-header
         .modal-body
+          %p
+            %strong
+              Amount:
+              %span{class: 'withdrawal_code_amount'}
           .text-center
             - unless @base64_barcode_string.blank?
               %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
@@ -23,4 +26,4 @@
                 %i.fa.fa-spinner.fa-spin.fa-3x.fa-fw
               %img{id: "company_#{@account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
         .modal-footer
-          = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default btn-lg', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
+          = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}

@@ -1,0 +1,13 @@
+%p
+  %a.btn.btn-success.btn-block.btn-lg{href: "#company_#{@account.CompanyNumber}_barcode", "data-toggle" => "modal", "data-target" => "#company_#{@account.CompanyNumber}_barcode", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, id: "show_account_code_button"}
+    %b 
+      %i.fa.fa-qrcode
+      My Code
+  %div.modal.fade.in{id: "company_#{@account.CompanyNumber}_barcode"}
+    .modal-dialog.modal-sm{:role => "document"}
+      .modal-content
+        .modal-body
+          .text-center
+            %img{:src => "#{current_user.qr_code}", class: 'img-fluid'}
+        .modal-footer
+          = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}

@@ -29,7 +29,8 @@ Rails.application.routes.draw do
     collection do
       post 'quick_pay'
       post 'quick_purchase'
-      post 'leave_tip'
+      post 'send_payment'
+      post 'send_payment_from_qr_code_scan'
     end
   end
   resources :sms_messages

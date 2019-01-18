@@ -55,38 +55,7 @@
               - if @customer.anonymous?
                 .text-danger Anonymous Payee
             - if current_user.consumer? or current_user.caddy? or current_user.vendor?
-              -#
-                %a.btn.btn-success.btn-block{href: barcode_customer_path(current_user.customer), target: '_blank'}
-                  %b 
-                    %i.fa.fa-check-square
-                    Show Account Code
-              -# current_user.customer.accounts.each do |account|
-              %p
-                %a.btn.btn-success.btn-block.btn-lg{href: "#company_#{@account.CompanyNumber}_barcode", "data-toggle" => "modal", "data-target" => "#company_#{@account.CompanyNumber}_barcode", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, id: "show_account_code_button"}
-                  %b 
-                    %i.fa.fa-qrcode
-                    My Code
-                    =# "#{@account.company.name} Code"
-                  -#
-                    %br
-                    %small 
-                      = "Balance #{number_to_currency(account.balance)}"
-                %div.modal.fade.in{id: "company_#{@account.CompanyNumber}_barcode"}
-                  .modal-dialog.modal-sm{:role => "document"}
-                    .modal-content
-                      .modal-header
-                      .modal-body
-                        .text-center
-                          %img{:src => "#{current_user.qr_code}", class: 'img-fluid'}
-                          -#
-                            - unless @base64_barcode_string.blank?
-                              %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
-                            - else
-                              %div{class: "generating_barcode_spinner", style: 'display:none;'}
-                                %i.fa.fa-spinner.fa-spin.fa-3x.fa-fw
-                              %img{id: "company_#{@account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
-                      .modal-footer
-                        = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default btn-lg', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
+              = render 'my_code'
               =# render 'barcode'
               =# render 'consumer_qr_code_payment'
             - if current_user.vendor? or current_user.caddy?
@@ -94,11 +63,19 @@
                 %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
                   %h5
                     %b 
-                      %i.fa.fa-exchange
+                      %i.fa.fa-long-arrow-right
                       Request Payment
                 .box-body
-                  = render 'vendor_quick_purchase'
+                  = render 'request_payment'
             - if @account.balance > 0
+              .box.box-success.collapsed-box.box-solid
+                %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
+                  %h5
+                    %b 
+                      %i.fa.fa-long-arrow-left
+                      Send Payment
+                .box-body
+                  = render 'send_payment'
               .box.box-success.collapsed-box.box-solid
                 %button.btn.btn-success.btn-block.btn-box-tool{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
                   %h5 
@@ -263,7 +240,7 @@
                             Additional Payment
                             = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
                           .modal-body
-                            = form_tag leave_tip_transactions_path, method: 'post', class: 'form-horizontal' do |f|
+                            = form_tag send_payment_transactions_path, method: 'post', class: 'form-horizontal' do |f|
                               = hidden_field_tag :id, payment_transaction.id
                               .input-group.mb-3
                                 .input-group-prepend
