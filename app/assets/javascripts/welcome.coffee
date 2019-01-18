@@ -141,7 +141,7 @@ jQuery ->
         to_account_id = data.account_id
         $('#scan_spinner').show()
         $('#open_send_payment_qrcode_scanner_button').hide()
-        $('#to_account_id').val to_account_id
+        $('#send_payment_to_account_id').val to_account_id
         $("#send_payment_amount").prop("readonly", true);
         $('#send_payment_form').submit()
         return
