@@ -169,7 +169,7 @@ jQuery ->
   $('#send_payment_details').on 'click', '#open_send_payment_qrcode_scanner_button', (e) ->
     amount = parseFloat($('#send_payment_amount').val())
     account_balance = parseFloat($('#account_balance').val())
-    if amount > 0 && account_balance > amount
+    if amount > 0 && account_balance >= amount
       $('.send_payment_amount').html "$" + amount
       $('#send_payment_scan_spinner').show()
       $('#open_send_payment_qrcode_scanner_button').hide()
