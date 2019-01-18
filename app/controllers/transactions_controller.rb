@@ -198,7 +198,7 @@ class TransactionsController < ApplicationController
   
   def send_payment_from_qr_code_scan
     amount = params[:send_payment_amount]
-    to_account_id = params[:to_account_id]
+    to_account_id = params[:send_payment_to_account_id]
     from_account_id = params[:from_account_id]
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
       response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
