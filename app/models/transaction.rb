@@ -357,6 +357,19 @@ class Transaction < ActiveRecord::Base
     reversal_transaction.present?
   end
   
+  def send_text_message_receipt
+    from_customer = from_account.customer
+    to_customer = to_account.customer
+    from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
+    unless from_customer_phone.blank?
+#      SendSmsWorker.perform_async(cell_phone_number, id, self.CustomerID, self.ClubCompanyNbr, message_body)
+      message = "You have transfered $#{amt_auth} to #{to_customer.company.name}."
+      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+      client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
+      Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
+    end
+  end
+  
   #############################
   #     Class Methods         #
   #############################

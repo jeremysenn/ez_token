@@ -17,10 +17,12 @@ class Customer < ActiveRecord::Base
   has_many :payments, :foreign_key => "CustomerID"
   has_many :customer_barcodes, :foreign_key => "CustomerID"
   
+  scope :payees, -> { where(GroupID: 18) }
+  scope :vendor, -> { where(GroupID: 17) }
   scope :consumer, -> { where(GroupID: 16) }
   scope :anonymous, -> { where(GroupID: 15) }
   scope :members, -> { where(GroupID: 14) }
-  scope :payees, -> { where(GroupID: 13) }
+  scope :caddies, -> { where(GroupID: 13) }
   scope :active, -> { where(Active: true) }
   
   # Virtual Attributes
@@ -455,11 +457,7 @@ class Customer < ActiveRecord::Base
     end
   end
   
-#  def caddy?
-#    self.GroupID == 13
-#  end
-  
-  def employee?
+  def caddy?
     self.GroupID == 13
   end
   
@@ -469,6 +467,18 @@ class Customer < ActiveRecord::Base
   
   def anonymous?
     self.GroupID == 15
+  end
+  
+  def consumer?
+    self.GroupID == 16
+  end
+  
+  def vendor?
+    self.GroupID == 17
+  end
+  
+  def payee?
+    self.GroupID == 18
   end
   
   def vendor_payables_with_balance

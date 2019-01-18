@@ -40,7 +40,7 @@
           = f.input :Email, label: 'Email'  
           = f.input :Registration_Source, label: 'Payee ID'
           = f.input :Active, as: :boolean, inline_label: 'Active'
-          = f.input :GroupID, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 13 : @customer.GroupID}" }
+          = f.input :GroupID, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 18 : @customer.GroupID}" }
           = f.simple_fields_for :accounts do |account_form|
             - if account_form.object.new_record?
               = account_form.input :CustomerID, :as => :hidden, :input_html => { :value => @customer.id }

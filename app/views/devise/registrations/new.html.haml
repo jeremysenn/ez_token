@@ -8,6 +8,7 @@
     = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
       = devise_error_messages!
       = f.hidden_field :company_id, value: current_user.blank? ? 7 : current_user.company_id
+      = f.hidden_field :role, value: current_user.blank? ? "consumer" : "basic"
       .form-group
         = f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: 'form-control', :placeholder => "First Name", required: true
       .form-group
@@ -30,5 +31,6 @@
             I agree to the
             %a{:href => "#"} terms
       .actions
-        = f.submit "Sign up", class: 'btn btn-primary'
+        = f.submit "Sign up", class: 'btn btn-primary btn-block'
+      = link_to "Log in", new_user_session_path
     =# render "devise/shared/links"

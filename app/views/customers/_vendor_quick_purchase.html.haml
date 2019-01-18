@@ -14,9 +14,10 @@
       = hidden_field_tag :customer_barcode_id
       =# hidden_field_tag :from_account_id
     .btn-group
-      %a.btn.btn-default.btn-lg{id: 'open_buddy_search_button', href: "#buddy_search_modal", "data-target" => "#buddy_search_modal", "data-toggle" => "modal"}
-        %i.fa.fa-search
-        Search
+      - if current_user.caddy?
+        %a.btn.btn-default.btn-lg{id: 'open_buddy_search_button', href: "#buddy_search_modal", "data-target" => "#buddy_search_modal", "data-toggle" => "modal"}
+          %i.fa.fa-search
+          Search
       =# select_tag :from_account_id, options_from_collection_for_select(current_user.buddies, "id", "customer_user_name"), class: "form-control input-lg", prompt: 'Search/Select'
       %a.btn.btn-default.btn-lg{id: 'open_consumer_qrcode_scanner_button', href: "#qrcode_scanner_modal", "data-target" => "#qrcode_scanner_modal", "data-toggle" => "modal"}
         %i.fa.fa-qrcode

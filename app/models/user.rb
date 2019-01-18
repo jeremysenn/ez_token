@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # :registerable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable #, :timeoutable
   
-  ROLES = %w[admin basic consumer payee vendor].freeze
+  ROLES = %w[admin basic caddy consumer payee vendor].freeze
        
   belongs_to :company
   belongs_to :customer, optional: true
@@ -13,6 +13,7 @@ class User < ApplicationRecord
   
   scope :admin, -> { where(role: "admin") }
   scope :basic, -> { where(role: "basic") }
+  scope :caddy, -> { where(role: "caddy") }
   scope :consumer, -> { where(role: "consumer") }
   scope :payee, -> { where(role: "payee") }
   scope :vendor, -> { where(role: "vendor") }
@@ -37,6 +38,10 @@ class User < ApplicationRecord
   
   def basic?
     role == "basic"
+  end
+  
+  def caddy?
+    role == "caddy"
   end
   
   def consumer?

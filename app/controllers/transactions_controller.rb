@@ -166,6 +166,7 @@ class TransactionsController < ApplicationController
       end
     end
     unless @transaction.blank?
+      @transaction.send_text_message_receipt
       redirect_to root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
     else
       redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_code.blank? ? 'Unknown' : error_code}."
