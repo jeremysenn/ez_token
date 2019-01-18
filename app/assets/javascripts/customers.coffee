@@ -120,8 +120,9 @@ jQuery ->
 
   $('#withdrawal_details').on 'click', '#open_withdrawal_code_button', (e) ->
     amount = parseFloat($('#withdrawal_amount').val())
-    if amount > 0
+    account_balance = parseFloat($('#account_balance').val())
+    if amount > 0 && account_balance > amount
       $('.withdrawal_code_amount').html "$" + amount
     else
-      alert "Withdrawal amount must be greater than $0"
+      alert "Withdrawal amount must be greater than $0 and your balance must cover the amount."
       return false
