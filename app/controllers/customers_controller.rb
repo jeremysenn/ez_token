@@ -60,7 +60,7 @@ class CustomersController < ApplicationController
     end
     @withdrawal_transactions = Kaminari.paginate_array(@customer.withdrawals).page(params[:withdrawals]).per(10)
 #    @payment_transactions =  Kaminari.paginate_array(@customer.successful_payments).page(params[:payments]).per(10)
-    @payment_transactions =  Kaminari.paginate_array(@account.successful_wire_transactions).page(params[:payments]).per(10)
+    @payment_transactions =  Kaminari.paginate_array(@account.successful_wire_transactions.sort_by(&:date_time).reverse).page(params[:payments]).per(10)
     @check_transactions =  Kaminari.paginate_array(@customer.cashed_checks).page(params[:checks]).per(10)
     @sms_messages = @customer.sms_messages.order("created_at DESC").page(params[:messages]).per(10)
 #    @base64_barcode_string = @customer.barcode_png
