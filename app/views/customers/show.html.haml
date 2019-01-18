@@ -209,10 +209,8 @@
                         %tr
                           %th Date
                           %th Description
-                          - if current_user.consumer?
-                            %th To
-                          - if current_user.vendor?
-                            %th From
+                          %th To
+                          %th From
                           %th Amount
                           - if current_user.consumer?
                             %th
@@ -223,10 +221,8 @@
                               =# payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
                               = link_to payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), payment_transaction
                             %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
-                            - if current_user.consumer?
-                              %td= payment_transaction.to_account_customer.user.blank? ? payment_transaction.to_account_customer.full_name : payment_transaction.to_account_customer.user.full_name
-                            - if current_user.vendor?
-                              %td= payment_transaction.from_account_customer.user.blank? ? payment_transaction.from_account_customer.full_name : payment_transaction.from_account_customer.user.full_name
+                            %td= payment_transaction.to_account_customer.user.blank? ? payment_transaction.to_account_customer.full_name : payment_transaction.to_account_customer.user.full_name
+                            %td= payment_transaction.from_account_customer.user.blank? ? payment_transaction.from_account_customer.full_name : payment_transaction.from_account_customer.user.full_name
                             %td= number_to_currency(payment_transaction.amt_auth)
                             - if current_user.consumer?
                               %td
