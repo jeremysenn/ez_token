@@ -363,7 +363,7 @@ class Transaction < ActiveRecord::Base
     from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
     unless from_customer_phone.blank?
 #      SendSmsWorker.perform_async(cell_phone_number, id, self.CustomerID, self.ClubCompanyNbr, message_body)
-      message = "You have transfered #{amt_auth.round} to #{to_customer.company.name}."
+      message = "You have transfered #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)} to #{to_customer.company.name}. Your balance is #{ActiveSupport::NumberHelper.number_to_currency(from_account.Balance)}"
       client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
       client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
       Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
