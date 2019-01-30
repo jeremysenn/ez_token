@@ -13,7 +13,7 @@
       = hidden_field_tag :customer_barcode_id
       = hidden_field_tag :from_account_id, @account.id
       = hidden_field_tag :account_balance, @account.balance
-    .btn-group
+    #send_payment_button_group.btn-group{style: 'display:none;'}
       %a.btn.btn-default.btn-lg{id: 'open_send_payment_buddy_search_button', href: "#send_payment_buddy_search_modal", "data-target" => "#send_payment_buddy_search_modal", "data-toggle" => "modal"}
         %i.fa.fa-search
         Search
@@ -62,3 +62,17 @@
               %span{class: 'send_payment_amount'}
         .modal-footer
           = link_to "Cancel", '#', :class => "btn btn-default", "data-dismiss" => "modal"
+
+:javascript
+  $('#send_payment_details').on('keyup', '#send_payment_amount', function() {
+    var account_balance, amount;
+    amount = parseFloat($('#send_payment_amount').val());
+    account_balance = parseFloat($('#account_balance').val());
+    if (amount > 0 && account_balance >= amount) {
+      $('#send_payment_button_group').show();
+      return $('.send_payment_amount').html("$" + amount);
+    } else {
+      $('#send_payment_button_group').hide();
+      return false;
+    }
+  });

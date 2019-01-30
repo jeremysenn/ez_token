@@ -58,32 +58,68 @@
               = render 'my_code'
               =# render 'barcode'
               =# render 'consumer_qr_code_payment'
-            - if current_user.vendor? or current_user.caddy?
-              .box.box-success.collapsed-box.box-solid
-                %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
-                  %h5
-                    %b 
-                      %i.fa.fa-long-arrow-right
-                      Request Payment
-                .box-body
-                  = render 'request_payment'
-            - if @account.balance > 0
-              .box.box-success.collapsed-box.box-solid
-                %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
-                  %h5
-                    %b 
-                      %i.fa.fa-long-arrow-left
-                      Send Payment
-                .box-body
-                  = render 'send_payment'
-              .box.box-success.collapsed-box.box-solid
-                %button.btn.btn-success.btn-block.btn-box-tool{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
-                  %h5 
-                    %b 
-                      %i.fa.fa-money
-                      Withdrawal
-                .box-body
-                  = render 'withdrawal'
+
+            #accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist"}
+              - if current_user.vendor? or current_user.caddy?
+                %p
+                  .panel.panel-default
+                    #headingOne.panel-heading{:role => "tab"}
+                      %h4.panel-title
+                        %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button"}
+                          %i.fa.fa-long-arrow-right
+                          Request Payment
+                    #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
+                      .panel-body
+                        = render 'request_payment'
+              - if @account.balance > 0
+                %p
+                  .panel.panel-default
+                    #headingTwo.panel-heading{:role => "tab"}
+                      %h4.panel-title
+                        %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseTwo", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseTwo", :role => "button"}
+                          %i.fa.fa-long-arrow-left
+                          Send Payment
+                    #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
+                      .panel-body
+                        = render 'send_payment'
+                %p
+                  .panel.panel-default
+                    #headingThree.panel-heading{:role => "tab"}
+                      %h4.panel-title
+                        %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
+                          %i.fa.fa-money
+                          Withdrawal
+                    #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
+                      .panel-body
+                        = render 'withdrawal'
+            -#
+              - if current_user.vendor? or current_user.caddy?
+                .box.box-success.collapsed-box.box-solid
+                  %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
+                    %h5
+                      %b 
+                        %i.fa.fa-long-arrow-right
+                        Request Payment
+                  .box-body
+                    = render 'request_payment'
+
+              - if @account.balance > 0
+                .box.box-success.collapsed-box.box-solid
+                  %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
+                    %h5
+                      %b 
+                        %i.fa.fa-long-arrow-left
+                        Send Payment
+                  .box-body
+                    = render 'send_payment'
+                .box.box-success.collapsed-box.box-solid
+                  %button.btn.btn-success.btn-block.btn-box-tool{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
+                    %h5 
+                      %b 
+                        %i.fa.fa-money
+                        Withdrawal
+                  .box-body
+                    = render 'withdrawal'
                 
             - if current_user.admin? and not @customer.anonymous?
               %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}

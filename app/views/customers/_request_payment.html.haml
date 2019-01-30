@@ -12,7 +12,7 @@
       = hidden_field_tag :company_id, @account.CompanyNumber
       = hidden_field_tag :customer_barcode_id
       =# hidden_field_tag :from_account_id
-    .btn-group
+    #request_payment_button_group.btn-group{style: 'display:none;'}
       -# if current_user.caddy?
       %a.btn.btn-default.btn-lg{id: 'open_buddy_search_button', href: "#request_payment_buddy_search_modal", "data-target" => "#request_payment_buddy_search_modal", "data-toggle" => "modal"}
         %i.fa.fa-search
@@ -59,3 +59,16 @@
           = link_to "Cancel", '#', :class => "btn btn-default", "data-dismiss" => "modal"
 
 = audio_tag asset_path("cash_register.mp3"), class: "cash_register_chime"
+
+:javascript
+  $('#request_payment_details').on('keyup', '#amount', function() {
+    var amount;
+    amount = parseFloat($('#amount').val());
+    if (amount > 0) {
+      $('#request_payment_button_group').show();
+      return true;
+    } else {
+      $('#request_payment_button_group').hide();
+      return false;
+    }
+  });

@@ -7,7 +7,7 @@
     .input-group-append
       %span.input-group-text .00
   %p
-    %a.btn.btn-default.btn-lg.show_account_code_button{href: "#withdrawal_code", "data-toggle" => "modal", "data-target" => "#withdrawal_code", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, "data-account-id" => @account.id, id: "open_withdrawal_code_button"}
+    %a.btn.btn-default.btn-lg.show_account_code_button{href: "#withdrawal_code", "data-toggle" => "modal", "data-target" => "#withdrawal_code", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, "data-account-id" => @account.id, id: "open_withdrawal_code_button", style: 'display:none;'}
       %i.fa.fa-qrcode
       Create Code
       
@@ -28,3 +28,17 @@
               %img{id: "company_#{@account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
         .modal-footer
           = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
+
+:javascript
+  $('#withdrawal_details').on('keyup', '#withdrawal_amount', function() {
+    var account_balance, amount;
+    amount = parseFloat($('#withdrawal_amount').val());
+    account_balance = parseFloat($('#account_balance').val());
+    if (amount > 0 && account_balance >= amount) {
+      $('#open_withdrawal_code_button').show();
+      return $('.withdrawal_code_amount').html("$" + amount);
+    } else {
+      $('#open_withdrawal_code_button').hide();
+      return false;
+    }
+  });
