@@ -82,16 +82,19 @@
                     #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
                       .panel-body
                         = render 'send_payment'
-                %p
-                  .panel.panel-default
-                    #headingThree.panel-heading{:role => "tab"}
-                      %h4.panel-title
-                        %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
-                          %i.fa.fa-money
-                          Withdrawal
-                    #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
-                      .panel-body
-                        = render 'withdrawal'
+                - unless current_user.caddy?
+                  %p
+                    .panel.panel-default
+                      #headingThree.panel-heading{:role => "tab"}
+                        %h4.panel-title
+                          %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
+                            %i.fa.fa-money
+                            Withdrawal
+                      #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
+                        .panel-body
+                          = render 'withdrawal'
+                - else
+                  = render 'withdrawal_all'
             -#
               - if current_user.vendor? or current_user.caddy?
                 .box.box-success.collapsed-box.box-solid
