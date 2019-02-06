@@ -45,7 +45,7 @@ Rails.application.configure do
     password: ENV["GMAIL_PASSWORD"]
   }
   
-  Rails.application.routes.default_url_options[:host] = "http://#{ENV["APPLICATION_HOST"]}:3000"
+  Rails.application.routes.default_url_options[:host] = "http://#{ENV["APPLICATION_HOST"]}"
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

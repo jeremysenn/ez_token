@@ -1,9 +1,9 @@
 class CustomersController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:qr_code]
   before_action :set_customer, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message, :barcode]
 #  load_and_authorize_resource :except => [:find_by_barcode]
 #  skip_load_resource only: [:barcode]
-  skip_load_resource only: [:find_by_barcode]
+  skip_load_resource only: [:find_by_barcode, :qr_code]
   
   helper_method :customers_sort_column, :customers_sort_direction
   
@@ -253,6 +253,15 @@ class CustomersController < ApplicationController
 #        format.json {render json: { error: ["Error: Customer cannot be found or QR Code has already been used."] }, status: :unprocessable_entity}
 #      end
 #    end
+  end
+  
+  # GET /customers/123456789/qr_code
+  def qr_code
+    @customer = Customer.find_by(barcode_access_string: params[:id])
+    @user = @customer.user
+    unless @customer.blank? or @user.blank?
+      send_data @user.qr_code_png, :type => 'image/png',:disposition => 'inline'
+    end
   end
   
   private

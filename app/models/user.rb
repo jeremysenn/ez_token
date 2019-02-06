@@ -119,4 +119,24 @@ class User < ApplicationRecord
     "data:image/png;base64,#{base64_output}"
   end
   
+  def qr_code_png
+    require 'barby'
+    require 'barby/barcode'
+    require 'barby/barcode/qr_code'
+    require 'barby/outputter/png_outputter'
+
+    barcode = Barby::QrCode.new(customer.barcode_access_string, level: :q, size: 5)
+    barcode.to_png({ xdim: 5 })
+  end
+  
+  def set_temporary_password
+    temp_pass = SecureRandom.random_number(10**6).to_s
+    self.update_attributes(temporary_password: temp_pass, password: temp_pass, password_confirmation: temp_pass)
+  end
+  
+  def create_consumer_customer_and_account_records
+    customer = Customer.create(CompanyNumber: company_id, LangID: 1, Active: 1, GroupID: 16)
+    Account.create(CustomerID: customer.id, CompanyNumber: company_id, Balance: 0, MinBalance: 0, ActTypeID: 6)
+  end
+  
 end

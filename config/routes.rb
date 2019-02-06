@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       get 'send_barcode_link_sms_message'
       get 'send_barcode_sms_message'
       get 'find_by_barcode'
+      get 'qr_code'
     end
     collection do
       post 'send_sms_message'
@@ -48,5 +49,8 @@ Rails.application.routes.draw do
   end
   resources :payment_batch_csv_mappings
   resources :cards
+  
+  post 'twilio/sms' => 'twilio#sms'
+  post 'twilio/voice' => 'twilio#voice'
   
 end
