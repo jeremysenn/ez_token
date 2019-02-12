@@ -83,6 +83,11 @@ class Ability
         user.company == card.device.company
       end
       
+      # Events
+      ############
+      can :manage, Event
+      can :create, :events
+      
     elsif user.basic?
       
       # SmsMessages

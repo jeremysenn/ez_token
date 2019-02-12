@@ -32,24 +32,30 @@ class TwilioController < ApplicationController
     to = params[:To] 
     body = params[:Body].truncate(255) # Do not allow to be larger than 255 so doesn't cause a PostgreSQL error
     keyword = body.downcase.strip
-    company = Company.where("LOWER(CompanyName) like ?", keyword).first
+#    company = Company.where("LOWER(CompanyName) like ?", keyword).first
+    event = Event.find_by(join_code: keyword)
     message_sid = params[:MessageSid]
     
     response = Twilio::TwiML::MessagingResponse.new
     response.message do |message|
         if user.blank?
-          if company.blank?
-            message.body("Welcome to EZ Token #{plain_cell_number}. Sorry, we're not able to find a company by that name.")
+          if event.blank?
+            message.body("Welcome to EZ Token #{plain_cell_number}. Sorry, we're not able to find an event with that Join Code.")
           else
 #            user = User.create(phone: plain_cell_number, company_id: company.id, role: "consumer")
 #            user.create_consumer_customer_and_account_records
 #            user.set_temporary_password
-            message.body("Welcome to EZ Token #{plain_cell_number}. We successfully found #{company.CompanyName}.")
-#            message.media(qr_code_customer_path(user.customer.barcode_access_string))
+#            message.body("Welcome to EZ Token #{plain_cell_number}. We successfully found #{event.title}.")
+            message.body(event.join_response)
           end
         else
-          message.body("Welcome back to ezToken #{user.full_name}")
-          message.media(qr_code_customer_path(user.customer.barcode_access_string))
+          if event.blank?
+            message.body("Welcome back to ezToken #{user.full_name}. Sorry, we're not able to find an event with that Join Code.")
+          else
+#            message.body("Welcome back to ezToken #{user.full_name}. We successfully found #{event.title}.")
+            message.body(event.join_response)
+            message.media(qr_code_customer_path(user.customer.barcode_access_string))
+          end
         end
     end
     render_twiml response

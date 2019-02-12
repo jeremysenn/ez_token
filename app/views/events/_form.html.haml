@@ -1,0 +1,41 @@
+- @event.errors.each do |attr, msg|
+  .alert.alert-danger
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    = "#{attr} #{msg}" if @event.errors[attr].first == msg
+.box.box-primary
+  -#
+    .box-header.with-border
+      %h3.box-title 
+        Box Title
+      .box-tools.pull-right
+        Box tools
+  .box-body
+    = form_for @event, class: 'form-horizontal' do |f|
+      = f.hidden_field :company_id, value: current_user.company_id
+      .row
+        .col-xs-12.col-sm-6
+          .form-group
+            %label{:for => "title"} Title
+            = f.text_field :title, class: "form-control", required: true
+        .col-xs-12.col-sm-6
+          .form-group
+            %label{:for => "joine_code"} Join Code
+            = f.text_field :join_code, class: "form-control", required: true
+      .row
+        .col-xs-12.col-sm-6
+          .form-group
+            %label{:for => "start_date"} Start
+            = f.text_field :start_date, value: @start_date ||= Date.today.to_s, style: 'width: 100%;', 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+        .col-xs-12.col-sm-6
+          .form-group
+            %label{:for => "start_date"} End
+            = f.text_field :end_date, value: @end_date ||= (Date.today + 1.week).to_s, style: 'width: 100%;', 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+      .row
+        .col-xs-12.col-sm-6
+          .form-group
+            %label{:for => "join_response"} Join Response
+            = f.text_area :join_response, rows: 3, style: 'width: 100%;', required: true
+
+      = link_to 'Cancel', :back, class: "btn btn-default"
+      %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+        Save

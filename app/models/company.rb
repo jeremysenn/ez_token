@@ -16,6 +16,7 @@ class Company < ActiveRecord::Base
   has_many :payment_batch_csv_mappings
   has_many :cards, through: :devices
   has_many :customer_barcodes, :foreign_key => "CompanyNumber"
+  has_many :events
   
   ### Start Virtual Attributes ###
   def transaction_fee # Getter

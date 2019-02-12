@@ -1,85 +1,85 @@
 .content-wrapper
   .container
-  / Content Header (Page header)
-  %section.content-header
-    = render 'shared/flash_messages'
-    %h1
-      %i.fa.fa-male
-      Payees
-      %small= link_to 'New', new_customer_path, class: 'btn bg-orange'
-      - unless @customers.blank? or @type == "Anonymous"
-        .pull-right
-          %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
-            %i.fa.fa-comment
-            Message
-        = render 'group_sms_message'
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        %i.fa.fa-male
+        Payees
+        %small= link_to 'New', new_customer_path, class: 'btn bg-orange'
+        - unless @customers.blank? or @type == "Anonymous"
+          .pull-right
+            %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
+              %i.fa.fa-comment
+              Message
+          = render 'group_sms_message'
 
-  / Main content
-  %section.content
-    / Default box
-    .box.box-primary
-      .box-header.with-border
-        %h3.box-title 
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+            - unless browser.device.mobile?
+              - unless @customers.blank?
+                %a{href: customers_path(format: "csv", q: params[:q], type: @type), class: 'btn btn-info btn-sm'}
+                  %i.fa.fa-download
+                  Download CSV
+            - else
+              = form_tag customers_path, id: 'customers_search_form', method: 'get', class: 'form-inline' do |f|
+                = select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
+                &nbsp;
+                .input-group
+                  = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true, style: 'width: 75%'
+                  .input-group-append
+                    %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                      %i.fa.fa-search
           - unless browser.device.mobile?
-            - unless @customers.blank?
-              %a{href: customers_path(format: "csv", q: params[:q], type: @type), class: 'btn btn-info btn-sm'}
-                %i.fa.fa-download
-                Download CSV
-          - else
-            = form_tag customers_path, id: 'customers_search_form', method: 'get', class: 'form-inline' do |f|
-              = select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
-              &nbsp;
-              .input-group
-                = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true, style: 'width: 75%'
-                .input-group-append
-                  %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                    %i.fa.fa-search
-        - unless browser.device.mobile?
-          .box-tools
-            = form_tag customers_path, id: 'customers_search_form', method: 'get', class: 'form-inline' do |f|
-              = select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
-              &nbsp;
-              .input-group
-                = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
-                .input-group-append
-                  %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                    %i.fa.fa-search
-        %br
-        %small.text-muted
-          = "#{pluralize(number_with_delimiter(@all_customers.count), 'record')} found"
+            .box-tools
+              = form_tag customers_path, id: 'customers_search_form', method: 'get', class: 'form-inline' do |f|
+                = select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
+                &nbsp;
+                .input-group
+                  = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
+                  .input-group-append
+                    %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                      %i.fa.fa-search
+          %br
+          %small.text-muted
+            = "#{pluralize(number_with_delimiter(@all_customers.count), 'record')} found"
 
-      .box-body.no-padding
-        .table-responsive
-          %table.table.table-striped.table-condensed
-            %thead
-              %tr
-                - unless @type == "Anonymous"
-                  %th{:scope => "col"}= customers_sort_link 'customer.NameF', "First", params[:q], @type
-                  %th{:scope => "col"}= customers_sort_link 'customer.NameL', "Last", params[:q], @type
-                  %th{:scope => "col"}= customers_sort_link 'customer.PhoneMobile', "Phone", params[:q], @type
-                  %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @type
-                - else
-                  %th{:scope => "col"}= customers_sort_link 'customer.CreateDate', "Created", params[:q], @type
-                  %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @type
-            %tbody
-              - @customers.each do |customer|
+        .box-body.no-padding
+          .table-responsive
+            %table.table.table-striped.table-condensed
+              %thead
                 %tr
                   - unless @type == "Anonymous"
-                    %td= link_to customer.first_name, customer
-                    %td= link_to customer.last_name, customer
-                    %td
-                      %a{href: "tel:#{customer.phone}"}
-                        = customer.phone
-                    %td= number_to_currency(customer.balance)
+                    %th{:scope => "col"}= customers_sort_link 'customer.NameF', "First", params[:q], @type
+                    %th{:scope => "col"}= customers_sort_link 'customer.NameL', "Last", params[:q], @type
+                    %th{:scope => "col"}= customers_sort_link 'customer.PhoneMobile', "Phone", params[:q], @type
+                    %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @type
                   - else
-                    %td= link_to customer.CreateDate, customer
-                    %td
-                      - unless customer.account.blank?
-                        = number_to_currency(customer.balance)
-                      - else
-                        "N/A"
-      .box-footer
-        .pull-right= paginate @customers, param_name: 'result1'
+                    %th{:scope => "col"}= customers_sort_link 'customer.CreateDate', "Created", params[:q], @type
+                    %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @type
+              %tbody
+                - @customers.each do |customer|
+                  %tr
+                    - unless @type == "Anonymous"
+                      %td= link_to customer.first_name, customer
+                      %td= link_to customer.last_name, customer
+                      %td
+                        %a{href: "tel:#{customer.phone}"}
+                          = customer.phone
+                      %td= number_to_currency(customer.balance)
+                    - else
+                      %td= link_to customer.CreateDate, customer
+                      %td
+                        - unless customer.account.blank?
+                          = number_to_currency(customer.balance)
+                        - else
+                          "N/A"
+        .box-footer
+          .pull-right= paginate @customers, param_name: 'result1'
 
 :javascript
   $('[data-toggle="popover"]').popover();

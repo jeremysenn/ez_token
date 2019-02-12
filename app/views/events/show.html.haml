@@ -1,0 +1,39 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        %i.fa.fa-calendar
+        = @event.title
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+            =# @event.start_date.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+            =# @event.end_date.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+          .box-tools.pull-right
+            Box tools
+        .box-body
+          %p.lead
+            Title:
+            = @event.title
+          %p.lead
+            Join Code:
+            = @event.join_code
+          %p.lead
+            Start:
+            = @event.start_date
+          %p.lead
+            End:
+            = @event.end_date
+          %p.lead
+            Join Response:
+            = @event.join_response
+        .box-footer
+          = link_to 'Back', :back, class: 'btn btn-default'
+          = link_to 'Edit', edit_event_path(@event), class: 'btn btn-primary'
+          .pull-right
+            = link_to 'Delete', @event, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }

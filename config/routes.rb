@@ -53,4 +53,6 @@ Rails.application.routes.draw do
   post 'twilio/sms' => 'twilio#sms'
   post 'twilio/voice' => 'twilio#voice'
   
+  resources :events
+  
 end

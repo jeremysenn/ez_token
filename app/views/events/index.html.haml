@@ -1,0 +1,54 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        %i.fa.fa-calendar
+        Events
+        %small= link_to 'New', new_event_path, class: 'btn bg-orange'
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+            - if browser.device.mobile?
+              = form_tag events_path, id: 'events_search_form', method: 'get', class: 'form-inline' do |f|
+                .input-group
+                  = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true, style: 'width: 75%'
+                  .input-group-append
+                    %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                      %i.fa.fa-search
+            - else
+              .box-tools
+                = form_tag events_path, id: 'events_search_form', method: 'get', class: 'form-inline' do |f|
+                  .input-group
+                    = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
+                    .input-group-append
+                      %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                        %i.fa.fa-search
+          %br
+          %small.text-muted
+            = "#{pluralize(number_with_delimiter(@events.count), 'event')} found"
+
+        .box-body.no-padding
+          .table-responsive
+            %table.table.table-striped.table-condensed
+              %thead
+                %tr
+                  %th Title
+                  %th Start 
+                  %th End
+                  %th
+              %tbody
+                - @events.each do |event|
+                  %tr
+                    %td= event.title
+                    %td= event.start_date
+                    %td= event.end_date
+                    %td= link_to "Show", event, class: 'btn btn-secondary'
+                    
+        .box-footer
+          -#
+            .pull-right= paginate @events
