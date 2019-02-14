@@ -14,10 +14,16 @@
             Home
       %li.nav-item.bordered
         .text-center
+          %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
+            %i.fa.fa-google-wallet.fa-lg
+            %br
+            Accounts
+      %li.nav-item.bordered
+        .text-center
           %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
             %i.fa.fa-male.fa-lg
             %br
-            Payees
+            Customers
       -#
         %li.nav-item.bordered
           .text-center
@@ -57,7 +63,7 @@
             %small= "(#{current_user.role})"
           %a.dropdown-item{:href => edit_user_registration_path(current_user)} 
             %i.fa.fa-edit
-            Edit account
+            Edit profile
           .dropdown-divider
           %a.dropdown-item{:href => users_admin_index_path, :class => (params[:controller] == 'users') ?  "text-light-blue" : ""} 
             %i.fa.fa-users

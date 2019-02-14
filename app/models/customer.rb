@@ -327,6 +327,12 @@ class Customer < ActiveRecord::Base
     "#{self.NameF} #{self.NameL} #{member_number}"
   end
   
+  def user_name
+    unless user.blank?
+      user.full_name
+    end
+  end
+  
   def email
     self.Email
   end

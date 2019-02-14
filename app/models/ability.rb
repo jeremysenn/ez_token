@@ -88,6 +88,11 @@ class Ability
       can :manage, Event
       can :create, :events
       
+      # Accounts
+      ############
+      can :manage, Account
+      can :create, :accounts
+      
     elsif user.basic?
       
       # SmsMessages

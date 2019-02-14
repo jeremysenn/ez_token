@@ -2,6 +2,7 @@ class Event < ActiveRecord::Base
   establish_connection :ez_cash
   
   belongs_to :company
+  has_many :accounts
   
   before_validation :downcase_join_code, :strip_join_code
   

@@ -6,7 +6,8 @@
     - if current_user.admin? or current_user.payee?
       %h1
         %i.fa.fa-male
-        Payee Profile
+        - unless @customer.user_name.blank?
+          = @customer.user_name
         %a{href: edit_customer_path(@customer)}
           %i.fa.fa-pencil
     - elsif current_user.consumer?
@@ -29,7 +30,7 @@
       %p.text-muted
         Balance
         = number_to_currency(@account.balance)
-    .text-muted= "#{@account.company.name} (#{current_user.role})"
+    .text-muted= "#{@account.company.name} (#{@customer.user.blank? ? '' : @customer.user.role})"
   / Main content
   %section.content
     / Default box
@@ -71,7 +72,7 @@
                     #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
                       .panel-body
                         = render 'request_payment'
-              - if @account.balance > 0
+              - if @account.balance > 0 and not current_user.admin?
                 %p
                   .panel.panel-default
                     #headingTwo.panel-heading{:role => "tab"}
@@ -106,7 +107,7 @@
                   .box-body
                     = render 'request_payment'
 
-              - if @account.balance > 0
+              - if @account.balance > 0 and not current_user.admin?
                 .box.box-success.collapsed-box.box-solid
                   %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
                     %h5
@@ -126,19 +127,22 @@
                 
             - if current_user.admin? and not @customer.anonymous?
               %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
-                %b 
-                  %i.fa.fa-dollar
-                  One Time Payment
+                %h5
+                  %b 
+                    %i.fa.fa-dollar
+                    One Time Payment
               - if @account.balance > 0 and not @customer.phone.blank?
                 %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
-                  %b 
-                    %i.fa.fa-money
-                    Send Payment Code
+                  %h5
+                    %b 
+                      %i.fa.fa-money
+                      Send Payment Code
               - unless @customer.phone.blank?
                 %a.btn.bg-orange.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
-                  %b 
-                    %i.fa.fa-comment
-                    Send Message
+                  %h5
+                    %b 
+                      %i.fa.fa-comment
+                      Send Message
               = render 'one_time_payment'
               = render 'sms_message'
 
@@ -263,15 +267,9 @@
                             -#
                               %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
                             %td
-                              - unless payment_transaction.to_account == @account
-                                = payment_transaction.to_account_customer.user.blank? ? payment_transaction.to_account_customer.full_name : payment_transaction.to_account_customer.user.full_name
-                              - else
-                                Me
+                              = payment_transaction.to_account_customer.user.blank? ? payment_transaction.to_account_customer.full_name : payment_transaction.to_account_customer.user.full_name
                             %td
-                              - unless payment_transaction.from_account == @account
-                                = payment_transaction.from_account_customer.user.blank? ? payment_transaction.from_account_customer.full_name : payment_transaction.from_account_customer.user.full_name
-                              - else
-                                Me
+                              = payment_transaction.from_account_customer.user.blank? ? payment_transaction.from_account_customer.full_name : payment_transaction.from_account_customer.user.full_name
                             %td= number_to_currency(payment_transaction.amt_auth)
                             - if current_user.consumer?
                               %td

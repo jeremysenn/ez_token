@@ -19,7 +19,7 @@
             = current_user.company.name
             %br
             %small Consumer
-          %a.dropdown-item{:href => edit_user_registration_path(current_user)} Edit account
+          %a.dropdown-item{:href => accounts_path} Accounts
           .dropdown-divider
-          %a.dropdown-item{:href => "#"} Something else here
+          %a.dropdown-item{:href => edit_user_registration_path(current_user)} Edit profile
       .my-2.my-sm-0= link_to 'Log out', destroy_user_session_path, method: :delete, data: { confirm: 'Are you sure you want to sign out?' }, class: 'btn btn-outline-danger'

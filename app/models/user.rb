@@ -8,6 +8,7 @@ class User < ApplicationRecord
   belongs_to :company
   belongs_to :customer, optional: true
   has_many :sms_messages
+  has_many :accounts, through: :customer
   
   serialize :device_ids, Array
   
@@ -18,7 +19,7 @@ class User < ApplicationRecord
   scope :payee, -> { where(role: "payee") }
   scope :vendor, -> { where(role: "vendor") }
   
-  before_create :search_for_payee_match
+#  before_create :search_for_payee_match
   after_create :send_confirmation_sms_message
   after_update :send_new_phone_number_confirmation_sms_message, if: :phone_changed?
   
@@ -137,6 +138,56 @@ class User < ApplicationRecord
   def create_consumer_customer_and_account_records
     customer = Customer.create(CompanyNumber: company_id, LangID: 1, Active: 1, GroupID: 16)
     Account.create(CustomerID: customer.id, CompanyNumber: company_id, Balance: 0, MinBalance: 0, ActTypeID: 6)
+  end
+  
+  def create_event_account(event)
+    event_id = event.id
+    event_account = accounts.find_by(event_id: event_id)
+    if event_account.blank?
+      Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, event_id: event_id, Balance: 0, MinBalance: 0, ActTypeID: 6)
+    end
+  end
+  
+  def twilio_formated_phone_number
+    "+1#{phone.gsub(/([-() ])/, '')}" if phone
+  end
+  
+  def send_text_message(body)
+    unless phone.blank?
+      account_sid = ENV["TWILIO_ACCOUNT_SID"]
+      auth_token = ENV["TWILIO_AUTH_TOKEN"]
+      client = Twilio::REST::Client.new account_sid, auth_token
+
+      begin
+        client.messages.create(
+          :from => ENV["FROM_PHONE_NUMBER"],
+          :to => twilio_formated_phone_number,
+          :body => body #,
+#          :media_url => "https://www.gstatic.com/webp/gallery/1.sm.jpg"
+        )
+      rescue Twilio::REST::RestError => e
+        puts e.message
+      end
+    end
+  end
+  
+  def send_media_text_message(media_url)
+    unless phone.blank?
+      account_sid = ENV["TWILIO_ACCOUNT_SID"]
+      auth_token = ENV["TWILIO_AUTH_TOKEN"]
+      client = Twilio::REST::Client.new account_sid, auth_token
+
+      begin
+        client.messages.create(
+          :from => ENV["FROM_PHONE_NUMBER"],
+          :to => twilio_formated_phone_number,
+          :body => "",
+          :media_url => media_url
+        )
+      rescue Twilio::REST::RestError => e
+        puts e.message
+      end
+    end
   end
   
 end

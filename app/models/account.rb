@@ -9,10 +9,12 @@ class Account < ActiveRecord::Base
   has_many :transactions, :foreign_key => :from_acct_id
   belongs_to :company, :foreign_key => "CompanyNumber"
   belongs_to :account_type, :foreign_key => "ActTypeID"
+  belongs_to :event
   
   attr_accessor :last_4_of_pan
   
   scope :debit, -> { where(ActTypeID: 6) }
+  scope :event, -> { where.not(event_id: nil) }
   
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
@@ -315,6 +317,12 @@ class Account < ActiveRecord::Base
   
   def buddies
     company.accounts.debit.where.not(CustomerID: self.CustomerID)
+  end
+  
+  def user
+    unless customer.blank?
+      customer.user
+    end
   end
   
   #############################

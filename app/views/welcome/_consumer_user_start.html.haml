@@ -11,7 +11,7 @@
       .box.box-primary
         .box-header.with-border
           %h3.box-title 
-            Accounts
+            Events
           -#
             .box-tools.pull-right
               %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
@@ -19,5 +19,5 @@
               %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
                 %i.fa.fa-times
         .box-body
-          - current_user.customer.accounts.each do |account|
-            %p= link_to account.company.name, customer_path(current_user.customer, account_id: account.id)
+          - current_user.customer.accounts.event.each do |account|
+            %p= link_to "#{account.event.blank? ? account.company.name : account.event.title}", customer_path(current_user.customer, account_id: account.id)

@@ -32,7 +32,6 @@ class TwilioController < ApplicationController
     to = params[:To] 
     body = params[:Body].truncate(255) # Do not allow to be larger than 255 so doesn't cause a PostgreSQL error
     keyword = body.downcase.strip
-#    company = Company.where("LOWER(CompanyName) like ?", keyword).first
     event = Event.find_by(join_code: keyword)
     message_sid = params[:MessageSid]
     
@@ -53,6 +52,7 @@ class TwilioController < ApplicationController
             message.body("Welcome back to ezToken #{user.full_name}. Sorry, we're not able to find an event with that Join Code.")
           else
 #            message.body("Welcome back to ezToken #{user.full_name}. We successfully found #{event.title}.")
+            user.create_event_account(event)
             message.body(event.join_response)
             message.media(qr_code_customer_path(user.customer.barcode_access_string))
           end
@@ -61,23 +61,5 @@ class TwilioController < ApplicationController
     render_twiml response
 
   end
-
-  def demo_event_sms
-    to = "+1#{params[:phone_number].gsub(/([-() ])/, '')}"
-    keyword_event = Event.find_by_keyword("demo")
-    guest = Guest.find_or_create_by(phone_number: to)
-    guest.events << keyword_event unless guest.event_ids.include?(keyword_event.id)
-    guest.current_event = keyword_event
-    test_media_url = "https://s3-us-west-2.amazonaws.com/eventgallery/reception_#{rand(1..6)}.jpg"
-    guest.messages.build(body: "demo", from: "+1#{params[:phone_number]}", message_sid: "", event_id: guest.event_id, media_urls: [test_media_url])
-    guest.save
-    @client = Twilio::REST::Client.new ENV["TWILIO_ACCOUNT_SID"], ENV["TWILIO_AUTH_TOKEN"]
-    @client.messages.create(
-      :from => '+15414184121',
-      :to => to,
-      :body => "Welcome to Picshare Party! Start sending your pics for #{keyword_event.title}! You can check out the demo event's gallery at #{keyword_event.short_public_url}."
-    )
-    redirect_to root_path, notice: "Message sent to your phone."
-  end
-
+  
 end

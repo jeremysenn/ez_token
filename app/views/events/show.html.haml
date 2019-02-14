@@ -16,23 +16,65 @@
             .box-tools.pull-right
               Box tools
         .box-body
-          %p.lead
-            Title:
-            = @event.title
-          %p.lead
-            Join Code:
-            = @event.join_code
-          %p.lead
-            Start:
-            = @event.start_date
-          %p.lead
-            End:
-            = @event.end_date
-          %p.lead
-            Join Response:
-            = @event.join_response
-        .box-footer
-          = link_to 'Back', :back, class: 'btn btn-default'
-          = link_to 'Edit', edit_event_path(@event), class: 'btn btn-primary'
-          .pull-right
-            = link_to 'Delete', @event, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }
+          %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+            %li.nav-item
+              %a#details-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#details", :role => "tab"} 
+                Details
+            %li.nav-item
+              %a#accounts-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#accounts", :role => "tab"} 
+                Accounts
+          #myTabContent.tab-content
+            #details.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+              %p.lead
+                %strong Title:
+                = @event.title
+              %p.lead
+                %strong Join Code:
+                = @event.join_code
+              %p.lead
+                %strong Start:
+                = @event.start_date
+              %p.lead
+                %strong End:
+                = @event.end_date
+              %p.lead
+                %strong Join Response:
+                = @event.join_response
+            #accounts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+              - unless @event.accounts.blank?
+                .table-responsive
+                  %table.table.table-striped.table-condensed
+                    %thead
+                      %tr
+                        %th ID
+                        %th User 
+                        %th Event
+                        %th Balance
+                        %th
+                    %tbody
+                      - @event.accounts.each do |account|
+                        %tr
+                          %td= account.id
+                          %td
+                            - unless account.user.blank?
+                              = link_to "#{account.user.full_name} (#{account.user.role})", customer_path(account.customer.id, account_id: account.id)
+                            - else
+                              N/A
+                          %td
+                            - unless account.event.blank?
+                              = link_to account.event.title, account.event
+                            - else
+                              N/A
+                          %td= number_to_currency(account.Balance)
+                          %td= link_to "Show", account, class: 'btn btn-secondary'
+              - else
+                .jumbotron
+                  %h3.text-center
+                    No accounts yet
+
+          .box-footer
+            = link_to 'Back', :back, class: 'btn btn-default'
+            = link_to 'Edit', edit_event_path(@event), class: 'btn btn-primary'
+            .pull-right
+              = link_to 'Delete', @event, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }
+            

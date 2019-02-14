@@ -1,0 +1,22 @@
+- @account.errors.each do |attr, msg|
+  .alert.alert-danger
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    = "#{attr} #{msg}" if @account.errors[attr].first == msg
+.box.box-primary
+  -#
+    .box-header.with-border
+      %h3.box-title 
+        Box Title
+      .box-tools.pull-right
+        Box tools
+  .box-body
+    = form_for @account, class: 'form-horizontal' do |f|
+      .row
+        .col-xs-12.col-sm-6
+          .form-group
+            %label{:for => "title"} Balance
+            = f.text_field :Balance, class: "form-control", required: true
+
+      = link_to 'Cancel', :back, class: "btn btn-default"
+      %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+        Save

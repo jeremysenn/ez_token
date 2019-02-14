@@ -45,7 +45,7 @@
             %small= "(#{current_user.role})"
           %a.dropdown-item{:href => edit_user_registration_path(current_user)} 
             %i.fa.fa-edit
-            Edit account
+            Edit profile
           .dropdown-divider
           %a.dropdown-item{:href => transactions_path, :class => (params[:controller] == 'transactions') ?  "text-light-blue" : ""}
             %i.fa.fa-bolt
