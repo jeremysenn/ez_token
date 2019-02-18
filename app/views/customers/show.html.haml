@@ -226,6 +226,11 @@
                   %a#withdrawals-tab.nav-link{"aria-controls" => "withdrawals", "aria-selected" => "false", "data-toggle" => "tab", :href => "#withdrawals", :role => "tab"} 
                     %i.fa.fa-money.fa-lg
                     = "Withdrawals" 
+              - unless @events.blank?
+                %li.nav-item
+                  %a#events-tab.nav-link{"aria-controls" => "events", "aria-selected" => "false", "data-toggle" => "tab", :href => "#events", :role => "tab"} 
+                    %i.fa.fa-calendar.fa-lg
+                    = "Events" 
               -#
                 - unless current_user.vendor?
                   %li.nav-item
@@ -338,6 +343,24 @@
                   .pull-right= paginate @withdrawal_transactions, param_name: 'withdrawals'
                 - else
                   %p.text-center None 
+
+              - unless @events.blank?
+                #events.tab-pane.fade{"aria-labelledby" => "profile-tab", :role => "tabpanel"}
+                  .table-responsive
+                    %table.table.table-striped{class: "#{browser.device.mobile? ? 'table-sm' : ''}"}
+                      %thead
+                        %tr
+                          %th Title
+                          %th Date
+                      %tbody
+                        - @events.each do |event|
+                          %tr
+                            %td= event.title
+                            %td= event.start_date
+                  -#
+                    .pull-right= paginate @withdrawal_transactions, param_name: 'withdrawals'
+                  - else
+                    %p.text-center None 
 
               #messages.tab-pane.fade{"aria-labelledby" => "contact-tab", :role => "tabpanel"}
                 - unless @sms_messages.blank?
