@@ -54,7 +54,7 @@
                     %td
                       - unless account.events.blank?
                         - account.events.each do |event|
-                          = link_to event.title, account.event
+                          = link_to event.title, event
                       - else
                         N/A
                     %td= number_to_currency(account.Balance)
