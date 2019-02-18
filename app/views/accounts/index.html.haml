@@ -39,7 +39,7 @@
                 %tr
                   %th ID
                   %th User 
-                  %th Event
+                  %th Events
                   %th Balance
                   %th
               %tbody
@@ -52,8 +52,9 @@
                       - else
                         N/A
                     %td
-                      - unless account.event.blank?
-                        = link_to account.event.title, account.event
+                      - unless account.events.blank?
+                        - account.events.each do |event|
+                          = link_to event.title, account.event
                       - else
                         N/A
                     %td= number_to_currency(account.Balance)
