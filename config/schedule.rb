@@ -28,6 +28,6 @@ every :reboot do
   # Mac Mini
 #  job_type :application, "cd /Users/jeremy/Ruby/ez_token && :task :output"
   
-  application "rails server" # Start application server
+  application "rails server -p 3003" # Start application server
 #  application "bundle exec sidekiq -c 5" # Start background workers
 end

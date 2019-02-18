@@ -48,7 +48,6 @@
                       %tr
                         %th ID
                         %th User 
-                        %th Event
                         %th Balance
                         %th
                     %tbody
@@ -58,11 +57,6 @@
                           %td
                             - unless account.user.blank?
                               = link_to "#{account.user.full_name} (#{account.user.role})", customer_path(account.customer.id, account_id: account.id)
-                            - else
-                              N/A
-                          %td
-                            - unless account.event.blank?
-                              = link_to account.event.title, account.event
                             - else
                               N/A
                           %td= number_to_currency(account.Balance)

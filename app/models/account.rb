@@ -9,7 +9,8 @@ class Account < ActiveRecord::Base
   has_many :transactions, :foreign_key => :from_acct_id
   belongs_to :company, :foreign_key => "CompanyNumber"
   belongs_to :account_type, :foreign_key => "ActTypeID"
-  belongs_to :event
+#  belongs_to :event
+  has_and_belongs_to_many :events, :join_table => :accounts_events
   
   attr_accessor :last_4_of_pan
   

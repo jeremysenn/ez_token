@@ -4,6 +4,8 @@ class Group < ActiveRecord::Base
   
   establish_connection :ez_cash
   
+  has_many :customers
+  
   #############################
   #     Instance Methods      #
   #############################

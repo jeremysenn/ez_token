@@ -16,6 +16,7 @@ class Customer < ActiveRecord::Base
   has_many :sms_messages
   has_many :payments, :foreign_key => "CustomerID"
   has_many :customer_barcodes, :foreign_key => "CustomerID"
+  belongs_to :group, :foreign_key => "GroupID"
   
   scope :payees, -> { where(GroupID: 18) }
   scope :vendor, -> { where(GroupID: 17) }
@@ -259,10 +260,6 @@ class Customer < ActiveRecord::Base
       email_subject: subject, processed: false, err_flag: false, seq_nbr: 0) if self.MessageSMS == 1 and self.MessageEmail == 1 and not email.blank? and not phone.blank?
     
     self.update_attributes(pwd_hash: encrypted_random_password, IsTempPassword: true, pwd_needs_change: 1, Answer1: decrypted_answer_1, Answer2: decrypted_answer_2, Answer3: decrypted_answer_3 )
-  end
-  
-  def group
-    Group.find(self.GroupID)
   end
   
   def can_create_bill_payments?
