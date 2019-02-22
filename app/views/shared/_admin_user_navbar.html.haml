@@ -61,7 +61,7 @@
             %i.fa.fa-building
             = current_user.company.name
             %br
-            %small= "(#{current_user.role})"
+            %small= "(#{current_user.role.humanize})"
           %a.dropdown-item{:href => edit_user_registration_path(current_user)} 
             %i.fa.fa-edit
             Edit profile
