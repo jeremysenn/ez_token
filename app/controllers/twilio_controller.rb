@@ -32,14 +32,14 @@ class TwilioController < ApplicationController
     to = params[:To] 
     body = params[:Body].truncate(255) # Do not allow to be larger than 255 so doesn't cause a PostgreSQL error
     keyword = body.downcase.strip
-    event = Event.find_by(join_code: keyword)
+    event = Event.now_open.find_by(join_code: keyword)
     message_sid = params[:MessageSid]
     
     response = Twilio::TwiML::MessagingResponse.new
     response.message do |message|
         if user.blank?
           if event.blank?
-            message.body("Welcome to EZ Token #{plain_cell_number}. Sorry, we're not able to find an event with that Join Code.")
+            message.body("Welcome to EZ Token #{plain_cell_number}. Sorry, we're not able to find an open event with that join code.")
           else
 #            user = User.create(phone: plain_cell_number, company_id: company.id, role: "consumer")
 #            user.create_consumer_customer_and_account_records
@@ -49,7 +49,7 @@ class TwilioController < ApplicationController
           end
         else
           if event.blank?
-            message.body("Welcome back to ezToken #{user.full_name}. Sorry, we're not able to find an event with that Join Code.")
+            message.body("Welcome back to ezToken #{user.full_name}. Sorry, we're not able to find an open event with that join code.")
           else
 #            message.body("Welcome back to ezToken #{user.full_name}. We successfully found #{event.title}.")
             user.create_event_account(event)

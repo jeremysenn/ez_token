@@ -30,7 +30,7 @@
       %p.text-muted
         Balance
         = number_to_currency(@account.balance)
-    .text-muted= "#{@account.company.name} (#{@customer.user.blank? ? '' : @customer.user.role})"
+    .text-muted= "(#{@customer.user.blank? ? '' : @customer.user.role})"
   / Main content
   %section.content
     / Default box
@@ -51,6 +51,7 @@
               %h5.text-muted
                 Balance
                 = number_to_currency(@account.balance)
+              .text-center= "(#{@account.company.name})"
             %h3.profile-username.text-center
               =# current_user.consumer? ? current_user.full_name : @customer.full_name
               - if @customer.anonymous?
@@ -351,11 +352,13 @@
                       %thead
                         %tr
                           %th Title
+                          %th Company
                           %th Date
                       %tbody
                         - @events.each do |event|
                           %tr
                             %td= event.title
+                            %td= event.company.name
                             %td= event.start_date
                   -#
                     .pull-right= paginate @withdrawal_transactions, param_name: 'withdrawals'

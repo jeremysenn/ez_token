@@ -25,9 +25,11 @@
             - else
               N/A
           %p.lead
-            %strong Event:
-            - unless @account.event.blank?
-              = link_to @account.event.title, @account.event
+            %strong Events:
+            - unless @account.events.blank?
+              - @account.events.each do |event|
+                = link_to event.title, event
+                %br
             - else
               N/A
           %p.lead

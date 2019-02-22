@@ -63,17 +63,9 @@ class CustomersController < ApplicationController
     @payment_transactions =  Kaminari.paginate_array(@account.successful_wire_transactions.sort_by(&:date_time).reverse).page(params[:payments]).per(10)
     @check_transactions =  Kaminari.paginate_array(@customer.cashed_checks).page(params[:checks]).per(10)
     @sms_messages = @customer.sms_messages.order("created_at DESC").page(params[:messages]).per(10)
-    @events = @customer.events
-#    @base64_barcode_string = @customer.barcode_png
-#    unless @customer.barcode_access_string.blank?
-#      @barcode_access_string = @customer.barcode_access_string
-#    else
-#      @customer.generate_barcode_access_string
-#      @barcode_access_string = @customer.barcode_access_string
-#    end
+#    @events = @customer.events
+    @events = @account.events
     if @customer.user.blank?
-#      @temporary_password = Devise.friendly_token.first(10)
-#      @temporary_password = SecureRandom.hex.first(6)
       @temporary_password = SecureRandom.random_number(10**6).to_s
     end
   end

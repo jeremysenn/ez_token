@@ -3,16 +3,18 @@ class User < ApplicationRecord
   # :registerable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable #, :timeoutable
   
-  ROLES = %w[admin basic caddy consumer payee vendor].freeze
+  ROLES = %w[admin caddy_admin basic caddy consumer payee vendor].freeze
        
   belongs_to :company
   belongs_to :customer, optional: true
   has_many :sms_messages
   has_many :accounts, through: :customer
+  has_many :events, through: :customer
   
   serialize :device_ids, Array
   
   scope :admin, -> { where(role: "admin") }
+  scope :caddy_admin, -> { where(role: "caddy_admin") }
   scope :basic, -> { where(role: "basic") }
   scope :caddy, -> { where(role: "caddy") }
   scope :consumer, -> { where(role: "consumer") }
@@ -34,7 +36,11 @@ class User < ApplicationRecord
   end
   
   def admin?
-    role == "admin"
+    role == "admin" or role == "caddy_admin"
+  end
+  
+  def caddy_admin?
+    role == "caddy_admin"
   end
   
   def basic?
@@ -141,10 +147,19 @@ class User < ApplicationRecord
   end
   
   def create_event_account(event)
-    event_id = event.id
-    event_account = accounts.find_by(event_id: event_id)
-    if event_account.blank?
-      Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, event_id: event_id, Balance: 0, MinBalance: 0, ActTypeID: 6)
+    unless events.include?(event)
+      existing_company_account = accounts.find_by(CompanyNumber: event.company_id)
+      if existing_company_account.blank? 
+        new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: 6)
+        event.accounts << new_account
+      else
+        if event.expire_accounts?
+          new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: 6)
+          event.accounts << new_account
+        else
+          event.accounts << existing_company_account
+        end
+      end
     end
   end
   

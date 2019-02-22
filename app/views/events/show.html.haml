@@ -29,6 +29,9 @@
                 %strong Title:
                 = @event.title
               %p.lead
+                %strong Phone:
+                = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
+              %p.lead
                 %strong Join Code:
                 = @event.join_code
               %p.lead
@@ -40,6 +43,9 @@
               %p.lead
                 %strong Join Response:
                 = @event.join_response
+              %p.lead
+                %strong Expire Accounts:
+                = @event.expire_accounts? ? 'Yes' : 'No'
             #accounts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
               - unless @event.accounts.blank?
                 .table-responsive
@@ -62,9 +68,10 @@
                           %td= number_to_currency(account.Balance)
                           %td= link_to "Show", account, class: 'btn btn-secondary'
               - else
-                .jumbotron
-                  %h3.text-center
-                    No accounts yet
+                .container
+                  .jumbotron{style: "background-color: transparent;"}
+                    %h3.text-center
+                      No accounts yet
 
           .box-footer
             = link_to 'Back', :back, class: 'btn btn-default'

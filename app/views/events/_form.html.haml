@@ -35,6 +35,13 @@
           .form-group
             %label{:for => "join_response"} Join Response
             = f.text_area :join_response, rows: 3, style: 'width: 100%;', required: true
+        .col-xs-12.col-sm-6
+          .form-group
+            %label{:for => "expire_accounts"} 
+              %i.fa.fa-warning
+              Expire Accounts
+            = f.check_box :expire_accounts, disabled: (not @event.new_record? and @event.started?) ? true : false 
+            %small.form-text.text-muted (This cannot be changed after event has started)
 
       = link_to 'Cancel', :back, class: "btn btn-default"
       %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 

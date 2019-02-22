@@ -18,12 +18,13 @@
             %i.fa.fa-google-wallet.fa-lg
             %br
             Accounts
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
-            %i.fa.fa-male.fa-lg
-            %br
-            Customers
+      - unless current_user.caddy_admin?
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
+              %i.fa.fa-male.fa-lg
+              %br
+              Customers
       -#
         %li.nav-item.bordered
           .text-center

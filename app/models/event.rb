@@ -7,6 +7,8 @@ class Event < ActiveRecord::Base
   
   before_validation :downcase_join_code, :strip_join_code
   
+  scope :now_open, -> { where("start_date <= ? AND end_date >= ?", Date.today, Date.today) }
+  
   validates :title, presence: true
   validates :join_code, uniqueness: true, presence: true
   validates :join_code, exclusion: { in: %w( stop start help),
@@ -17,7 +19,23 @@ class Event < ActiveRecord::Base
   #     Instance Methods      #
   #############################
   
+  def started?
+    (start_date <= Date.today)
+  end
   
+  def open?
+#    (start_time.in_time_zone(time_zone) < Time.now.in_time_zone(time_zone)) and (Time.now.in_time_zone(time_zone) < end_time.in_time_zone(time_zone))
+    (start_date <= Date.today) and (Date.today <= end_time)
+  end
+  
+  def closed?
+    unless end_time.blank?
+#      end_time.in_time_zone(time_zone) < Time.now.in_time_zone(time_zone)
+      end_date < Date.today
+    else
+      false
+    end
+  end
   
   #############################
   #     Class Methods         #

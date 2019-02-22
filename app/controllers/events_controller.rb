@@ -85,6 +85,6 @@ class EventsController < ApplicationController
 #    end
     
     def event_params
-      params.require(:event).permit(:title, :join_code, :start_date, :end_date, :join_response, :company_id)
+      params.require(:event).permit(:title, :join_code, :start_date, :end_date, :join_response, :company_id, :expire_accounts)
     end
 end
