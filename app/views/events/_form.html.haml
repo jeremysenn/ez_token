@@ -17,10 +17,11 @@
           .form-group
             %label{:for => "title"} Title
             = f.text_field :title, class: "form-control", required: true
-        .col-xs-12.col-sm-6
-          .form-group
-            %label{:for => "joine_code"} Join Code
-            = f.text_field :join_code, class: "form-control", required: true
+        - unless current_user.caddy_admin?
+          .col-xs-12.col-sm-6
+            .form-group
+              %label{:for => "joine_code"} Join Code
+              = f.text_field :join_code, class: "form-control", required: true
       .row
         .col-xs-12.col-sm-6
           .form-group
@@ -31,10 +32,11 @@
             %label{:for => "start_date"} End
             = f.text_field :end_date, value: @end_date ||= (Date.today + 1.week).to_s, style: 'width: 100%;', 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
       .row
-        .col-xs-12.col-sm-6
-          .form-group
-            %label{:for => "join_response"} Join Response
-            = f.text_area :join_response, rows: 3, style: 'width: 100%;', required: true
+        - unless current_user.caddy_admin?
+          .col-xs-12.col-sm-6
+            .form-group
+              %label{:for => "join_response"} Join Response
+              = f.text_area :join_response, rows: 3, style: 'width: 100%;', required: true
         .col-xs-12.col-sm-6
           .form-group
             %label{:for => "expire_accounts"} 
@@ -42,7 +44,58 @@
               Expire Accounts
             = f.check_box :expire_accounts, disabled: (not @event.new_record? and @event.started?) ? true : false 
             %small.form-text.text-muted (This cannot be changed after event has started)
+      - if current_user.caddy_admin? or current_user.event_admin?
+        %hr
+        .row
+          .col-xs-12.col-sm-6
+            %div{id: "event_do_not_expire_accounts_check_boxes", style: "#{@event.expire_accounts? ? 'display:none;' : 'display:block;'}"}
+              %label.control-label 
+                %strong Accounts
+              %fieldset{"#{@event.expire_accounts? ? 'disabled' : ''}" => "#{@event.expire_accounts? ? 'disabled' : ''}"}
+                = f.collection_check_boxes(:account_ids, current_user.company.customer_accounts, :id, :customer_user_name) do |account_field|
+                  .col-xs-12.col-md-4= account_field.label(class:"label-checkbox") { account_field.check_box + ' ' + account_field.text }
+            %div{id: "event_expire_accounts_links", style: "#{@event.expire_accounts? ? 'display:block;' : 'display:none;'}"}
+              %label.control-label 
+                %strong Accounts
+                %fieldset{"#{@event.expire_accounts? ? '' : 'disabled'}" => "#{@event.expire_accounts? ? '' : 'disabled'}"}
+                  = f.nested_fields_for :accounts do |ff|
+                    = ff.hidden_field :CompanyNumber, value: current_user.company_id
+                    = ff.hidden_field :Balance, value: 0
+                    = ff.hidden_field :MinBalance, value: 0
+                    = ff.hidden_field :ActTypeID, value: 6
+                    = ff.hidden_field 'event_ids[]', value: @event.id if ff.object.new_record?
+                    .form-group
+                      = ff.remove_nested_fields_link 'Remove'
+                      = ff.select :CustomerID, options_from_collection_for_select(current_user.company.all_customers, "id", "full_name", ff.object.CustomerID), {prompt: "Select customer"}, {:class => "form-control"}
 
+                  %p= f.add_nested_fields_link :accounts, 'Add Account', class: 'btn bg-orange btn-sm', role: 'button'
+              
+              -#
+                - @event.accounts.each do |account|
+                  %p= account.customer_user_name
+
+            -#
+              %div{id: "event_do_not_expire_accounts_check_boxes", style: "#{@event.expire_accounts? ? 'display:none;' : 'display:block;'}"}
+                = f.collection_check_boxes(:account_ids, current_user.company.customer_accounts, :id, :customer_user_name) do |account_field|
+                  .col-xs-12.col-md-4= account_field.label(class:"label-checkbox") { account_field.check_box + ' ' + account_field.text }
+              %div{id: "event_expire_accounts_check_boxes", style: "#{@event.expire_accounts? ? 'display:block;' : 'display:none;'}"}
+                = f.collection_check_boxes(:account_ids, @event.accounts, :id, :customer_user_name) do |account_field|
+                  .col-xs-12.col-md-4= account_field.label(class:"label-checkbox") { account_field.check_box + ' ' + account_field.text }
+              %div{id: "event_accounts_add_links", style: "#{@event.expire_accounts? ? 'display:block;' : 'display:none;'}"}
+                %label.control-label 
+                  %strong Add Accounts
+                - current_user.company.customers_by_user_role(current_user).each do |customer|
+                  - unless @event.includes_customer?(customer)
+                    .col-xs-12.col-md-4
+                      %a{class: "create_account_and_add_to_event_link", href: '#', "data-customer-id" => customer.id, "data-event-id" => @event.id}
+                        %i.fa.fa-plus-circle.fa-fw
+                        %i.fa.fa-spinner.fa-spin.fa-fw{style: 'display:none;'}
+                        = customer.full_name
+                  - else
+                    %a{id: "remove_account_link", href: '#', "data-account-id" => nil, "data-event-id" => @event.id, style: 'display:none;'}
+                      %i.fa.fa-minus-circle.fa-fw
+                      = customer.full_name
+      
       = link_to 'Cancel', :back, class: "btn btn-default"
       %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
         Save

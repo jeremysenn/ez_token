@@ -26,11 +26,13 @@ class Customer < ActiveRecord::Base
   scope :members, -> { where(GroupID: 14) }
   scope :caddies, -> { where(GroupID: 13) }
   scope :active, -> { where(Active: true) }
+  scope :not_anonymous, -> { where.not(GroupID: 15) }
   
   # Virtual Attributes
   attr_accessor :create_payee_user_flag
   
   accepts_nested_attributes_for :accounts
+  accepts_nested_attributes_for :events
   
 #  validates :NameF, :NameL, presence: true
   validates :PhoneMobile, uniqueness: {allow_blank: true} #uniqueness: true, presence: true
@@ -42,10 +44,12 @@ class Customer < ActiveRecord::Base
 #  validates :Email, uniqueness: {allow_blank: true}
 #  validates :PhoneMobile, uniqueness: true
 
-  after_commit :create_payee_user, on: [:create]
-  after_commit :generate_barcode_access_string, on: [:create]
-  after_update :create_payee_user, if: :need_to_create_payee_user?
-  after_update :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
+  after_commit :create_payee_user, on: [:create], if: :need_to_create_payee_user?
+  after_commit :create_caddy_user, on: [:create], if: :need_to_create_caddy_user?
+  after_commit :create_member_user, on: [:create], if: :need_to_create_member_user?
+  before_create :generate_barcode_access_string
+#  after_update :create_payee_user, if: :need_to_create_payee_user?
+#  after_update :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
       
   #############################
   #     Instance Methods      #
@@ -485,6 +489,24 @@ class Customer < ActiveRecord::Base
     self.GroupID == 18
   end
   
+  def type
+    if caddy?
+      "Caddy"
+    elsif member?
+      "Member"
+    elsif consumer?
+      "Consumer"
+    elsif vendor?
+      "Vendor"
+    elsif payee?
+      "Payee"
+    elsif anonymous?
+      "Anonymous"
+    else
+      "Unknown"
+    end
+  end
+  
   def vendor_payables_with_balance
     vendor_payables.where("Balance > ?", 0)
   end
@@ -651,8 +673,10 @@ class Customer < ActiveRecord::Base
   end
   
   def generate_barcode_access_string
-    self.barcode_access_string = SecureRandom.urlsafe_base64
-    self.save
+#    self.barcode_access_string = SecureRandom.urlsafe_base64
+#    self.save
+    access_string = SecureRandom.urlsafe_base64
+    self.barcode_access_string = access_string
   end
   
   def need_to_create_payee_user?
@@ -667,12 +691,36 @@ class Customer < ActiveRecord::Base
     password: temporary_password, password_confirmation: temporary_password, temporary_password: temporary_password)
   end
   
+  def need_to_create_caddy_user?
+    self.GroupID == 13
+  end
+  
+  def create_caddy_user
+    temporary_password = SecureRandom.random_number(10**6).to_s
+    User.create(first_name: first_name, last_name: last_name, email: email, company_id: company_id, customer_id: id, role: "caddy", phone: phone,
+    password: temporary_password, password_confirmation: temporary_password, temporary_password: temporary_password)
+  end
+  
+  def need_to_create_member_user?
+    self.GroupID == 14
+  end
+  
+  def create_member_user
+    temporary_password = SecureRandom.random_number(10**6).to_s
+    User.create(first_name: first_name, last_name: last_name, email: email, company_id: company_id, customer_id: id, role: "member", phone: phone,
+    password: temporary_password, password_confirmation: temporary_password, temporary_password: temporary_password)
+  end
+  
   def phone_changed?
     saved_change_to_PhoneMobile?
   end
   
   def update_portal_user_phone
     user.update_attribute(:phone, phone)
+  end
+  
+  def accounts_with_events
+    accounts.left_outer_joins(:events).where.not(events: {id: nil})
   end
  
   #############################

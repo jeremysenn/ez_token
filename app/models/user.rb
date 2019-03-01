@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # :registerable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable #, :timeoutable
   
-  ROLES = %w[admin caddy_admin basic caddy consumer payee vendor].freeze
+  ROLES = %w[admin caddy_admin event_admin basic caddy member consumer payee vendor].freeze
        
   belongs_to :company
   belongs_to :customer, optional: true
@@ -15,8 +15,10 @@ class User < ApplicationRecord
   
   scope :admin, -> { where(role: "admin") }
   scope :caddy_admin, -> { where(role: "caddy_admin") }
+  scope :event_admin, -> { where(role: "event_admin") }
   scope :basic, -> { where(role: "basic") }
   scope :caddy, -> { where(role: "caddy") }
+  scope :member, -> { where(role: "member") }
   scope :consumer, -> { where(role: "consumer") }
   scope :payee, -> { where(role: "payee") }
   scope :vendor, -> { where(role: "vendor") }
@@ -35,12 +37,20 @@ class User < ApplicationRecord
     "#{first_name} #{last_name}"
   end
   
+  def administrator?
+    role == "admin" or role == "caddy_admin" or role == "event_admin"
+  end
+  
   def admin?
-    role == "admin" or role == "caddy_admin"
+    role == "admin" #or role == "caddy_admin" or role == "event_admin"
   end
   
   def caddy_admin?
     role == "caddy_admin"
+  end
+  
+  def event_admin?
+    role == "event_admin"
   end
   
   def basic?
@@ -49,6 +59,10 @@ class User < ApplicationRecord
   
   def caddy?
     role == "caddy"
+  end
+  
+  def member?
+    role == "member"
   end
   
   def consumer?

@@ -41,9 +41,10 @@ class TwilioController < ApplicationController
           if event.blank?
             message.body("Welcome to EZ Token #{plain_cell_number}. Sorry, we're not able to find an open event with that join code.")
           else
-#            user = User.create(phone: plain_cell_number, company_id: company.id, role: "consumer")
-#            user.create_consumer_customer_and_account_records
-#            user.set_temporary_password
+            customer = Customer.create(CompanyNumber: 7, LangID: 1, Active: 1, GroupID: event.company.include_rounds? ? 13 : 16)
+            user = User.create(phone: plain_cell_number, company_id: 7, role: event.company.include_rounds? ? "caddy" : "consumer", customer_id: customer.id, confirmed_at: Time.now)
+            user.set_temporary_password
+            user.create_event_account(event)
 #            message.body("Welcome to EZ Token #{plain_cell_number}. We successfully found #{event.title}.")
             message.body(event.join_response)
           end

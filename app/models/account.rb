@@ -10,12 +10,11 @@ class Account < ActiveRecord::Base
   belongs_to :company, :foreign_key => "CompanyNumber"
   belongs_to :account_type, :foreign_key => "ActTypeID"
 #  belongs_to :event
-  has_and_belongs_to_many :events, :join_table => :accounts_events
+  has_and_belongs_to_many :events, :join_table => :accounts_events, :uniq => true
   
   attr_accessor :last_4_of_pan
   
   scope :debit, -> { where(ActTypeID: 6) }
-  scope :event, -> { where.not(event_id: nil) }
   
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
@@ -43,6 +42,10 @@ class Account < ActiveRecord::Base
     else
       customer.full_name
     end
+  end
+  
+  def customer_name_and_events
+    return "#{customer_user_name} (#{events.blank? ? 'No events' : events.map(&:title).join(', ')})"
   end
   
   def transactions
@@ -323,6 +326,72 @@ class Account < ActiveRecord::Base
   def user
     unless customer.blank?
       customer.user
+    end
+  end
+  
+  def caddy?
+    unless customer.blank?
+      customer.caddy?
+    else
+      nil
+    end
+  end
+  
+  def member?
+    unless customer.blank?
+      customer.member?
+    else
+      nil
+    end
+  end
+  
+  def anonymous?
+    unless customer.blank?
+      customer.anonymous?
+    else
+      nil
+    end
+  end
+  
+  def consumer?
+    unless customer.blank?
+      customer.consumer?
+    else
+      nil
+    end
+  end
+  
+  def vendor?
+    unless customer.blank?
+      customer.vendor?
+    else
+      nil
+    end
+  end
+  
+  def payee?
+    unless customer.blank?
+      customer.payee?
+    else
+      nil
+    end
+  end
+  
+  def type
+    if caddy?
+      "Caddy"
+    elsif member?
+      "Member"
+    elsif consumer?
+      "Consumer"
+    elsif vendor?
+      "Vendor"
+    elsif payee?
+      "Payee"
+    elsif anonymous?
+      "Anonymous"
+    else
+      "Unknown"
     end
   end
   

@@ -3,17 +3,24 @@ class Event < ActiveRecord::Base
   
   belongs_to :company
 #  has_many :accounts
-  has_and_belongs_to_many :accounts, :join_table => :accounts_events
+  has_and_belongs_to_many :accounts, :join_table => :accounts_events, :uniq => true
+  has_many :customers, through: :accounts
   
-  before_validation :downcase_join_code, :strip_join_code
+  before_validation :downcase_join_code, :strip_join_code, unless: Proc.new { |event| event.join_code.blank? }
   
   scope :now_open, -> { where("start_date <= ? AND end_date >= ?", Date.today, Date.today) }
+  scope :accounts_do_not_expire, -> { where(expire_accounts: [nil, 0]) }
+  scope :accounts_expire, -> { where(expire_accounts: 1) }
   
   validates :title, presence: true
-  validates :join_code, uniqueness: true, presence: true
+#  validates :join_code, uniqueness: true, presence: true
+  validates :join_code, uniqueness: { case_sensitive: false }, allow_blank: true
   validates :join_code, exclusion: { in: %w( stop start help),
     message: "%{value} is reserved." }
-  validates :join_response, presence: true
+#  validates :join_response, presence: true
+  validate :no_duplicate_customers
+
+  accepts_nested_attributes_for :accounts, allow_destroy: true
   
   #############################
   #     Instance Methods      #
@@ -34,6 +41,22 @@ class Event < ActiveRecord::Base
       end_date < Date.today
     else
       false
+    end
+  end
+  
+  def member_accounts
+#    accounts.select {|a| a.member?}
+    accounts.joins(:customer).where("customer.GroupID = ?", 14)
+  end
+  
+  def includes_customer?(customer)
+    customers = accounts.joins(:customer).where("customer.CustomerID = ?", customer.id)
+    return (not customers.blank?)
+  end
+  
+  def no_duplicate_customers
+    unless accounts.map{|a| a.CustomerID} == accounts.map{|a| a.CustomerID}.uniq
+      errors.add(:error, 'Duplicate customer')
     end
   end
   

@@ -20,7 +20,7 @@
         - unless (params[:controller] == "customers" and params[:action] == "qr_code")
           = render 'shared/no_user_navbar'
       - else
-        - if current_user.admin?
+        - if current_user.administrator?
           - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
             = render 'shared/admin_user_navbar' 
         - elsif current_user.basic?
@@ -29,8 +29,9 @@
           = render 'shared/consumer_user_navbar' 
         - elsif current_user.payee?
           = render 'shared/customer_user_navbar'
-        - elsif current_user.vendor? or current_user.caddy?
-          = render 'shared/vendor_user_navbar'
+        - elsif current_user.vendor?
+        - elsif current_user.caddy?
+          = render 'shared/caddy_user_navbar'
       = yield
       - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
         %footer.main-footer

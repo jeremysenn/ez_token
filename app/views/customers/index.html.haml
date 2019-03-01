@@ -5,8 +5,8 @@
       = render 'shared/flash_messages'
       %h1
         %i.fa.fa-male
-        Payees
-        %small= link_to 'New', new_customer_path, class: 'btn bg-orange'
+        Accounts
+        %small= link_to 'New', new_customer_path(group_id: @group_id), class: 'btn bg-orange'
         - unless @customers.blank? or @type == "Anonymous"
           .pull-right
             %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
@@ -27,7 +27,8 @@
                   Download CSV
             - else
               = form_tag customers_path, id: 'customers_search_form', method: 'get', class: 'form-inline' do |f|
-                = select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
+                =# select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
+                = select_tag :group_id, options_for_select(Group.selections_by_user_role(current_user), @group_id), class: "form-control"
                 &nbsp;
                 .input-group
                   = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true, style: 'width: 75%'
@@ -37,7 +38,8 @@
           - unless browser.device.mobile?
             .box-tools
               = form_tag customers_path, id: 'customers_search_form', method: 'get', class: 'form-inline' do |f|
-                = select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
+                =# select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
+                = select_tag :group_id, options_for_select(Group.selections_by_user_role(current_user), @group_id), class: "form-control"
                 &nbsp;
                 .input-group
                   = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
@@ -49,35 +51,43 @@
             = "#{pluralize(number_with_delimiter(@all_customers.count), 'record')} found"
 
         .box-body.no-padding
-          .table-responsive
-            %table.table.table-striped.table-condensed
-              %thead
-                %tr
-                  - unless @type == "Anonymous"
-                    %th{:scope => "col"}= customers_sort_link 'customer.NameF', "First", params[:q], @type
-                    %th{:scope => "col"}= customers_sort_link 'customer.NameL', "Last", params[:q], @type
-                    %th{:scope => "col"}= customers_sort_link 'customer.PhoneMobile', "Phone", params[:q], @type
-                    %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @type
-                  - else
-                    %th{:scope => "col"}= customers_sort_link 'customer.CreateDate', "Created", params[:q], @type
-                    %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @type
-              %tbody
-                - @customers.each do |customer|
+          - unless @all_customers.blank?
+            .table-responsive
+              %table.table.table-striped.table-condensed
+                %thead
                   %tr
                     - unless @type == "Anonymous"
-                      %td= link_to customer.first_name, customer
-                      %td= link_to customer.last_name, customer
-                      %td
-                        %a{href: "tel:#{customer.phone}"}
-                          = customer.phone
-                      %td= number_to_currency(customer.balance)
+                      %th{:scope => "col"}= customers_sort_link 'customer.NameF', "First", params[:q], @group_id
+                      %th{:scope => "col"}= customers_sort_link 'customer.NameL', "Last", params[:q], @group_id
+                      %th{:scope => "col"} Type
+                      %th{:scope => "col"}= customers_sort_link 'customer.PhoneMobile', "Phone", params[:q], @group_id
+                      %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @group_id
                     - else
-                      %td= link_to customer.CreateDate, customer
-                      %td
-                        - unless customer.account.blank?
-                          = number_to_currency(customer.balance)
-                        - else
-                          "N/A"
+                      %th{:scope => "col"}= customers_sort_link 'customer.CreateDate', "Created", params[:q], @group_id
+                      %th{:scope => "col"} Type
+                      %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @group_id
+                %tbody
+                  - @customers.each do |customer|
+                    %tr
+                      - unless @type == "Anonymous"
+                        %td= link_to customer.first_name, customer
+                        %td= link_to customer.last_name, customer
+                        %td= customer.type
+                        %td
+                          %a{href: "tel:#{customer.phone}"}
+                            = customer.phone
+                        %td= number_to_currency(customer.balance)
+                      - else
+                        %td= link_to customer.CreateDate, customer
+                        %td= customer.type
+                        %td
+                          - unless customer.account.blank?
+                            = number_to_currency(customer.balance)
+                          - else
+                            "N/A"
+          - else
+            .jumbotron
+              %h3.text-center None found
         .box-footer
           .pull-right= paginate @customers, param_name: 'result1'
 

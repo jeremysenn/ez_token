@@ -7,13 +7,14 @@
         %i.fa.fa-user
         Users
         %small= link_to 'New', new_users_admin_path, class: 'btn bg-orange'
+
     / Main content
     %section.content
       / Default box
       .box.box-primary
         .box-header.with-border
           %h3.box-title 
-            Admin
+            All Users
           .box-tools.pull-right
             %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
               %i.fa.fa-minus
@@ -30,69 +31,101 @@
                 %th{:scope => "col"} Email
                 %th
             %tbody
-              - @admin_users.each do |admin_user|
+              - @users.each do |user|
                 %tr
-                  %th{:scope => "row"}= admin_user.id
-                  %td= admin_user.first_name
-                  %td= admin_user.last_name
-                  %td= admin_user.phone
-                  %td= admin_user.email
-                  %td= link_to 'More', users_admin_path(admin_user), class: 'btn btn-primary btn-sm'
+                  %th{:scope => "row"}= user.id
+                  %td= user.first_name
+                  %td= user.last_name
+                  %td= user.phone
+                  %td= user.email
+                  %td= link_to 'More', users_admin_path(user), class: 'btn btn-primary btn-sm'
+    -#
+      / Main content
+      %section.content
+        / Default box
+        .box.box-primary
+          .box-header.with-border
+            %h3.box-title 
+              Admin
+            .box-tools.pull-right
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                %i.fa.fa-minus
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+                %i.fa.fa-times
+          .box-body.no-padding
+            %table.table.table-condensed
+              %thead
+                %tr
+                  %th{:scope => "col"} #
+                  %th{:scope => "col"} First
+                  %th{:scope => "col"} Last
+                  %th{:scope => "col"} Phone
+                  %th{:scope => "col"} Email
+                  %th
+              %tbody
+                - @admin_users.each do |admin_user|
+                  %tr
+                    %th{:scope => "row"}= admin_user.id
+                    %td= admin_user.first_name
+                    %td= admin_user.last_name
+                    %td= admin_user.phone
+                    %td= admin_user.email
+                    %td= link_to 'More', users_admin_path(admin_user), class: 'btn btn-primary btn-sm'
 
-      .box.box-primary
-        .box-header.with-border
-          %h3.box-title 
-            Basic
-          .box-tools.pull-right
-            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
-              %i.fa.fa-minus
-            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
-              %i.fa.fa-times
-        .box-body.no-padding
-          %table.table.table-condensed
-            %thead
-              %tr
-                %th{:scope => "col"} #
-                %th{:scope => "col"} First
-                %th{:scope => "col"} Last
-                %th{:scope => "col"} Phone
-                %th{:scope => "col"} Email
-                %th
-            %tbody
-              - @basic_users.each do |basic_user|
+        .box.box-primary
+          .box-header.with-border
+            %h3.box-title 
+              Basic
+            .box-tools.pull-right
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                %i.fa.fa-minus
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+                %i.fa.fa-times
+          .box-body.no-padding
+            %table.table.table-condensed
+              %thead
                 %tr
-                  %th{:scope => "row"}= basic_user.id
-                  %td= basic_user.first_name
-                  %td= basic_user.last_name
-                  %td= basic_user.phone
-                  %td= basic_user.email
-                  %td= link_to 'More', users_admin_path(basic_user), class: 'btn btn-primary btn-sm'
+                  %th{:scope => "col"} #
+                  %th{:scope => "col"} First
+                  %th{:scope => "col"} Last
+                  %th{:scope => "col"} Phone
+                  %th{:scope => "col"} Email
+                  %th
+              %tbody
+                - @basic_users.each do |basic_user|
+                  %tr
+                    %th{:scope => "row"}= basic_user.id
+                    %td= basic_user.first_name
+                    %td= basic_user.last_name
+                    %td= basic_user.phone
+                    %td= basic_user.email
+                    %td= link_to 'More', users_admin_path(basic_user), class: 'btn btn-primary btn-sm'
 
-      .box.box-primary
-        .box-header.with-border
-          %h3.box-title 
-            Payee
-          .box-tools.pull-right
-            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
-              %i.fa.fa-minus
-            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
-              %i.fa.fa-times
-        .box-body.no-padding
-          %table.table.table-condensed
-            %thead
-              %tr
-                %th{:scope => "col"} #
-                %th{:scope => "col"} First
-                %th{:scope => "col"} Last
-                %th{:scope => "col"} Phone
-                %th{:scope => "col"} Email
-                %th
-            %tbody
-              - @payee_users.each do |payee_user|
+        .box.box-primary
+          .box-header.with-border
+            %h3.box-title 
+              Payee
+            .box-tools.pull-right
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                %i.fa.fa-minus
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+                %i.fa.fa-times
+          .box-body.no-padding
+            %table.table.table-condensed
+              %thead
                 %tr
-                  %th{:scope => "row"}= payee_user.id
-                  %td= payee_user.first_name
-                  %td= payee_user.last_name
-                  %td= payee_user.phone
-                  %td= payee_user.email
-                  %td= link_to 'More', users_admin_path(payee_user), class: 'btn btn-primary btn-sm'
+                  %th{:scope => "col"} #
+                  %th{:scope => "col"} First
+                  %th{:scope => "col"} Last
+                  %th{:scope => "col"} Phone
+                  %th{:scope => "col"} Email
+                  %th
+              %tbody
+                - @payee_users.each do |payee_user|
+                  %tr
+                    %th{:scope => "row"}= payee_user.id
+                    %td= payee_user.first_name
+                    %td= payee_user.last_name
+                    %td= payee_user.phone
+                    %td= payee_user.email
+                    %td= link_to 'More', users_admin_path(payee_user), class: 'btn btn-primary btn-sm'

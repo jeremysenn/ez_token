@@ -5,7 +5,8 @@ class Company < ActiveRecord::Base
   establish_connection :ez_cash
   
   has_many :users
-  has_many :customers, :foreign_key => "CompanyNumber" # AKA employees
+#  has_many :customers, :foreign_key => "CompanyNumber" 
+#  has_many :customers, :through => :accounts
   has_many :accounts, :foreign_key => "CompanyNumber" # This is all accounts that have this company ID
   has_many :sms_messages
   has_many :payment_batches, :foreign_key => "CompanyNbr"
@@ -54,6 +55,11 @@ class Company < ActiveRecord::Base
   
   def transaction_and_fee_accounts
     accounts.where(CustomerID: nil, ActTypeID: [7,19])
+  end
+  
+  def customer_accounts
+#    accounts.where.not(CustomerID: nil).where(ActTypeID: 6)
+    accounts.where.not(CustomerID: nil).where(ActTypeID: 6).left_outer_joins(:events).where("events.expire_accounts = 0 OR events.expire_accounts IS NULL OR events.id IS NULL").joins(:customer).order("customer.NameF")
   end
   
   def perform_one_sided_credit_transaction(amount)
@@ -137,6 +143,18 @@ class Company < ActiveRecord::Base
       csv << ['', '', '', '', '', '']
       csv << ['', '', '', '', '', '']
     end
+  end
+  
+  def customers_by_user_role(user)
+    if user.event_admin?
+      Customer.joins(:accounts).where("accounts.CompanyNumber = ?", self.CompanyNumber)
+    else
+      Customer.where(CompanyNumber: self.CompanyNumber)
+    end
+  end
+  
+  def all_customers
+    Customer.where(CompanyNumber: self.CompanyNumber)
   end
   
   #############################

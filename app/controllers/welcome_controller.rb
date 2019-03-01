@@ -19,8 +19,9 @@ class WelcomeController < ApplicationController
           end
         end
       end
-      if current_user.admin? or current_user.basic?
-        @devices = current_user.devices.order("description ASC")
+      if current_user.administrator? or current_user.basic?
+#        @devices = current_user.devices.order("description ASC")
+        @devices = current_user.company.devices.order("description ASC")
         @start_date = params[:start_date] ||= (Date.today - 1.week).to_s
         @end_date = params[:end_date] ||= Date.today.to_s
         @type = params[:type] ||= 'Transfer'

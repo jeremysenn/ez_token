@@ -22,10 +22,10 @@
           - current_user.accounts.each do |account|
             %p
               =# link_to "#{account.id} - #{account.company.name}", customer_path(current_user.customer, account_id: account.id)
-              = account.company.name
-              %br
               %a{href: customer_path(current_user.customer, account_id: account.id)}
-                = account.events.map{ |event| "#{event.title}"}
+                =# account.events.map{ |event| "#{event.title}"}
+                = account.events.map(&:title).join(',')
+                = "(#{account.company.name})"
           -#
             - current_user.events.each do |event|
               %p= link_to "#{event.title} (#{event.company.name})", event

@@ -108,6 +108,14 @@ jQuery ->
       alert "Amount must be greater than $0"
       return false
 
+  $('#request_payment_details').on 'click', '#open_buddy_search_button', (e) ->
+    amount = parseFloat($('#amount').val())
+    if amount > 0
+      $('.request_payment_amount').html "$" + amount
+    else
+      alert "Amount must be greater than $0"
+      return false
+
   $('#send_payment_details').on 'click', '#open_send_payment_buddy_search_button', (e) ->
     amount = parseFloat($('#send_payment_amount').val())
     account_balance = parseFloat($('#account_balance').val())
@@ -125,3 +133,29 @@ jQuery ->
     else
       alert "Withdrawal amount must be greater than $0 and your balance must cover the amount."
       return false
+
+  $('.create_account_and_add_to_event_link').on 'click', (e) ->
+    e.preventDefault()
+    spinner_icon = $(this).find( ".fa-spinner" )
+    spinner_icon.show()
+    customer_id = $(this).data( "customer-id" )
+    event_id = $(this).data( "event-id" )
+    plus_circle_icon = $(this).find( ".fa-plus-circle" )
+    plus_circle_icon.hide()
+    $.ajax
+      url: "/customers/" + customer_id + "/create_account_and_add_to_event"
+      dataType: 'json'
+      data: 
+        event_id: event_id
+      success: (data) ->
+        spinner_icon.hide()
+        $(this).hide()
+        return
+      error: (xhr) ->
+        spinner_icon.hide()
+        plus_circle_icon.show()
+        error = $.parseJSON(xhr.responseText).error
+        alert error
+        console.log error
+        return
+    return

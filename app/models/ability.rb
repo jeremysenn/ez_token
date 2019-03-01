@@ -29,7 +29,7 @@ class Ability
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
     
-    if user.admin?
+    if user.admin? or user.caddy_admin? or user.event_admin?
       
       # Customers
       ############
@@ -182,7 +182,7 @@ class Ability
         user == user_record
       end
       
-    elsif user.vendor?
+    elsif user.vendor? or user.caddy?
       
       # Customers
       ############

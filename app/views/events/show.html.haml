@@ -28,24 +28,30 @@
               %p.lead
                 %strong Title:
                 = @event.title
-              %p.lead
-                %strong Phone:
-                = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
-              %p.lead
-                %strong Join Code:
-                = @event.join_code
+              - unless current_user.caddy_admin?
+                %p.lead
+                  %strong Phone:
+                  = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
+                %p.lead
+                  %strong Join Code:
+                  = @event.join_code
               %p.lead
                 %strong Start:
                 = @event.start_date
               %p.lead
                 %strong End:
                 = @event.end_date
-              %p.lead
-                %strong Join Response:
-                = @event.join_response
+              - unless current_user.caddy_admin?
+                %p.lead
+                  %strong Join Response:
+                  = @event.join_response
               %p.lead
                 %strong Expire Accounts:
                 = @event.expire_accounts? ? 'Yes' : 'No'
+              .pull-right
+                %br
+                %p= link_to 'Delete', @event, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }
+                
             #accounts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
               - unless @event.accounts.blank?
                 .table-responsive
@@ -76,6 +82,5 @@
           .box-footer
             = link_to 'Back', :back, class: 'btn btn-default'
             = link_to 'Edit', edit_event_path(@event), class: 'btn btn-primary'
-            .pull-right
-              = link_to 'Delete', @event, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }
+            
             

@@ -6,7 +6,7 @@ class AccountsController < ApplicationController
   # GET /accounts
   # GET /accounts.json
   def index
-    if current_user.admin?
+    if current_user.administrator?
       unless params[:q].blank?
         @query_string = "%#{params[:q]}%"
         @accounts = current_user.company.accounts.where(ActID: @query_string)

@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       get 'send_barcode_sms_message'
       get 'find_by_barcode'
       get 'qr_code'
+      get 'create_account_and_add_to_event'
     end
     collection do
       post 'send_sms_message'

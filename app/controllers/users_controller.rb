@@ -8,9 +8,9 @@ class UsersController < ApplicationController
   # GET /users.json
   def index
     @users = current_user.company.users
-    @admin_users = @users.where(role: 'admin')
-    @basic_users = @users.where(role: 'basic')
-    @payee_users = @users.where(role: 'payee')
+#    @admin_users = @users.where(role: 'admin')
+#    @basic_users = @users.where(role: 'basic')
+#    @payee_users = @users.where(role: 'payee')
   end
 
   # GET /users/1

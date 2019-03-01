@@ -12,19 +12,19 @@
             %i.fa.fa-dashboard.fa-lg
             %br
             Home
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
-            %i.fa.fa-google-wallet.fa-lg
-            %br
-            Accounts
-      - unless current_user.caddy_admin?
+      -#
         %li.nav-item.bordered
           .text-center
-            %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
-              %i.fa.fa-male.fa-lg
+            %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
+              %i.fa.fa-google-wallet.fa-lg
               %br
-              Customers
+              Accounts
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
+            %i.fa.fa-male.fa-lg
+            %br
+            Accounts
       -#
         %li.nav-item.bordered
           .text-center
@@ -68,7 +68,7 @@
           .dropdown-divider
           %a.dropdown-item{:href => users_admin_index_path, :class => (params[:controller] == 'users') ?  "text-light-blue" : ""} 
             %i.fa.fa-users
-            Users
+            Web Users
           -#
             %a.dropdown-item{:href => transactions_path, :class => (params[:controller] == 'transactions') ?  "text-light-blue" : ""}
               %i.fa.fa-bolt
