@@ -19,7 +19,7 @@
             %strong ID:
             = @account.id
           %p.lead
-            %strong User:
+            %strong User Account:
             - unless @account.user.blank?
               = link_to "#{@account.user.full_name} (#{@account.user.role})", customer_path(@account.customer.id, account_id: @account.id)
             - else
@@ -27,6 +27,7 @@
           %p.lead
             %strong Events:
             - unless @account.events.blank?
+              %br
               - @account.events.each do |event|
                 = link_to event.title, event
                 %br
