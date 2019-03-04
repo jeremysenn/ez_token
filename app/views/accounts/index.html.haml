@@ -50,13 +50,13 @@
                       - unless account.user.blank?
                         = link_to "#{account.user.full_name} (#{account.user.role})", customer_path(account.customer.id, account_id: account.id)
                       - else
-                        N/A
+                        None
                     %td
                       - unless account.events.blank?
                         - account.events.each do |event|
                           = link_to "#{event.title}#{event != account.events.last ? ', ' : ''}", event
                       - else
-                        N/A
+                        None
                     %td= number_to_currency(account.Balance)
                     %td
                       = link_to 'Delete', account, :method => :delete, class: 'btn btn-danger', :data => { :confirm => 'Are you sure?' }

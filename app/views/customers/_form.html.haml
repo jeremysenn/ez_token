@@ -58,11 +58,13 @@
               = account_form.input :MinBalance, :as => :hidden, :input_html => { :value => 0}
               = account_form.input :ActTypeID, :as => :hidden, :input_html => { :value => 6 }
             =# account_form.collection_check_boxes(:event_ids, current_user.company.events.now_open, :id, :title)
-            .row
-              .col-xs-12.col-sm-6
-                %label.control-label Events
-                = account_form.collection_check_boxes(:event_ids, account_form.object.new_record? ? current_user.company.events.now_open : current_user.company.events.now_open.accounts_do_not_expire, :id, :title) do |account_field|
-                  = account_field.label(class:"label-checkbox") { account_field.check_box + ' ' + account_field.text }
+            -#
+              .row
+                .col-xs-12.col-sm-6
+                  %label.control-label 
+                    %strong Events
+                  = account_form.collection_check_boxes(:event_ids, account_form.object.new_record? ? current_user.company.events.now_open : current_user.company.events.now_open.accounts_do_not_expire, :id, :title) do |account_field|
+                    = account_field.label(class:"label-checkbox") { account_field.check_box + ' ' + account_field.text }
           
       .form-actions
         = link_to 'Cancel', :back, class: 'btn btn-default'

@@ -23,11 +23,11 @@
         %a{href: edit_customer_path(@customer)}
           %i.fa.fa-pencil
     .text-muted= "(#{@customer.user.blank? ? '' : @customer.user.role.humanize})"
-    %br
-    .btn-group
-      - unless @accounts.blank?
+    - unless @accounts.blank? or @accounts.count == 1
+      %br
+      .btn-group
         - @accounts.each_with_index do |account, index|
-          %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Wallet #{index + 1}"}}
+          %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> Wallet #{index + 1}"}}
             %i.fa.fa-google-wallet
             Wallet
             = "#{index + 1}"

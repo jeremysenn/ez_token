@@ -13,12 +13,12 @@
             %br
             Home
       -#
-        %li.nav-item.bordered
-          .text-center
-            %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
-              %i.fa.fa-google-wallet.fa-lg
-              %br
-              Accounts
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
+            %i.fa.fa-google-wallet.fa-lg
+            %br
+            Wallets
       %li.nav-item.bordered
         .text-center
           %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}

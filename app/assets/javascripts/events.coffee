@@ -32,14 +32,14 @@ $(document).on 'turbolinks:load', ->
   $('#event_expire_accounts').on 'change', (e) ->
     checked = $(this).is(":checked")
     if checked
-      #$('#event_do_not_expire_accounts_check_boxes').hide()
+      $('#event_do_not_expire_accounts_check_boxes').hide()
       $('#event_do_not_expire_accounts_check_boxes_fieldset').prop("disabled", true)
-      #$('#event_expire_accounts_links').show()
+      $('#event_expire_accounts_links').show()
       $('#event_expire_accounts_links_fieldset').prop("disabled", false)
     else
-      #$('#event_do_not_expire_accounts_check_boxes').show()
+      $('#event_do_not_expire_accounts_check_boxes').show()
       $('#event_do_not_expire_accounts_check_boxes_fieldset').prop("disabled", false)
-      #$('#event_expire_accounts_links').hide()
+      $('#event_expire_accounts_links').hide()
       $('#event_expire_accounts_links_fieldset').prop("disabled", true)
     return
   ### End Expire Accounts Checkbox Change ###
