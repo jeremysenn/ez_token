@@ -63,7 +63,7 @@
                     %td= number_to_currency(account.Balance)
                     %td
                       = link_to "Show", account, class: 'btn btn-secondary'
-                      - unless account.customer.blank? or account == account.customer.accounts.first
+                      - unless account.customer.blank? or account.customer_primary?
                         = link_to 'Delete', account, :method => :delete, class: 'btn btn-danger', :data => { :confirm => 'Are you sure?' }
                       - else
                         %span.text-danger 

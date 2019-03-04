@@ -15,6 +15,7 @@ class Account < ActiveRecord::Base
   attr_accessor :last_4_of_pan
   
   scope :debit, -> { where(ActTypeID: 6) }
+  scope :customer_primary, -> { where(AbleToDelete: [0,nil]) }
   
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
@@ -393,6 +394,10 @@ class Account < ActiveRecord::Base
     else
       "Unknown"
     end
+  end
+  
+  def customer_primary?
+    self.AbleToDelete == 0 or self.AbleToDelete == nil
   end
   
   #############################

@@ -59,7 +59,7 @@ class Company < ActiveRecord::Base
   
   def customer_accounts
 #    accounts.where.not(CustomerID: nil).where(ActTypeID: 6)
-    accounts.where.not(CustomerID: nil).where(ActTypeID: 6).left_outer_joins(:events).where("events.expire_accounts = 0 OR events.expire_accounts IS NULL OR events.id IS NULL").joins(:customer).order("customer.NameF")
+    accounts.where.not(CustomerID: nil).where(ActTypeID: 6).customer_primary.left_outer_joins(:events).where("events.expire_accounts = 0 OR events.expire_accounts IS NULL OR events.id IS NULL").joins(:customer).order("customer.NameF")
   end
   
   def perform_one_sided_credit_transaction(amount)
