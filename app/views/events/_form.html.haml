@@ -51,13 +51,13 @@
             %div{id: "event_do_not_expire_accounts_check_boxes", style: "#{@event.expire_accounts? ? 'display:none;' : 'display:block;'}"}
               %label.control-label 
                 %strong Accounts
-              %fieldset{"#{@event.expire_accounts? ? 'disabled' : ''}" => "#{@event.expire_accounts? ? 'disabled' : ''}"}
+              %fieldset{id: "event_do_not_expire_accounts_check_boxes_fieldset", "#{@event.expire_accounts? ? 'disabled' : ''}" => "#{@event.expire_accounts? ? 'disabled' : ''}"}
                 = f.collection_check_boxes(:account_ids, current_user.company.customer_accounts, :id, :customer_user_name) do |account_field|
                   .col-xs-12.col-md-4= account_field.label(class:"label-checkbox") { account_field.check_box + ' ' + account_field.text }
             %div{id: "event_expire_accounts_links", style: "#{@event.expire_accounts? ? 'display:block;' : 'display:none;'}"}
               %label.control-label 
                 %strong Accounts
-                %fieldset{"#{@event.expire_accounts? ? '' : 'disabled'}" => "#{@event.expire_accounts? ? '' : 'disabled'}"}
+                %fieldset{id: "event_expire_accounts_links_fieldset", "#{@event.expire_accounts? ? '' : 'disabled'}" => "#{@event.expire_accounts? ? '' : 'disabled'}"}
                   = f.nested_fields_for :accounts do |ff|
                     = ff.hidden_field :CompanyNumber, value: current_user.company_id
                     = ff.hidden_field :Balance, value: 0
