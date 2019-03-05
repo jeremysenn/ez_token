@@ -22,7 +22,9 @@
         = current_user.full_name
         %a{href: edit_customer_path(@customer)}
           %i.fa.fa-pencil
-    .text-muted= "(#{@customer.user.blank? ? '' : @customer.user.role.humanize})"
+    = "#{@account.blank? ? 'No company' : @account.company.name}"
+    %span.text-muted= "(#{@customer.user.blank? ? '' : @customer.user.role.humanize})"
+    
     - unless @accounts.blank? or @accounts.count == 1
       %br
       .btn-group
@@ -31,14 +33,13 @@
             %i.fa.fa-google-wallet
             Wallet
             = "#{index + 1}"
-            = "(#{account.blank? ? 'No company' : truncate(account.company.name, length: 10)})"
     %p
       .btn-group
         - unless @events.blank?
           - @events.each do |event|
             %a.btn{href: customer_path(event_id: event.id, account_id: @account.id), class: "#{@event.id == event.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-calendar'></i> #{event.title}"}}
               %i.fa.fa-calendar
-              = event.title
+              = event.title.html_safe
       - if @events.blank?
         (no events)
     

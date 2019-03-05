@@ -15,16 +15,22 @@
       -#
       %li.nav-item.bordered
         .text-center
-          %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
-            %i.fa.fa-google-wallet.fa-lg
+          %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
+            %i.fa.fa-calendar.fa-lg
             %br
-            Wallets
+            Events
       %li.nav-item.bordered
         .text-center
           %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
             %i.fa.fa-male.fa-lg
             %br
             Accounts
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
+            %i.fa.fa-google-wallet.fa-lg
+            %br
+            Wallets
       -#
         %li.nav-item.bordered
           .text-center
@@ -38,12 +44,7 @@
             %i.fa.fa-bolt.fa-lg
             %br
             Transactions
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
-            %i.fa.fa-calendar.fa-lg
-            %br
-            Events
+      
       -#
         %li.nav-item.bordered
           .text-center

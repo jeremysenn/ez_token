@@ -47,28 +47,33 @@
       - if current_user.caddy_admin? or current_user.event_admin?
         %hr
         .row
-          .col-xs-12.col-sm-6
+          .col-xs-12.col-sm-3
             %div{id: "event_do_not_expire_accounts_check_boxes", style: "#{@event.expire_accounts? ? 'display:none;' : 'display:block;'}"}
               %label.control-label 
                 %strong Accounts
               %fieldset{id: "event_do_not_expire_accounts_check_boxes_fieldset", "#{@event.expire_accounts? ? 'disabled' : ''}" => "#{@event.expire_accounts? ? 'disabled' : ''}"}
                 = f.collection_check_boxes(:account_ids, current_user.company.customer_accounts.uniq, :id, :customer_user_name) do |account_field|
-                  .col-xs-12.col-md-4= account_field.label(class:"label-checkbox") { account_field.check_box + ' ' + account_field.text }
+                  .col-xs-12.col-md-12= account_field.label(class:"label-checkbox") { account_field.check_box + ' ' + account_field.text }
+                =# f.collection_select :account_ids, current_user.company.customer_accounts.uniq, :id, :customer_user_name, {}, {class: 'form-control', :multiple => true}
             %div{id: "event_expire_accounts_links", style: "#{@event.expire_accounts? ? 'display:block;' : 'display:none;'}"}
               %label.control-label 
-                %strong Accounts
-                %fieldset{id: "event_expire_accounts_links_fieldset", "#{@event.expire_accounts? ? '' : 'disabled'}" => "#{@event.expire_accounts? ? '' : 'disabled'}"}
-                  = f.nested_fields_for :accounts do |ff|
-                    = ff.hidden_field :CompanyNumber, value: current_user.company_id
-                    = ff.hidden_field :Balance, value: 0
-                    = ff.hidden_field :MinBalance, value: 0
-                    = ff.hidden_field :ActTypeID, value: 6
-                    = ff.hidden_field 'event_ids[]', value: @event.id if ff.object.new_record?
-                    .form-group
-                      = ff.remove_nested_fields_link 'Remove'
+              %strong Accounts
+              %fieldset{id: "event_expire_accounts_links_fieldset", "#{@event.expire_accounts? ? '' : 'disabled'}" => "#{@event.expire_accounts? ? '' : 'disabled'}"}
+                = f.nested_fields_for :accounts do |ff|
+                  = ff.hidden_field :CompanyNumber, value: current_user.company_id if ff.object.new_record?
+                  = ff.hidden_field :Balance, value: 0 if ff.object.new_record?
+                  = ff.hidden_field :MinBalance, value: 0 if ff.object.new_record?
+                  = ff.hidden_field :ActTypeID, value: 6 if ff.object.new_record?
+                  = ff.hidden_field 'event_ids[]', value: @event.id if ff.object.new_record?
+                  .form-group
+                    = ff.remove_nested_fields_link 'Remove'
+                    - if ff.object.new_record?
                       = ff.select :CustomerID, options_from_collection_for_select(current_user.company.all_customers, "id", "full_name", ff.object.CustomerID), {prompt: "Select customer"}, {:class => "form-control"}
+                    - else
+                      %br
+                      = ff.object.customer_user_name
 
-                  %p= f.add_nested_fields_link :accounts, 'Add Account', class: 'btn bg-orange btn-sm', role: 'button'
+                %p= f.add_nested_fields_link :accounts, 'Add Account', class: 'btn bg-orange btn-sm', role: 'button'
               
               -#
                 - @event.accounts.each do |account|
