@@ -68,7 +68,7 @@
                           %td= account.id
                           %td
                             - unless (account.user.blank? and account.customer.blank?)
-                              = link_to "#{account.customer_user_name} (#{account.customer_user.role})", customer_path(account.customer.id, account_id: account.id)
+                              = link_to "#{account.customer_user_name} (#{account.customer_user_role})", customer_path(account.customer.id, account_id: account.id)
                             - else
                               N/A
                           %td= number_to_currency(account.Balance)
