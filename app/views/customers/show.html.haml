@@ -22,11 +22,10 @@
         = current_user.full_name
         %a{href: edit_customer_path(@customer)}
           %i.fa.fa-pencil
-    = "#{@account.blank? ? 'No company' : @account.company.name}"
-    %span.text-muted= "(#{@customer.user.blank? ? '' : @customer.user.role.humanize})"
+    
+    -# %span.text-muted= "(#{@customer.user.blank? ? '' : @customer.user.role.humanize})"
     
     - unless @accounts.blank? or @accounts.count == 1
-      %br
       .btn-group
         - @accounts.each_with_index do |account, index|
           %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> Wallet #{index + 1}"}}
@@ -42,6 +41,8 @@
               = event.title.html_safe
       - if @events.blank?
         (no events)
+      %br
+      = "#{@account.blank? ? 'No company' : @account.company.name}"
     
   / Main content
   %section.content
