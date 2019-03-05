@@ -67,7 +67,7 @@
                         %tr
                           %td= account.id
                           %td
-                            - unless account.user.blank?
+                            - unless (account.user.blank? and account.customer.blank?)
                               = link_to "#{account.customer_user_name} (#{account.user.role})", customer_path(account.customer.id, account_id: account.id)
                             - else
                               N/A

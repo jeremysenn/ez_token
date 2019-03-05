@@ -45,6 +45,14 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def customer_user_role
+    unless customer.user.blank?
+      customer.user.role
+    else
+      customer.type
+    end
+  end
+  
   def customer_name_and_events
     return "#{customer_user_name} (#{events.blank? ? 'No events' : events.map(&:title).join(', ')})"
   end
