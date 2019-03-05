@@ -30,6 +30,7 @@
         - elsif current_user.payee?
           = render 'shared/customer_user_navbar'
         - elsif current_user.vendor?
+          = render 'shared/vendor_user_navbar'
         - elsif current_user.caddy?
           = render 'shared/caddy_user_navbar'
       = yield
