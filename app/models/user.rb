@@ -3,7 +3,8 @@ class User < ApplicationRecord
   # :registerable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable #, :timeoutable
   
-  ROLES = %w[admin caddy_admin event_admin basic caddy member consumer payee vendor].freeze
+#  ROLES = %w[admin caddy_admin event_admin basic caddy member consumer payee vendor].freeze
+  ROLES = %w[admin basic].freeze
        
   belongs_to :company
   belongs_to :customer, optional: true

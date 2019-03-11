@@ -36,38 +36,69 @@
           / /.modal-dialog
         / /.modal
         - if current_user.administrator?
-          = f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? current_user.company.id : @customer.CompanyNumber}" }
+          =# f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? current_user.company.id : @customer.CompanyNumber}" }
+          = f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 7 : @customer.CompanyNumber}" }
           = f.input :LangID, :as => :hidden, :input_html => { :value => 1 }
           = f.input :NameF, label: 'First Name', required: true
           = f.input :NameL, label: 'Last Name', required: true
           = f.input :PhoneMobile, label: 'Phone', required: true
           = f.input :Email, label: 'Email'  , required: true
           = f.input :Registration_Source, label: 'Payee ID' unless current_user.caddy_admin?
-          = f.input :GroupID, collection: Group.selections_by_user_role(current_user), selected: @customer.new_record? ? params[:group_id] : @customer.GroupID, as: :select, label: "Type", prompt: "Select type", required: true
+          = f.input :GroupID, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 5 : @customer.GroupID}" }
+          =# f.input :GroupID, collection: Group.selections_by_user_role(current_user), selected: @customer.new_record? ? params[:group_id] : @customer.GroupID, as: :select, label: "Type", prompt: "Select type", required: true
           -#
             - unless current_user.caddy_admin?
               = f.input :GroupID, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 18 : @customer.GroupID}" }
             - else
               = f.input :GroupID, collection: Group.selections_by_user_role(current_user), selected: @customer.GroupID, as: :select, label: "Type", prompt: "Select type", required: true
           = f.input :Active, as: :boolean, inline_label: 'Active'
-          = f.simple_fields_for :accounts do |account_form|
-            - if account_form.object.new_record?
-              = account_form.input :CustomerID, :as => :hidden, :input_html => { :value => @customer.id }
-              = account_form.input :CompanyNumber, :as => :hidden, :input_html => { :value => current_user.company.id }
-              = account_form.input :Balance, :as => :hidden, :input_html => { :value => 0 }
-              = account_form.input :MinBalance, :as => :hidden, :input_html => { :value => 0}
-              = account_form.input :ActTypeID, :as => :hidden, :input_html => { :value => 6 }
-              = account_form.input :AbleToDelete, :as => :hidden, :input_html => { :value => 0 }
-            =# account_form.collection_check_boxes(:event_ids, current_user.company.events.now_open, :id, :title)
-            -#
-              .row
-                .col-xs-12.col-sm-6
-                  %label.control-label 
-                    %strong Events
-                  = account_form.collection_check_boxes(:event_ids, account_form.object.new_record? ? current_user.company.events.now_open : current_user.company.events.now_open.accounts_do_not_expire, :id, :title) do |account_field|
-                    = account_field.label(class:"label-checkbox") { account_field.check_box + ' ' + account_field.text }
-          
+          %label.control-label 
+            %strong Wallets
+          =# f.simple_fields_for :accounts do |account_form|
+          = f.nested_fields_for :accounts do |account_form|
+            .box.box-success
+              .box-body
+                - index = f.object.accounts.index(account_form.object)
+                = index + 1 unless index.blank?
+                = account_form.input :ActTypeID, collection: current_user.company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type"
+                - if account_form.object.new_record?
+                  = account_form.input :CustomerID, :as => :hidden, :input_html => { :value => @customer.id }
+                  = account_form.input :CompanyNumber, :as => :hidden, :input_html => { :value => current_user.company.id }
+                  = account_form.input :Balance, :as => :hidden, :input_html => { :value => 0 }
+                  = account_form.input :MinBalance, :as => :hidden, :input_html => { :value => 0}
+                  =# account_form.input :ActTypeID, :as => :hidden, :input_html => { :value => 6 }
+                  = account_form.input :AbleToDelete, :as => :hidden, :input_html => { :value => 0 }
+                  = account_form.input "account[event_ids][]", label: 'Events' do
+                    - unless current_user.company.events.accounts_do_not_expire.blank?
+                      %br
+                      %label.control-label.text-muted Non-expiring Accounts
+                    .row
+                      = account_form.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title) do |event_field|
+                        .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box(checked: false) + ' ' + event_field.text }
+                    - unless current_user.company.events.accounts_expire.blank?
+                      %label.control-label.text-muted Expiring Accounts
+                    .row
+                      = account_form.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
+                        .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: false) + ' ' + event_field.text }
+
+                - else
+                  = account_form.input "account[event_ids][]", label: 'Events' do
+                    - unless current_user.company.events.accounts_do_not_expire.blank?
+                      %br
+                      %label.control-label.text-muted Non-expiring Accounts
+                    .row
+                      = account_form.collection_check_boxes(:event_ids, account_form.object.belongs_to_expire_accounts_event? ? account_form.object.events : current_user.company.events.accounts_do_not_expire, :id, :title) do |event_field|
+                        .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box + ' ' + event_field.text }
+                    - unless current_user.company.events.accounts_expire.blank?
+                      %label.control-label.text-muted Expiring Accounts
+                    .row
+                      = account_form.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
+                        .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: account_form.object.events.first == event_field.object) + ' ' + event_field.text }
+
+          %p= f.add_nested_fields_link :accounts, "<i class='fa fa-plus'></i> Add Wallet".html_safe, class: 'btn bg-orange btn-sm', role: 'button'
+
       .form-actions
+        %hr
         = link_to 'Cancel', :back, class: 'btn btn-default'
         = f.button :submit, 'Save'
 

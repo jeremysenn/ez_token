@@ -1,6 +1,6 @@
 class AccountsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_account, only: [:show, :edit, :update, :destroy]
+  before_action :set_account, only: [:show, :edit, :update, :destroy, :one_time_payment]
   load_and_authorize_resource
 
   # GET /accounts
@@ -22,6 +22,7 @@ class AccountsController < ApplicationController
   # GET /accounts/1
   # GET /accounts/1.json
   def show
+    @customer = @account.customer
   end
 
   # GET /accounts/new
@@ -31,6 +32,7 @@ class AccountsController < ApplicationController
 
   # GET /accounts/1/edit
   def edit
+    @customer = @account.customer
   end
 
   # POST /accounts
@@ -62,6 +64,29 @@ class AccountsController < ApplicationController
       end
     end
   end
+  
+  def one_time_payment
+    amount = params[:amount].to_f.abs unless params[:amount].blank?
+    note = params[:note]
+    receipt_number = params[:receipt_number]
+    if params[:pay_and_text]
+      response = @account.one_time_payment(amount, note, receipt_number)
+    else
+      response = @account.one_time_payment_with_no_text_message(amount, note, receipt_number)
+    end
+    response_code = response[:return]
+    unless response_code.to_i > 0
+      transaction_id = response[:tran_id]
+    else
+      error_code = response_code
+    end
+    Rails.logger.debug "*********************************One time payment transaction ID: #{transaction_id}"
+    unless transaction_id.blank?
+      redirect_back fallback_location: @account.customer, notice: 'One time payment submitted.'
+    else
+      redirect_back fallback_location: @account.customer, alert: "There was a problem creating the one time payment. Error code: #{error_code}"
+    end
+  end
 
   # DELETE /accounts/1
   # DELETE /accounts/1.json
@@ -85,6 +110,6 @@ class AccountsController < ApplicationController
 #    end
     
     def account_params
-      params.require(:account).permit(:CustomerID, :CompanyNumber)
+      params.require(:account).permit(:Balance, :ActTypeID, :event_ids, event_ids: [])
     end
 end

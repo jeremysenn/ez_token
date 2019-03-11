@@ -17,11 +17,10 @@
           .form-group
             %label{:for => "title"} Title
             = f.text_field :title, class: "form-control", required: true
-        - unless current_user.caddy_admin?
-          .col-xs-12.col-sm-6
-            .form-group
-              %label{:for => "joine_code"} Join Code
-              = f.text_field :join_code, class: "form-control", required: true
+        .col-xs-12.col-sm-6
+          .form-group
+            %label{:for => "joine_code"} Join Code
+            = f.text_field :join_code, class: "form-control"
       .row
         .col-xs-12.col-sm-6
           .form-group
@@ -32,11 +31,10 @@
             %label{:for => "start_date"} End
             = f.text_field :end_date, value: @end_date ||= (Date.today + 1.week).to_s, style: 'width: 100%;', 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
       .row
-        - unless current_user.caddy_admin?
-          .col-xs-12.col-sm-6
-            .form-group
-              %label{:for => "join_response"} Join Response
-              = f.text_area :join_response, rows: 3, style: 'width: 100%;', required: true
+        .col-xs-12.col-sm-6
+          .form-group
+            %label{:for => "join_response"} Join Response
+            = f.text_area :join_response, rows: 3, style: 'width: 100%;'
         .col-xs-12.col-sm-6
           .form-group
             %label{:for => "expire_accounts"} 

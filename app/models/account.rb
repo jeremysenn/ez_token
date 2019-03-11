@@ -17,6 +17,9 @@ class Account < ActiveRecord::Base
   scope :debit, -> { where(ActTypeID: 6) }
   scope :customer_primary, -> { where(AbleToDelete: [0,nil]) }
   
+  scope :can_be_pulled_by_search, -> { joins(:account_type).where('AccountTypes.CanBePulledBySearch = ?', 1) }
+  scope :can_be_pulled_by_scan, -> { joins(:account_type).where('AccountTypes.CanBePulledByScan = ?', 1) }
+  
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
 #  validates :MinBalance, numericality: { :greater_than_or_equal_to => 0 }
@@ -38,10 +41,14 @@ class Account < ActiveRecord::Base
 #  end
 
   def customer_user_name
-    unless customer.user.blank?
-      customer.user.full_name
+    unless customer.blank?
+      unless customer.user.blank?
+        customer.user.full_name
+      else
+        customer.full_name
+      end
     else
-      customer.full_name
+      company.name
     end
   end
   
@@ -214,9 +221,9 @@ class Account < ActiveRecord::Base
     "#{entity.EntityName}<br>#{entity.EntityAddressL1}<br>#{entity.EntityCity}, #{entity.EntityState} #{entity.EntityZip}".html_safe
   end
   
-  def account_type
-    AccountType.find_by_AccountTypeID(self.ActTypeID)
-  end
+#  def account_type
+#    AccountType.find_by_AccountTypeID(self.ActTypeID)
+#  end
   
   def debit_card?
     account_type.AccountTypeDesc == "Heavy Metal Debit" unless account_type.blank?
@@ -406,6 +413,79 @@ class Account < ActiveRecord::Base
   
   def customer_primary?
     self.AbleToDelete == 0 or self.AbleToDelete == nil
+  end
+  
+  def belongs_to_expire_accounts_event?
+    events.where(expire_accounts: 1).present?
+  end
+  
+  def can_fund_by_ach?
+    account_type.can_fund_by_ach?
+  end
+  
+  def can_fund_by_cc?
+    account_type.can_fund_by_cc?
+  end
+  
+  def can_fund_by_cash?
+    account_type.can_fund_by_cash?
+  end
+  
+  def can_withdraw?
+    account_type.can_withdraw?
+  end
+  
+  def withdrawal_all?
+    account_type.withdrawal_all?
+  end
+  
+  def can_pull?
+    account_type.can_pull?
+  end
+  
+  def can_request_payment_by_search?
+    account_type.can_request_payment_by_search?
+  end
+  
+  def can_request_payment_by_scan?
+    account_type.can_request_payment_by_scan?
+  end
+  
+  def can_send_payment?
+    account_type.can_send_payment?
+  end
+  
+  def one_time_payment(amount, note, receipt_number)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number})
+    Rails.logger.debug "************** Account one_time_payment response body: #{response.body}"
+    if response.success?
+      unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
+        unless customer.blank? or customer.phone.blank?
+          customer.send_barcode_sms_message_with_info("You've just been paid #{ActiveSupport::NumberHelper.number_to_currency(amount)} by #{company.name}! Your current balance is #{ActiveSupport::NumberHelper.number_to_currency(balance)}. Get your cash from the PaymentATM. More information at www.tranact.com")
+        end
+        return response.body[:ez_cash_txn_response]
+      else
+        return response.body[:ez_cash_txn_response]
+      end
+    else
+      return nil
+    end
+  end
+  
+  def one_time_payment_with_no_text_message(amount, note, receipt_number)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, dev_id: nil})
+    Rails.logger.debug "************** Account one_time_payment_with_no_text_message response body: #{response.body}"
+    if response.success?
+      unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
+        return response.body[:ez_cash_txn_response]
+      else
+        return response.body[:ez_cash_txn_response]
+      end
+    else
+      return nil
+    end
   end
   
   #############################

@@ -3,27 +3,16 @@
   / Content Header (Page header)
   %section.content-header
     = render 'shared/flash_messages'
-    - if current_user.administrator? or current_user.payee?
-      %h1
+    - if current_user.administrator?
+      %h3
         %i.fa.fa-male
-        - unless @customer.user_name.blank?
-          = @customer.user_name
+        = @customer.user_name
         %a{href: edit_customer_path(@customer)}
           %i.fa.fa-pencil
-    - elsif current_user.consumer?
-      %h1
+    - else
+      %h3
         %i.fa.fa-male
-        = current_user.full_name
-        %a{href: edit_customer_path(@customer)}
-          %i.fa.fa-pencil
-    - elsif current_user.vendor? or current_user.caddy?
-      %h1
-        %i.fa.fa-male
-        = current_user.full_name
-        %a{href: edit_customer_path(@customer)}
-          %i.fa.fa-pencil
-    
-    -# %span.text-muted= "(#{@customer.user.blank? ? '' : @customer.user.role.humanize})"
+        = @customer.user_name
     
     - unless @accounts.blank? or @accounts.count == 1
       .btn-group
@@ -32,17 +21,18 @@
             %i.fa.fa-google-wallet
             Wallet
             = "#{index + 1}"
-      %br
-      .btn-group
-        - unless @events.blank?
-          - @events.each do |event|
-            %a.btn{href: customer_path(event_id: event.id, account_id: @account.id), class: "#{@event.id == event.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-calendar'></i> #{event.title.html_safe}"}}
-              %i.fa.fa-calendar
-              = event.title.html_safe
-      - if @events.blank?
-        (no events)
-      %br
-      = "#{@account.blank? ? 'No company' : @account.company.name}"
+      %p
+        .btn-group
+          - unless @events.blank?
+            - @events.each do |event|
+              %a.btn{href: customer_path(event_id: event.id, account_id: @account.id), class: "#{@event.id == event.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-calendar'></i> #{event.title.html_safe}"}}
+                %i.fa.fa-calendar
+                = event.title.html_safe
+        - if @events.blank?
+          (no events)
+      -#
+        %br
+        = "#{@account.blank? ? 'No company' : @account.company.name}"
     
   / Main content
   %section.content
@@ -57,10 +47,6 @@
                 %i.fa.fa-edit.fa-lg
           .box-body.box-profile
             .text-center
-              - unless @customer.avatar.blank?
-                = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')
-              - else
-                = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
               %h5.text-muted
                 Balance
                 = number_to_currency(@account.blank? ? 0 : @account.balance)
@@ -79,24 +65,24 @@
               =# current_user.consumer? ? current_user.full_name : @customer.full_name
               - if @customer.anonymous?
                 .text-danger Anonymous Payee
-            - if @account and (current_user.consumer? or current_user.caddy? or current_user.vendor?)
+            - if @account and not current_user.administrator?
               = render 'my_code'
               =# render 'barcode'
               =# render 'consumer_qr_code_payment'
 
             #accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist"}
-              - if @account and @event and current_user.caddy?
+              - if not current_user.administrator? and @account and @event and @account.can_pull?
                 %p
                   .panel.panel-default
                     #headingOne.panel-heading{:role => "tab"}
                       %h4.panel-title
-                        %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or @event.member_accounts.blank?) ? 'disabled' : ''}"}
+                        %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or @event.accounts.can_be_pulled_by_search.blank?) ? 'disabled' : ''}"}
                           %i.fa.fa-long-arrow-right
                           Request Payment
                     #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
                       .panel-body
                         = render 'request_payment'
-              - if @account and @account.balance > 0 and not current_user.administrator?
+              - if not current_user.administrator? and @account and @account.balance > 0 and @account.can_send_payment?
                 %p
                   .panel.panel-default
                     #headingTwo.panel-heading{:role => "tab"}
@@ -107,7 +93,8 @@
                     #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
                       .panel-body
                         = render 'send_payment'
-                - unless current_user.caddy?
+              - if not current_user.administrator? and @account and @account.balance > 0 and @account.can_withdraw?
+                - unless @account.withdrawal_all?
                   %p
                     .panel.panel-default
                       #headingThree.panel-heading{:role => "tab"}
@@ -120,34 +107,24 @@
                           = render 'withdrawal'
                 - else
                   = render 'withdrawal_all'
-            -#
-              - if current_user.vendor? or current_user.caddy?
-                .box.box-success.collapsed-box.box-solid
-                  %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
-                    %h5
-                      %b 
-                        %i.fa.fa-long-arrow-right
-                        Request Payment
-                  .box-body
-                    = render 'request_payment'
-
-              - if @account and @account.balance > 0 and not current_user.administrator?
-                .box.box-success.collapsed-box.box-solid
-                  %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
-                    %h5
-                      %b 
-                        %i.fa.fa-long-arrow-left
-                        Send Payment
-                  .box-body
-                    = render 'send_payment'
-                .box.box-success.collapsed-box.box-solid
-                  %button.btn.btn-success.btn-block.btn-box-tool{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
-                    %h5 
-                      %b 
-                        %i.fa.fa-money
-                        Withdrawal
-                  .box-body
-                    = render 'withdrawal'
+              -#
+                - if @account and @account.balance > 0 and not current_user.administrator?
+                  .box.box-success.collapsed-box.box-solid
+                    %button.btn.btn-success.btn-block{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
+                      %h5
+                        %b 
+                          %i.fa.fa-long-arrow-left
+                          Send Payment
+                    .box-body
+                      = render 'send_payment'
+                  .box.box-success.collapsed-box.box-solid
+                    %button.btn.btn-success.btn-block.btn-box-tool{"data-widget" => "collapse", :type => "button", style: 'color: white;'}
+                      %h5 
+                        %b 
+                          %i.fa.fa-money
+                          Withdrawal
+                    .box-body
+                      = render 'withdrawal'
                 
             - if current_user.administrator? and not @customer.anonymous?
               %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
@@ -172,71 +149,78 @@
 
           / /.box-body
         / /.box
-        -#
-          - unless current_user.payee?
-            / Details Box
-            .box.box-primary
-              .box-header.with-border
-                %h3.box-title Info
-                -#
-                  .box-tools.pull-right
-                    %button.btn.btn-box-tool{"data-widget" => "collapse", :type => "button"}
-                      %i.fa.fa-minus
-              / /.box-header
-              .box-body
-                %strong
-                  %i.fa.fa-envelope.margin-r-5
-                  Email
-                %p.text-muted
-                  = current_user.consumer? ? current_user.email : @customer.email
-                %hr/
-                %strong
-                  %i.fa.fa-mobile.margin-r-5
-                  Phone
-                %p.text-muted
-                  = current_user.consumer? ? current_user.phone : @customer.phone
-                - if current_user.administrator?
-                  %hr/
-                  %strong
-                    %i.fa.fa-user.margin-r-5
-                    User Portal
-                  %p.text-muted
-                    - unless @customer.user.blank?
-                      - if @customer.user.confirmed?
-                        Sign In Count:
-                        = @customer.user.sign_in_count
-                        %br
-                        Current Sign In At:
-                        = @customer.user.current_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
-                        %br
-                        Last Sign In At:
-                        = @customer.user.last_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
-                        %br
-                        Current Sign In IP:
-                        = @customer.user.current_sign_in_ip
-                        %br
-                        Last Sign In IP:
-                        = @customer.user.last_sign_in_ip
-                      - else
-                        .text-danger Waiting for user to confirm account
-                    - else
-                      Portal user has not been created
-                      - unless @customer.phone.blank?
-                        = form_for(@customer) do |f|
-                          = f.hidden_field :create_payee_user_flag, :value => true
-                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Invite"}}
-                            %i.fa.fa-comment
-                            Send Invite
-                  %hr/
-                  %strong
-                    %i.fa.fa-file-text-o.margin-r-5
-                    Notes
-                  %p.text-muted
-                    = "EZcash ID: #{@customer.id}"
+        
+        / Details Box
+        .box.box-primary
+          .box-header.with-border
+            %h3.box-title Info
+            -#
+              .box-tools.pull-right
+                %button.btn.btn-box-tool{"data-widget" => "collapse", :type => "button"}
+                  %i.fa.fa-minus
+          / /.box-header
+          .box-body
+            %strong 
+              %i.fa.fa-user-circle.margin-r-5
+              Avatar
+            %p.text-center
+              - unless @customer.avatar.blank?
+                = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')
+              - else
+                = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
+            %strong
+              %i.fa.fa-envelope.margin-r-5
+              Email
+            %p.text-muted
+              = @customer.user.blank? ? @customer.email : @customer.user.email
+            %hr/
+            %strong
+              %i.fa.fa-mobile.margin-r-5
+              Phone
+            %p.text-muted
+              = @customer.user.blank? ? @customer.phone : @customer.user.phone
+            - if current_user.administrator?
+              %hr/
+              %strong
+                %i.fa.fa-user.margin-r-5
+                User Web Portal
+              %p.text-muted
+                - unless @customer.user.blank?
+                  - if @customer.user.confirmed?
+                    Sign In Count:
+                    = @customer.user.sign_in_count
                     %br
-                    = "Payee ID: #{@customer.Registration_Source}"
-              / /.box-body
-            / /.box
+                    Current Sign In At:
+                    = @customer.user.current_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+                    %br
+                    Last Sign In At:
+                    = @customer.user.last_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+                    %br
+                    Current Sign In IP:
+                    = @customer.user.current_sign_in_ip
+                    %br
+                    Last Sign In IP:
+                    = @customer.user.last_sign_in_ip
+                  - else
+                    .text-danger Waiting for user to confirm account
+                - else
+                  Portal user has not been created
+                  - unless @customer.phone.blank?
+                    = form_for(@customer) do |f|
+                      = f.hidden_field :create_payee_user_flag, :value => true
+                      %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Invite"}}
+                        %i.fa.fa-comment
+                        Send Invite
+              %hr/
+              %strong
+                %i.fa.fa-file-text-o.margin-r-5
+                Notes
+              %p.text-muted
+                = "EZcash ID: #{@customer.id}"
+                %br
+                = "Payee ID: #{@customer.Registration_Source}"
+            / /.box-body
+          / /.box
       .col-md-9
         .box.box-primary
           .box-body
@@ -245,7 +229,7 @@
                 %a#payments-tab.nav-link.active{"aria-controls" => "payments", "aria-selected" => "true", "data-toggle" => "tab", :href => "#payments", :role => "tab"} 
                   %i.fa.fa-dollar.fa-lg
                   = "Payments"
-              - if current_user.vendor?
+              - if @account.can_withdraw?
                 %li.nav-item
                   %a#withdrawals-tab.nav-link{"aria-controls" => "withdrawals", "aria-selected" => "false", "data-toggle" => "tab", :href => "#withdrawals", :role => "tab"} 
                     %i.fa.fa-money.fa-lg
@@ -256,11 +240,10 @@
                     %i.fa.fa-calendar.fa-lg
                     = "Events" 
               -#
-                - unless current_user.vendor?
-                  %li.nav-item
-                    %a#checks-tab.nav-link{"aria-controls" => "checks", "aria-selected" => "false", "data-toggle" => "tab", :href => "#checks", :role => "tab"} 
-                      %i.fa.fa-bank.fa-lg
-                      = "Checks" unless browser.device.mobile?
+                %li.nav-item
+                  %a#checks-tab.nav-link{"aria-controls" => "checks", "aria-selected" => "false", "data-toggle" => "tab", :href => "#checks", :role => "tab"} 
+                    %i.fa.fa-bank.fa-lg
+                    = "Checks" unless browser.device.mobile?
                   
                   %li.nav-item
                     %a#messages-tab.nav-link{"aria-controls" => "messages", "aria-selected" => "false", "data-toggle" => "tab", :href => "#messages", :role => "tab"} 
@@ -285,7 +268,7 @@
                           %th To
                           %th From
                           %th Amount
-                          - if current_user.consumer?
+                          -#
                             %th
                       %tbody
                         - @payment_transactions.each do |payment_transaction|
@@ -306,7 +289,7 @@
                               - else
                                 = payment_transaction.from_account.company.CompanyName
                             %td= number_to_currency(payment_transaction.amt_auth)
-                            - if current_user.consumer?
+                            -#
                               %td
                                 %a{href: "#additional_payment_modal", "data-target" => "#additional_payment_modal", "data-toggle" => "modal"}
                                   Additional Payment
@@ -372,7 +355,8 @@
                             %td= number_to_currency(withdrawal_transaction.amt_auth)
                   .pull-right= paginate @withdrawal_transactions, param_name: 'withdrawals'
                 - else
-                  %p.text-center None 
+                  .jumbotron
+                    %h3.text-center None 
 
               #messages.tab-pane.fade{"aria-labelledby" => "contact-tab", :role => "tabpanel"}
                 - unless @sms_messages.blank?

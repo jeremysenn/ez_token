@@ -1,22 +1,31 @@
-- @account.errors.each do |attr, msg|
-  .alert.alert-danger
-    <button type="button" class="close" data-dismiss="alert">×</button>
-    = "#{attr} #{msg}" if @account.errors[attr].first == msg
 .box.box-primary
-  -#
+  - unless @customer.blank?
     .box-header.with-border
       %h3.box-title 
-        Box Title
-      .box-tools.pull-right
-        Box tools
+        = @customer.full_name.blank? ? @customer.company.name : @customer.full_name
   .box-body
-    = form_for @account, class: 'form-horizontal' do |f|
-      .row
-        .col-xs-12.col-sm-6
-          .form-group
-            %label{:for => "title"} Balance
-            = f.text_field :Balance, class: "form-control", required: true
-
-      = link_to 'Cancel', :back, class: "btn btn-default"
-      %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
-        Save
+    = simple_form_for(@account) do |f|
+      = f.error_notification
+      - @account.errors.each do |attr, msg|
+        .alert.alert-danger
+          <button type="button" class="close" data-dismiss="alert">×</button>
+          = "#{attr} #{msg}" if @account.errors[attr].first == msg
+      .form-inputs
+        = f.input :Balance, as: :decimal, label: 'Balance', required: true
+        = f.input :ActTypeID, collection: AccountType.all.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
+        = f.input :event_ids, label: 'Events' do
+          - unless current_user.company.events.accounts_do_not_expire.blank?
+            %br
+            %label.control-label.text-muted Non-expiring Accounts
+          .row
+            = f.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title, :include_hidden => false) do |event_field|
+              .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box + ' ' + event_field.text }
+          - unless current_user.company.events.accounts_expire.blank?
+            %label.control-label.text-muted Expiring Accounts
+          .row
+            = f.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
+              .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: @account.events.first == event_field.object) + ' ' + event_field.text }
+      .form-actions
+        = link_to 'Cancel', :back, class: "btn btn-default"
+        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+          Save

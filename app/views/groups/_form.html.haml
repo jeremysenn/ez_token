@@ -1,0 +1,15 @@
+.box.box-primary
+  .box-body
+    = simple_form_for(@group) do |f|
+      = f.error_notification
+      - @group.errors.each do |attr, msg|
+        .alert.alert-danger
+          <button type="button" class="close" data-dismiss="alert">×</button>
+          = "#{attr} #{msg}" if @group.errors[attr].first == msg
+      .form-inputs
+        = f.input :GroupDescription, label: 'Description', required: true
+        = f.input :Active, as: :boolean, inline_label: 'Active'
+      .form-actions
+        = link_to 'Cancel', :back, class: "btn btn-default"
+        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+          Save

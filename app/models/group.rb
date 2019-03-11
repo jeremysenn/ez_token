@@ -4,7 +4,7 @@ class Group < ActiveRecord::Base
   
   establish_connection :ez_cash
   
-  has_many :customers
+  has_many :customers, :foreign_key => "GroupID"
   
   #############################
   #     Instance Methods      #
@@ -50,6 +50,14 @@ class Group < ActiveRecord::Base
     else
       "Unknown"
     end
+  end
+  
+  def description
+    self.GroupDescription
+  end
+  
+  def active?
+    self.Active == 1
   end
   
   

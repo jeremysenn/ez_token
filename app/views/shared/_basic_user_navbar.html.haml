@@ -11,27 +11,28 @@
             %i.fa.fa-dashboard.fa-lg
             %br
             Home
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
-            %i.fa.fa-male.fa-lg
-            %br
-            Payees
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => payment_batches_path, :class => (params[:controller] == 'payment_batches') ?  "text-light-blue" : ""}
-            %i.fa.fa-dollar.fa-lg
-            -#
-              %i.fa.fa-arrow-right.fa-sm
+      -#
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
               %i.fa.fa-male.fa-lg
-            %br
-            Transfer
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => cards_path, :class => (params[:controller] == 'cards') ?  "text-light-blue" : ""}
-            %i.fa.fa-qrcode.fa-lg
-            %br
-            Barcodes
+              %br
+              Payees
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => payment_batches_path, :class => (params[:controller] == 'payment_batches') ?  "text-light-blue" : ""}
+              %i.fa.fa-dollar.fa-lg
+              -#
+                %i.fa.fa-arrow-right.fa-sm
+                %i.fa.fa-male.fa-lg
+              %br
+              Transfer
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => cards_path, :class => (params[:controller] == 'cards') ?  "text-light-blue" : ""}
+              %i.fa.fa-qrcode.fa-lg
+              %br
+              Barcodes
     %form.form-inline.my-2.my-lg-0
       .my-2.my-sm-0.dropdown
         %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
@@ -47,10 +48,11 @@
             %i.fa.fa-edit
             Edit profile
           .dropdown-divider
-          %a.dropdown-item{:href => transactions_path, :class => (params[:controller] == 'transactions') ?  "text-light-blue" : ""}
-            %i.fa.fa-bolt
-            Transactions
-          %a.dropdown-item{:href => devices_path, :class => (params[:controller] == 'devices') ?  "text-light-blue" : ""}
-            %i.fa.fa-money
-            ATMs
+          -#
+            %a.dropdown-item{:href => transactions_path, :class => (params[:controller] == 'transactions') ?  "text-light-blue" : ""}
+              %i.fa.fa-bolt
+              Transactions
+            %a.dropdown-item{:href => devices_path, :class => (params[:controller] == 'devices') ?  "text-light-blue" : ""}
+              %i.fa.fa-money
+              ATMs
       .my-2.my-sm-0= link_to 'Log out', destroy_user_session_path, method: :delete, data: { confirm: 'Are you sure you want to sign out?' }, class: 'btn btn-outline-danger'

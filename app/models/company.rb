@@ -6,8 +6,9 @@ class Company < ActiveRecord::Base
   
   has_many :users
 #  has_many :customers, :foreign_key => "CompanyNumber" 
-#  has_many :customers, :through => :accounts
-  has_many :accounts, :foreign_key => "CompanyNumber" # This is all accounts that have this company ID
+  has_many :accounts, :foreign_key => "CompanyNumber" 
+  has_many :customers, -> { distinct }, :through => :accounts
+  has_many :account_types, :foreign_key => "CompanyNumber" 
   has_many :sms_messages
   has_many :payment_batches, :foreign_key => "CompanyNbr"
   has_many :payments, :foreign_key => "CompanyNbr"
@@ -145,17 +146,17 @@ class Company < ActiveRecord::Base
     end
   end
   
-  def customers_by_user_role(user)
-    if user.event_admin?
-      Customer.joins(:accounts).where("accounts.CompanyNumber = ?", self.CompanyNumber)
-    else
-      Customer.where(CompanyNumber: self.CompanyNumber)
-    end
-  end
-  
-  def all_customers
-    Customer.where(CompanyNumber: self.CompanyNumber)
-  end
+#  def customers_by_user_role(user)
+#    if user.event_admin?
+#      Customer.joins(:accounts).where("accounts.CompanyNumber = ?", self.CompanyNumber)
+#    else
+#      Customer.where(CompanyNumber: self.CompanyNumber)
+#    end
+#  end
+#  
+#  def all_customers
+#    Customer.where(CompanyNumber: self.CompanyNumber)
+#  end
   
   #############################
   #     Class Methods         #

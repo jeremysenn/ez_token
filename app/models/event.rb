@@ -20,7 +20,7 @@ class Event < ActiveRecord::Base
 #  validates :join_response, presence: true
   validate :no_duplicate_customers
 
-  accepts_nested_attributes_for :accounts, allow_destroy: true
+  accepts_nested_attributes_for :accounts #, allow_destroy: true
   
   #############################
   #     Instance Methods      #

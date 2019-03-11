@@ -3,7 +3,7 @@
     / Content Header (Page header)
     %section.content-header
       = render 'shared/flash_messages'
-      %h1
+      %h3
         %i.fa.fa-male
         Accounts
         %small= link_to 'New', new_customer_path(group_id: @group_id), class: 'btn bg-orange'
@@ -28,7 +28,7 @@
             - else
               = form_tag customers_path, id: 'customers_search_form', method: 'get', class: 'form-inline' do |f|
                 =# select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
-                = select_tag :group_id, options_for_select(Group.selections_by_user_role(current_user), @group_id), class: "form-control"
+                =# select_tag :group_id, options_for_select(Group.selections_by_user_role(current_user), @group_id), class: "form-control"
                 &nbsp;
                 .input-group
                   = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true, style: 'width: 75%'
@@ -39,7 +39,7 @@
             .box-tools
               = form_tag customers_path, id: 'customers_search_form', method: 'get', class: 'form-inline' do |f|
                 =# select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"
-                = select_tag :group_id, options_for_select(Group.selections_by_user_role(current_user), @group_id), class: "form-control"
+                =# select_tag :group_id, options_for_select(Group.selections_by_user_role(current_user), @group_id), class: "form-control"
                 &nbsp;
                 .input-group
                   = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
@@ -48,7 +48,7 @@
                       %i.fa.fa-search
           %br
           %small.text-muted
-            = "#{pluralize(number_with_delimiter(@all_customers.count), 'record')} found"
+            =# "#{pluralize(number_with_delimiter(@all_customers.count), 'record')} found"
 
         .box-body.no-padding
           - unless @all_customers.blank?
@@ -59,32 +59,33 @@
                     - unless @type == "Anonymous"
                       %th{:scope => "col"}= customers_sort_link 'customer.NameF', "First", params[:q], @group_id
                       %th{:scope => "col"}= customers_sort_link 'customer.NameL', "Last", params[:q], @group_id
-                      %th{:scope => "col"} Type
                       %th{:scope => "col"}= customers_sort_link 'customer.PhoneMobile', "Phone", params[:q], @group_id
-                      %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @group_id
                     - else
                       %th{:scope => "col"}= customers_sort_link 'customer.CreateDate', "Created", params[:q], @group_id
-                      %th{:scope => "col"} Type
-                      %th{:scope => "col"}= customers_sort_link 'accounts.Balance', "Balance", params[:q], @group_id
+                    %th{:scope => "col"} Wallets
+                    %th{:scope => "col"}
                 %tbody
                   - @customers.each do |customer|
                     %tr
                       - unless @type == "Anonymous"
-                        %td= link_to customer.first_name, customer
-                        %td= link_to customer.last_name, customer
-                        %td= customer.type
+                        %td= customer.first_name
+                        %td= customer.last_name
                         %td
-                          %a{href: "tel:#{customer.phone}"}
+                          - if browser.device.mobile?
+                            %a{href: "tel:#{customer.phone}"}
+                              = customer.phone
+                          - else
                             = customer.phone
-                        %td= number_to_currency(customer.balance)
                       - else
                         %td= link_to customer.CreateDate, customer
-                        %td= customer.type
-                        %td
-                          - unless customer.account.blank?
-                            = number_to_currency(customer.balance)
-                          - else
-                            "N/A"
+                      %td
+                        - unless customer.accounts.blank?
+                          = safe_join(customer.accounts.map { |account| link_to(truncate(account.account_type.description, length: 10), account) }, ", ".html_safe)
+                        - else
+                          None
+                      %td
+                        = link_to 'Show', customer, class: 'btn btn-default btn-sm'
+                        = link_to "Edit", edit_customer_path(customer), class: 'btn btn-primary btn-sm'
           - else
             .jumbotron
               %h3.text-center None found

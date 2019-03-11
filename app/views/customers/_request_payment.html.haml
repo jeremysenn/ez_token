@@ -13,13 +13,14 @@
       = hidden_field_tag :customer_barcode_id
       =# hidden_field_tag :from_account_id
     #request_payment_button_group.btn-group{style: 'display:none;'}
-      -# if current_user.caddy?
-      %a.btn.btn-default.btn-lg{id: 'open_buddy_search_button', href: "#request_payment_buddy_search_modal", "data-target" => "#request_payment_buddy_search_modal", "data-toggle" => "modal"}
-        %i.fa.fa-search
-        Search
-      %a.btn.btn-default.btn-lg{id: 'open_request_payment_qrcode_scanner_button', href: "#request_payment_qrcode_scanner_modal", "data-target" => "#request_payment_qrcode_scanner_modal", "data-toggle" => "modal"}
-        %i.fa.fa-qrcode
-        Scan Code
+      - if @account.can_request_payment_by_search?
+        %a.btn.btn-default.btn-lg{id: 'open_buddy_search_button', href: "#request_payment_buddy_search_modal", "data-target" => "#request_payment_buddy_search_modal", "data-toggle" => "modal"}
+          %i.fa.fa-search
+          Search
+      - if @account.can_request_payment_by_scan?
+        %a.btn.btn-default.btn-lg{id: 'open_request_payment_qrcode_scanner_button', href: "#request_payment_qrcode_scanner_modal", "data-target" => "#request_payment_qrcode_scanner_modal", "data-toggle" => "modal"}
+          %i.fa.fa-qrcode
+          Scan Code
     %div{id: "request_payment_scan_spinner", style: 'display:none;'}
       %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
     = link_to "Cancel", nil, id: 'quick_purchase_cancel_button', :onclick => "javascript:window.location.reload()", style: 'display: none;', class: 'btn btn-default btn-lg', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Cancel"}
@@ -38,7 +39,8 @@
                 Amount:
                 %span{class: 'request_payment_amount'}
             =# select_tag :from_account_id, options_from_collection_for_select(@account.buddies, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
-            = select_tag :from_account_id, options_from_collection_for_select(@event.member_accounts, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
+            =# select_tag :from_account_id, options_from_collection_for_select(@event.member_accounts, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
+            = select_tag :from_account_id, options_from_collection_for_select(@event.accounts.can_be_pulled_by_search, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
           .modal-footer
             %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
             %button.btn.btn-primary{id: 'quick_purchase_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 

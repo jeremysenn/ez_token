@@ -11,19 +11,23 @@ class CustomersController < ApplicationController
   # GET /customers.json
   def index
 #    @group_id = params[:group_id] ||= 18
-    @group_id = params[:group_id] ||= (current_user.caddy_admin?) ? 13 : (current_user.event_admin? ? 16 : 18)
+#    @group_id = params[:group_id] ||= (current_user.caddy_admin?) ? 13 : (current_user.event_admin? ? 16 : 18)
     unless params[:q].blank?
       @query_string = "%#{params[:q]}%"
       if customers_sort_column == "accounts.Balance"
-        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+#        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
       else
-        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).order("#{customers_sort_column} #{customers_sort_direction}") #.order("customer.NameL")
+#        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
       end
     else
       if customers_sort_column == "accounts.Balance"
-        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+#        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
       else
-        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).order("#{customers_sort_column} #{customers_sort_direction}")
+#        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.order("#{customers_sort_column} #{customers_sort_direction}")
       end
     end
     
@@ -78,7 +82,8 @@ class CustomersController < ApplicationController
       @account = @accounts.find(params[:account_id])
     end
     unless @account.blank?
-      @withdrawal_transactions = Kaminari.paginate_array(@customer.withdrawals).page(params[:withdrawals]).per(10)
+#      @withdrawal_transactions = Kaminari.paginate_array(@customer.withdrawals).page(params[:withdrawals]).per(10)
+      @withdrawal_transactions = Kaminari.paginate_array(@account.withdrawals).page(params[:withdrawals]).per(10)
   #    @payment_transactions =  Kaminari.paginate_array(@customer.successful_payments).page(params[:payments]).per(10)
       @payment_transactions =  Kaminari.paginate_array(@account.successful_wire_transactions.sort_by(&:date_time).reverse).page(params[:payments]).per(10)
       @check_transactions =  Kaminari.paginate_array(@customer.cashed_checks).page(params[:checks]).per(10)
@@ -303,7 +308,7 @@ class CustomersController < ApplicationController
     def customer_params
       params.require(:customer).permit(:ParentCustID, :CompanyNumber, :Active, :GroupID, :NameF, :NameL, :NameS, :PhoneMobile, :Email, 
         :LangID, :Registration_Source, :Registration_Source_ext, :create_payee_user_flag, :create_caddy_user_flag, :avatar, :avatar_cache,
-        accounts_attributes:[:CompanyNumber, :Balance, :MinBalance, :Active, :CustomerID, :ActNbr, :ActTypeID, :BankActNbr, :RoutingNbr, :_destroy,:id, event_ids: []])
+        accounts_attributes:[:CompanyNumber, :Balance, :MinBalance, :Active, :CustomerID, :ActNbr, :ActTypeID, :BankActNbr, :RoutingNbr, :AddGroupID, :_destroy,:id, event_ids: []])
     end
     
     ### Secure the customeres sort direction ###

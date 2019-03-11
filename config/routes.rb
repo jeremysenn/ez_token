@@ -56,6 +56,14 @@ Rails.application.routes.draw do
   
   resources :events
   
-  resources :accounts
+  resources :accounts do
+    member do
+      get 'one_time_payment'
+    end
+  end
+  
+  resources :account_types
+  
+  resources :groups
   
 end

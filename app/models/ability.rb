@@ -29,7 +29,7 @@ class Ability
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
     
-    if user.admin? or user.caddy_admin? or user.event_admin?
+    if user.administrator?
       
       # Customers
       ############
@@ -92,6 +92,16 @@ class Ability
       ############
       can :manage, Account
       can :create, :accounts
+      
+      # Groups
+      ############
+      can :manage, Group
+#      can :create, :groups
+
+      # AccountTypes
+      ############
+      can :manage, AccountType
+      can :create, :account_type
       
     elsif user.basic?
       
