@@ -332,6 +332,8 @@ class Customer < ActiveRecord::Base
   def user_name
     unless user.blank?
       user.full_name
+    else
+      full_name
     end
   end
   
