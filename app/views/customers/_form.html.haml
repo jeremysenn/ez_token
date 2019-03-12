@@ -57,9 +57,12 @@
           =# f.simple_fields_for :accounts do |account_form|
           = f.nested_fields_for :accounts do |account_form|
             .box.box-success
+              .box-header.with-border
+                %h3.box-title 
+                  = number_to_currency(account_form.object.Balance)
+                .box-tools.pull-right
+                  = account_form.remove_nested_fields_link "<i class='fa fa-trash'></i> Delete".html_safe, data: { confirm: 'Are you sure you want to delete?' }
               .box-body
-                - index = f.object.accounts.index(account_form.object)
-                = index + 1 unless index.blank?
                 = account_form.input :ActTypeID, collection: current_user.company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type"
                 - if account_form.object.new_record?
                   = account_form.input :CustomerID, :as => :hidden, :input_html => { :value => @customer.id }
@@ -73,7 +76,7 @@
                       %br
                       %label.control-label.text-muted Non-expiring Accounts
                     .row
-                      = account_form.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title) do |event_field|
+                      = account_form.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title, :include_hidden => false) do |event_field|
                         .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box(checked: false) + ' ' + event_field.text }
                     - unless current_user.company.events.accounts_expire.blank?
                       %label.control-label.text-muted Expiring Accounts
@@ -87,7 +90,7 @@
                       %br
                       %label.control-label.text-muted Non-expiring Accounts
                     .row
-                      = account_form.collection_check_boxes(:event_ids, account_form.object.belongs_to_expire_accounts_event? ? account_form.object.events : current_user.company.events.accounts_do_not_expire, :id, :title) do |event_field|
+                      = account_form.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title, :include_hidden => false) do |event_field|
                         .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box + ' ' + event_field.text }
                     - unless current_user.company.events.accounts_expire.blank?
                       %label.control-label.text-muted Expiring Accounts
@@ -113,3 +116,13 @@
       document.getElementById("profile_image").src = oFREvent.target.result;
     };
   };
+
+  //Un-check Check Boxes When Radio Button Selected
+  $(document).on("click", 'input[type="radio"]' , function() {
+    $(this).closest('.form-group').find('input[type="checkbox"]').attr("checked", false);
+  });
+
+  //Un-check Radio Buttons When Check Box Selected
+  $(document).on("click", 'input[type="checkbox"]' , function() {
+    $(this).closest('.form-group').find('input[type="radio"]').attr("checked", false);
+  });

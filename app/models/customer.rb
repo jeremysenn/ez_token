@@ -31,7 +31,7 @@ class Customer < ActiveRecord::Base
   # Virtual Attributes
   attr_accessor :create_payee_user_flag
   
-  accepts_nested_attributes_for :accounts
+  accepts_nested_attributes_for :accounts, allow_destroy: true
 #  accepts_nested_attributes_for :events
   
 #  validates :NameF, :NameL, presence: true
