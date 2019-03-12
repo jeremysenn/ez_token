@@ -26,8 +26,8 @@
             %br
             Events
         .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
-          %a.dropdown-item{:href => events_path, :class => (params[:controller] == 'events' and params[:action] == 'index') ?  "active" : ""} All
-          %a.dropdown-item{:href => new_event_path, :class => (params[:controller] == 'events' and params[:action] == 'new') ?  "active" : ""} New
+          %a.dropdown-item{:href => events_path, :class => (params[:controller] == 'events' and params[:action] == 'index') ?  "active" : ""} All Events
+          %a.dropdown-item{:href => new_event_path, :class => (params[:controller] == 'events' and params[:action] == 'new') ?  "active" : ""} New Event
       -#
         %li.nav-item.bordered
           .text-center
@@ -42,8 +42,8 @@
             %br
             Accounts
         .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
-          %a.dropdown-item{:href => customers_path, :class => (params[:controller] == 'customers' and params[:action] == 'index') ?  "active" : ""} All
-          %a.dropdown-item{:href => new_customer_path, :class => (params[:controller] == 'customers' and params[:action] == 'new') ?  "active" : ""} New
+          %a.dropdown-item{:href => customers_path, :class => (params[:controller] == 'customers' and params[:action] == 'index') ?  "active" : ""} All Accounts
+          %a.dropdown-item{:href => new_customer_path, :class => (params[:controller] == 'customers' and params[:action] == 'new') ?  "active" : ""} New Account
       -#
         %li.nav-item.bordered
           .text-center
@@ -58,10 +58,10 @@
             %br
             Wallets
         .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
-          %a.dropdown-item{:href => accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'index') ?  "active" : ""} All
+          %a.dropdown-item{:href => accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'index') ?  "active" : ""} All Wallets
           .dropdown-divider
-          %a.dropdown-item{:href => account_types_path, :class => (params[:controller] == 'account_types' and params[:action] == 'index') ?  "active" : ""} Types
-          %a.dropdown-item{:href => new_account_type_path, :class => (params[:controller] == 'account_types' and params[:action] == 'new') ?  "active" : ""} New Type
+          %a.dropdown-item{:href => account_types_path, :class => (params[:controller] == 'account_types' and params[:action] == 'index') ?  "active" : ""} Wallet Types
+          %a.dropdown-item{:href => new_account_type_path, :class => (params[:controller] == 'account_types' and params[:action] == 'new') ?  "active" : ""} New Wallet Type
 
       -#
         %li.nav-item.bordered
