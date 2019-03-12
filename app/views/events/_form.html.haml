@@ -42,7 +42,7 @@
               Expire Accounts
             = f.check_box :expire_accounts, disabled: (not @event.new_record? and @event.started?) ? true : false 
             %small.form-text.text-muted (This cannot be changed after event has started)
-      - if current_user.caddy_admin? or current_user.event_admin?
+      - if current_user.administrator?
         %hr
         .row
           .col-xs-12.col-sm-3
@@ -66,12 +66,12 @@
                   .form-group
                     = ff.remove_nested_fields_link 'Remove'
                     - if ff.object.new_record?
-                      = ff.select :CustomerID, options_from_collection_for_select(current_user.company.all_customers, "id", "full_name", ff.object.CustomerID), {prompt: "Select customer"}, {:class => "form-control"}
+                      = ff.select :CustomerID, options_from_collection_for_select(current_user.company.customers, "id", "full_name", ff.object.CustomerID), {prompt: "Select account"}, {:class => "form-control"}
                     - else
                       %br
                       = ff.object.customer_user_name
 
-                %p= f.add_nested_fields_link :accounts, 'Add Account', class: 'btn bg-orange btn-sm', role: 'button'
+                %p= f.add_nested_fields_link :accounts, 'Create new account wallet', class: 'btn bg-orange btn-sm', role: 'button'
               
               -#
                 - @event.accounts.each do |account|
