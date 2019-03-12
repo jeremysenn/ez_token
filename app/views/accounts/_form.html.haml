@@ -13,6 +13,7 @@
       .form-inputs
         = f.input :Balance, as: :decimal, label: 'Balance', required: true
         = f.input :ActTypeID, collection: AccountType.all.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
+        = f.input :AbleToDelete, as: :boolean, label: "Can delete"
         = f.input :event_ids, label: 'Events' do
           - unless current_user.company.events.accounts_do_not_expire.blank?
             %br

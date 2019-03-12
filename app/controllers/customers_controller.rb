@@ -308,7 +308,8 @@ class CustomersController < ApplicationController
     def customer_params
       params.require(:customer).permit(:ParentCustID, :CompanyNumber, :Active, :GroupID, :NameF, :NameL, :NameS, :PhoneMobile, :Email, 
         :LangID, :Registration_Source, :Registration_Source_ext, :create_payee_user_flag, :create_caddy_user_flag, :avatar, :avatar_cache,
-        accounts_attributes:[:CompanyNumber, :Balance, :MinBalance, :Active, :CustomerID, :ActNbr, :ActTypeID, :BankActNbr, :RoutingNbr, :AddGroupID, :_destroy,:id, event_ids: []])
+        accounts_attributes:[:CompanyNumber, :Balance, :MinBalance, :Active, :CustomerID, :ActNbr, :ActTypeID, :BankActNbr, :RoutingNbr, 
+          :AddGroupID, :AbleToDelete, :_destroy,:id, event_ids: []])
     end
     
     ### Secure the customeres sort direction ###

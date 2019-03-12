@@ -411,8 +411,8 @@ class Account < ActiveRecord::Base
     end
   end
   
-  def customer_primary?
-    self.AbleToDelete == 0 or self.AbleToDelete == nil
+  def can_delete?
+    not (self.AbleToDelete == 0 or self.AbleToDelete == nil)
   end
   
   def belongs_to_expire_accounts_event?

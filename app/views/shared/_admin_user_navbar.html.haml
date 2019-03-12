@@ -13,24 +13,56 @@
             %br
             Home
       -#
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
+              %i.fa.fa-calendar.fa-lg
+              %br
+              Events
+      %li.nav-item.bordered.dropdown
+        %a.nav-link{ "data-toggle" => "dropdown", :href => "#", :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
+          .text-center
             %i.fa.fa-calendar.fa-lg
             %br
             Events
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
+        .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
+          %a.dropdown-item{:href => events_path, :class => (params[:controller] == 'events' and params[:action] == 'index') ?  "active" : ""} All
+          %a.dropdown-item{:href => new_event_path, :class => (params[:controller] == 'events' and params[:action] == 'new') ?  "active" : ""} New
+      -#
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
+              %i.fa.fa-male.fa-lg
+              %br
+              Accounts
+      %li.nav-item.bordered.dropdown
+        %a.nav-link{ "data-toggle" => "dropdown", :href => "#", :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
+          .text-center
             %i.fa.fa-male.fa-lg
             %br
             Accounts
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
+        .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
+          %a.dropdown-item{:href => customers_path, :class => (params[:controller] == 'customers' and params[:action] == 'index') ?  "active" : ""} All
+          %a.dropdown-item{:href => new_customer_path, :class => (params[:controller] == 'customers' and params[:action] == 'new') ?  "active" : ""} New
+      -#
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
+              %i.fa.fa-google-wallet.fa-lg
+              %br
+              Wallets
+      %li.nav-item.bordered.dropdown
+        %a.nav-link{ "data-toggle" => "dropdown", :href => "#", :class => (params[:controller] == 'accounts' or params[:controller] == 'account_types') ?  "text-light-blue" : ""}
+          .text-center
             %i.fa.fa-google-wallet.fa-lg
             %br
             Wallets
+        .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
+          %a.dropdown-item{:href => accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'index') ?  "active" : ""} All
+          .dropdown-divider
+          %a.dropdown-item{:href => account_types_path, :class => (params[:controller] == 'account_types' and params[:action] == 'index') ?  "active" : ""} Types
+          %a.dropdown-item{:href => new_account_type_path, :class => (params[:controller] == 'account_types' and params[:action] == 'new') ?  "active" : ""} New Type
+
       -#
         %li.nav-item.bordered
           .text-center

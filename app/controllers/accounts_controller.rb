@@ -110,6 +110,6 @@ class AccountsController < ApplicationController
 #    end
     
     def account_params
-      params.require(:account).permit(:Balance, :ActTypeID, :event_ids, event_ids: [])
+      params.require(:account).permit(:Balance, :ActTypeID, :AbleToDelete, :event_ids, event_ids: [])
     end
 end
