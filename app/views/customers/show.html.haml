@@ -318,7 +318,7 @@
                   .pull-right= paginate @payment_transactions, param_name: 'payments'
                 - else
                   .jumbotron
-                    %h3.text-center
+                    %h3.text-center None
               
               #checks.tab-pane.fade{"aria-labelledby" => "profile-tab", :role => "tabpanel"}
                 - unless @check_transactions.blank?
