@@ -1,0 +1,33 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      -#
+        %h1= current_user.full_name
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+            %i.fa.fa-google-wallet
+            Wallets
+          -#
+            .box-tools.pull-right
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                %i.fa.fa-minus
+              %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+                %i.fa.fa-times
+        .box-body
+          - current_user.accounts.each_with_index do |account, index|
+            %p
+              =# link_to "#{account.id} - #{account.company.name}", customer_path(current_user.customer, account_id: account.id)
+              %a{href: customer_path(current_user.customer, account_id: account.id)}
+                = "#{index + 1}."
+                =# account.events.map{ |event| "#{event.title}"}
+                = account.events.map(&:title).join(', ')
+                = "(#{account.company.name})"
+          -#
+            - current_user.events.each do |event|
+              %p= link_to "#{event.title} (#{event.company.name})", event

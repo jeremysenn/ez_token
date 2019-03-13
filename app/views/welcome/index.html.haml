@@ -1,11 +1,13 @@
 .wrapper
   - if user_signed_in?
     =# render 'admin_user_sidebar'
-    - if current_user.admin? or current_user.basic?
+    - if current_user.admin?
       - if browser.device.mobile?
         = render 'mobile_admin_user_start' 
       - else
         = render 'admin_user_start'
+    - elsif current_user.basic?
+      = render 'basic_user_start'
     - elsif current_user.payee?
       = render 'customer_user_start'
     - elsif current_user.consumer?
