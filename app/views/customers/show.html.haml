@@ -21,15 +21,15 @@
             %i.fa.fa-google-wallet
             Wallet
             = "#{index + 1}"
-      %p
+    %p
+      - unless @events.blank?
         .btn-group
-          - unless @events.blank?
-            - @events.each do |event|
-              %a.btn{href: customer_path(event_id: event.id, account_id: @account.id), class: "#{@event.id == event.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-calendar'></i> #{event.title.html_safe}"}}
-                %i.fa.fa-calendar
-                = event.title.html_safe
-        - if @events.blank?
-          (no events)
+          - @events.each do |event|
+            %a.btn{href: customer_path(event_id: event.id, account_id: @account.id), class: "#{@event.id == event.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-calendar'></i> #{event.title.html_safe}"}}
+              %i.fa.fa-calendar
+              = event.title.html_safe
+      - else @events.blank?
+        (no events)
       -#
         %br
         = "#{@account.blank? ? 'No company' : @account.company.name}"
@@ -317,7 +317,8 @@
                             $('.modal').on('shown.bs.modal', function() {$(this).find('[autofocus]').first().focus();});
                   .pull-right= paginate @payment_transactions, param_name: 'payments'
                 - else
-                  %p.text-center None
+                  .jumbotron
+                    %h3.text-center
               
               #checks.tab-pane.fade{"aria-labelledby" => "profile-tab", :role => "tabpanel"}
                 - unless @check_transactions.blank?
