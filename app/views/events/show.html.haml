@@ -25,29 +25,40 @@
                 Accounts
           #myTabContent.tab-content
             #details.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-              %p.lead
-                %strong Title:
-                = @event.title
-              - unless current_user.caddy_admin?
-                %p.lead
-                  %strong Phone:
-                  = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
-                %p.lead
-                  %strong Join Code:
-                  = @event.join_code
-              %p.lead
-                %strong Start:
-                = @event.start_date
-              %p.lead
-                %strong End:
-                = @event.end_date
-              - unless current_user.caddy_admin?
-                %p.lead
-                  %strong Join Response:
-                  = @event.join_response
-              %p.lead
-                %strong Expire Accounts:
-                = @event.expire_accounts? ? 'Yes' : 'No'
+              %br
+              .row
+                .col-xs-12.col-sm-6
+                  %p.lead
+                    %strong Title:
+                    = @event.title  
+                  %p.lead
+                    %strong Expire Accounts:
+                    = @event.expire_accounts? ? 'Yes' : 'No'
+                  %p.lead
+                    %strong Start:
+                    = @event.start_date
+                    %strong End:
+                    = @event.end_date
+                  - unless @event.join_code.blank?
+                    .box.box-default
+                      .box-header.with-border
+                        .box-title 
+                          %i.fa.fa-commenting
+                          Join by SMS
+                      .box-body
+                        %p.lead
+                          %strong Phone:
+                          = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
+                        %p.lead
+                          %strong Join Code:
+                          = @event.join_code
+                        %p.lead
+                          %strong Join Response:
+                          = @event.join_response
+                        %p.lead
+                          %strong Join by SMS Wallet Type:
+                          = @event.join_by_sms_wallet_type.description unless @event.join_by_sms_wallet_type.blank?
+
               .pull-right
                 %br
                 %p= link_to 'Delete', @event, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }

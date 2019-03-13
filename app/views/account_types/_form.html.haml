@@ -8,18 +8,23 @@
           = "#{attr} #{msg}" if @account_type.errors[attr].first == msg
       .form-inputs
         = f.input :CompanyNumber, as: :hidden, :input_html => { :value => "#{@account_type.new_record? ? current_user.company.id : @account_type.CompanyNumber}" }
-        = f.input :AccountTypeDesc, as: :string, label: 'Description', required: true
-        = f.input :CanFundByACH, as: :boolean, label: 'Fund by ACH'
-        = f.input :CanFundByCC, as: :boolean, label: 'Fund by CC'
-        = f.input :CanFundByCash, as: :boolean, label: 'Fund by Cash'
-        = f.input :CanWithdraw, as: :boolean, label: 'Can Withdraw'
-        = f.input :WithdrawAll, as: :boolean, label: 'Withdrawal All'
-        = f.input :CanPull, as: :boolean, label: 'Pull Payments'
-        = f.input :CanRequestPmtBySearch, as: :boolean, label: 'Request Payments by Search'
-        = f.input :CanRequestPmtByScan, as: :boolean, label: 'Request Payments by Scan'
-        = f.input :CanSendPmt, as: :boolean, label: 'Send Payments'
-        = f.input :CanBePulledBySearch, as: :boolean, label: 'Can be Pulled by Search'
-        = f.input :CanBePulledByScan, as: :boolean, label: 'Can be Pulled by Scan'
+        .row
+          .col-xs-12.col-sm-6
+            = f.input :AccountTypeDesc, as: :string, label: 'Description', required: true
+        .row
+          .col-xs-12.col-sm-6
+            = f.input :CanFundByACH, as: :boolean, label: 'Fund by ACH'
+            = f.input :CanFundByCC, as: :boolean, label: 'Fund by CC'
+            = f.input :CanFundByCash, as: :boolean, label: 'Fund by Cash'
+            = f.input :CanWithdraw, as: :boolean, label: 'Can Withdraw'
+            = f.input :WithdrawAll, as: :boolean, label: 'Withdrawal All'
+            = f.input :CanPull, as: :boolean, label: 'Pull Payments'
+          .col-xs-12.col-sm-6
+            = f.input :CanRequestPmtBySearch, as: :boolean, label: 'Request Payments by Search'
+            = f.input :CanRequestPmtByScan, as: :boolean, label: 'Request Payments by Scan'
+            = f.input :CanSendPmt, as: :boolean, label: 'Send Payments'
+            = f.input :CanBePulledBySearch, as: :boolean, label: 'Can be Pulled by Search'
+            = f.input :CanBePulledByScan, as: :boolean, label: 'Can be Pulled by Scan'
       .form-actions
         = link_to 'Cancel', :back, class: "btn btn-default"
         %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 

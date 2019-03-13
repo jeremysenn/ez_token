@@ -60,8 +60,8 @@
                     %td= event.end_date
                     %td= event.expire_accounts? ? 'Yes' : 'No'
                     %td
-                      = link_to "Show", event, class: 'btn btn-secondary'
-                      = link_to "Edit", edit_event_path(event), class: 'btn btn-primary'
+                      = link_to "Show", event, class: 'btn btn-secondary btn-sm'
+                      = link_to "Edit", edit_event_path(event), class: 'btn btn-primary btn-sm'
                     
         .box-footer
           -#

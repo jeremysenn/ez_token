@@ -4,6 +4,13 @@
 
 
 $(document).on 'turbolinks:load', ->
+  
+  $('.box').boxWidget
+    animationSpeed: 500
+    collapseTrigger: '#join_by_sms_box_tool_collapse'
+    collapseIcon: 'fa-minus'
+    expandIcon: 'fa-plus'
+
   ### ATM Reset Command ###
   $('#commands-modal').on 'click', '.atm_command_button', (e) ->
     #user click on atm reset button button

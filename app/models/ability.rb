@@ -34,17 +34,17 @@ class Ability
       # Customers
       ############
       can :manage, Customer
-      can :create, :customers
+      can :create, Customer
       
       # PaymentBatches
       ############
       can :manage, PaymentBatch
-      can :create, :payment_batches
+      can :create, PaymentBatch
       
       # Payments
       ############
       can :manage, Payment
-      can :create, :payments
+      can :create, Payment
       
       # PaymentBatchCsvMappings
       ############
@@ -56,7 +56,7 @@ class Ability
       # SmsMessages
       ############
       can :manage, SmsMessage
-      can :create, :sms_messages
+      can :create, SmsMessage
       
       # Transactions
       ############
@@ -85,13 +85,17 @@ class Ability
       
       # Events
       ############
-      can :manage, Event
-      can :create, :events
+      can :manage, Event do |event|
+        event.company == user.company
+      end
+      can :create, Event
       
       # Accounts
       ############
-      can :manage, Account
-      can :create, :accounts
+      can :manage, Account do |account|
+        account.company == user.company
+      end
+      can :create, Account
       
       # Groups
       ############
@@ -100,8 +104,10 @@ class Ability
 
       # AccountTypes
       ############
-      can :manage, AccountType
-      can :create, :account_type
+      can :manage, AccountType do |account_type|
+        account_type.company == user.company
+      end
+      can :create, AccountType
       
     elsif user.basic?
       

@@ -19,7 +19,7 @@
             %br
             %label.control-label.text-muted Non-expiring Accounts
           .row
-            = f.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title, :include_hidden => false) do |event_field|
+            = f.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title) do |event_field|
               .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box + ' ' + event_field.text }
           - unless current_user.company.events.accounts_expire.blank?
             %label.control-label.text-muted Expiring Accounts

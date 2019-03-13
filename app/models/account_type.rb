@@ -6,7 +6,6 @@ class AccountType < ActiveRecord::Base
   has_many :accounts, :foreign_key => "ActTypeID"
   belongs_to :company, :foreign_key => "CompanyNumber"
   
-  
   #############################
   #     Instance Methods      #
   #############################

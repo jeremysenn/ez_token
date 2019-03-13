@@ -24,13 +24,13 @@
         %table.table.table-condensed
           %thead
             %tr
-              %th{:scope => "col"} ID
+              -# %th{:scope => "col"} ID
               %th{:scope => "col"} Description
-              %th{:scope => "col"} Company
+              -# %th{:scope => "col"} Company
               %th{:scope => "col"} Fund by ACH
               %th{:scope => "col"} Fund by CC
               %th{:scope => "col"} Fund by Cash
-              %th{:scope => "col"} Can Withdraw
+              %th{:scope => "col"} Withdraw
               %th{:scope => "col"} Withdrawal All
               %th{:scope => "col"} Pull Payments
               %th{:scope => "col"} Request Payments by Search
@@ -42,9 +42,9 @@
           %tbody
             - @account_types.each do |account_type|
               %tr
-                %td= account_type.id
+                -# %td= account_type.id
                 %td= account_type.description
-                %td= account_type.company.blank? ? 'None' : account_type.company.name
+                -# %td= account_type.company.blank? ? 'None' : account_type.company.name
                 %td= account_type.can_fund_by_ach? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
                 %td= account_type.can_fund_by_cc? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
                 %td= account_type.can_fund_by_cash? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe

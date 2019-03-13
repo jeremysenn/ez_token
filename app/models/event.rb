@@ -19,6 +19,7 @@ class Event < ActiveRecord::Base
     message: "%{value} is reserved." }
 #  validates :join_response, presence: true
   validate :no_duplicate_customers
+  validate :account_type_required_if_join_code
 
   accepts_nested_attributes_for :accounts #, allow_destroy: true
   
@@ -57,6 +58,20 @@ class Event < ActiveRecord::Base
   def no_duplicate_customers
     unless accounts.map{|a| a.CustomerID} == accounts.map{|a| a.CustomerID}.uniq
       errors.add(:error, 'Duplicate customer')
+    end
+  end
+  
+  def account_type_required_if_join_code
+    if join_code.present? and account_type_id.blank?
+      errors.add(:error, 'You must choose a Wallet Type if you have a Join Code')
+    end
+  end
+  
+  def join_by_sms_wallet_type
+    unless account_type_id.blank?
+      AccountType.find(account_type_id)
+    else
+      nil
     end
   end
   
