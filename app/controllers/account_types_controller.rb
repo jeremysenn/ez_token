@@ -31,8 +31,8 @@ class AccountTypesController < ApplicationController
     @account_type = AccountType.new(account_type_params)
     respond_to do |format|
       if @account_type.save
-        format.html { redirect_to @account_type, notice: 'AccountType was successfully created.' }
-        format.html { redirect_to :back, notice: 'AccountType was successfully created.' }
+        format.html { redirect_to account_types_path, notice: 'AccountType was successfully created.' }
+        format.html { redirect_to :back, notice: 'Wallet Type was successfully created.' }
       else
         format.html { render :new }
         format.json { render json: @account_type.errors, status: :unprocessable_entity }
@@ -45,7 +45,7 @@ class AccountTypesController < ApplicationController
   def update
     respond_to do |format|
       if @account_type.update(account_type_params)
-        format.html { redirect_to @account_type, notice: 'AccountType was successfully updated.' }
+        format.html { redirect_to account_types_path, notice: 'Wallet Type was successfully updated.' }
         format.json { render :show, status: :ok, location: @account_type }
       else
         format.html { render :edit }
@@ -59,7 +59,7 @@ class AccountTypesController < ApplicationController
   def destroy
     @account_type.destroy
     respond_to do |format|
-      format.html { redirect_to account_types_path, notice: 'AccountType was successfully destroyed.' }
+      format.html { redirect_to account_types_path, notice: 'Wallet Type was successfully destroyed.' }
       format.json { head :no_content }
     end
   end

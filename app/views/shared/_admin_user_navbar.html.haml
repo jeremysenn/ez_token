@@ -58,8 +58,6 @@
             %br
             Wallets
         .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
-          %a.dropdown-item{:href => accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'index') ?  "active" : ""} All Wallets
-          .dropdown-divider
           %a.dropdown-item{:href => account_types_path, :class => (params[:controller] == 'account_types' and params[:action] == 'index') ?  "active" : ""} Wallet Types
           %a.dropdown-item{:href => new_account_type_path, :class => (params[:controller] == 'account_types' and params[:action] == 'new') ?  "active" : ""} New Wallet Type
 
