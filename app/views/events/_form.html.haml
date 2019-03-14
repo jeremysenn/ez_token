@@ -59,6 +59,7 @@
                     = f.text_area :join_response, rows: 5, style: 'width: 100%;'
               .row    
                 .col-xs-12.col-sm-6
+                  %label{:for => "account_type_id"} Join by SMS Wallet Type
                   = f.select :account_type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description"), {prompt: "Select Wallet Type"}, {:class => "form-control"}
       - if current_user.administrator?
         .row
