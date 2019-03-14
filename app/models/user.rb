@@ -162,17 +162,19 @@ class User < ApplicationRecord
   end
   
   def create_event_account(event)
-    unless events.include?(event)
-      existing_company_account = accounts.find_by(CompanyNumber: event.company_id)
-      if existing_company_account.blank? 
-        new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: 6)
-        event.accounts << new_account
-      else
-        if event.expire_accounts?
-          new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: 6)
+    unless event.join_by_sms_wallet_type.blank?
+      unless events.include?(event)
+        existing_company_account = accounts.find_by(CompanyNumber: event.company_id)
+        if existing_company_account.blank? 
+          new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id)
           event.accounts << new_account
         else
-          event.accounts << existing_company_account
+          if event.expire_accounts?
+            new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id)
+            event.accounts << new_account
+          else
+            event.accounts << existing_company_account
+          end
         end
       end
     end
