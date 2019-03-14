@@ -44,16 +44,18 @@ class TwilioController < ApplicationController
             customer = Customer.create(CompanyNumber: 7, LangID: 1, Active: 1, GroupID: 5)
             user = User.create(phone: plain_cell_number, company_id: 7, role: "basic", customer_id: customer.id, confirmed_at: Time.now)
             user.set_temporary_password
-            user.create_event_account(event)
-            message.body(event.join_response)
+            if user.create_event_account(event)
+              message.body(event.join_response)
+            end
           end
         else
           if event.blank?
             message.body("Welcome back to ezToken #{user.full_name}. Sorry, we're not able to find an open event with that join code.")
           else
-            user.create_event_account(event)
-            message.body(event.join_response)
-            message.media(qr_code_customer_path(user.customer.barcode_access_string))
+            if user.create_event_account(event)
+              message.body(event.join_response)
+              message.media(qr_code_customer_path(user.customer.barcode_access_string))
+            end
           end
         end
     end

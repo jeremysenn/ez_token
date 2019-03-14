@@ -164,7 +164,7 @@ class User < ApplicationRecord
   def create_event_account(event)
     unless event.join_by_sms_wallet_type.blank?
       unless events.include?(event)
-        existing_company_account = accounts.find_by(CompanyNumber: event.company_id)
+        existing_company_account = accounts.find_by(ActTypeID: event.join_by_sms_wallet_type.id, CompanyNumber: event.company_id)
         if existing_company_account.blank? 
           new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id)
           event.accounts << new_account
@@ -176,7 +176,11 @@ class User < ApplicationRecord
             event.accounts << existing_company_account
           end
         end
+      else
+        return nil
       end
+    else
+      return nil
     end
   end
   

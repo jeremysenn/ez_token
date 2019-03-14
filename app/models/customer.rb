@@ -17,7 +17,7 @@ class Customer < ActiveRecord::Base
   has_many :payments, :foreign_key => "CustomerID"
   has_many :customer_barcodes, :foreign_key => "CustomerID"
   belongs_to :group, :foreign_key => "GroupID"
-#  has_many :events, through: :accounts
+  has_many :events, through: :accounts
   
   scope :payees, -> { where(GroupID: 18) }
   scope :vendor, -> { where(GroupID: 17) }
