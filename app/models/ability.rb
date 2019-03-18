@@ -140,6 +140,12 @@ class Ability
          user.company == card.device.company and user.devices.include? card.device
       end
       
+      # Accounts
+      ############
+      can :manage, Account do |account|
+        account.customer == user.customer
+      end
+      
     elsif user.payee?
       
       # Customers

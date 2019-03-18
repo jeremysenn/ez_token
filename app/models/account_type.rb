@@ -74,6 +74,14 @@ class AccountType < ActiveRecord::Base
     self.CanBePulledByScan == 1
   end
   
+  def heavy_metal_debit?
+    self.AccountTypeID == 6
+  end
+  
+  def company_account?
+    self.AccountTypeID == 7
+  end
+  
   #############################
   #     Class Methods      #
   #############################

@@ -48,6 +48,7 @@ class AccountTypesController < ApplicationController
         format.html { redirect_to account_types_path, notice: 'Wallet Type was successfully updated.' }
         format.json { render :show, status: :ok, location: @account_type }
       else
+        flash[:notice] = "Error"
         format.html { render :edit }
         format.json { render json: @account_type.errors, status: :unprocessable_entity }
       end
@@ -67,7 +68,7 @@ class AccountTypesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_account_type
-      @account_type = AccountType.find(params[:id])
+      @account_type = AccountType.find_by(AccountTypeID: params[:id], CompanyNumber: params[:company_id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

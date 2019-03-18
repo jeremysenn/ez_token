@@ -13,6 +13,10 @@ class Account < ActiveRecord::Base
   has_and_belongs_to_many :events, :join_table => :accounts_events, :uniq => true
   
   attr_accessor :last_4_of_pan
+  attr_accessor :cc_charge_amount
+  attr_accessor :cc_number
+  attr_accessor :cc_expiration
+  attr_accessor :cc_cvc
   
   scope :debit, -> { where(ActTypeID: 6) }
   scope :customer_primary, -> { where(AbleToDelete: [0,nil]) }

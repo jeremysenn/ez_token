@@ -41,20 +41,38 @@ class TwilioController < ApplicationController
           if event.blank?
             message.body("Welcome to EZ Token #{plain_cell_number}. Sorry, we're not able to find an open event with that join code.")
           else
-            customer = Customer.create(CompanyNumber: 7, LangID: 1, Active: 1, GroupID: 5)
-            user = User.create(phone: plain_cell_number, company_id: 7, role: "basic", customer_id: customer.id, confirmed_at: Time.now)
-            user.set_temporary_password
-            if user.create_event_account(event)
-              message.body(event.join_response)
-            end
+            message.body(event.join_response)
+          
+            ### Put all of this into background process
+#            customer = Customer.create(CompanyNumber: 7, LangID: 1, Active: 1, GroupID: 5)
+#            user = User.create(phone: plain_cell_number, company_id: 7, role: "basic", customer_id: customer.id, confirmed_at: Time.now)
+#            user.set_temporary_password
+#            user.save
+#            account = user.create_event_account(event)
+#            if account
+#              body_1 = event.join_response
+#              body_2 = " - your temporary password is: #{user.temporary_password}"
+#              body_3 = (account.can_fund_by_cc? or account.can_fund_by_ach?) ? " - you can fund your Wallet here: #{edit_account_url(account)}" : " - you can sign in here: #{new_user_session_url}"
+#              message.body(body_1 + body_2 + body_3)
+#              message.media(qr_code_customer_path(user.customer.barcode_access_string))
+#            else
+#              message.body("There was a problem creating a Wallet for #{event.title}.")
+#            end
+            ### End Put all of this into background process
+          
           end
         else
           if event.blank?
             message.body("Welcome back to ezToken #{user.full_name}. Sorry, we're not able to find an open event with that join code.")
           else
-            if user.create_event_account(event)
-              message.body(event.join_response)
+            account = user.create_event_account(event)
+            if account
+              body_1 = event.join_response
+              body_2 = (account.can_fund_by_cc? or account.can_fund_by_ach?) ? " - you can fund your Wallet here: #{edit_account_url(account)}" : ''
+              message.body(body_1 + body_2)
               message.media(qr_code_customer_path(user.customer.barcode_access_string))
+            else
+              message.body("You already have a Wallet for #{event.title}.")
             end
           end
         end

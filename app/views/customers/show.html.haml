@@ -21,6 +21,8 @@
             %i.fa.fa-google-wallet
             Wallet
             = "#{index + 1}"
+            .text-center
+              %small= "(#{account.account_type.description})"
     %p
       - unless @events.blank?
         .btn-group
@@ -50,6 +52,10 @@
               %h5.text-muted
                 Balance
                 = number_to_currency(@account.blank? ? 0 : @account.balance)
+                - if (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and not current_user.administrator?
+                  %a.btn.btn-sm.btn-default{href: edit_account_path(@account)}
+                    %i.fa.fa-credit-card
+                    Fund
               -#
                 .text-center
                   = "#{@account.blank? ? '' : @account.company.name}"

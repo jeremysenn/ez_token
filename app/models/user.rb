@@ -34,6 +34,16 @@ class User < ApplicationRecord
   #     Instance Methods      #
   #############################
   
+  ### Don't require email - from Devise wiki ###
+  def email_required?
+    false
+  end
+  
+  def will_save_change_to_email?
+    false
+  end
+  ### End Don't require email - from Devise wiki ###
+  
   def full_name
     "#{first_name} #{last_name}"
   end
@@ -92,7 +102,7 @@ class User < ApplicationRecord
   end
   
   def send_confirmation_sms_message
-    unless phone.blank?
+    unless phone.blank? or self.confirmed?
 #      SendCaddySmsWorker.perform_async(cell_phone_number, id, self.CustomerID, self.ClubCompanyNbr, message_body)
       confirmation_link = "#{Rails.application.routes.default_url_options[:host]}/users/confirmation?confirmation_token=#{confirmation_token}"
       unless temporary_password.blank?
@@ -168,12 +178,15 @@ class User < ApplicationRecord
         if existing_company_account.blank? 
           new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id)
           event.accounts << new_account
+          return new_account
         else
           if event.expire_accounts?
             new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id)
             event.accounts << new_account
+            return new_account
           else
             event.accounts << existing_company_account
+            return existing_company_account
           end
         end
       else

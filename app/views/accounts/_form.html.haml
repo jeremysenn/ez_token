@@ -11,21 +11,41 @@
           <button type="button" class="close" data-dismiss="alert">×</button>
           = "#{attr} #{msg}" if @account.errors[attr].first == msg
       .form-inputs
-        = f.input :Balance, as: :decimal, label: 'Balance', required: true
-        = f.input :ActTypeID, collection: AccountType.all.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
-        = f.input :AbleToDelete, as: :boolean, label: "Can delete"
-        = f.input :event_ids, label: 'Events' do
-          - unless current_user.company.events.accounts_do_not_expire.blank?
-            %br
-            %label.control-label.text-muted Non-expiring Accounts
-          .row
-            = f.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title) do |event_field|
-              .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box + ' ' + event_field.text }
-          - unless current_user.company.events.accounts_expire.blank?
-            %label.control-label.text-muted Expiring Accounts
-          .row
-            = f.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
-              .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: @account.events.first == event_field.object) + ' ' + event_field.text }
+        - if current_user.administrator?
+          = f.input :Balance, as: :decimal, label: 'Balance', required: true
+          = f.input :ActTypeID, collection: AccountType.all.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
+          = f.input :AbleToDelete, as: :boolean, label: "Can delete"
+          = f.input :event_ids, label: 'Events' do
+            - unless current_user.company.events.accounts_do_not_expire.blank?
+              %br
+              %label.control-label.text-muted Non-expiring Accounts
+            .row
+              = f.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title) do |event_field|
+                .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box + ' ' + event_field.text }
+            - unless current_user.company.events.accounts_expire.blank?
+              %label.control-label.text-muted Expiring Accounts
+            .row
+              = f.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
+                .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: @account.events.first == event_field.object) + ' ' + event_field.text }
+        - else
+          - if @account.can_fund_by_cc?
+            .row
+              .col-xs-12.col-md-4= f.input :cc_charge_amount, as: :decimal, label: 'Amount', required: true
+            .row
+              .col-xs-12.col-md-12= f.input :cc_number, as: :string, label: 'Card Number', required: true
+            .row
+              .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry', required: true
+              .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC', required: true
+          - elsif @account.can_fund_by_ach?
+            %p
+              I hereby authorize Transact Payment Systems to debit my bank account the outstanding balance owed. I acknowledge that the origination of the 
+              ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
+              operating rules in effect from time to time.
+            .row
+              .col-xs-12.col-md-12= f.input :RoutingNbr, as: :string, label: 'Routing Number', required: true
+            .row
+              .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number', required: true
+          
       .form-actions
         = link_to 'Cancel', :back, class: "btn btn-default"
         %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
