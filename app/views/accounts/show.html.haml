@@ -37,6 +37,9 @@
           %p.lead
             %strong Balance:
             = number_to_currency(@account.Balance)
+          %p.lead
+            %strong Maintained Balance:
+            = @account.MaintainBal.blank? ? number_to_currency(0) : number_to_currency(@account.MaintainBal)
 
           .box-footer
             = link_to 'Back', :back, class: 'btn btn-default'

@@ -12,8 +12,22 @@
           = "#{attr} #{msg}" if @account.errors[attr].first == msg
       .form-inputs
         - if current_user.administrator?
-          = f.input :Balance, as: :decimal, label: 'Balance', required: true
           = f.input :ActTypeID, collection: AccountType.all.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
+          =# f.input :Balance, as: :decimal, label: 'Balance', required: true
+          = f.input :Balance, as: :decimal, required: true, label: "Balance" do
+            .row
+              .col-xs-12.col-sm-8
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text $
+                  = f.input_field :Balance, as: :string, class: "form-control"
+          = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
+            .row
+              .col-xs-12.col-sm-8
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text $
+                  = f.input_field :MaintainBal, as: :string, class: "form-control"
           = f.input :AbleToDelete, as: :boolean, label: "Can delete"
           = f.input :event_ids, label: 'Events' do
             - unless current_user.company.events.accounts_do_not_expire.blank?

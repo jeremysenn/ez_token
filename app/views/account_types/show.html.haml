@@ -14,6 +14,9 @@
           %p.lead
             %strong Description:
             = @account_type.description
+          %p.lead
+            %strong Minimum Maintained Balance:
+            = @account_type.MinMaintainBal.blank? ? number_to_currency(0) : number_to_currency(@account_type.MinMaintainBal)
           %table.table.table-condensed
             %thead
               %tr
