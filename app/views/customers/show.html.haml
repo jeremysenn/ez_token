@@ -88,7 +88,7 @@
                     #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
                       .panel-body
                         = render 'request_payment'
-              - if not current_user.administrator? and @account and @account.balance > 0 and @account.can_send_payment?
+              - if not current_user.administrator? and @account and @event and @account.balance > 0 and @account.can_send_payment?
                 %p
                   .panel.panel-default
                     #headingTwo.panel-heading{:role => "tab"}
