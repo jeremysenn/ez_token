@@ -5,20 +5,20 @@ class WelcomeController < ApplicationController
   
   def index
     if user_signed_in?
-      if current_user.payee? or current_user.caddy? or current_user.consumer? or current_user.vendor?
-        if not current_user.temporary_password.blank?
-          flash[:error] = "You must update your password."
-          redirect_to edit_registration_path(current_user)
-        else
-          unless current_user.customer.blank?
-            unless current_user.customer.accounts.count > 1
-              redirect_to current_user.customer
-            end
-          else
-            redirect_to users_admin_path(current_user)
-          end
-        end
-      end
+#      if current_user.payee? or current_user.caddy? or current_user.consumer? or current_user.vendor?
+#        if not current_user.temporary_password.blank?
+#          flash[:error] = "You must update your password."
+#          redirect_to edit_registration_path(current_user)
+#        else
+#          unless current_user.customer.blank?
+#            unless current_user.customer.accounts.count > 1
+#              redirect_to current_user.customer
+#            end
+#          else
+#            redirect_to users_admin_path(current_user)
+#          end
+#        end
+#      end
       if current_user.administrator? or current_user.basic?
 #        @devices = current_user.devices.order("description ASC")
         @devices = current_user.company.devices.order("description ASC")

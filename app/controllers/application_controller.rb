@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   # Permit additional parameters for Devise user
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :last_name, :temporary_password, :email, :phone, :time_zone])
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :email, :phone, :company_id])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :email, :phone, :company_id, :role])
   end
   
   # Redirect to a specific page on successful sign in

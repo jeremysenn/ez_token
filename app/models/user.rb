@@ -25,6 +25,7 @@ class User < ApplicationRecord
   scope :vendor, -> { where(role: "vendor") }
   
 #  before_create :search_for_payee_match
+  before_create :search_for_customer_match
   after_create :send_confirmation_sms_message
   after_update :send_new_phone_number_confirmation_sms_message, if: :phone_changed?
   
@@ -53,39 +54,11 @@ class User < ApplicationRecord
   end
   
   def admin?
-    role == "admin" #or role == "caddy_admin" or role == "event_admin"
-  end
-  
-  def caddy_admin?
-    role == "caddy_admin"
-  end
-  
-  def event_admin?
-    role == "event_admin"
+    role == "admin" 
   end
   
   def basic?
     role == "basic"
-  end
-  
-  def caddy?
-    role == "caddy"
-  end
-  
-  def member?
-    role == "member"
-  end
-  
-  def consumer?
-    role == "consumer"
-  end
-  
-  def payee?
-    role == "payee"
-  end
-  
-  def vendor?
-    role == "vendor"
   end
   
   def search_for_payee_match
@@ -98,6 +71,13 @@ class User < ApplicationRecord
       if self.role.blank?
         self.role = "consumer"
       end
+    end
+  end
+  
+  def search_for_customer_match
+    customer = Customer.find_by(PhoneMobile: phone)
+    unless customer.blank?
+      self.customer_id = customer.id
     end
   end
   

@@ -29,7 +29,7 @@ class Account < ActiveRecord::Base
 #  validates :ActNbr_confirmation, presence: true
 #  validates :MinBalance, numericality: { :greater_than_or_equal_to => 0 }
 #  validates :MinBalance, numericality: true
-  validate :maintain_balance_not_less_than_minimum_maintain_balance
+  validate :maintain_balance_not_less_than_minimum_maintain_balance, on: :update
   validate :credit_card_fields_filled
 
 #  before_save :encrypt_bank_account_number
@@ -498,6 +498,14 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def maintained_balance
+    unless self.MaintainBal.blank?
+      self.MaintainBal
+    else
+      0
+    end
+  end
+  
   def set_maintained_balance
     self.MaintainBal = minimum_maintain_balance
   end
@@ -511,7 +519,7 @@ class Account < ActiveRecord::Base
   end
   
   def maintain_balance_not_less_than_minimum_maintain_balance
-    if self.MaintainBal < minimum_maintain_balance
+    if maintained_balance < minimum_maintain_balance
       errors.add(:maintain_balance, "cannot be less than Wallet Type minimum maintain balance ($#{minimum_maintain_balance})") 
     end
   end
