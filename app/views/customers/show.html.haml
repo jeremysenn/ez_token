@@ -197,10 +197,10 @@
                     = @customer.user.sign_in_count
                     %br
                     Current Sign In At:
-                    = @customer.user.current_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+                    = @customer.user.current_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y') unless @customer.user.current_sign_in_at.blank?
                     %br
                     Last Sign In At:
-                    = @customer.user.last_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+                    = @customer.user.last_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y') unless @customer.user.last_sign_in_at.blank?
                     %br
                     Current Sign In IP:
                     = @customer.user.current_sign_in_ip
