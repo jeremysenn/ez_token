@@ -74,7 +74,7 @@
                       .input-group
                         .input-group-prepend
                           %span.input-group-text $
-                        = f.input_field :MaintainBal, as: :string, class: "form-control"
+                        = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
                 %p
                   I hereby authorize Transact Payment Systems to debit my bank account the outstanding balance owed. I acknowledge that the origination of the 
                   ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
