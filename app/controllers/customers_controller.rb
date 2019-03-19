@@ -118,7 +118,7 @@ class CustomersController < ApplicationController
 
     respond_to do |format|
       if @customer.save
-        format.html { redirect_to @customer, notice: "#{@customer.type} was successfully created." }
+        format.html { redirect_to @customer, notice: "Customer account was successfully created." }
         format.json { render :show, status: :created, location: @customer }
       else
         format.html { render :new }
@@ -132,7 +132,7 @@ class CustomersController < ApplicationController
   def update
     respond_to do |format|
       if @customer.update(customer_params)
-        format.html { redirect_to @customer, notice: 'Customer was successfully updated.' }
+        format.html { redirect_to @customer, notice: 'Customer account was successfully updated.' }
         format.json { render :show, status: :ok, location: @customer }
       else
         format.html { render :edit }

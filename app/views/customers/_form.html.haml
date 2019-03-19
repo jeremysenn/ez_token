@@ -56,7 +56,7 @@
             %strong Wallets
           =# f.simple_fields_for :accounts do |account_form|
           = f.nested_fields_for :accounts do |account_form|
-            - if account_form.object.company == current_user.company
+            - if account_form.object.new_record? or account_form.object.company == current_user.company
               .box.box-success
                 .box-header.with-border
                   %h3.box-title 

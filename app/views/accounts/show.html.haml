@@ -30,16 +30,28 @@
             - unless @account.events.blank?
               %br
               - @account.events.each do |event|
-                = link_to event.title, event
+                - if current_user.administrator?
+                  = link_to event.title, event
+                - else
+                  = event.title
                 %br
             - else
               None
           %p.lead
             %strong Balance:
             = number_to_currency(@account.Balance)
-          %p.lead
-            %strong Maintained Balance:
-            = @account.MaintainBal.blank? ? number_to_currency(0) : number_to_currency(@account.MaintainBal)
+          - if @account.can_fund_by_ach?
+            %h5
+              %strong ACH
+            %p.lead
+              %strong Maintained Balance:
+              = @account.MaintainBal.blank? ? number_to_currency(0) : number_to_currency(@account.MaintainBal)
+            %p.lead
+              %strong Bank Routing Number:
+              = @account.bank_routing_number.blank? ? 'None' : @account.bank_routing_number
+            %p.lead
+              %strong Bank Account Number:
+              = @account.bank_account_number.blank? ? 'None' : @account.bank_account_number
 
           .box-footer
             = link_to 'Back', :back, class: 'btn btn-default'

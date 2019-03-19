@@ -13,6 +13,7 @@ class Account < ActiveRecord::Base
   has_and_belongs_to_many :events, :join_table => :accounts_events, :uniq => true
   
   attr_accessor :last_4_of_pan
+  
   attr_accessor :cc_charge_amount
   attr_accessor :cc_number
   attr_accessor :cc_expiration
@@ -28,9 +29,14 @@ class Account < ActiveRecord::Base
 #  validates :ActNbr_confirmation, presence: true
 #  validates :MinBalance, numericality: { :greater_than_or_equal_to => 0 }
 #  validates :MinBalance, numericality: true
+  validate :maintain_balance_not_less_than_minimum_maintain_balance
+  validate :credit_card_fields_filled
 
-  before_save :encrypt_bank_account_number
-  before_save :encrypt_bank_routing_number
+#  before_save :encrypt_bank_account_number
+#  before_save :encrypt_bank_routing_number
+  
+  before_save :check_for_funding_payment
+  before_create :set_maintained_balance
   
   #############################
   #     Instance Methods      #
@@ -490,6 +496,46 @@ class Account < ActiveRecord::Base
     else
       return nil
     end
+  end
+  
+  def set_maintained_balance
+    self.MaintainBal = minimum_maintain_balance
+  end
+  
+  def minimum_maintain_balance
+    unless account_type.blank? or account_type.MinMaintainBal.blank?
+      account_type.MinMaintainBal
+    else
+      0
+    end
+  end
+  
+  def maintain_balance_not_less_than_minimum_maintain_balance
+    if self.MaintainBal < minimum_maintain_balance
+      errors.add(:maintain_balance, "cannot be less than Wallet Type minimum maintain balance ($#{minimum_maintain_balance})") 
+    end
+  end
+  
+  def check_for_funding_payment
+    unless cc_charge_amount.blank? and cc_number.blank? and cc_expiration.blank? and cc_cvc.blank?
+      unless not cc_charge_amount.blank? and (cc_number.blank? or cc_expiration.blank? or cc_cvc.blank?)
+        self.Balance = self.Balance + cc_charge_amount.to_d
+      end
+    end
+  end
+  
+  def credit_card_fields_filled
+    if not cc_charge_amount.blank? and (cc_number.blank? or cc_expiration.blank? or cc_cvc.blank?)
+      errors.add(:credit_card, "all fields must be filled out")
+    end
+  end
+  
+  def bank_routing_number
+    self.RoutingNbr
+  end
+  
+  def bank_account_number
+    self.BankActNbr
   end
   
   #############################

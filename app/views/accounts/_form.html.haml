@@ -2,7 +2,9 @@
   - unless @customer.blank?
     .box-header.with-border
       %h3.box-title 
-        = @customer.full_name.blank? ? @customer.company.name : @customer.full_name
+        - if current_user.administrator?
+          = @customer.full_name.blank? ? @customer.company.name : @customer.full_name
+        = number_to_currency(@account.Balance)
   .box-body
     = simple_form_for(@account) do |f|
       = f.error_notification
@@ -14,20 +16,14 @@
         - if current_user.administrator?
           = f.input :ActTypeID, collection: AccountType.all.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
           =# f.input :Balance, as: :decimal, label: 'Balance', required: true
-          = f.input :Balance, as: :decimal, required: true, label: "Balance" do
-            .row
-              .col-xs-12.col-sm-8
-                .input-group
-                  .input-group-prepend
-                    %span.input-group-text $
-                  = f.input_field :Balance, as: :string, class: "form-control"
-          = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
-            .row
-              .col-xs-12.col-sm-8
-                .input-group
-                  .input-group-prepend
-                    %span.input-group-text $
-                  = f.input_field :MaintainBal, as: :string, class: "form-control"
+          -#
+            = f.input :Balance, as: :decimal, required: true, label: "Balance" do
+              .row
+                .col-xs-12.col-sm-8
+                  .input-group
+                    .input-group-prepend
+                      %span.input-group-text $
+                    = f.input_field :Balance, as: :string, class: "form-control"
           = f.input :AbleToDelete, as: :boolean, label: "Can delete"
           = f.input :event_ids, label: 'Events' do
             - unless current_user.company.events.accounts_do_not_expire.blank?
@@ -42,23 +38,55 @@
               = f.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
                 .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: @account.events.first == event_field.object) + ' ' + event_field.text }
         - else
-          - if @account.can_fund_by_cc?
-            .row
-              .col-xs-12.col-md-4= f.input :cc_charge_amount, as: :decimal, label: 'Amount', required: true
-            .row
-              .col-xs-12.col-md-12= f.input :cc_number, as: :string, label: 'Card Number', required: true
-            .row
-              .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry', required: true
-              .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC', required: true
-          - elsif @account.can_fund_by_ach?
-            %p
-              I hereby authorize Transact Payment Systems to debit my bank account the outstanding balance owed. I acknowledge that the origination of the 
-              ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
-              operating rules in effect from time to time.
-            .row
-              .col-xs-12.col-md-12= f.input :RoutingNbr, as: :string, label: 'Routing Number', required: true
-            .row
-              .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number', required: true
+          %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+            - if @account.can_fund_by_cc?
+              %li.nav-item
+                %a#add-funds-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#add_funds", :role => "tab"} 
+                  Add Funds
+            - if @account.can_fund_by_ach?
+              %li.nav-item
+                %a#ach-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#ach", :role => "tab"} 
+                  ACH
+          #myTabContent.tab-content
+            - if @account.can_fund_by_cc?
+              #add_funds.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                %br
+                %strong Add Funds by Credit/Debit Card
+                = f.input :cc_charge_amount, as: :decimal, label: "Amount" do
+                  .row
+                    .col-xs-12.col-sm-4
+                      .input-group
+                        .input-group-prepend
+                          %span.input-group-text $
+                        = f.input_field :cc_charge_amount, as: :string, class: "form-control"
+                .row
+                  .col-xs-12.col-md-12= f.input :cc_number, as: :string, label: 'Card Number'
+                .row
+                  .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry'
+                  .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC'
+            - if @account.can_fund_by_ach?
+              #ach.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                %br
+                %strong ACH Details
+                = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
+                  .row
+                    .col-xs-12.col-sm-4
+                      .input-group
+                        .input-group-prepend
+                          %span.input-group-text $
+                        = f.input_field :MaintainBal, as: :string, class: "form-control"
+                %p
+                  I hereby authorize Transact Payment Systems to debit my bank account the outstanding balance owed. I acknowledge that the origination of the 
+                  ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
+                  operating rules in effect from time to time.
+                .row
+                  -#
+                    .col-xs-12.col-md-12= f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :string, label: 'Routing Number'
+                  .col-xs-12.col-md-12= f.input :RoutingNbr,  as: :string, label: 'Routing Number'
+                .row
+                  -#
+                    .col-xs-12.col-md-12= f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :string, label: 'Account Number'
+                  .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number'
           
       .form-actions
         = link_to 'Cancel', :back, class: "btn btn-default"
