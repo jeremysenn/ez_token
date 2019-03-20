@@ -44,8 +44,7 @@
               %thead
                 %tr
                   %th Title
-                  - unless current_user.caddy_admin?
-                    %th Join Code
+                  %th Join Code
                   %th Start 
                   %th End
                   %th Expire Accounts
@@ -54,8 +53,7 @@
                 - @events.each do |event|
                   %tr
                     %td= event.title
-                    - unless current_user.caddy_admin?
-                      %td= event.join_code
+                    %td= event.join_code
                     %td= event.start_date
                     %td= event.end_date
                     %td= event.expire_accounts? ? 'Yes' : 'No'
