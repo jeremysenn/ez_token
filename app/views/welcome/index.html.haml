@@ -8,11 +8,5 @@
         = render 'admin_user_start'
     - elsif current_user.basic?
       = render 'basic_user_start'
-    - elsif current_user.payee?
-      = render 'customer_user_start'
-    - elsif current_user.consumer?
-      = render 'consumer_user_start'
-    - elsif current_user.vendor?
-      = render 'vendor_user_start'
   - else
     = render 'no_user_start'

@@ -80,7 +80,11 @@
                         %td= link_to customer.CreateDate, customer
                       %td
                         - unless customer.accounts.where(CompanyNumber: current_user.company_id).blank?
-                          = safe_join(customer.accounts.where(CompanyNumber: current_user.company_id).map { |account| link_to(truncate(account.account_type.description, length: 10), account) }, ", ".html_safe)
+                          =# safe_join(customer.accounts.where(CompanyNumber: current_user.company_id).map { |account| link_to(truncate(account.account_type.description, length: 10), account) }, ", ".html_safe)
+                          - customer.accounts.each do |account|
+                            = link_to account.account_type.description, account
+                            = number_to_currency(account.balance)
+                            %br
                         - else
                           None
                       %td

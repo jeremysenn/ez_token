@@ -42,7 +42,7 @@ class TwilioController < ApplicationController
             message.body("Welcome to EZ Token #{plain_cell_number}. Sorry, we're not able to find an open event with that join code.")
           else
             message.body(event.join_response)
-          
+            CreateUserCustomerEventAccountWalletWorker.perform_async(event.id, plain_cell_number)
             ### Put all of this into background process
 #            customer = Customer.create(CompanyNumber: 7, LangID: 1, Active: 1, GroupID: 5)
 #            user = User.create(phone: plain_cell_number, company_id: 7, role: "basic", customer_id: customer.id, confirmed_at: Time.now)
@@ -65,15 +65,18 @@ class TwilioController < ApplicationController
           if event.blank?
             message.body("Welcome back to ezToken #{user.full_name}. Sorry, we're not able to find an open event with that join code.")
           else
-            account = user.create_event_account(event)
-            if account
-              body_1 = event.join_response
-              body_2 = (account.can_fund_by_cc? or account.can_fund_by_ach?) ? " - you can fund your Wallet here: #{edit_account_url(account)}" : ''
-              message.body(body_1 + body_2)
-              message.media(qr_code_customer_path(user.customer.barcode_access_string))
-            else
-              message.body("You already have a Wallet for #{event.title}.")
-            end
+            message.body(event.join_response)
+            CreateEventAccountWalletWorker.perform_async(event.id)
+            ### Put all of this into background process
+#            account = user.create_event_account(event)
+#            if account
+#              body_1 = event.join_response
+#              body_2 = (account.can_fund_by_cc? or account.can_fund_by_ach?) ? " - you can fund your Wallet here: #{edit_account_url(account)}" : ''
+#              message.body(body_1 + body_2)
+#              message.media(qr_code_customer_path(user.customer.barcode_access_string))
+#            else
+#              message.body("You already have a Wallet for #{event.title}.")
+#            end
           end
         end
     end
