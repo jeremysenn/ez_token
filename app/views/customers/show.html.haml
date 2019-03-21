@@ -25,8 +25,9 @@
               .text-center
                 %small= "(#{account.account_type.description})"
           - else
-            %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> #{index + 1}"}}
+            %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> Wallet #{index + 1}"}}
               %i.fa.fa-google-wallet
+              Wallet
               = "#{index + 1}"
     %p
       - unless @events.blank?
