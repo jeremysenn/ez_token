@@ -1,6 +1,7 @@
 %div{:id => "request_payment_details"}
   = form_tag quick_purchase_transactions_path, id: 'quick_purchase_form', method: 'post', class: 'form-inline' do |f|
-    = hidden_field_tag :to_account_id, current_user.customer.account.id
+    =# hidden_field_tag :to_account_id, current_user.customer.account.id
+    = hidden_field_tag :to_account_id, @account.id
     .input-group.input-group-lg.mb-3
       .input-group-prepend
         %span.input-group-text $

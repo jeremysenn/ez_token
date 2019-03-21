@@ -25,14 +25,6 @@
             = render 'shared/admin_user_navbar' 
         - elsif current_user.basic?
           = render 'shared/basic_user_navbar' 
-        - elsif current_user.consumer?
-          = render 'shared/consumer_user_navbar' 
-        - elsif current_user.payee?
-          = render 'shared/customer_user_navbar'
-        - elsif current_user.vendor?
-          = render 'shared/vendor_user_navbar'
-        - elsif current_user.caddy?
-          = render 'shared/caddy_user_navbar'
       = yield
       - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
         %footer.main-footer
