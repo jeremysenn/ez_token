@@ -10,9 +10,10 @@
         %a{href: edit_customer_path(@customer)}
           %i.fa.fa-pencil
     - else
-      %h3
-        %i.fa.fa-male
-        = @customer.user_name
+      - unless @customer.user_name.blank?
+        %h3
+          %i.fa.fa-male
+          = @customer.user_name
     
     - unless @accounts.blank? or @accounts.count == 1
       .btn-group
@@ -291,7 +292,7 @@
                             -#
                               %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
                             %td
-                              - unless payment_transaction.to_account_customer.blank?
+                              - unless payment_transaction.to_account_customer.blank? or (payment_transaction.to_account_customer.full_name.blank? and payment_transaction.to_account_customer.user.full_name.blank?)
                                 = payment_transaction.to_account_customer.user.blank? ? payment_transaction.to_account_customer.full_name : payment_transaction.to_account_customer.user.full_name
                               - else
                                 = payment_transaction.to_account.company.CompanyName

@@ -7,6 +7,18 @@ GIT
       activerecord (~> 5.1.0)
       tiny_tds
 
+GIT
+  remote: https://github.com/sinatra/sinatra.git
+  revision: 6f15fba2790ebdf4d1215cebf425dea2ea3130ea
+  specs:
+    rack-protection (2.0.5)
+      rack
+    sinatra (2.0.5)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.5)
+      tilt (~> 2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -176,6 +188,7 @@ GEM
     minitest (5.11.3)
     multi_json (1.13.1)
     multipart-post (2.0.0)
+    mustermann (1.0.3)
     nested_form_fields (0.8.2)
       coffee-rails (>= 3.2.1)
       jquery-rails
@@ -189,8 +202,6 @@ GEM
     public_suffix (3.0.2)
     puma (3.11.2)
     rack (2.0.4)
-    rack-protection (2.0.5)
-      rack
     rack-test (0.8.3)
       rack (>= 1.0, < 3)
     rails (5.1.5)
@@ -340,6 +351,7 @@ DEPENDENCIES
   listen (>= 3.0.5, < 3.2)
   nested_form_fields
   puma (~> 3.7)
+  rack-protection
   rails (~> 5.1.5)
   rqrcode
   sass-rails (~> 5.0)
@@ -347,6 +359,7 @@ DEPENDENCIES
   selenium-webdriver
   sidekiq
   simple_form
+  sinatra!
   spring
   spring-watcher-listen (~> 2.0.0)
   sqlite3

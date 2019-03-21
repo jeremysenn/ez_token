@@ -100,6 +100,9 @@ gem 'nested_form_fields'
 
 # Background jobs
 gem 'sidekiq'
+# For sidekiq web UI
+gem 'sinatra', github: 'sinatra/sinatra', require: false
+gem 'rack-protection'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

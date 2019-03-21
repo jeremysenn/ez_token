@@ -66,7 +66,7 @@ class TwilioController < ApplicationController
             message.body("Welcome back to ezToken #{user.full_name}. Sorry, we're not able to find an open event with that join code.")
           else
             message.body(event.join_response)
-            CreateEventAccountWalletWorker.perform_async(event.id)
+            CreateEventAccountWalletWorker.perform_async(event.id, user.id)
             ### Put all of this into background process
 #            account = user.create_event_account(event)
 #            if account
