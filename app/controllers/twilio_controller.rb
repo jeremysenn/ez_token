@@ -39,7 +39,7 @@ class TwilioController < ApplicationController
     response.message do |message|
         if user.blank?
           if event.blank?
-            message.body("Welcome to EZ Token #{plain_cell_number}. Sorry, we're not able to find an open event with that join code.")
+            message.body("Welcome to EZ Token #{plain_cell_number}! Sorry, we're not able to find an open event with that join code.")
           else
             message.body(event.join_response)
             CreateUserCustomerEventAccountWalletWorker.perform_async(event.id, plain_cell_number)
@@ -63,9 +63,9 @@ class TwilioController < ApplicationController
           end
         else
           if event.blank?
-            message.body("Welcome back to ezToken #{user.full_name}. Sorry, we're not able to find an open event with that join code.")
+            message.body("Welcome back to ezToken #{user.full_name}! Sorry, we're not able to find an open event with that join code.")
           else
-#            message.body(event.join_response)
+            message.body("Welcome back to ezToken!")
             CreateEventAccountWalletWorker.perform_async(event.id, user.id)
             ### Put all of this into background process
 #            account = user.create_event_account(event)
