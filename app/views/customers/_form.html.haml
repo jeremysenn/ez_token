@@ -97,6 +97,11 @@
                           .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: account_form.object.events.first == event_field.object) + ' ' + event_field.text }
 
           %p= f.add_nested_fields_link :accounts, "<i class='fa fa-plus'></i> Add Wallet".html_safe, class: 'btn bg-orange btn-sm', role: 'button'
+        - else
+          = f.input :NameF, label: 'First Name', required: true
+          = f.input :NameL, label: 'Last Name', required: true
+          = f.input :PhoneMobile, label: 'Phone', required: true
+          = f.input :Email, label: 'Email', required: true
 
       .form-actions
         %hr

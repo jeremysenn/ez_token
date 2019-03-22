@@ -28,7 +28,9 @@ class User < ApplicationRecord
   before_create :search_for_customer_match
   after_create :send_confirmation_sms_message
   after_update :send_new_phone_number_confirmation_sms_message, if: :phone_changed?
-  
+  after_update :update_customer_record,
+    :if => proc {|obj| obj.phone_changed? || obj.first_name_changed? ||  obj.last_name_changed? || obj.email_changed?}  
+      
   validates :phone, uniqueness: true, presence: true  
     
   #############################
@@ -109,6 +111,18 @@ class User < ApplicationRecord
   
   def phone_changed?
     saved_change_to_phone?
+  end
+  
+  def first_name_changed?
+    saved_change_to_first_name?
+  end
+  
+  def last_name_changed?
+    saved_change_to_last_name?
+  end
+  
+  def email_changed?
+    saved_change_to_email?
   end
   
   def devices
@@ -216,6 +230,12 @@ class User < ApplicationRecord
       rescue Twilio::REST::RestError => e
         puts e.message
       end
+    end
+  end
+  
+  def update_customer_record
+    unless customer.blank?
+      customer.update_attributes(PhoneMobile: phone, NameF: first_name, NameL: last_name, Email: email)
     end
   end
   
