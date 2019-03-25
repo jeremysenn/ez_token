@@ -59,7 +59,7 @@
               %h5.text-muted
                 Balance
                 = number_to_currency(@account.blank? ? 0 : @account.balance)
-                - if (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and not current_user.administrator?
+                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?)) and not current_user.administrator?
                   %a.btn.btn-sm.btn-default{href: edit_account_path(@account)}
                     %i.fa.fa-credit-card
                     Fund
@@ -243,7 +243,7 @@
                 %a#payments-tab.nav-link.active{"aria-controls" => "payments", "aria-selected" => "true", "data-toggle" => "tab", :href => "#payments", :role => "tab"} 
                   %i.fa.fa-dollar.fa-lg
                   = "Payments"
-              - if @account.can_withdraw?
+              - if @account and @account.can_withdraw?
                 %li.nav-item
                   %a#withdrawals-tab.nav-link{"aria-controls" => "withdrawals", "aria-selected" => "false", "data-toggle" => "tab", :href => "#withdrawals", :role => "tab"} 
                     %i.fa.fa-money.fa-lg
