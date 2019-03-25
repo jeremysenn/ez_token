@@ -139,7 +139,7 @@
                     .box-body
                       = render 'withdrawal'
                 
-            - if current_user.administrator? and not @customer.anonymous?
+            - if @account and current_user.administrator? and not @customer.anonymous?
               %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
                 %h5
                   %b 
