@@ -10,7 +10,7 @@ class Customer < ActiveRecord::Base
   has_many :sms_messages
   
 #  has_one :account, :foreign_key => "CustomerID"
-  has_many :accounts, :foreign_key => "CustomerID", inverse_of: :customer
+  has_many :accounts, :foreign_key => "CustomerID", inverse_of: :customer, dependent: :destroy
   has_many :transactions, :through => :account
   has_one :user
   has_many :sms_messages
