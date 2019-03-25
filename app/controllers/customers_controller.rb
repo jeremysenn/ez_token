@@ -1,7 +1,7 @@
 class CustomersController < ApplicationController
   before_action :authenticate_user!, except: [:qr_code]
   before_action :set_customer, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message, :barcode, :create_account_and_add_to_event]
-#  load_and_authorize_resource :except => [:find_by_barcode]
+  load_and_authorize_resource :except => [:find_by_barcode]
 #  skip_load_resource only: [:barcode]
   skip_load_resource only: [:find_by_barcode, :qr_code]
   

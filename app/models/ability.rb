@@ -33,7 +33,11 @@ class Ability
       
       # Customers
       ############
-      can :manage, Customer
+      can :manage, Customer do |customer|
+#        user.company == customer.company
+        customer.accounts.exists?(CompanyNumber: user.company.id)
+        true
+      end
       can :create, Customer
       
       # PaymentBatches
