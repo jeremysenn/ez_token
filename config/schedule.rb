@@ -29,5 +29,5 @@ every :reboot do
 #  job_type :application, "cd /Users/jeremy/Ruby/ez_token && :task :output"
   
   application "rails server -p 3003" # Start application server
-#  application "bundle exec sidekiq -c 5" # Start background workers
+  application "bundle exec sidekiq -c 5" # Start background workers
 end
