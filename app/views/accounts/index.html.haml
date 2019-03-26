@@ -4,8 +4,7 @@
     %section.content-header
       = render 'shared/flash_messages'
       %h1
-        %i.fa.fa-google-wallet
-        Wallets
+        Accounts
         -# %small= link_to 'New', new_customer_path, class: 'btn bg-orange'
     / Main content
     %section.content
@@ -22,12 +21,20 @@
                       %i.fa.fa-search
             - else
               .box-tools
-                = form_tag accounts_path, id: 'accounts_search_form', method: 'get', class: 'form-inline' do |f|
-                  .input-group
-                    = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
-                    .input-group-append
-                      %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                        %i.fa.fa-search
+                = form_tag accounts_path, :method => 'get', :class => "form-inline" do
+                  = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title",@event_id), class: "form-control"
+                  &nbsp;
+                  = select_tag :type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @type_id), class: "form-control"
+                  &nbsp;
+                  = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                    %i.fa.fa-search
+                -#
+                  = form_tag accounts_path, id: 'accounts_search_form', method: 'get', class: 'form-inline' do |f|
+                    .input-group
+                      = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
+                      .input-group-append
+                        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                          %i.fa.fa-search
           %br
           %small.text-muted
             = "#{pluralize(number_with_delimiter(@accounts.count), 'account')} found"
@@ -39,6 +46,7 @@
                 %tr
                   %th ID
                   %th User Account 
+                  %th Type
                   %th Events
                   %th Balance
                   %th
@@ -54,6 +62,7 @@
                             = link_to "#{account.user.full_name} (#{account.user.role})", customer_path(account.customer.id, account_id: account.id)
                       - else
                         None
+                    %td= account.account_type.description
                     %td
                       - unless account.events.blank?
                         - account.events.each do |event|
