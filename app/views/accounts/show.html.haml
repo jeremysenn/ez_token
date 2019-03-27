@@ -48,10 +48,10 @@
               = @account.MaintainBal.blank? ? number_to_currency(0) : number_to_currency(@account.MaintainBal)
             %p.lead
               %strong Bank Routing Number:
-              = @account.bank_routing_number.blank? ? 'None' : @account.bank_routing_number
+              = @account.bank_routing_number.blank? ? 'None' : "****#{@account.decrypted_bank_routing_number.last(4)}"
             %p.lead
               %strong Bank Account Number:
-              = @account.bank_account_number.blank? ? 'None' : @account.bank_account_number
+              = @account.bank_account_number.blank? ? 'None' : "****#{@account.decrypted_bank_account_number.last(4)}"
 
           .box-footer
             = link_to 'Back', :back, class: 'btn btn-default'

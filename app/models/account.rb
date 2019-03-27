@@ -32,8 +32,8 @@ class Account < ActiveRecord::Base
   validate :maintain_balance_not_less_than_minimum_maintain_balance, on: :update
   validate :credit_card_fields_filled
 
-#  before_save :encrypt_bank_account_number
-#  before_save :encrypt_bank_routing_number
+  before_save :encrypt_bank_account_number
+  before_save :encrypt_bank_routing_number
   
   before_save :check_for_funding_payment
   before_create :set_maintained_balance
@@ -307,6 +307,22 @@ class Account < ActiveRecord::Base
       encrypted_and_encoded = Base64.strict_encode64(encrypted) # Base 64 encode it; strict_encode64 doesn't add the \n character on the end
       self.RoutingNbr = encrypted_and_encoded
 #      self.update_attribute(:RoutingNbr, encrypted_and_encoded)
+    end
+  end
+  
+  def encrypted_bank_account_number
+    unless self.BankActNbr.blank?
+      encrypted = Decrypt.encryption(self.BankActNbr) # Encrypt the bank account number
+      encrypted_and_encoded = Base64.strict_encode64(encrypted) # Base 64 encode it; strict_encode64 doesn't add the \n character on the end
+      return encrypted_and_encoded
+    end
+  end
+  
+  def encrypted_bank_routing_number
+    unless self.RoutingNbr.blank?
+      encrypted = Decrypt.encryption(self.RoutingNbr) # Encrypt the bank routing number
+      encrypted_and_encoded = Base64.strict_encode64(encrypted) # Base 64 encode it; strict_encode64 doesn't add the \n character on the end
+      return encrypted_and_encoded
     end
   end
   
