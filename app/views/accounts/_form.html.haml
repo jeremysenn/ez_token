@@ -65,7 +65,7 @@
                   .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry'
                   .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC'
             - if @account.can_fund_by_ach?
-              #ach.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+              #ach.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel", class: @account.can_fund_by_cc? ? '' : 'active'}
                 %br
                 %strong ACH Details
                 = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do

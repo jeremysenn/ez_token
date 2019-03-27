@@ -149,6 +149,12 @@ class Ability
         account.customer == user.customer
       end
       
+      # Customers
+      ############
+      can :manage, Customer do |customer|
+        user.customer == customer
+      end
+      
     end
     
   end
