@@ -296,12 +296,12 @@
                               - unless payment_transaction.to_account_customer.blank? or (payment_transaction.to_account_customer.full_name.blank? and payment_transaction.to_account_customer.user.full_name.blank?)
                                 = payment_transaction.to_account_customer.user.blank? ? payment_transaction.to_account_customer.full_name : payment_transaction.to_account_customer.user.full_name
                               - else
-                                = payment_transaction.to_account.company.CompanyName
+                                = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
                             %td
                               - unless payment_transaction.from_account_customer.blank?
                                 = payment_transaction.from_account_customer.user.blank? ? payment_transaction.from_account_customer.full_name : payment_transaction.from_account_customer.user.full_name
                               - else
-                                = payment_transaction.from_account.company.CompanyName
+                                = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
                             %td= number_to_currency(payment_transaction.amt_auth)
                             -#
                               %td
