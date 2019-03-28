@@ -16,6 +16,10 @@ class Transaction < ActiveRecord::Base
   scope :checks, -> { where(tran_code: ["CHK"], sec_tran_code: ["TFR"]) }
   scope :not_fees, -> { where.not(tran_code: ["FEE"]) }
   
+  scope :cuts, -> { where(tran_code: ["CUT"]) }
+  scope :adds, -> { where(tran_code: ["ADD"]) }
+  scope :adds_and_cuts, -> { where(tran_code: ["ADD", "CUT"]) }
+  
   #############################
   #     Instance Methods      #
   #############################

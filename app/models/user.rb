@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable #, :timeoutable
   
 #  ROLES = %w[admin caddy_admin event_admin basic caddy member consumer payee vendor].freeze
-  ROLES = %w[admin basic].freeze
+  ROLES = %w[admin basic collaborator].freeze
        
   belongs_to :company
   belongs_to :customer, optional: true
@@ -15,14 +15,9 @@ class User < ApplicationRecord
   serialize :device_ids, Array
   
   scope :admin, -> { where(role: "admin") }
-  scope :caddy_admin, -> { where(role: "caddy_admin") }
-  scope :event_admin, -> { where(role: "event_admin") }
   scope :basic, -> { where(role: "basic") }
-  scope :caddy, -> { where(role: "caddy") }
-  scope :member, -> { where(role: "member") }
-  scope :consumer, -> { where(role: "consumer") }
+  scope :collaborator, -> { where(role: "collaborator") }
   scope :payee, -> { where(role: "payee") }
-  scope :vendor, -> { where(role: "vendor") }
   
 #  before_create :search_for_payee_match
   before_create :search_for_customer_match

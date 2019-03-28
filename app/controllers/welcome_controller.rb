@@ -40,6 +40,10 @@ class WelcomeController < ApplicationController
           @denoms = @device.denoms
           @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
           
+          @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
+          @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)
+          @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: 3.months.ago..Time.now)
+          
           # Withdrawals Info
           @withdrawals = @device.transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
           @withdrawals_week_data = []
