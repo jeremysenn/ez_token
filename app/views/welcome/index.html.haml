@@ -1,7 +1,7 @@
 .wrapper
   - if user_signed_in?
     =# render 'admin_user_sidebar'
-    - if current_user.admin?
+    - if current_user.admin? or current_user.collaborator?
       - if browser.device.mobile?
         = render 'mobile_admin_user_start' 
       - else

@@ -3,10 +3,10 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/'
 
 
-$(document).on 'turbolinks:load', ->
-  $('#user_role_basic').on 'click', (e) ->
-    $('#user_devices').show()
-    return
-  $('#user_role_admin').on 'click', (e) ->
-    $('#user_devices').hide()
-    return
+#$(document).on 'turbolinks:load', ->
+#  $('#user_role_basic').on 'click', (e) ->
+#    $('#user_devices').show()
+#    return
+#  $('#user_role_admin').on 'click', (e) ->
+#    $('#user_devices').hide()
+#    return

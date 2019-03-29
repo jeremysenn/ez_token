@@ -6,17 +6,61 @@
       .form-inputs
         - if current_user.admin?
           = f.input :company_id, :as => :hidden, :input_html => { :value => "#{@user.new_record? ? current_user.company_id : @user.company_id}" }
-          = f.input :role, as: :radio_buttons, collection: [['admin', 'Admin'], ['basic', 'Basic']], label_method: :second, value_method: :first, label: false
-          = f.input :first_name, label: 'First Name'
-          = f.input :last_name, label: 'First Name'
-          = f.input :email, label: 'Email'  
-          = f.input :phone, label: 'Phone'
-          #user_devices.form-group{style: "#{@user.basic? ? 'display: block;' : 'display: none;'}"}
-            = f.label "Devices"
-            - current_user.company.devices.each do |device|
-              .col-xs-6
-                = check_box_tag "user[device_ids][]", device.id, (@user.device_ids.include? device.id.to_s), {id: "user_device_#{device.id}", class: "form_control"}
-                = device.description
+          = f.input :role, as: :radio_buttons, collection: [['admin', 'Admin'], ['collaborator', 'Collaborator']], label_method: :second, value_method: :first, label: false
+          .row
+            .col-xs-12.col-sm-6
+              = f.input :first_name, label: 'First Name'
+            .col-xs-12.col-sm-6
+              = f.input :last_name, label: 'Last Name'
+          .row
+            .col-xs-12.col-sm-6
+              = f.input :email, label: 'Email'  
+            .col-xs-12.col-sm-6
+              = f.input :phone, label: 'Phone'
+          .row
+            .col-xs-12.col-sm-8
+              = f.input :time_zone, priority: /US/, collection: ActiveSupport::TimeZone.us_zones, required: true, as: :time_zone
+          #user_devices.form-group{style: "#{@user.collaborator? ? 'display: block;' : 'display: none;'}"}
+            - unless current_user.company.devices.blank?
+              = f.label "Devices"
+              - current_user.company.devices.each do |device|
+                .col-xs-6
+                  = check_box_tag "user[device_ids][]", device.id, (@user.device_ids.include? device.id.to_s), {id: "user_device_#{device.id}", class: "form_control"}
+                  = device.description
+          #user_permissions.form-group{style: "#{@user.collaborator? ? 'display: block;' : 'display: none;'}"}
+            .row
+              .col-xs-12.col-sm-6
+                = f.input :view_events, as: :boolean, label: 'View events'
+                = f.input :edit_events, as: :boolean, label: 'Edit events'
+                = f.input :view_wallet_types, as: :boolean, label: 'View wallet types'
+                = f.input :edit_wallet_types, as: :boolean, label: 'Edit wallet types'
+                = f.input :view_accounts, as: :boolean, label: 'View accounts'
+                = f.input :edit_accounts, as: :boolean, label: 'Edit accounts'
+
+              .col-xs-12.col-sm-6
+                = f.input :view_users, as: :boolean, label: 'View users'
+                = f.input :edit_users, as: :boolean, label: 'Edit users'
+                = f.input :view_atms, as: :boolean, label: 'View ATMs'
+                = f.input :can_quick_pay, as: :boolean, label: 'Can quick pay'
       .form-actions
         = link_to 'Cancel', :back, class: 'btn btn-default'
         = f.button :submit, 'Save'
+
+:javascript
+  
+  $(document).on("click", '#user_role_admin' , function() {
+    $('#user_permissions').hide();
+    $('#user_devices').hide();
+    $('#user_permissions').closest('.form-group').find('input[type="checkbox"]').attr("checked", false);
+  });
+
+  $(document).on("click", '#user_role_basic' , function() {
+    $('#user_permissions').hide();
+    $('#user_devices').hide();
+    $('#user_permissions').closest('.form-group').find('input[type="checkbox"]').attr("checked", false);
+  });
+
+  $(document).on("click", '#user_role_collaborator' , function() {
+    $('#user_permissions').show();
+    $('#user_devices').show();
+  });

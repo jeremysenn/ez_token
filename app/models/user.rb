@@ -58,6 +58,10 @@ class User < ApplicationRecord
     role == "basic"
   end
   
+  def collaborator?
+    role == "collaborator"
+  end
+  
   def search_for_payee_match
     payee = Customer.find_by(PhoneMobile: phone)
     unless payee.blank?
@@ -232,6 +236,50 @@ class User < ApplicationRecord
     unless customer.blank?
       customer.update_attributes(PhoneMobile: phone, NameF: first_name, NameL: last_name, Email: email)
     end
+  end
+  
+  def can_view_events?
+    admin? or view_events?
+  end
+  
+  def can_edit_events?
+    admin? or edit_events?
+  end
+  
+  def can_view_accounts?
+    admin? or view_accounts?
+  end
+  
+  def can_edit_accounts?
+    admin? or edit_accounts?
+  end
+  
+  def can_view_wallet_types?
+    admin? or view_wallet_types?
+  end
+  
+  def can_edit_wallet_types?
+    admin? or edit_wallet_types?
+  end
+  
+  def can_view_users?
+    admin? or view_users?
+  end
+  
+  def can_edit_users?
+    admin? or edit_users?
+  end
+  
+  def can_view_atms?
+    admin? or view_atms?
+  end
+  
+  def can_view_atms?
+    admin? or view_atms?
+  end
+  
+  def can_quick_pay_customers?
+    admin? or can_quick_pay?
   end
   
 end

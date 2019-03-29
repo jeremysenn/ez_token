@@ -19,7 +19,7 @@ class WelcomeController < ApplicationController
 #          end
 #        end
 #      end
-      if current_user.administrator? or current_user.basic?
+      if current_user.administrator? or current_user.basic? or current_user.collaborator?
 #        @devices = current_user.devices.order("description ASC")
         @devices = current_user.company.devices.order("description ASC")
         @start_date = params[:start_date] ||= (Date.today - 1.week).to_s

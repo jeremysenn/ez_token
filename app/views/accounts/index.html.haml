@@ -22,7 +22,7 @@
             - else
               .box-tools
                 = form_tag accounts_path, :method => 'get', :class => "form-inline" do
-                  = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title",@event_id), class: "form-control"
+                  = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title", @event_id), class: "form-control"
                   &nbsp;
                   = select_tag :type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @type_id), class: "form-control"
                   &nbsp;
