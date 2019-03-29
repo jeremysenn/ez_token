@@ -1,12 +1,12 @@
 .box.box-primary
   .box-body
     =# simple_form_for(@user) do |f|
-    = simple_form_for(@user, url: users_admin_path)  do |f|
+    = simple_form_for(@user, url: @user.new_record? ? users_admin_index_path : users_admin_path)  do |f|
       = f.error_notification
       .form-inputs
         - if current_user.admin?
           = f.input :company_id, :as => :hidden, :input_html => { :value => "#{@user.new_record? ? current_user.company_id : @user.company_id}" }
-          = f.input :role, as: :radio_buttons, collection: [['admin', 'Admin'], ['collaborator', 'Collaborator']], label_method: :second, value_method: :first, label: false
+          = f.input :role, as: :radio_buttons, collection: [['admin', 'Admin'], ['basic', 'Basic'], ['collaborator', 'Collaborator']], label_method: :second, value_method: :first, label: false
           .row
             .col-xs-12.col-sm-6
               = f.input :first_name, label: 'First Name'
