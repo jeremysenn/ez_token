@@ -76,3 +76,20 @@
       return false;
     }
   });
+
+  $('#from_account_id').select2({
+    theme: 'bootstrap',
+    minimumInputLength: 3,
+    dropdownParent: $("#request_payment_buddy_search_modal")
+  });
+
+  $('#request_payment_details').on('click', '#open_buddy_search_button', function(e) {
+    var amount;
+    amount = parseFloat($('#amount').val());
+    if (amount > 0) {
+      return $('.request_payment_amount').html("$" + amount);
+    } else {
+      alert("Amount must be greater than $0");
+      return false;
+    }
+  });

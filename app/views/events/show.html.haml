@@ -79,11 +79,11 @@
                           %td= account.id
                           %td
                             - unless (account.user.blank? and account.customer.blank?)
-                              = link_to "#{account.customer_user_name} (#{account.customer_user_role})", customer_path(account.customer.id, account_id: account.id)
+                              = link_to "#{account.customer_user_name} (#{account.description})", customer_path(account.customer.id, account_id: account.id)
                             - else
                               N/A
                           %td= number_to_currency(account.Balance)
-                          %td= link_to "Show", account, class: 'btn btn-secondary'
+                          %td= link_to "Show", account, class: 'btn btn-sm btn-secondary'
               - else
                 .container
                   .jumbotron{style: "background-color: transparent;"}

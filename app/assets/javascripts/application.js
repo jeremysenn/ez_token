@@ -23,4 +23,5 @@
 //= require Chart.min
 //= require zxing-js.min
 //= require nested_form_fields
+//= require select2
 //= require_tree .

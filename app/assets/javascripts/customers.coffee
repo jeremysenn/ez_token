@@ -108,13 +108,7 @@ jQuery ->
         alert "Amount must be greater than $0"
         return false
 
-    $('#request_payment_details').on 'click', '#open_buddy_search_button', (e) ->
-      amount = parseFloat($('#amount').val())
-      if amount > 0
-        $('.request_payment_amount').html "$" + amount
-      else
-        alert "Amount must be greater than $0"
-        return false
+    
 
     $('#send_payment_details').on 'click', '#open_send_payment_buddy_search_button', (e) ->
       amount = parseFloat($('#send_payment_amount').val())
