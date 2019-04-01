@@ -3,6 +3,9 @@ class Transaction < ActiveRecord::Base
   self.table_name= 'transactions'
   
   establish_connection :ez_cash
+  
+  mount_uploader :upload_file, FileUploader
+  
   belongs_to :device, :foreign_key => :dev_id
   belongs_to :account, :foreign_key => :from_acct_id # Assume from account is the main account
   has_one :transfer, :foreign_key => :ez_cash_tran_id

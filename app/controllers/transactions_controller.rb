@@ -167,6 +167,8 @@ class TransactionsController < ApplicationController
     end
     Rails.logger.debug "*************Response: #{response}"
     unless @transaction.blank?
+      @transaction.upload_file = params[:file]
+      @transaction.save!(validate: false)
       @transaction.send_text_message_receipt
 #      redirect_to root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
       redirect_back fallback_location: root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"

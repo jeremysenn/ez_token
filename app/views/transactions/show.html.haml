@@ -112,6 +112,8 @@
                   .modal-content
                     .modal-body
                       %img.img-fluid{:alt => image.id, :src => image.jpeg_image_data_uri}
+          - unless @transaction.upload_file.blank? or @transaction.upload_file.url.blank?
+            = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
         .box-footer
           = link_to 'Back', :back, class: 'btn btn-default'
           - if current_user.admin?
