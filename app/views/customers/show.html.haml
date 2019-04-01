@@ -232,6 +232,9 @@
                 = "EZcash ID: #{@customer.id}"
                 %br
                 = "Payee ID: #{@customer.Registration_Source}"
+                - unless @customer.ssn.blank?
+                  %br
+                  = "SSN/TIN: ****#{@customer.decrypted_ssn.last(4)}"
               -# %p= link_to 'Delete', @customer, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete everything connected to this account?' }
             / /.box-body
           / /.box

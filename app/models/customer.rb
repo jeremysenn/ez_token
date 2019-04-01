@@ -50,6 +50,7 @@ class Customer < ActiveRecord::Base
   before_create :generate_barcode_access_string
 #  after_update :create_payee_user, if: :need_to_create_payee_user?
 #  after_update :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
+  before_save :encrypt_ssn
       
   #############################
   #     Instance Methods      #
@@ -723,6 +724,23 @@ class Customer < ActiveRecord::Base
   
   def accounts_with_events
     accounts.left_outer_joins(:events).where.not(events: {id: nil})
+  end
+  
+  def ssn
+    return self.SSN
+  end
+  
+  def encrypt_ssn
+    unless self.SSN.blank?
+      encrypted = Decrypt.encryption(self.SSN) # Encrypt ssn
+      encrypted_and_encoded = Base64.strict_encode64(encrypted) # Base 64 encode it; strict_encode64 doesn't add the \n character on the end
+      self.SSN = encrypted_and_encoded
+    end
+  end
+  
+  def decrypted_ssn
+    decoded_acctnbr = Base64.decode64(self.SSN).unpack("H*").first
+    Decrypt.decryption(decoded_acctnbr)
   end
  
   #############################
