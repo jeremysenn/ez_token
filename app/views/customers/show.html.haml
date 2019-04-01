@@ -230,8 +230,9 @@
                 Notes
               %p.text-muted
                 = "EZcash ID: #{@customer.id}"
-                %br
-                = "Payee ID: #{@customer.Registration_Source}"
+                - unless @customer.Registration_Source.blank?
+                  %br
+                  = "Payee ID: #{@customer.Registration_Source}"
                 - unless @customer.ssn.blank?
                   %br
                   = "SSN/TIN: ****#{@customer.decrypted_ssn.last(4)}"
