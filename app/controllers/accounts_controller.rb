@@ -10,7 +10,9 @@ class AccountsController < ApplicationController
     @event_id = params[:event_id] ||= current_user.company.events.first.id
     unless params[:q].blank?
       @query_string = "%#{params[:q]}%"
-      @accounts = current_user.company.accounts.where(ActID: @query_string)
+#      @accounts = current_user.company.accounts.where(ActID: @query_string)
+      accounts_results = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
+      @accounts = accounts_results.joins(:customer).where("customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string)
     else
       @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
 #      @accounts = current_user.company.accounts.page(params[:page]).per(20)
