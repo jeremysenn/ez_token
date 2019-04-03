@@ -30,3 +30,35 @@
               %img{:src => "#{current_user.qr_code}", class: 'img-fluid'}
           .modal-footer
             = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
+
+:javascript
+  $(document).on('click', '.show_account_code_button', function(e) {
+    var account_id, amount, company_id, customer_id;
+    $('.generating_barcode_spinner').show();
+    customer_id = $(this).data("customer-id");
+    company_id = $(this).data("company-id");
+    account_id = $(this).data("account-id");
+    amount = $('#withdrawal_amount').val();
+    $.ajax({
+      url: "/customers/" + customer_id + "/barcode",
+      dataType: 'json',
+      data: {
+        company_id: company_id,
+        account_id: account_id,
+        amount: amount
+      },
+      success: function(data) {
+        var barcode_string;
+        $('.generating_barcode_spinner').hide();
+        barcode_string = data.barcode_string;
+        document.getElementById("company_" + company_id + "_barcode_contents").setAttribute('src', "data:image/png;base64," + barcode_string);
+      },
+      error: function(xhr) {
+        var error;
+        $('.generating_barcode_spinner').hide();
+        error = $.parseJSON(xhr.responseText).error;
+        alert(error);
+        console.log(error);
+      }
+    });
+  });

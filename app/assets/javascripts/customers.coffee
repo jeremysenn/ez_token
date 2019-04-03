@@ -12,7 +12,7 @@ jQuery ->
     lastTab = localStorage.getItem('lastTab')
     if lastTab
       $('a[href="' + lastTab + '"]').click()
-    return
+      return
 
     $('input[name=file]').change ->
       alert $(this).val()
@@ -27,33 +27,6 @@ jQuery ->
     #$('#upload-btn').click ->
     #  $('#customer_avatar').click()
     ### End Avatar Upload ###
-
-    $('.show_account_code_button').on 'click', ->
-      $('.generating_barcode_spinner').show()
-      customer_id = $(this).data( "customer-id" )
-      company_id = $(this).data( "company-id" )
-      account_id = $(this).data( "account-id" )
-      amount = $('#withdrawal_amount').val()
-      $.ajax
-        url: "/customers/" + customer_id + "/barcode"
-        dataType: 'json'
-        data: 
-          company_id: company_id
-          account_id: account_id
-          amount: amount
-        success: (data) ->
-          $('.generating_barcode_spinner').hide()
-          barcode_string = data.barcode_string
-          # $('#barcode_contents').append barcode_string
-          document.getElementById("company_" + company_id + "_barcode_contents").setAttribute 'src', "data:image/png;base64," + barcode_string
-          return
-        error: (xhr) ->
-          $('.generating_barcode_spinner').hide()
-          error = $.parseJSON(xhr.responseText).error
-          alert error
-          console.log error
-          return
-      return
 
     ### Start Consumer QR Code Payment Scanner ###
     load_consumer_qr_code_payment_scanner = ->
