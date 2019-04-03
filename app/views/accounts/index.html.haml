@@ -12,31 +12,22 @@
       .box.box-primary
         .box-header.with-border
           %h3.box-title 
-            - if browser.device.mobile?
-              = form_tag accounts_path, id: 'accounts_search_form', method: 'get', class: 'form-inline' do |f|
-                .input-group
-                  = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true, style: 'width: 75%'
-                  .input-group-append
-                    %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                      %i.fa.fa-search
-            - else
-              .box-tools
-                = form_tag accounts_path, :method => 'get', :class => "form-inline" do
-                  = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title", @event_id), class: "form-control"
-                  &nbsp;
-                  = select_tag :type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @type_id), class: "form-control"
-                  &nbsp;
-                  = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control"
-                  &nbsp;
-                  = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-                    %i.fa.fa-search
-                -#
-                  = form_tag accounts_path, id: 'accounts_search_form', method: 'get', class: 'form-inline' do |f|
-                    .input-group
-                      = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
-                      .input-group-append
-                        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                          %i.fa.fa-search
+            = form_tag accounts_path, :method => 'get', :class => "form-inline" do
+              = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title", @event_id), class: "form-control"
+              &nbsp;
+              = select_tag :type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @type_id), class: "form-control"
+              &nbsp;
+              = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control"
+              &nbsp;
+              = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                %i.fa.fa-search
+          .box-tools.pull-left
+            - unless @accounts.blank?
+              = render 'sms_modal'
+              %span.pull-right
+                %a{href: '#', "data-toggle" => "modal", "data-target" => "#send_sms_notification"}
+                  %i.fa.fa-commenting.fa-lg
+                  Message
           %br
           %small.text-muted
             = "#{pluralize(number_with_delimiter(@accounts.count), 'account')} found"

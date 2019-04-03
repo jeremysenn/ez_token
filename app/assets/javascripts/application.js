@@ -24,4 +24,5 @@
 //= require zxing-js.min
 //= require nested_form_fields
 //= require select2
+//= require bootstrap.file-input
 //= require_tree .

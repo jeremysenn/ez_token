@@ -176,11 +176,14 @@
             %strong 
               %i.fa.fa-user-circle.margin-r-5
               Avatar
+              %a{href: edit_customer_path(@customer)}
+                %i.fa.fa-pencil
             %p.text-center
               - unless @customer.avatar.blank?
                 = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')
               - else
                 = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
+              
             %strong
               %i.fa.fa-envelope.margin-r-5
               Email

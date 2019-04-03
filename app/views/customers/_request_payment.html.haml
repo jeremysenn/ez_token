@@ -44,7 +44,7 @@
             = select_tag :from_account_id, options_from_collection_for_select(@event.accounts.can_be_pulled_by_search, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select', required: true
             %br
             %br
-            = file_field_tag "file"
+            = file_field_tag "file", class: 'btn-default btn-sm ', title: "<i class='fa fa-upload'/> Picture".html_safe
           .modal-footer
             %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
             %button.btn.btn-primary{id: 'quick_purchase_button', :type => "submit", data: {confirm: "Are you sure you want to pull payment?", disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
@@ -96,3 +96,6 @@
       return false;
     }
   });
+
+  // Prettier file upload buttons
+  $('input[type=file]').bootstrapFileInput();
