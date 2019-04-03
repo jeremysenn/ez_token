@@ -58,7 +58,9 @@ class Ability
       
       # SmsMessages
       ############
-      can :manage, SmsMessage
+      can :manage, SmsMessage do |sms_message|
+        user.company == sms_message.company or user == sms_message.user
+      end
       can :create, SmsMessage
       
       # Transactions
@@ -240,7 +242,13 @@ class Ability
       
       # SmsMessages
       ############
-      can :manage, SmsMessage
+      can :manage, SmsMessage do |sms_message|
+        unless user.customer.blank?
+          user.customer == sms_message
+        else
+          user == sms_message.user
+        end
+      end
       can :create, :sms_messages
       
       # Transactions

@@ -63,6 +63,9 @@ Rails.application.routes.draw do
     member do
       get 'one_time_payment'
     end
+    collection do
+      post 'twilio_send_sms_message'
+    end
   end
   
   resources :account_types

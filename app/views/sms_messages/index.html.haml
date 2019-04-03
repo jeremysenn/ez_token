@@ -1,73 +1,98 @@
-.container-fluid
-  %br
-  %p
-    = form_tag sms_messages_path, :method => 'get', :class => "form-inline" do
-      .form-group
-        = text_field_tag 'sms_message[start_date]', nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? Date.today : @start_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-      To
-      .form-group
-        = text_field_tag 'sms_message[end_date]', nil, :placeholder => "End Date", value: "#{@end_date.blank? ? Date.today : @end_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-      = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-        %i.fa.fa-search
-  %p.lead.text-muted= "#{pluralize(@sms_message_total, 'message')} found"
-
-  .card.card-block.card-outline-primary
-    %h4.card-title.text-primary
-      %i.fa.fa-commenting
-      = "Text Messages"
-    - unless @sms_messages.blank?
-      .table-responsive
-        %table.table.table-striped
-          %thead
-            %tr
-              %th Date/Time
-              %th To
-              %th Body
-              -#
-                %th Customer
-                %th Caddy
-              %th
-          %tbody
-            - @sms_messages.each do |sms_message|
-              %tr
-                %td= sms_message.created_at.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
-                %td= sms_message.customer.full_name
-                %td= sms_message.body
-                -#
-                  %td= sms_message.customer_id
-                  %td= sms_message.caddy_id
-                %td= link_to "Show", sms_message, class: 'btn btn-secondary'
-    - else
-      %p.lead None
-
-  = paginate @sms_messages
-
+.content-wrapper
+  .container-fluid
+    / Main content
+    %section.content
+      / Default box
+      .row
+        .col-md-12
+          .box.box-primary
+            .box-header.with-border
+              %h3.box-title 
+                SMS Messages
+                - unless @sms_messages.blank?
+                  %a{href: sms_messages_path(format: "csv", :type => @type, 'sms_message[start_date]' => @start_date, 'sms_message[end_date]' => @end_date), class: 'btn btn-sm btn-info'}
+                    %i.fa.fa-download
+                    Download CSV
+                  %br
+                  %small.text-muted
+                    = "#{pluralize(number_with_delimiter(@all_sms_messages.count), 'record')} found"
+              .box-tools
+                = form_tag sms_messages_path, :method => 'get', :class => "form-inline" do
+                  = text_field_tag 'sms_message[start_date]', nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? Date.today : @start_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                  To
+                  = text_field_tag 'sms_message[end_date]', nil, :placeholder => "End Date", value: "#{@end_date.blank? ? Date.today : @end_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                  &nbsp;
+                  = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                    %i.fa.fa-search
+            .box-body.no-padding
+              - unless @sms_messages.blank?
+                .table-responsive
+                  %table.table.table-striped
+                    %thead
+                      %tr
+                        %th Date/Time
+                        %th To
+                        %th From
+                        %th Body
+                        %th
+                    %tbody
+                      - @sms_messages.each do |sms_message|
+                        %tr
+                          %td= sms_message.created_at.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+                          %td= sms_message.customer.full_name
+                          %td= sms_message.user.full_name.blank? ? sms_message.company.name : sms_message.user.full_name
+                          %td= sms_message.body
+                          %td= link_to "Show", sms_message, class: 'btn btn-sm btn-primary'
+              - else
+                .jumbotron
+                  %p.text-center None
+            .box-footer
+              .pull-right= paginate @sms_messages, param_name: 'transactions_page'
 
 -#
-  %h1 Listing sms_messages
+  .container-fluid
+    %br
+    %p
+      = form_tag sms_messages_path, :method => 'get', :class => "form-inline" do
+        .form-group
+          = text_field_tag 'sms_message[start_date]', nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? Date.today : @start_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+        To
+        .form-group
+          = text_field_tag 'sms_message[end_date]', nil, :placeholder => "End Date", value: "#{@end_date.blank? ? Date.today : @end_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+        &nbsp;
+        = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+          %i.fa.fa-search
+    %p.lead.text-muted= "#{pluralize(@sms_message_total, 'message')} found"
 
-  %table
-    %thead
-      %tr
-        %th To
-        %th Body
-        %th Customer
-        %th Caddy
-        %th
-        %th
-        %th
+    .card.card-block.card-outline-primary
+      %h4.card-title.text-primary
+        %i.fa.fa-commenting
+        = "Text Messages"
+      - unless @sms_messages.blank?
+        .table-responsive
+          %table.table.table-striped
+            %thead
+              %tr
+                %th Date/Time
+                %th To
+                %th From
+                %th Body
+                -#
+                  %th Customer
+                  %th Caddy
+                %th
+            %tbody
+              - @sms_messages.each do |sms_message|
+                %tr
+                  %td= sms_message.created_at.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+                  %td= sms_message.customer.full_name
+                  %td= sms_message.user.full_name.blank? ? sms_message.company.name : sms_message.user.full_name
+                  %td= sms_message.body
+                  -#
+                    %td= sms_message.customer_id
+                    %td= sms_message.caddy_id
+                  %td= link_to "Show", sms_message, class: 'btn btn-secondary'
+      - else
+        %p.lead None
 
-    %tbody
-      - @sms_messages.each do |sms_message|
-        %tr
-          %td= sms_message.to
-          %td= sms_message.body
-          %td= sms_message.customer_id
-          %td= sms_message.caddy_id
-          %td= link_to 'Show', sms_message
-          %td= link_to 'Edit', edit_sms_message_path(sms_message)
-          %td= link_to 'Destroy', sms_message, :method => :delete, :data => { :confirm => 'Are you sure?' }
-
-  %br
-
-  = link_to 'New Sms message', new_sms_message_path
+    = paginate @sms_messages

@@ -2,23 +2,24 @@
   .modal-dialog{:role => "document"}
     .modal-content
       .modal-header
-        %i.fa.fa-commenting
-        Send text message
+        %h5
+          %i.fa.fa-commenting.fa-lg
+          Send text message
         %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
           %span{"aria-hidden" => "true"} ×
       .modal-body
-        = form_tag '#', id: 'send_accounts_sms_form', method: 'post', class: 'form-horizontal' do |f|
-          .form-group
-            - @accounts.each_slice(2) do |accounts|
-              .row
-                .col-xs-12.col-sm-7
+        = form_tag twilio_send_sms_message_accounts_path, id: 'send_accounts_sms_form', method: 'post', class: 'form-horizontal' do |f|
+          .row
+            .col-xs-12.col-sm-4
+              .form-group
+                - @accounts.each_slice(2) do |accounts|
                   - accounts.each do |account|
                     .col-xs-6
-                      = check_box_tag "account_ids[]", account.id, false, {id: "account_#{account.id}", class: "form_control"}
-                      = account.id
-                .col-xs-12.col-sm-5
-                  .form-group
-                    = text_area_tag :message_body, @message_body, :placeholder => "Message", class: "form-control input-lg", rows: 8, style: 'width:100%', autofocus: true
+                      = check_box_tag "account_ids[]", account.id, true, {id: "account_#{account.id}", class: "form_control"}
+                      = account.customer_user_name
+            .col-xs-12.col-sm-8
+              .form-group
+                = text_area_tag :message_body, @message_body, :placeholder => "Message", class: "form-control input-lg", rows: 8, style: 'width:100%', autofocus: true
           .modal-footer
             %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
             %button.btn.btn-primary{id: 'send_sms_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send"}} 

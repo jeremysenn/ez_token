@@ -98,6 +98,19 @@ class AccountsController < ApplicationController
       format.json { head :no_content }
     end
   end
+  
+  def twilio_send_sms_message
+    @message_body = params[:message_body]
+    unless params[:account_ids].blank?
+      params[:account_ids].each do |account_id|
+        account = Account.where(ActID: account_id).first
+        account.customer.twilio_send_sms_message(@message_body, current_user.id) unless account.blank? or account.customer.blank?
+      end
+      redirect_back fallback_location: accounts_path, notice: 'Text message sent.'
+    else
+      redirect_back fallback_location: accounts_path, alert: 'You must select at least one account to text message.'
+    end
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.

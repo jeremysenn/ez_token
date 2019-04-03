@@ -408,6 +408,10 @@ class Customer < ActiveRecord::Base
     self.PhoneMobile
   end
   
+  def twilio_formated_phone_number
+    "+1#{phone.gsub(/([-() ])/, '')}" if phone
+  end
+  
   def account_id
     if primary?
       account.id
@@ -648,6 +652,25 @@ class Customer < ActiveRecord::Base
       client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
       client.call(:send_sms, message: { Phone: phone, Msg: "#{message_body} - sent from #{company.name}"})
       SmsMessage.create(to: phone, customer_id: self.id, user_id: user_id, company_id: self.CompanyNumber, body: "#{message_body} - sent from #{company.name}")
+    end
+  end
+  
+  def twilio_send_sms_message(body, from_user_id)
+    unless phone.blank?
+      user = User.find(from_user_id)
+      account_sid = ENV["TWILIO_ACCOUNT_SID"]
+      auth_token = ENV["TWILIO_AUTH_TOKEN"]
+      client = Twilio::REST::Client.new account_sid, auth_token
+      begin
+        client.messages.create(
+          :from => ENV["FROM_PHONE_NUMBER"],
+          :to => twilio_formated_phone_number,
+          :body => body #,
+        )
+      rescue Twilio::REST::RestError => e
+        puts e.message
+      end
+      SmsMessage.create(to: phone, customer_id: self.id, user_id: from_user_id, company_id: user.company_id, body: "#{body}")
     end
   end
   
