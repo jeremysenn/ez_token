@@ -3,17 +3,11 @@
   / Content Header (Page header)
   %section.content-header
     = render 'shared/flash_messages'
-    - if current_user.administrator?
-      %h3
-        %i.fa.fa-male
-        = @customer.user_name
-        %a{href: edit_customer_path(@customer)}
-          %i.fa.fa-pencil
-    - else
-      - unless @customer.user_name.blank?
-        %h3
-          %i.fa.fa-male
-          = @customer.user_name
+    %h3
+      %i.fa.fa-male
+      = @customer.user_name
+      %a{href: edit_customer_path(@customer)}
+        %i.fa.fa-pencil
     
     - unless @accounts.blank? or @accounts.count == 1
       .btn-group
@@ -166,7 +160,8 @@
         / Details Box
         .box.box-primary
           .box-header.with-border
-            %h3.box-title Info
+            %h3.box-title 
+              Info
             -#
               .box-tools.pull-right
                 %button.btn.btn-box-tool{"data-widget" => "collapse", :type => "button"}
@@ -176,8 +171,6 @@
             %strong 
               %i.fa.fa-user-circle.margin-r-5
               Avatar
-              %a{href: edit_customer_path(@customer)}
-                %i.fa.fa-pencil
             %p.text-center
               - unless @customer.avatar.blank?
                 = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')

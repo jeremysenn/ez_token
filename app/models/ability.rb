@@ -126,6 +126,14 @@ class Ability
         can :index, Customer
       end
       
+      # Transactions
+      ############
+      if user.view_atms?
+        can :manage, Transaction do |transaction|
+           user.company == transaction.company
+        end
+      end
+      
       # PaymentBatches
       ############
       can :manage, PaymentBatch
@@ -238,7 +246,7 @@ class Ability
       # Transactions
       ############
       can :manage, Transaction do |transaction|
-         user.company == transaction.company
+        user.accounts.include?(transaction.from_account) or user.accounts.include?(transaction.to_account)
       end
       
       # Users

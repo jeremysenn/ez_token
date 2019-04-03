@@ -116,12 +116,12 @@
             = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
         .box-footer
           = link_to 'Back', :back, class: 'btn btn-default'
-          - if current_user.admin?
+          - if current_user.administrator?
             - unless @to_customer.blank? or @to_customer.balance.blank? or @to_customer.balance.zero?
               %a.btn.btn-default{href: barcode_customer_path(@to_customer.id), target: '_blank'}
                 %i.fa.fa-print
                 Print Barcode
-          - if current_user.admin? or current_user.vendor?
+          - if current_user.administrator?
             - if @reversal_transaction.blank? and not @transaction.reversal?
               .pull-right
                 %a{href: reverse_transaction_path(@transaction), class: 'btn btn-danger btn-sm', data: {confirm: 'Are you sure you want to reverse this transaction?', disable_with: "<i class='fa fa-spinner fa-spin'></i> Reverse"}}
