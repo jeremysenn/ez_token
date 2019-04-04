@@ -66,8 +66,9 @@
                     %td
                       = link_to "Show", account, class: 'btn btn-default btn-sm'
                       = link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
-                      - unless account.customer.blank? or account.can_delete?
-                        = link_to 'Delete', account, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure?' }
+                      -#
+                        - unless account.customer.blank? or account.can_delete?
+                          = link_to 'Delete', account, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure?' }
                       -#
                         - else
                           %span 
