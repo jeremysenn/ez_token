@@ -40,7 +40,9 @@
                   %td= user.role.humanize
                   %td= user.phone
                   %td= user.email
-                  %td= link_to 'More', users_admin_path(user), class: 'btn btn-primary btn-sm'
+                  %td
+                    = link_to 'Show', users_admin_path(user), class: 'btn btn-default btn-sm'
+                    = link_to 'Edit', edit_users_admin_path(user), class: 'btn btn-primary btn-sm'
     -#
       / Main content
       %section.content

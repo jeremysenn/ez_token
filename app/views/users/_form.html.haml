@@ -20,14 +20,10 @@
           .row
             .col-xs-12.col-sm-8
               = f.input :time_zone, priority: /US/, collection: ActiveSupport::TimeZone.us_zones, required: true, as: :time_zone
-          #user_devices.form-group{style: "#{@user.collaborator? ? 'display: block;' : 'display: none;'}"}
-            - unless current_user.company.devices.blank?
-              = f.label "Devices"
-              - current_user.company.devices.each do |device|
-                .col-xs-6
-                  = check_box_tag "user[device_ids][]", device.id, (@user.device_ids.include? device.id.to_s), {id: "user_device_#{device.id}", class: "form_control"}
-                  = device.description
+          
           #user_permissions.form-group{style: "#{@user.collaborator? ? 'display: block;' : 'display: none;'}"}
+            .col-xs-12
+              = f.label "Permissions"
             .row
               .col-xs-12.col-sm-6
                 = f.input :view_events, as: :boolean, label: 'View events'
@@ -42,6 +38,14 @@
                 = f.input :edit_users, as: :boolean, label: 'Edit users'
                 = f.input :view_atms, as: :boolean, label: 'View ATMs'
                 = f.input :can_quick_pay, as: :boolean, label: 'Can quick pay'
+
+          #user_devices.form-group{style: "#{@user.collaborator? ? 'display: block;' : 'display: none;'}"}
+            - unless current_user.company.devices.blank?
+              = f.label "Devices"
+              - current_user.company.devices.each do |device|
+                .col-xs-6
+                  = check_box_tag "user[device_ids][]", device.id, (@user.device_ids.include? device.id.to_s), {id: "user_device_#{device.id}", class: "form_control"}
+                  = device.description
       .form-actions
         = link_to 'Cancel', :back, class: 'btn btn-default'
         = f.button :submit, 'Save'

@@ -72,7 +72,7 @@
               =# current_user.consumer? ? current_user.full_name : @customer.full_name
               - if @customer.anonymous?
                 .text-danger Anonymous Payee
-            - if @account and not current_user.administrator?
+            - if @account and current_user.basic? and (@account.can_be_pulled_by_scan? or @account.can_be_pushed_by_scan?)
               = render 'my_code'
               =# render 'barcode'
               =# render 'consumer_qr_code_payment'

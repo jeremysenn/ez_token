@@ -34,6 +34,7 @@
             = f.input :CanSendPmt, as: :boolean, label: 'Send Payments'
             = f.input :CanBePulledBySearch, as: :boolean, label: 'Can be Pulled by Search'
             = f.input :CanBePulledByScan, as: :boolean, label: 'Can be Pulled by Scan'
+            = f.input :CanBePushedByScan, as: :boolean, label: 'Can be Pushed by Scan'
       .form-actions
         = link_to 'Cancel', :back, class: "btn btn-default"
         %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 

@@ -481,6 +481,14 @@ class Account < ActiveRecord::Base
     account_type.can_send_payment?
   end
   
+  def can_be_pulled_by_scan?
+    account_type.can_be_pulled_by_scan?
+  end
+  
+  def can_be_pushed_by_scan?
+    account_type.can_be_pushed_by_scan?
+  end
+  
   def one_time_payment(amount, note, receipt_number)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number})
