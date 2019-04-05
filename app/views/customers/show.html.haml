@@ -100,7 +100,7 @@
                     #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
                       .panel-body
                         = render 'send_payment'
-              - if not current_user.administrator? and @account and @account.balance > 0 and @account.can_withdraw?
+              - if current_user.basic? and @account and @account.balance > 0 and @account.can_withdraw?
                 - unless @account.withdrawal_all?
                   %p
                     .panel.panel-default
@@ -113,7 +113,10 @@
                         .panel-body
                           = render 'withdrawal'
                 - else
-                  = render 'withdrawal_all'
+                  =# render 'withdrawal_all'
+                  %a.btn.btn-success.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+                    %i.fa.fa-money
+                    Withdrawal All
               -#
                 - if @account and @account.balance > 0 and not current_user.administrator?
                   .box.box-success.collapsed-box.box-solid
@@ -228,7 +231,7 @@
                 = "EZcash ID: #{@customer.id}"
                 - unless @customer.Registration_Source.blank?
                   %br
-                  = "Payee ID: #{@customer.Registration_Source}"
+                  = "Source: #{@customer.Registration_Source}"
                 - unless @customer.ssn.blank?
                   %br
                   = "SSN/TIN: ****#{@customer.decrypted_ssn.last(4)}"

@@ -48,7 +48,7 @@
             = image_tag('', id: 'file_image', class: 'img-responsive transaction-img')
           .modal-footer
             %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
-            %button.btn.btn-primary{id: 'quick_purchase_button', :type => "submit", data: {confirm: "Are you sure you want to pull payment?", disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+            %button.btn.btn-primary{id: 'quick_purchase_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
               Submit
 
   .modal.fade{id: "request_payment_qrcode_scanner_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
@@ -81,12 +81,6 @@
     }
   });
 
-  $('#from_account_id').select2({
-    theme: 'bootstrap',
-    minimumInputLength: 3,
-    dropdownParent: $("#request_payment_buddy_search_modal")
-  });
-
   $('#request_payment_details').on('click', '#open_buddy_search_button', function(e) {
     var amount;
     amount = parseFloat($('#amount').val());
@@ -98,9 +92,6 @@
     }
   });
 
-  // Prettier file upload buttons
-  $('input[type=file]').bootstrapFileInput();
-
   function PreviewImage() {
     var oFReader = new FileReader();
     oFReader.readAsDataURL(document.getElementById("transaction_file").files[0]);
@@ -109,3 +100,44 @@
       document.getElementById("file_image").src = oFREvent.target.result;
     };
   };
+
+  // Confirm amount to pull
+  $('#request_payment_buddy_search_modal').on('click', '#quick_purchase_button', function(e) {
+    var amount, confirm1, name;
+    name = $(this).closest('form').find('#from_account_id:first option:selected').text();
+    amount = Number($(this).closest('form').find('#amount:first').val());
+    if (name === "Search/Select") {
+      e.preventDefault();
+      alert('Please choose an account.');
+    } else if (!$.isNumeric(amount) || amount <= 0) {
+      e.preventDefault();
+      alert('Amount must be a positive number.');
+    } else {
+      confirm1 = confirm('Are you sure you want to charge ' + name + ' $' + amount.toFixed(2) + '?');
+      if (confirm1) {
+
+      } else {
+        e.preventDefault();
+      }
+    }
+  });
+
+  // Prettier file upload buttons
+  // Make sure wrapper hasn't already been applied
+  if (document.querySelector('.file-input-wrapper') === null) {
+    alert('here');
+    $('input[type=file]').bootstrapFileInput();
+  };
+  
+  // Make sure select2 isn't applied multiple times by turbolinks
+  $(document).on('turbolinks:before-cache', function() {
+    $('#from_account_id').select2('destroy');
+  });
+
+  $(document).on('turbolinks:load', function() {
+    $('#from_account_id').select2({
+      theme: 'bootstrap',
+      minimumInputLength: 3,
+      dropdownParent: $("#request_payment_buddy_search_modal")
+    });
+  });
