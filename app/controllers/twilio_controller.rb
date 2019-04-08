@@ -30,10 +30,11 @@ class TwilioController < ApplicationController
     plain_cell_number = from.gsub(/\+1/, '')
     user = User.find_by(phone: plain_cell_number)
     to = params[:To] 
-    body = params[:Body].truncate(255) # Do not allow to be larger than 255 so doesn't cause a PostgreSQL error
+    body = params[:Body].truncate(255) # Do not allow to be larger than 255 so doesn't cause a DB error
     keyword = body.downcase.strip
     event = Event.now_open.find_by(join_code: keyword)
     message_sid = params[:MessageSid]
+    SmsMessage.create(sid: message_sid, to: to, from: from, company_id: event.blank? ? nil : event.company_id, body: "#{body}")
     
     response = Twilio::TwiML::MessagingResponse.new
     response.message do |message|

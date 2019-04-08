@@ -661,17 +661,18 @@ class Customer < ActiveRecord::Base
       account_sid = ENV["TWILIO_ACCOUNT_SID"]
       auth_token = ENV["TWILIO_AUTH_TOKEN"]
       client = Twilio::REST::Client.new account_sid, auth_token
+      from = ENV["FROM_PHONE_NUMBER"]
       begin
         message = client.messages.create(
-          :from => ENV["FROM_PHONE_NUMBER"],
+          :from => from,
           :to => twilio_formated_phone_number,
           :body => body #,
         )
         sid = message.sid
+        SmsMessage.create(sid: sid, to: twilio_formated_phone_number, from: from, customer_id: self.id, user_id: from_user_id, company_id: user.company_id, body: "#{body}")
       rescue Twilio::REST::RestError => e
         puts e.message
       end
-      SmsMessage.create(to: phone, customer_id: self.id, user_id: from_user_id, company_id: user.company_id, body: "#{body}")
     end
   end
   

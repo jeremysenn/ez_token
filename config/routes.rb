@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   resources :transactions do
     member do
       get 'reverse'
+      get 'dispute'
     end
     collection do
       post 'quick_pay'

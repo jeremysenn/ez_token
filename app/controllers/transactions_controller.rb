@@ -1,6 +1,6 @@
 class TransactionsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_transaction, only: [:show, :edit, :update, :destroy, :reverse]
+  before_action :set_transaction, only: [:show, :edit, :update, :destroy, :reverse, :dispute]
   load_and_authorize_resource
   
   helper_method :transactions_sort_column, :transactions_sort_direction
@@ -219,6 +219,18 @@ class TransactionsController < ApplicationController
       redirect_back fallback_location: root_path, notice: "Payment sent. Transaction ID #{@transaction.id}"
     else
       redirect_back fallback_location: root_path, alert: "There was a problem sending the payment. Error code: #{error_code.blank? ? 'Unknown' : error_code}."
+    end
+  end
+  
+  # GET /transactions/1/dispute
+  # GET /transactions/1/dispute.json
+  def dispute
+    @from_customer = @transaction.from_account_customer
+    @to_customer = @transaction.to_account_customer
+    @send_notification = params[:send_notification]
+    unless @send_notification.blank?
+      ApplicationMailer.send_admins_transaction_dispute_email_notification(current_user, @transaction.company.users.admin.map{|u| u.email}, @transaction).deliver
+      flash.now[:notice] = "We will be in contact with you to discuss further. Thank you."
     end
   end
 

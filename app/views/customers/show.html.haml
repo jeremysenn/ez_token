@@ -251,6 +251,11 @@
                   %a#withdrawals-tab.nav-link{"aria-controls" => "withdrawals", "aria-selected" => "false", "data-toggle" => "tab", :href => "#withdrawals", :role => "tab"} 
                     %i.fa.fa-money.fa-lg
                     = "Withdrawals" 
+              - unless @customer.sms_messages.blank?
+                %li.nav-item
+                  %a#messages-tab.nav-link{"aria-controls" => "messages", "aria-selected" => "false", "data-toggle" => "tab", :href => "#messages", :role => "tab"} 
+                    %i.fa.fa-comments.fa-lg
+                    = "Messages" unless browser.device.mobile?
               -#
                 %li.nav-item
                   %a#events-tab.nav-link{"aria-controls" => "events", "aria-selected" => "false", "data-toggle" => "tab", :href => "#events", :role => "tab"} 
@@ -261,16 +266,10 @@
                   %a#checks-tab.nav-link{"aria-controls" => "checks", "aria-selected" => "false", "data-toggle" => "tab", :href => "#checks", :role => "tab"} 
                     %i.fa.fa-bank.fa-lg
                     = "Checks" unless browser.device.mobile?
-                  
-                  %li.nav-item
-                    %a#messages-tab.nav-link{"aria-controls" => "messages", "aria-selected" => "false", "data-toggle" => "tab", :href => "#messages", :role => "tab"} 
-                      %i.fa.fa-comments.fa-lg
-                      = "Messages" unless browser.device.mobile?
-                - else
-                  %li.nav-item
-                    %a#products-tab.nav-link{"aria-controls" => "products", "aria-selected" => "false", "data-toggle" => "tab", :href => "#products", :role => "tab"} 
-                      %i.fa.fa-dropbox.fa-lg
-                      = "Products" unless browser.device.mobile?
+                %li.nav-item
+                  %a#products-tab.nav-link{"aria-controls" => "products", "aria-selected" => "false", "data-toggle" => "tab", :href => "#products", :role => "tab"} 
+                    %i.fa.fa-dropbox.fa-lg
+                    = "Products" unless browser.device.mobile?
             #myTabContent.tab-content
               #payments.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                 - unless @payment_transactions.blank?
@@ -389,7 +388,7 @@
                               - else
                                 = link_to sms_message.company.name, sms_message
                               %br
-                              = "#{sms_message.body.blank? ? 'N/A' : truncate(sms_message.body, length: 35)}"
+                              = "#{sms_message.body.blank? ? 'N/A' : truncate(sms_message.body, length: 140)}"
                             %td= sms_message.created_at.in_time_zone(current_user.time_zone).strftime("%^b %d")
                   .pull-right= paginate @sms_messages, param_name: 'messages'
                 - else

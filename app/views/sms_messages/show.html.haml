@@ -16,6 +16,12 @@
             Date/Time of text message:
             = @sms_message.created_at.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
           %p.lead
+            To phone:
+            = @sms_message.to
+          %p.lead
+            From phone:
+            = @sms_message.from
+          %p.lead
             To:
             = @sms_message.customer.full_name
           %p.lead
@@ -25,5 +31,9 @@
             Body:
             %br
             = @sms_message.body
+          %p.lead
+            Twilio SID:
+            %br
+            = @sms_message.sid
         .box-footer
           = link_to 'Back', :back, class: 'btn btn-default'

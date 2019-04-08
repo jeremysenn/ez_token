@@ -522,6 +522,19 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def withdraw_all_barcode_png
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:get_account_barcode, message: { ActID: self.ActID, Scale: 5, amount: 0})
+    
+    Rails.logger.debug "Account withdraw_all_barcode_png response body: #{response.body}"
+    
+    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+      return response.body[:get_customer_barcode_png_response][:return]
+    else
+      return ""
+    end
+  end
+  
   def maintained_balance
     unless self.MaintainBal.blank?
       self.MaintainBal
