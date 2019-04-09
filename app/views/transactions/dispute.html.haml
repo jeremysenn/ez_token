@@ -117,4 +117,11 @@
             = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
         .box-footer
           - if @send_notification.blank?
-            = link_to 'I would like to dispute this transaction', dispute_transaction_path(@transaction, send_notification: true), class: 'btn btn-lg btn-danger'
+            = form_tag dispute_transaction_path, :method => 'get', class: 'form-horizontal' do
+              = hidden_field_tag :id, @transaction.id
+              = hidden_field_tag :send_notification, true
+              .form-group
+                = text_area_tag :details, nil, :placeholder => "Details of dispute", class: "form-control input-lg", rows: 4, style: 'width:50%', autofocus: true
+              = button_tag(:type => 'submit', :class => 'btn btn-danger', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit dispute"}) do
+                %i.fa.fa-send
+                Submit dispute

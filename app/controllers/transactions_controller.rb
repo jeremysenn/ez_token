@@ -228,8 +228,9 @@ class TransactionsController < ApplicationController
     @from_customer = @transaction.from_account_customer
     @to_customer = @transaction.to_account_customer
     @send_notification = params[:send_notification]
+    @details = params[:details]
     unless @send_notification.blank?
-      ApplicationMailer.send_admins_transaction_dispute_email_notification(current_user, @transaction.company.users.admin.map{|u| u.email}, @transaction).deliver
+      ApplicationMailer.send_admins_transaction_dispute_email_notification(current_user, @transaction.company.users.admin.map{|u| u.email}, @transaction, @details).deliver
       flash.now[:notice] = "We will be in contact with you to discuss further. Thank you."
     end
   end
