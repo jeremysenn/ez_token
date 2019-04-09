@@ -117,7 +117,7 @@
             = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
         .box-footer
           - if @send_notification.blank?
-            = form_tag dispute_transaction_path, :method => 'get', class: 'form-horizontal' do
+            = form_tag send_dispute_details_transaction_path, :method => 'post', class: 'form-horizontal' do
               = hidden_field_tag :id, @transaction.id
               = hidden_field_tag :send_notification, true
               .form-group

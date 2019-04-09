@@ -1,6 +1,6 @@
 class TransactionsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_transaction, only: [:show, :edit, :update, :destroy, :reverse, :dispute]
+  before_action :set_transaction, only: [:show, :edit, :update, :destroy, :reverse, :dispute, :send_dispute_details]
   load_and_authorize_resource
   
   helper_method :transactions_sort_column, :transactions_sort_direction
@@ -228,11 +228,13 @@ class TransactionsController < ApplicationController
     @from_customer = @transaction.from_account_customer
     @to_customer = @transaction.to_account_customer
     @send_notification = params[:send_notification]
+  end
+  
+  def send_dispute_details
     @details = params[:details]
-    unless @send_notification.blank?
-      ApplicationMailer.send_admins_transaction_dispute_email_notification(current_user, @transaction.company.users.admin.map{|u| u.email}, @transaction, @details).deliver
-      flash.now[:notice] = "We will be in contact with you to discuss further. Thank you."
-    end
+    ApplicationMailer.send_admins_transaction_dispute_email_notification(current_user, @transaction.company.users.admin.map{|u| u.email}, @transaction, @details).deliver
+    flash[:notice] = "We will be in contact with you to discuss further. Thank you."
+    redirect_to dispute_transaction_path(@transaction, send_notification: true)
   end
 
   private

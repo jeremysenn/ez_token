@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     member do
       get 'reverse'
       get 'dispute'
+      post 'send_dispute_details'
     end
     collection do
       post 'quick_pay'
