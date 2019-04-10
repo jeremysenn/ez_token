@@ -1,15 +1,30 @@
 %div{:id => "withdrawal_details"}
-  = hidden_field_tag :account_balance, @account.balance
-  .input-group.input-group-lg.mb-3
-    .input-group-prepend
-      %span.input-group-text $
-    = number_field_tag :withdrawal_amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
-    .input-group-append
-      %span.input-group-text .00
-  %p
-    %a.btn.btn-default.btn-lg.show_account_code_button{href: "#withdrawal_code", "data-toggle" => "modal", "data-target" => "#withdrawal_code", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, "data-account-id" => @account.id, id: "open_withdrawal_code_button", style: 'display:none;'}
-      %i.fa.fa-qrcode
-      Create Code
+  = form_tag send_barcode_sms_message_customer_path, method: 'get', class: 'form-horizontal' do |f|
+    = hidden_field_tag :id, @customer.id
+    = hidden_field_tag :account_id, @account.id
+    = hidden_field_tag :account_balance, @account.balance
+    .input-group.input-group-lg.mb-3
+      .input-group-prepend
+        %span.input-group-text $
+      = number_field_tag :withdrawal_amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
+      .input-group-append
+        %span.input-group-text .00
+    %button.btn.btn-default{id: 'send_code_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Withdrawal Code"}, style: 'display:none;'} 
+      %i.fa.fa-comment
+      Send Withdrawal Code
+
+  -#
+    = hidden_field_tag :account_balance, @account.balance
+    .input-group.input-group-lg.mb-3
+      .input-group-prepend
+        %span.input-group-text $
+      = number_field_tag :withdrawal_amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
+      .input-group-append
+        %span.input-group-text .00
+    %p
+      %a.btn.btn-default.btn-lg.show_account_code_button{href: "#withdrawal_code", "data-toggle" => "modal", "data-target" => "#withdrawal_code", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, "data-account-id" => @account.id, id: "open_withdrawal_code_button", style: 'display:none;'}
+        %i.fa.fa-qrcode
+        Create Code
       
   %div.modal.fade.in{id: "withdrawal_code"}
     .modal-dialog.modal-sm{:role => "document"}
@@ -35,10 +50,12 @@
     amount = parseFloat($('#withdrawal_amount').val());
     account_balance = parseFloat($('#account_balance').val());
     if (amount > 0 && account_balance >= amount) {
-      $('#open_withdrawal_code_button').show();
+      //$('#open_withdrawal_code_button').show();
+      $('#send_code_button').show();
       return $('.withdrawal_code_amount').html("$" + amount);
     } else {
-      $('#open_withdrawal_code_button').hide();
+      //$('#open_withdrawal_code_button').hide();
+      $('#send_code_button').hide();
       return false;
     }
   });

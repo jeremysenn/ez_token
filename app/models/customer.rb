@@ -56,9 +56,9 @@ class Customer < ActiveRecord::Base
   #     Instance Methods      #
   #############################
   
-  def account
-    accounts.first
-  end
+#  def account
+#    accounts.first
+#  end
   
   def active_accounts
     Account.where(CustomerID: id, active: true)
@@ -412,13 +412,13 @@ class Customer < ActiveRecord::Base
     "+1#{phone.gsub(/([-() ])/, '')}" if phone
   end
   
-  def account_id
-    if primary?
-      account.id
-    else
-      parent_customer.account.id
-    end
-  end
+#  def account_id
+#    if primary?
+#      account.id
+#    else
+#      parent_customer.account.id
+#    end
+#  end
   
   def clear_account_balance
     if balance < 0 # Make sure it's a negative value
@@ -686,10 +686,12 @@ class Customer < ActiveRecord::Base
     end
   end
   
-  def send_barcode_sms_message
-    unless phone.blank?
+  def send_barcode_sms_message(account_id, amount)
+    account = accounts.find_by(ActID: account_id)
+    unless phone.blank? or account.blank?
       client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_mms_cust_barcode, message: { CustomerID: self.CustomerID, CompanyNumber: account.CompanyNumber})
+#      client.call(:send_mms_cust_barcode, message: { CustomerID: self.CustomerID, CompanyNumber: account.CompanyNumber})
+      client.call(:send_mms_cust_barcode, message: { ActID: account_id, CustomerID: self.CustomerID, CompanyNumber: account.CompanyNumber, Amount: amount})
     end
   end
   

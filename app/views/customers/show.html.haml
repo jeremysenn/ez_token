@@ -114,7 +114,7 @@
                           = render 'withdrawal'
                 - else
                   =# render 'withdrawal_all'
-                  %a.btn.btn-success.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+                  %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdrawal All"}}
                     %i.fa.fa-money
                     Withdrawal All
               -#
@@ -139,21 +139,18 @@
             - if @account and current_user.administrator? and not @customer.anonymous?
               %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
                 %h5
-                  %b 
-                    %i.fa.fa-dollar
-                    One Time Payment
+                  %i.fa.fa-dollar
+                  One Time Payment
               - if @account and @account.balance > 0 and not @customer.phone.blank?
-                %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+                %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
                   %h5
-                    %b 
-                      %i.fa.fa-money
-                      Send Payment Code
+                    %i.fa.fa-money
+                    Send Payment Code
               - unless @customer.phone.blank?
                 %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
                   %h5
-                    %b 
-                      %i.fa.fa-comment
-                      Send Message
+                    %i.fa.fa-comment
+                    Send Message
               = render 'one_time_payment'
               = render 'sms_message'
 

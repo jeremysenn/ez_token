@@ -245,8 +245,14 @@ class CustomersController < ApplicationController
   end
   
   def send_barcode_sms_message
-    @customer.send_barcode_sms_message
-    redirect_back fallback_location: @customer, notice: 'Text message sent.'
+    amount = params[:withdrawal_amount]
+    account_id = params[:account_id]
+    unless account_id.blank?
+      @customer.send_barcode_sms_message(account_id, amount.blank? ? 0 : amount)
+      redirect_back fallback_location: @customer, notice: 'QR Code sent to phone.'
+    else
+      redirect_back fallback_location: @customer, notice: 'There was a problem sending the QR Code to phone.'
+    end
   end
   
   # GET /customers/123456789/find_by_barcode
