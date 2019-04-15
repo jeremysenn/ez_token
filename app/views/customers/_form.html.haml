@@ -97,7 +97,9 @@
                         = account_form.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
                           .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: account_form.object.events.first == event_field.object) + ' ' + event_field.text }
 
-          %p= f.add_nested_fields_link :accounts, "<i class='fa fa-plus'></i> Add Wallet".html_safe, class: 'btn bg-orange btn-sm', role: 'button'
+          .pull-right
+            = f.add_nested_fields_link :accounts, "<i class='fa fa-plus'></i> Add Wallet".html_safe, class: 'btn btn-default btn-sm', role: 'button'
+          %br
         - else
           = f.input :NameF, label: 'First Name', required: true
           = f.input :NameL, label: 'Last Name', required: true
@@ -107,7 +109,8 @@
       .form-actions
         %hr
         = link_to 'Cancel', :back, class: 'btn btn-default'
-        = f.button :submit, 'Save'
+        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+          Save
 
 :javascript
   $('[data-toggle="tooltip"]').tooltip()
