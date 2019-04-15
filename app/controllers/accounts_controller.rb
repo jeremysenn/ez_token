@@ -6,8 +6,12 @@ class AccountsController < ApplicationController
   # GET /accounts
   # GET /accounts.json
   def index
-    @type_id = params[:type_id] ||= current_user.company.account_types.first.id
-    @event_id = params[:event_id] ||= current_user.company.events.first.id
+    unless current_user.company.account_types.blank?
+      @type_id = params[:type_id] ||= current_user.company.account_types.first.id
+    end
+    unless current_user.company.events
+      @event_id = params[:event_id] ||= current_user.company.events.first.id
+    end
     unless params[:q].blank?
       @query_string = "%#{params[:q]}%"
 #      @accounts = current_user.company.accounts.where(ActID: @query_string)
