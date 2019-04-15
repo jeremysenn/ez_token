@@ -9,7 +9,7 @@ class AccountsController < ApplicationController
     unless current_user.company.account_types.blank?
       @type_id = params[:type_id] ||= current_user.company.account_types.first.id
     end
-    unless current_user.company.events
+    unless current_user.company.events.blank?
       @event_id = params[:event_id] ||= current_user.company.events.first.id
     end
     unless params[:q].blank?
@@ -19,7 +19,6 @@ class AccountsController < ApplicationController
       @accounts = accounts_results.joins(:customer).where("customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string)
     else
       @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
-      Rails.logger.debug "************** Type: #{@type_id} Event: #{@event_id}"
 #      @accounts = current_user.company.accounts.page(params[:page]).per(20)
     end
   end
