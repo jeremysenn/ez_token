@@ -35,7 +35,7 @@
             / /.modal-content
           / /.modal-dialog
         / /.modal
-        - if current_user.administrator?
+        - if current_user.administrator? or current_user.collaborator?
           =# f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? current_user.company.id : @customer.CompanyNumber}" }
           = f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 7 : @customer.CompanyNumber}" }
           = f.input :LangID, :as => :hidden, :input_html => { :value => 1 }
