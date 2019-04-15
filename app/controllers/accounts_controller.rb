@@ -19,6 +19,7 @@ class AccountsController < ApplicationController
       @accounts = accounts_results.joins(:customer).where("customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string)
     else
       @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
+      Rails.logger.debug "************** Type: #{@type_id} Event: #{@event_id}"
 #      @accounts = current_user.company.accounts.page(params[:page]).per(20)
     end
   end
