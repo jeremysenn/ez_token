@@ -44,7 +44,8 @@
             = select_tag :from_account_id, options_from_collection_for_select(@event.accounts.can_be_pulled_by_search, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select', required: true
             %br
             %br
-            = file_field_tag "file", id: 'transaction_file', onchange: "PreviewImage();", class: 'btn-default btn-sm ', title: "<i class='fa fa-upload'/> Picture".html_safe
+            =# file_field_tag "file", id: 'transaction_file', onchange: "PreviewImage();", class: 'btn-default btn-sm ', title: "<i class='fa fa-upload'/> Picture".html_safe
+            = file_field_tag "file", id: 'transaction_file', class: 'btn-default btn-sm ', title: "<i class='fa fa-upload'/> Picture".html_safe
             = image_tag('', id: 'file_image', class: 'img-responsive transaction-img')
           .modal-footer
             %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
