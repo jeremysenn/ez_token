@@ -64,7 +64,12 @@
                             = link_to "#{event.title}#{event != account.events.last ? ', ' : ''}", event
                         - else
                           None
-                    %td= number_to_currency(account.Balance)
+                    %td
+                      - unless account.MinBalance.blank? or account.MinBalance.zero?
+                        %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance) - #{number_to_currency(account.minimum_balance)} (minimum) = #{number_to_currency(account.available_balance)} (available)", "data-placement" => "right"}
+                          = number_to_currency(account.available_balance)
+                      - else
+                        = number_to_currency(account.Balance)
                     %td
                       = link_to "Show", account, class: 'btn btn-default btn-sm'
                       = link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
@@ -80,3 +85,6 @@
         .box-footer
           -#
             .pull-right= paginate @accounts
+
+:javascript
+  $('[data-toggle="tooltip"]').tooltip();

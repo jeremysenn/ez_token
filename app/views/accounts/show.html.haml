@@ -39,7 +39,14 @@
               None
           %p.lead
             %strong Balance:
-            = number_to_currency(@account.Balance)
+            = number_to_currency(@account.balance)
+          - unless @account.minimum_balance.blank? or @account.minimum_balance.zero?
+            %p.lead
+              %strong Minimum Balance:
+              = number_to_currency(@account.minimum_balance)
+            %p.lead
+              %strong Available Balance:
+              = number_to_currency(@account.available_balance)
           - if @account.can_fund_by_ach?
             %h5
               %strong ACH

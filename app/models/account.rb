@@ -192,28 +192,34 @@ class Account < ActiveRecord::Base
     StandbyAuth.find_by_account_nbr(account_number_with_leading_zeros)
   end
   
-  def current_balance
-#    (standby_auth.curr_bal / 100) unless standby_auth.blank?
+  def balance
     self.Balance
   end
   
-  def available_balance
-#    (standby_auth.avail_bal / 100) unless standby_auth.blank?
+  def minimum_balance
+    self.MinBalance
+  end
+  
+  def current_balance
     self.Balance
   end
   
 #  def available_balance
-#    # If the account minimum balance is nil, set to zero
-#    unless self.MinBalance.blank?
-#      account_minimum_balance = self.MinBalance
-#      account_balance = self.Balance - account_minimum_balance
-#    else
-#      account_balance = 0
-#    end
-#    # The account available balance is the balance minus the minimum balance
-#    
-#    return account_balance
+#    self.Balance
 #  end
+  
+  def available_balance
+    # If the account minimum balance is nil, set to zero
+    unless self.MinBalance.blank? or self.MinBalance.zero? or self.MinBalance > self.Balance
+      account_minimum_balance = self.MinBalance
+      account_balance = self.Balance - account_minimum_balance
+    else
+      account_balance = 0
+    end
+    # The account available balance is the balance minus the minimum balance
+    
+    return account_balance
+  end
   
   def entity
     Entity.find_by_EntityID(self.EntityID)
