@@ -16,6 +16,13 @@
         - if current_user.administrator?
           = f.input :ActTypeID, collection: current_user.company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
           =# f.input :Balance, as: :decimal, label: 'Balance', required: true
+          = f.input :MinBalance, as: :decimal, required: true, label: "Minimum Balance" do
+            .row
+              .col-xs-12.col-sm-8
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text $
+                  = f.input_field :MinBalance, as: :string, class: "form-control"
           -#
             = f.input :Balance, as: :decimal, required: true, label: "Balance" do
               .row

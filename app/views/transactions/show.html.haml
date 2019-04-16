@@ -117,7 +117,8 @@
         .box-footer
           = link_to 'Back', :back, class: 'btn btn-default'
           - if current_user.administrator?
-            - unless @to_customer.blank? or @to_customer.balance.blank? or @to_customer.balance.zero?
+            -# unless @to_customer.blank? or @to_customer.balance.blank? or @to_customer.balance.zero?
+            - unless @to_customer.blank? or @transaction.to_account.balance.blank? or @transaction.to_account.balance.zero?
               %a.btn.btn-default{href: barcode_customer_path(@to_customer.id), target: '_blank'}
                 %i.fa.fa-print
                 Print Barcode
