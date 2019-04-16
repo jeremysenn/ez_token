@@ -50,6 +50,18 @@ class Account < ActiveRecord::Base
 #    customer.company unless customer.blank?
 #  end
 
+  def customer_user_name_and_registration_source
+    unless customer.blank?
+      unless customer.Registration_Source.blank?
+        "#{customer.Registration_Source} #{customer.full_name}"
+      else
+        customer.full_name
+      end
+    else
+      company.name
+    end
+  end
+  
   def customer_user_name
     unless customer.blank?
       unless customer.user.blank?
