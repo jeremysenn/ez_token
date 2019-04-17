@@ -52,8 +52,13 @@
             .text-center
               %h5.text-muted
                 Balance
-                = number_to_currency(@account.blank? ? 0 : @account.balance)
-                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?)) and not current_user.administrator?
+                =# number_to_currency(@account.blank? ? 0 : @account.balance)
+                - unless @account.MinBalance.blank? or @account.MinBalance.zero?
+                  %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance) - #{number_to_currency(@account.minimum_balance)} (minimum) = #{number_to_currency(@account.available_balance)} (available)", "data-placement" => "right"}
+                    = number_to_currency(@account.available_balance)
+                - else
+                  = number_to_currency(@account.available_balance)
+                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?))
                   %a.btn.btn-sm.btn-default{href: edit_account_path(@account)}
                     %i.fa.fa-credit-card
                     Fund
@@ -407,3 +412,6 @@
                   %p.text-center None
 
 = audio_tag asset_path("cash_register.mp3"), class: "cash_register_chime"
+
+:javascript
+  $('[data-toggle="tooltip"]').tooltip();

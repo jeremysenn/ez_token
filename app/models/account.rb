@@ -226,7 +226,7 @@ class Account < ActiveRecord::Base
       account_minimum_balance = self.MinBalance
       account_balance = self.Balance - account_minimum_balance
     else
-      account_balance = 0
+      account_balance = self.Balance
     end
     # The account available balance is the balance minus the minimum balance
     
