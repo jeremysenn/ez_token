@@ -30,7 +30,7 @@
                   .input-group-prepend
                     %span.input-group-text $
                   = f.input_field :Balance, as: :string, class: "form-control"
-        = f.input :AbleToDelete, as: :boolean, label: "Can delete"
+        =# f.input :AbleToDelete, as: :boolean, label: "Can delete"
         = f.input :event_ids, label: 'Events' do
           - unless current_user.company.events.accounts_do_not_expire.blank?
             %br
