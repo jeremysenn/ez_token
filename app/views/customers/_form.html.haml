@@ -133,3 +133,5 @@
   $(document).on("click", 'input[type="checkbox"]' , function() {
     $(this).closest('.form-group').find('input[type="radio"]').attr("checked", false);
   });
+
+  $('#customer_PhoneMobile').mask("(999) 999-9999");
