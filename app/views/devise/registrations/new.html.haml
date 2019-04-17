@@ -35,3 +35,6 @@
         = f.submit "Sign up", class: 'btn btn-primary btn-block'
       = link_to "Log in", new_user_session_path
     =# render "devise/shared/links"
+
+%script
+  $('#user_phone').mask("(999) 999-9999");

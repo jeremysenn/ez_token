@@ -20,6 +20,7 @@
 //= require bootstrap-datepicker
 // require rails-ujs
 //= require turbolinks
+//= require jquery.maskedinput
 //= require Chart.min
 //= require zxing-js.min
 //= require nested_form_fields
