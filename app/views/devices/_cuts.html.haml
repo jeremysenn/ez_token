@@ -37,7 +37,9 @@
                       %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
                         = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
                       %br
-                  %td= number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
+                  %td
+                    - unless first_bill_hist.blank?
+                      = number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
                   %td= number_to_currency(add_total)
                   %td= number_to_currency(dispensed_total)
                   %td= number_to_currency(@device.remaining)
