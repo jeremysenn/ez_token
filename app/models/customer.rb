@@ -50,7 +50,7 @@ class Customer < ActiveRecord::Base
   after_commit :create_caddy_user, on: [:create], if: :need_to_create_caddy_user?
   after_commit :create_member_user, on: [:create], if: :need_to_create_member_user?
   before_create :generate_barcode_access_string
-#  after_update :create_payee_user, if: :need_to_create_payee_user?
+  after_update :create_payee_user, if: :need_to_create_payee_user?
 #  after_update :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
   before_save :encrypt_ssn
       
