@@ -193,9 +193,9 @@ class User < ApplicationRecord
     end
   end
   
-#  def twilio_formated_phone_number
-#    "+1#{phone.gsub(/([-() ])/, '')}" if phone
-#  end
+  def twilio_formated_phone_number
+    "+1#{phone.gsub(/([-() ])/, '')}" if phone
+  end
   
   def send_text_message(body)
     unless phone.blank?
@@ -206,7 +206,7 @@ class User < ApplicationRecord
       begin
         client.messages.create(
           :from => ENV["FROM_PHONE_NUMBER"],
-          :to => phone,
+          :to => twilio_formated_phone_number,
           :body => body #,
 #          :media_url => "https://www.gstatic.com/webp/gallery/1.sm.jpg"
         )
@@ -225,7 +225,7 @@ class User < ApplicationRecord
       begin
         client.messages.create(
           :from => ENV["FROM_PHONE_NUMBER"],
-          :to => phone,
+          :to => twilio_formated_phone_number,
           :body => "",
           :media_url => media_url
         )
@@ -286,11 +286,15 @@ class User < ApplicationRecord
   end
   
   def format_phone_before_create
-    self.phone = "+1#{phone.gsub(/([-() ])/, '')}" if phone
+    self.phone = "#{phone.gsub(/([-() ])/, '')}" if phone
   end
 
   def format_phone_before_update
     self.phone = "#{phone.gsub(/([-() ])/, '')}" if phone
+  end
+  
+  def plain_phone # Remove the +1 in front of the number
+    phone.gsub(/\+1/, '') unless phone.blank?
   end
   
 end

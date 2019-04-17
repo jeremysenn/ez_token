@@ -22,7 +22,7 @@ class CreateUserCustomerEventAccountWalletWorker
     twilio_client = Twilio::REST::Client.new ENV["TWILIO_ACCOUNT_SID"], ENV["TWILIO_AUTH_TOKEN"]
     twilio_client.messages.create(
       :from => ENV["FROM_PHONE_NUMBER"],
-      :to => user.phone,
+      :to => user.twilio_formated_phone_number,
       :body => message_body,
       :media_url => message_media.blank? ? nil : message_media
     )

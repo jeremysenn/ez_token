@@ -13,7 +13,7 @@ class CreateEventAccountWalletWorker
       message_media = "https://#{ENV['APPLICATION_HOST']}/customers/#{user.customer.barcode_access_string}/qr_code"
       twilio_client.messages.create(
         :from => ENV["FROM_PHONE_NUMBER"],
-        :to => user.phone,
+        :to => user.twilio_formated_phone_number,
         :body => message_body,
         :media_url => message_media.blank? ? nil : message_media
       )
@@ -21,7 +21,7 @@ class CreateEventAccountWalletWorker
       message_body = "You already have a Wallet for #{event.title}."
       twilio_client.messages.create(
         :from => ENV["FROM_PHONE_NUMBER"],
-        :to => user.phone,
+        :to => user.twilio_formated_phone_number,
         :body => message_body
       )
     end
