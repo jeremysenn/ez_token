@@ -105,7 +105,7 @@
                     #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
                       .panel-body
                         = render 'send_payment'
-              - if current_user.basic? and @account and @account.balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
+              - if current_user.basic? and @account and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
                 - unless @account.withdrawal_all?
                   %p
                     .panel.panel-default
