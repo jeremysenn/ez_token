@@ -44,6 +44,8 @@ class Customer < ActiveRecord::Base
 #  validates :Email, uniqueness: {allow_blank: true}
 #  validates :PhoneMobile, uniqueness: true
 
+  before_create :format_phone_mobile_before_create
+  before_update :format_phone_mobile_before_update
   after_commit :create_payee_user, on: [:create], if: :need_to_create_payee_user?
   after_commit :create_caddy_user, on: [:create], if: :need_to_create_caddy_user?
   after_commit :create_member_user, on: [:create], if: :need_to_create_member_user?
@@ -408,9 +410,9 @@ class Customer < ActiveRecord::Base
     self.PhoneMobile
   end
   
-  def twilio_formated_phone_number
-    "+1#{phone.gsub(/([-() ])/, '')}" if phone
-  end
+#  def twilio_formated_phone_number
+#    "+1#{phone.gsub(/([-() ])/, '')}" if phone
+#  end
   
 #  def account_id
 #    if primary?
@@ -665,11 +667,11 @@ class Customer < ActiveRecord::Base
       begin
         message = client.messages.create(
           :from => from,
-          :to => twilio_formated_phone_number,
+          :to => phone,
           :body => body #,
         )
         sid = message.sid
-        SmsMessage.create(sid: sid, to: twilio_formated_phone_number, from: from, customer_id: self.id, user_id: from_user_id, company_id: user.company_id, body: "#{body}")
+        SmsMessage.create(sid: sid, to: phone, from: from, customer_id: self.id, user_id: from_user_id, company_id: user.company_id, body: "#{body}")
       rescue Twilio::REST::RestError => e
         puts e.message
       end
@@ -768,6 +770,14 @@ class Customer < ActiveRecord::Base
   def decrypted_ssn
     decoded_acctnbr = Base64.decode64(self.SSN).unpack("H*").first
     Decrypt.decryption(decoded_acctnbr)
+  end
+  
+  def format_phone_mobile_before_create
+    self.PhoneMobile = "+1#{self.PhoneMobile.gsub(/([-() ])/, '')}" if self.PhoneMobile
+  end
+
+  def format_phone_mobile_before_update
+    self.PhoneMobile = "#{self.PhoneMobile.gsub(/([-() ])/, '')}" if self.PhoneMobile
   end
  
   #############################

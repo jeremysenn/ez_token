@@ -20,6 +20,9 @@ class User < ApplicationRecord
   scope :payee, -> { where(role: "payee") }
   
 #  before_create :search_for_payee_match
+
+  before_create :format_phone_before_create
+  before_update :format_phone_before_update
   before_create :search_for_customer_match
   after_create :send_confirmation_sms_message
   after_update :send_new_phone_number_confirmation_sms_message, if: :phone_changed?
@@ -190,9 +193,9 @@ class User < ApplicationRecord
     end
   end
   
-  def twilio_formated_phone_number
-    "+1#{phone.gsub(/([-() ])/, '')}" if phone
-  end
+#  def twilio_formated_phone_number
+#    "+1#{phone.gsub(/([-() ])/, '')}" if phone
+#  end
   
   def send_text_message(body)
     unless phone.blank?
@@ -203,7 +206,7 @@ class User < ApplicationRecord
       begin
         client.messages.create(
           :from => ENV["FROM_PHONE_NUMBER"],
-          :to => twilio_formated_phone_number,
+          :to => phone,
           :body => body #,
 #          :media_url => "https://www.gstatic.com/webp/gallery/1.sm.jpg"
         )
@@ -222,7 +225,7 @@ class User < ApplicationRecord
       begin
         client.messages.create(
           :from => ENV["FROM_PHONE_NUMBER"],
-          :to => twilio_formated_phone_number,
+          :to => phone,
           :body => "",
           :media_url => media_url
         )
@@ -280,6 +283,14 @@ class User < ApplicationRecord
   
   def can_quick_pay_customers?
     admin? or can_quick_pay?
+  end
+  
+  def format_phone_before_create
+    self.phone = "+1#{phone.gsub(/([-() ])/, '')}" if phone
+  end
+
+  def format_phone_before_update
+    self.phone = "#{phone.gsub(/([-() ])/, '')}" if phone
   end
   
 end
