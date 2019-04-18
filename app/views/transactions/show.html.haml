@@ -31,14 +31,12 @@
           %p.lead
             Company:
             = @transaction.company.CompanyName unless @transaction.company.blank?
-          - unless @to_customer.blank?
-            %p.lead
-              To:
-              = @to_customer.user.blank? ? @to_customer.full_name : @to_customer.user.full_name
-          - unless @from_customer.blank?
-            %p.lead
-              From:
-              = @from_customer.user.blank? ? @from_customer.full_name : @from_customer.user.full_name
+          %p.lead
+            To:
+            = @to_customer.blank? ? @transaction.to_account.company.name : @to_customer.full_name
+          %p.lead
+            From:
+            = @from_customer.blank? ? @transaction.to_account.company.name : @from_customer.full_name
           -#
             %p.lead
               From Account:
