@@ -44,4 +44,14 @@ class FileUploader < CarrierWave::Uploader::Base
   # def filename
   #   "something.jpg" if original_filename
   # end
+  
+#  By default, CarrierWave copies an uploaded file twice, first copying the file into the cache, then copying the file into the store. 
+#  For large files, this can be prohibitively time consuming. When the move_to_cache and/or move_to_store methods return true, 
+#  files will be moved (instead of copied) to the cache and store respectively.
+  def move_to_cache
+    true
+  end
+  def move_to_store
+    true
+  end
 end
