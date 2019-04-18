@@ -394,6 +394,18 @@ class Transaction < ActiveRecord::Base
     end
   end
   
+  def self.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:ez_cash_txn, message: { EventID: event_id, FromActID: from_account_id, ToActID: to_account_id, Amount: amount})
+    Rails.logger.debug "Response body: #{response.body}"
+    unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
+#      return response.body[:ez_cash_txn_response][:return]
+      return response.body[:ez_cash_txn_response]
+    else
+      return nil
+    end
+  end
+  
   def self.ezcash_get_barcode_png_web_service_call(customer_id, company_number, scale)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:get_customer_barcode_png, message: { CustomerID: customer_id, CompanyNumber: company_number, Scale: scale})

@@ -12,6 +12,7 @@
       = hidden_field_tag :barcode_number
       = hidden_field_tag :company_id, @account.CompanyNumber
       = hidden_field_tag :customer_barcode_id
+      = hidden_field_tag :event_id, @event.id
       =# hidden_field_tag :from_account_id
     #request_payment_button_group.btn-group{style: 'display:none;'}
       - if @account.can_request_payment_by_search?

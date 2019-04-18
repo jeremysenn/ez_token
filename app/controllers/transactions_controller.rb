@@ -147,11 +147,16 @@ class TransactionsController < ApplicationController
   
   def quick_purchase
     amount = params[:amount]
+    event_id = params[:event_id]
     to_account_id = params[:to_account_id]
     from_account_id = params[:from_account_id]
     customer_barcode_id = params[:customer_barcode_id]
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
-      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+      unless event_id.blank?
+        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount)
+      else
+        response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+      end
       unless response.blank?
         response_code = response[:return]
         unless response_code.to_i > 0
