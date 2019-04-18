@@ -151,6 +151,9 @@ class TransactionsController < ApplicationController
     to_account_id = params[:to_account_id]
     from_account_id = params[:from_account_id]
     customer_barcode_id = params[:customer_barcode_id]
+    if params[:file]
+      @file_upload = params[:file].path
+    end
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
       unless event_id.blank?
         response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount)
@@ -172,10 +175,10 @@ class TransactionsController < ApplicationController
     end
     Rails.logger.debug "*************Response: #{response}"
     unless @transaction.blank?
-      @transaction.upload_file = params[:file]
-      @transaction.save!(validate: false)
+#      @transaction.upload_file = params[:file]
+#      @transaction.save!(validate: false)
+      FileUploadWorker.perform_async(@transaction.id, @file_upload)
       @transaction.send_text_message_receipt
-#      redirect_to root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
       redirect_back fallback_location: root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
     else
       redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_code.blank? ? 'Unknown' : error_code}."
