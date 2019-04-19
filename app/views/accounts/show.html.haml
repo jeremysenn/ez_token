@@ -42,7 +42,7 @@
             = number_to_currency(@account.balance)
           - unless @account.minimum_balance.blank? or @account.minimum_balance.zero?
             %p.lead
-              %strong Minimum Balance:
+              %strong= "#{@account.credit_balance? ? 'Credit' : 'Minimum'}:"
               = number_to_currency(@account.minimum_balance)
             %p.lead
               %strong Available Balance:

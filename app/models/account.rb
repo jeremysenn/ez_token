@@ -209,28 +209,33 @@ class Account < ActiveRecord::Base
   end
   
   def minimum_balance
-    self.MinBalance
+    self.MinBalance.abs
   end
   
   def current_balance
     self.Balance
   end
   
-#  def available_balance
-#    self.Balance
-#  end
-  
   def available_balance
     # If the account minimum balance is nil, set to zero
-    unless self.MinBalance.blank? or self.MinBalance.zero? or self.MinBalance > self.Balance
-      account_minimum_balance = self.MinBalance
-      account_balance = self.Balance - account_minimum_balance
+    unless self.MinBalance.blank? or self.MinBalance.zero?
+      if self.MinBalance < 0 and self.Balance < 0
+        account_balance = (self.MinBalance - self.Balance).abs
+      else
+        account_balance = self.Balance - self.MinBalance
+      end
     else
       account_balance = self.Balance
     end
-    # The account available balance is the balance minus the minimum balance
-    
-    return account_balance
+    if account_balance < 0
+      return 0
+    else
+      return account_balance
+    end
+  end
+  
+  def credit_balance?
+    self.MinBalance < 0
   end
   
   def entity
@@ -365,10 +370,6 @@ class Account < ActiveRecord::Base
     else
       return nil
     end
-  end
-  
-  def balance
-    self.Balance
   end
   
   def description
