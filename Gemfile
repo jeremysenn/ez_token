@@ -87,6 +87,8 @@ gem 'exception_notification'
 
 # File uploads
 gem 'carrierwave'
+# mini replacement for RMagick http://mini_magick.rubyforge.org/
+gem "mini_magick"
 
 # Creating barcodes
 gem 'barby'
