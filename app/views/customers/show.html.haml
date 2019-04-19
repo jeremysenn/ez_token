@@ -177,7 +177,7 @@
               Avatar
             %p.text-center
               - unless @customer.avatar.blank?
-                = image_tag(asset_path(@customer.avatar.url), class: 'center image img-responsive img-circle')
+                = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')
               - else
                 = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
               
