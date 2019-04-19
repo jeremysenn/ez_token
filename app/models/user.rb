@@ -45,6 +45,11 @@ class User < ApplicationRecord
   end
   ### End Don't require email - from Devise wiki ###
   
+  ### Don't send confirmation email - from Devise wiki ###
+  def send_confirmation_notification?
+    false
+  end
+  
   def full_name
     "#{first_name} #{last_name}"
   end

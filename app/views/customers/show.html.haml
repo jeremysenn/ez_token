@@ -51,7 +51,7 @@
           .box-body.box-profile
             .text-center
               %h5.text-muted
-                Available Balance
+                Balance
                 - unless @account.MinBalance.blank? or @account.MinBalance.zero?
                   %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
                     = number_to_currency(@account.available_balance)
