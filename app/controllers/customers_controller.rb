@@ -315,7 +315,7 @@ class CustomersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def customer_params
       params.require(:customer).permit(:ParentCustID, :CompanyNumber, :Active, :GroupID, :NameF, :NameL, :NameS, :PhoneMobile, :Email, 
-        :LangID, :Registration_Source, :Registration_Source_ext, :create_payee_user_flag, :create_caddy_user_flag, :avatar, :avatar_cache, :SSN,
+        :LangID, :Registration_Source, :Registration_Source_ext, :create_payee_user_flag, :create_basic_user_flag, :create_caddy_user_flag, :avatar, :avatar_cache, :SSN,
         accounts_attributes:[:CompanyNumber, :Balance, :MinBalance, :Active, :CustomerID, :ActNbr, :ActTypeID, :BankActNbr, :RoutingNbr, 
           :AddGroupID, :AbleToDelete, :_destroy,:id, :event_ids, event_ids: []])
     end

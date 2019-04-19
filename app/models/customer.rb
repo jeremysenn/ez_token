@@ -30,6 +30,7 @@ class Customer < ActiveRecord::Base
   
   # Virtual Attributes
   attr_accessor :create_payee_user_flag
+  attr_accessor :create_basic_user_flag
   
   accepts_nested_attributes_for :accounts, allow_destroy: true
 #  accepts_nested_attributes_for :events
@@ -51,6 +52,7 @@ class Customer < ActiveRecord::Base
   after_commit :create_member_user, on: [:create], if: :need_to_create_member_user?
   before_create :generate_barcode_access_string
   after_update :create_payee_user, if: :need_to_create_payee_user?
+  after_update :create_basic_user, if: :need_to_create_basic_user?
 #  after_update :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
   before_save :encrypt_ssn
       
@@ -715,11 +717,21 @@ class Customer < ActiveRecord::Base
     return create_payee_user_flag == "true"
   end
   
+  def need_to_create_basic_user?
+    return create_basic_user_flag == "true"
+  end
+  
   def create_payee_user
 #    temporary_password = Devise.friendly_token.first(10)
 #    temporary_password = SecureRandom.hex.first(6)
     temporary_password = SecureRandom.random_number(10**6).to_s
     User.create(first_name: first_name, last_name: last_name, email: email, company_id: company_id, customer_id: id, role: "payee", phone: phone,
+    password: temporary_password, password_confirmation: temporary_password, temporary_password: temporary_password)
+  end
+  
+  def create_basic_user
+    temporary_password = SecureRandom.random_number(10**6).to_s
+    User.create(first_name: first_name, last_name: last_name, email: email, company_id: company_id, customer_id: id, role: "basic", phone: phone,
     password: temporary_password, password_confirmation: temporary_password, temporary_password: temporary_password)
   end
   
