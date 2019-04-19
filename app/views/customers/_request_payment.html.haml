@@ -5,7 +5,6 @@
     .input-group.input-group-lg.mb-3
       .input-group-prepend
         %span.input-group-text $
-      =# number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg",  required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "\d*"
       = text_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg",  required: true, autofocus: true, :pattern => "[0-9]*"
       .input-group-append
         %span.input-group-text .00

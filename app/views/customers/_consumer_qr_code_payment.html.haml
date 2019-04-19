@@ -2,13 +2,6 @@
   =# form_tag quick_purchase_transactions_path, id: 'quick_purchase_form', method: 'post', class: 'form-horizontal' do |f|
   = form_tag '#', id: 'qr_code_payment_form', method: 'post', class: 'form-horizontal' do |f|
     = hidden_field_tag :from_account_id, current_user.customer.account.id
-    -#
-      .input-group.mb-3
-        .input-group-prepend
-          %span.input-group-text $
-        = number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-xl", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
-        .input-group-append
-          %span.input-group-text .00
     %p{id: 'consumer_details'}
       = hidden_field_tag :barcode_number
       = hidden_field_tag :customer_barcode_id
