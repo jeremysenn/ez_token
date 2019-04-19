@@ -8,7 +8,7 @@
     = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
       .form-group
         =# f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control', :placeholder => "Email", :type => "email"
-        = f.text_field :phone, autocomplete: "phone", class: 'form-control', :placeholder => "Phone", required: true, autofocus: true, :pattern => "[0-9]*"
+        = f.text_field :phone, autocomplete: "phone", class: 'form-control', :placeholder => "Phone", required: true, :pattern => "[0-9]*"
       .form-group
         = f.password_field :password, autocomplete: "off",  class: 'form-control', :placeholder => "Password"
       - if devise_mapping.rememberable?
