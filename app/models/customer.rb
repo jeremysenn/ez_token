@@ -561,7 +561,7 @@ class Customer < ActiveRecord::Base
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
         unless phone.blank?
-          send_barcode_sms_message_with_info("You've just been paid #{ActiveSupport::NumberHelper.number_to_currency(amount)} by #{company.name}! Your current balance is #{ActiveSupport::NumberHelper.number_to_currency(balance)}. Get your cash from the PaymentATM. More information at www.tranact.com")
+          send_barcode_sms_message_with_info("You've just been paid #{ActiveSupport::NumberHelper.number_to_currency(amount)} by #{company.name}! Get your cash from the PaymentATM. More information at www.tranact.com")
         end
         return response.body[:ez_cash_txn_response]
       else
