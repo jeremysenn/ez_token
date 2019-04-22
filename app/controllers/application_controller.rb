@@ -29,4 +29,13 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Redirect to a specific page on successful sign in
+  def after_sign_up_path_for(resource)
+    if current_user.temporary_password.blank?
+      root_path
+    else
+      edit_user_registration_path(current_user)
+    end
+  end
+  
 end
