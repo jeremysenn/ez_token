@@ -18,19 +18,20 @@ jQuery ->
       console.log 'Request payment ZXing code reader initialized'
       codeReader.getVideoInputDevices().then (videoInputDevices) ->
         sourceSelect = document.getElementById('sourceSelect')
-        firstDeviceId = videoInputDevices[0].deviceId
+        #firstDeviceId = videoInputDevices[0].deviceId
         ###
-        if videoInputDevices.length > 1
-          videoInputDevices.forEach (element) ->
-            sourceOption = document.createElement('option')
-            sourceOption.text = element.label
-            sourceOption.value = element.deviceId
-            sourceSelect.appendChild sourceOption
-            return
+        #if videoInputDevices.length > 1
+        #  videoInputDevices.forEach (element) ->
+        #    sourceOption = document.createElement('option')
+        #    sourceOption.text = element.label
+        #    sourceOption.value = element.deviceId
+        #    sourceSelect.appendChild sourceOption
+        #    return
           sourceSelectPanel = document.getElementById('sourceSelectPanel')
           sourceSelectPanel.style.display = 'block'
         ###
-        codeReader.decodeFromInputVideoDevice(firstDeviceId, 'video').then((result) ->
+        #codeReader.decodeFromInputVideoDevice(firstDeviceId, 'video').then((result) ->
+        codeReader.decodeFromInputVideoDevice(undefined, 'video').then((result) ->
           barcode_number = result.text
           console.log barcode_number
           $('#qrcode_scanner_modal').modal('hide')
@@ -48,7 +49,8 @@ jQuery ->
 
         ).catch (err) ->
           console.error err
-        console.log 'Started continuous decode from camera with id ' + firstDeviceId
+        # console.log 'Started continuous decode from camera with id ' + firstDeviceId
+        console.log 'Started continuous decode from camera'
         return
 
     find_customer_by_barcode_ajax = ->
@@ -93,19 +95,20 @@ jQuery ->
       console.log 'Send payment ZXing code reader initialized'
       sendPaymentcodeReader.getVideoInputDevices().then (videoInputDevices) ->
         sourceSelect = document.getElementById('sourceSelect')
-        firstDeviceId = videoInputDevices[0].deviceId
+        #firstDeviceId = videoInputDevices[0].deviceId
         ###
-        if videoInputDevices.length > 1
-          videoInputDevices.forEach (element) ->
-            sourceOption = document.createElement('option')
-            sourceOption.text = element.label
-            sourceOption.value = element.deviceId
-            sourceSelect.appendChild sourceOption
-            return
+        #if videoInputDevices.length > 1
+        #  videoInputDevices.forEach (element) ->
+        #    sourceOption = document.createElement('option')
+        #    sourceOption.text = element.label
+        #    sourceOption.value = element.deviceId
+        #    sourceSelect.appendChild sourceOption
+        #    return
           sourceSelectPanel = document.getElementById('sourceSelectPanel')
           sourceSelectPanel.style.display = 'block'
         ###
-        sendPaymentcodeReader.decodeFromInputVideoDevice(firstDeviceId, 'send_payment_video').then((result) ->
+        #sendPaymentcodeReader.decodeFromInputVideoDevice(firstDeviceId, 'send_payment_video').then((result) ->
+        sendPaymentcodeReader.decodeFromInputVideoDevice(undefined, 'send_payment_video').then((result) ->
           barcode_number = result.text
           console.log barcode_number
           $('#send_payment_qrcode_scanner_modal').modal('hide')
@@ -123,7 +126,8 @@ jQuery ->
 
         ).catch (err) ->
           console.error err
-        console.log 'Started continuous decode from camera with id ' + firstDeviceId
+        #console.log 'Started continuous decode from camera with id ' + firstDeviceId
+        console.log 'Started continuous decode from camera'
         return
 
     find_user_by_qr_code_ajax = ->
