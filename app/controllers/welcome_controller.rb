@@ -19,7 +19,7 @@ class WelcomeController < ApplicationController
 #          end
 #        end
 #      end
-      if current_user.administrator? or current_user.basic? or current_user.collaborator?
+      if current_user.administrator? or current_user.collaborator?
 #        @devices = current_user.devices.order("description ASC")
         @devices = current_user.company.devices.order("description ASC")
         @start_date = params[:start_date] ||= (Date.today - 1.week).to_s
@@ -105,6 +105,10 @@ class WelcomeController < ApplicationController
         @bin_6_column_count = @devices.select{ |device| device.bin_6_count != 0 }.select{ |device| device.bin_6_count != nil }.count
         @bin_7_column_count = @devices.select{ |device| device.bin_7_count != 0 }.select{ |device| device.bin_7_count != nil }.count
         @bin_8_column_count = @devices.select{ |device| device.bin_8_count != 0 }.select{ |device| device.bin_8_count != nil }.count
+      else
+        if current_user.accounts.count == 1
+          redirect_to customer_path(current_user.customer)
+        end
       end
     end
   end
