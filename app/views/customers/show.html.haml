@@ -248,7 +248,7 @@
                 %a#payments-tab.nav-link.active{"aria-controls" => "payments", "aria-selected" => "true", "data-toggle" => "tab", :href => "#payments", :role => "tab"} 
                   %i.fa.fa-dollar.fa-lg
                   = "Payments"
-              - if @account and @account.can_withdraw?
+              - if @account and (@account.can_withdraw? or @account.withdrawal_all?)
                 %li.nav-item
                   %a#withdrawals-tab.nav-link{"aria-controls" => "withdrawals", "aria-selected" => "false", "data-toggle" => "tab", :href => "#withdrawals", :role => "tab"} 
                     %i.fa.fa-money.fa-lg
