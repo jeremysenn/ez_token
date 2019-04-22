@@ -17,7 +17,8 @@ class ApplicationController < ActionController::Base
   # Redirect to a specific page on successful sign in
   def after_sign_in_path_for(resource)
     sign_in_url = new_user_session_url
-    unless not current_user.temporary_password.blank? and current_user.sign_in_count > 1
+#    unless not current_user.temporary_password.blank? and current_user.sign_in_count > 1
+    if current_user.temporary_password.blank?
       if request.referer == sign_in_url
         super
       else
