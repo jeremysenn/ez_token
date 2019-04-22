@@ -11,6 +11,7 @@ class Transaction < ActiveRecord::Base
   has_one :transfer, :foreign_key => :ez_cash_tran_id
   belongs_to :company, :foreign_key => "DevCompanyNbr"
   has_one :payment, :foreign_key => "TranID"
+  belongs_to :event
   
   scope :withdrawals, -> { where(tran_code: ["WDL", "ALL"], sec_tran_code: ["TFR", ""]) }
   scope :transfers, -> { where(tran_code: ["CARD"], sec_tran_code: ["TFR"]) }

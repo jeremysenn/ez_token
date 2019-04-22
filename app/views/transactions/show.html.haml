@@ -37,6 +37,12 @@
           %p.lead
             From:
             = @from_customer.blank? ? @transaction.to_account.company.name : @from_customer.full_name
+          %p.lead
+            Event:
+            - unless @transaction.event.blank?
+              = link_to @transaction.event.title, @transaction.event
+            - else
+              N/A
           -#
             %p.lead
               From Account:

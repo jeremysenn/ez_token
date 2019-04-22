@@ -7,6 +7,7 @@
           %th{:scope => "col"}= transactions_sort_link 'date_time', "Date", @start_date, @end_date, @type, @transaction_id_or_receipt_number
           %td{:scope => "col"} To
           %td{:scope => "col"} From
+          %td{:scope => "col"} Event
           -# %th{:scope => "col"} Ref
           -#
             %th{:scope => "col"}= transactions_sort_link 'error_code', "Code", @start_date, @end_date, @type, @transaction_id_or_receipt_number
@@ -26,6 +27,7 @@
             %td= transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
             %td= to_customer.blank? ? transaction.to_account.company.name : to_customer.full_name
             %td= from_customer.blank? ? transaction.to_account.company.name : from_customer.full_name
+            %td= transaction.event.blank? ? 'N/A' : transaction.event.title
             -# %td= "#{transaction.receipt_nbr.blank? ? 'N/A' : transaction.receipt_nbr}"
             -#
               %td

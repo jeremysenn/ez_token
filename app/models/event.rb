@@ -5,6 +5,7 @@ class Event < ActiveRecord::Base
 #  has_many :accounts
   has_and_belongs_to_many :accounts, :join_table => :accounts_events, :uniq => true
   has_many :customers, through: :accounts
+  has_many :transactions
   
   before_validation :downcase_join_code, :strip_join_code, unless: Proc.new { |event| event.join_code.blank? }
   
