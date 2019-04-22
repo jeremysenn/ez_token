@@ -54,9 +54,9 @@
                 Balance
                 - unless @account.MinBalance.blank? or @account.MinBalance.zero?
                   %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
-                    = number_to_currency(@account.available_balance)
+                    = number_to_currency(@account.Balance)
                 - else
-                  = number_to_currency(@account.available_balance)
+                  = number_to_currency(@account.Balance)
                 - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?))
                   %a.btn.btn-sm.btn-default{href: edit_account_path(@account)}
                     %i.fa.fa-credit-card
