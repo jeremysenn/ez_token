@@ -23,6 +23,8 @@
                   .input-group-prepend
                     %span.input-group-text $
                   = f.input_field :MinBalance, as: :string, class: "form-control"
+              .col-xs-12.col-sm-6
+                = f.input :Active, as: :boolean, inline_label: 'Active'
           -#
             = f.input :Balance, as: :decimal, required: true, label: "Balance" do
               .row
