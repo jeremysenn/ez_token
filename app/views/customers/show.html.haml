@@ -87,7 +87,7 @@
                   .panel.panel-default
                     #headingOne.panel-heading{:role => "tab"}
                       %h4.panel-title
-                        %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or @event.accounts.can_be_pulled_by_search.blank?) ? 'disabled' : ''}"}
+                        %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or (@event.accounts.can_be_pulled_by_search.blank? and @event.accounts.can_be_pulled_by_scan.blank?)) ? 'disabled' : ''}"}
                           %i.fa.fa-long-arrow-right
                           Request Payment
                     #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
