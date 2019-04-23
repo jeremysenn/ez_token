@@ -12,8 +12,9 @@ class CreateUserCustomerEventAccountWalletWorker
     twilio_client = Twilio::REST::Client.new ENV["TWILIO_ACCOUNT_SID"], ENV["TWILIO_AUTH_TOKEN"]
     if account
 #      body_1 = "Your temporary password is: #{user.temporary_password}"
+#      body_2 = (account.can_fund_by_cc? or account.can_fund_by_ach?) ? " - you can fund your Wallet here: https://#{ENV['APPLICATION_HOST']}/accounts/#{account.id}/edit" : " - you can sign in here: https://#{ENV['APPLICATION_HOST']}/users/sign_in"
       body_1 = ''
-      body_2 = (account.can_fund_by_cc? or account.can_fund_by_ach?) ? " - you can fund your Wallet here: https://#{ENV['APPLICATION_HOST']}/accounts/#{account.id}/edit" : " - you can sign in here: https://#{ENV['APPLICATION_HOST']}/users/sign_in"
+      body_2 = ''
       message_body = body_1 + body_2
 #      message_media = qr_code_customer_path(user.customer.barcode_access_string)
       message_media = "https://#{ENV['APPLICATION_HOST']}/customers/#{user.customer.barcode_access_string}/qr_code"
