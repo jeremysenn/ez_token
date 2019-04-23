@@ -15,11 +15,12 @@ class AccountsController < ApplicationController
     unless params[:q].blank?
       @query_string = "%#{params[:q]}%"
 #      @accounts = current_user.company.accounts.where(ActID: @query_string)
-      accounts_results = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
-      @accounts = accounts_results.joins(:customer).where("customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string)
+      @total_accounts_results = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
+      @accounts = @total_accounts_results.joins(:customer).where("customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string).order("customer.NameF ASC").page(params[:page]).per(20)
     else
-      @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
-#      @accounts = current_user.company.accounts.page(params[:page]).per(20)
+#      @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
+      @total_accounts_results = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
+      @accounts = @total_accounts_results.joins(:customer).order("customer.NameF ASC").page(params[:page]).per(20)
     end
   end
 
