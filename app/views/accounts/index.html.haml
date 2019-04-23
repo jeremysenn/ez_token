@@ -50,7 +50,7 @@
                     %td= account.id
                     %td
                       - unless account.customer.blank? 
-                        = link_to "#{account.customer.full_name}", customer_path(account.customer.id, account_id: account.id)
+                        = link_to "#{account.customer.full_name.blank? ? account.customer.phone : account.customer.full_name}", customer_path(account.customer.id, account_id: account.id)
                         -#
                           - unless account.user.blank?
                             = link_to "#{account.user.full_name} (#{account.user.role})", customer_path(account.customer.id, account_id: account.id)
