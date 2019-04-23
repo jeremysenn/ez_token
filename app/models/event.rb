@@ -34,11 +34,11 @@ class Event < ActiveRecord::Base
   
   def open?
 #    (start_time.in_time_zone(time_zone) < Time.now.in_time_zone(time_zone)) and (Time.now.in_time_zone(time_zone) < end_time.in_time_zone(time_zone))
-    (start_date.to_date <= Date.today) and (Date.today <= end_time.to_date)
+    (start_date.to_date <= Date.today) and (Date.today <= end_date.to_date)
   end
   
   def closed?
-    unless end_time.blank?
+    unless end_date.blank?
 #      end_time.in_time_zone(time_zone) < Time.now.in_time_zone(time_zone)
       end_date.to_date < Date.today
     else
