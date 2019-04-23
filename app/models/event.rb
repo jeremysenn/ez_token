@@ -9,7 +9,7 @@ class Event < ActiveRecord::Base
   
   before_validation :downcase_join_code, :strip_join_code, unless: Proc.new { |event| event.join_code.blank? }
   
-  scope :now_open, -> { where("start_date <= ? AND end_date >= ?", Date.today, Date.today) }
+  scope :now_open, -> { where("CONVERT(date, start_date) <= ? AND CONVERT(date, end_date) >= ?", Date.today, Date.today) }
   scope :accounts_do_not_expire, -> { where(expire_accounts: [nil, 0]) }
   scope :accounts_expire, -> { where(expire_accounts: 1) }
   
