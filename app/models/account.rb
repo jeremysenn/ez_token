@@ -22,8 +22,8 @@ class Account < ActiveRecord::Base
   scope :debit, -> { where(ActTypeID: 6) }
   scope :customer_primary, -> { where(AbleToDelete: [0,nil]) }
   
-  scope :can_be_pulled_by_search, -> { joins(:account_type).where('AccountTypes.CanBePulledBySearch = ?', 1) }
-  scope :can_be_pulled_by_scan, -> { joins(:account_type).where('AccountTypes.CanBePulledByScan = ?', 1) }
+  scope :can_be_pulled_by_search, -> { where(Active: true).joins(:account_type).where('AccountTypes.CanBePulledBySearch = ?', 1) }
+  scope :can_be_pulled_by_scan, -> { where(Active: true).joins(:account_type).where('AccountTypes.CanBePulledByScan = ?', 1) }
   
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
