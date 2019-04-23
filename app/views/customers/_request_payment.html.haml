@@ -53,19 +53,19 @@
               Submit
 
   .modal.fade{id: "request_payment_qrcode_scanner_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
-    .modal-dialog.modal-sm{:role => "document"}
-      .modal-content
-        .modal-header
-          Scan QR Code for Payment
-          = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
+    .modal-dialog{:role => "document"}
+      .modal-content{style: 'background-color: black;'}
+        -#
+          .modal-header
+            Scan QR Code for Payment
+            = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
         .modal-body
-          %p
+          %div.text-center{style: 'color: white; font-size: 48px;'}
             %strong
-              Amount:
               %span{class: 'request_payment_amount'}
-          %video#video{:style => "border: 1px solid green; width: 100%; height: auto;"}
+          %video#video{:style => "border: 2px solid green; width: 100%; height: auto;"}
         .modal-footer
-          = link_to "Cancel", '#', :class => "btn btn-default", "data-dismiss" => "modal"
+          = link_to "Cancel", '#', :class => "btn btn-default btn-sm", "data-dismiss" => "modal"
 
 = audio_tag asset_path("cash_register.mp3"), class: "cash_register_chime"
 
