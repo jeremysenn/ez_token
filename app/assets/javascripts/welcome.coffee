@@ -67,7 +67,6 @@ jQuery ->
           last_name = data.last_name
           balance = parseFloat(data.balance)
           consumer_customer_account_id = data.account_id
-          alert consumer_customer_account_id
           customer_barcode_id = data.customer_barcode_id
           $('#consumer_details').append "<p>" + first_name + " " + last_name + "<br> Balance: OK </p>"
           if balance >= amount
