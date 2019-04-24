@@ -74,7 +74,8 @@ jQuery ->
             $('#open_consumer_qrcode_scanner_button').hide()
             $('#from_account_id').val consumer_customer_account_id
             $('#customer_barcode_id').val customer_barcode_id
-            $("#amount").prop("readonly", true);
+            $("#amount").prop("readonly", true)
+            alert $('#from_account_id').val()
             $('#quick_purchase_form').submit()
             $(".cash_register_chime")[0].play()
           else
