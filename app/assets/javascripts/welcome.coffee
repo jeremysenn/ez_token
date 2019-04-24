@@ -63,6 +63,7 @@ jQuery ->
         data:
           company_id: company_id
         success: (data) ->
+          alert 'QR Code found'
           first_name = data.first_name
           last_name = data.last_name
           balance = parseFloat(data.balance)
@@ -82,6 +83,7 @@ jQuery ->
             $('#open_consumer_qrcode_scanner_button').hide()
           return
         error: (xhr) ->
+          alert 'QR Code not found'
           $('#scan_spinner').hide()
           error = $.parseJSON(xhr.responseText).error
           alert error
