@@ -5,7 +5,7 @@
     = render 'shared/flash_messages'
     %h3
       %i.fa.fa-male
-      = @customer.user_name
+      = "#{@customer.full_name.blank? ? @customer.phone : @customer.full_name}"
       %a{href: edit_customer_path(@customer)}
         %i.fa.fa-pencil
     
@@ -297,13 +297,13 @@
                             -#
                               %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
                             %td
-                              - unless payment_transaction.to_account_customer.blank? or (payment_transaction.to_account_customer.full_name.blank? and payment_transaction.to_account_customer.user.full_name.blank?)
-                                = payment_transaction.to_account_customer.user.blank? ? payment_transaction.to_account_customer.full_name : payment_transaction.to_account_customer.user.full_name
+                              - unless payment_transaction.to_account_customer.blank? 
+                                = payment_transaction.to_account_customer.full_name.blank? ? payment_transaction.to_account_customer.phone : payment_transaction.to_account_customer.full_name
                               - else
                                 = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
                             %td
                               - unless payment_transaction.from_account_customer.blank?
-                                = payment_transaction.from_account_customer.user.blank? ? payment_transaction.from_account_customer.full_name : payment_transaction.from_account_customer.user.full_name
+                                = payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
                               - else
                                 = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
                             %td= number_to_currency(payment_transaction.amt_auth)
