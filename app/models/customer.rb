@@ -42,8 +42,6 @@ class Customer < ActiveRecord::Base
 #  validates :PhoneMobile, presence: true
 #  validates_uniqueness_of :Email
 #  validates_uniqueness_of :PhoneMobile
-#  validates :Email, uniqueness: {allow_blank: true}
-#  validates :PhoneMobile, uniqueness: true
 
   before_create :format_phone_mobile_before_create
   before_update :format_phone_mobile_before_update

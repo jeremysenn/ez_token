@@ -29,7 +29,8 @@ class User < ApplicationRecord
   after_update :update_customer_record,
     :if => proc {|obj| obj.phone_changed? || obj.first_name_changed? ||  obj.last_name_changed? || obj.email_changed?}  
       
-  validates :phone, uniqueness: true, presence: true  
+  validates :phone, uniqueness: true, presence: true 
+  validates :email, uniqueness: {allow_blank: true}
     
   #############################
   #     Instance Methods      #
