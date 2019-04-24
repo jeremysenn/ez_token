@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :registerable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable #, :timeoutable
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :confirmable #, :validatable, :timeoutable
   
 #  ROLES = %w[admin caddy_admin event_admin basic caddy member consumer payee vendor].freeze
   ROLES = %w[admin basic collaborator].freeze
@@ -31,6 +31,7 @@ class User < ApplicationRecord
       
   validates :phone, uniqueness: true, presence: true 
   validates :email, uniqueness: {allow_blank: true}
+
     
   #############################
   #     Instance Methods      #
