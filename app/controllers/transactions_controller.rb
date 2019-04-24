@@ -181,7 +181,7 @@ class TransactionsController < ApplicationController
       @transaction.send_text_message_receipt
       redirect_back fallback_location: root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
     else
-      redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_code.blank? ? 'Unknown' : ErrorDesc.find_by(error_code: error_code)}."
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_code.blank? ? 'Unknown' : ErrorDesc.find_by(error_code: error_code)}. Amount: #{amount}, To: #{to_account_id}, From: #{from_account_id}"
     end
   end
   
