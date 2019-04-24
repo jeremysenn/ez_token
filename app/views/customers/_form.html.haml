@@ -95,7 +95,7 @@
                       - unless current_user.company.events.accounts_expire.blank?
                         %label.control-label.text-muted Expiring Wallets
                       .row
-                        = account_form.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
+                        = account_form.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => true) do |event_field|
                           .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: account_form.object.events.first == event_field.object) + ' ' + event_field.text }
 
           .pull-right

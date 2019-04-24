@@ -258,6 +258,7 @@ class CustomersController < ApplicationController
   # GET /customers/123456789/find_by_barcode
   def find_by_barcode
     company_id = params[:company_id]
+    event_id = params[:event_id]
     unless company_id.blank?
       @barcode = CustomerBarcode.where(:Barcode => params[:id], :CompanyNumber => current_user.company_id).first
     else

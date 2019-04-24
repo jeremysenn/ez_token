@@ -56,12 +56,14 @@ jQuery ->
     find_customer_by_barcode_ajax = ->
       barcode_number = $('#barcode_number').val()
       company_id = $('#company_id').val()
+      event_id = $('#event_id').val()
       amount = parseFloat($('#amount').val())
       $.ajax
         url: "/customers/" + barcode_number + "/find_by_barcode"
         dataType: 'json'
         data:
           company_id: company_id
+          event_id: event_id
         success: (data) ->
           first_name = data.first_name
           last_name = data.last_name
@@ -75,7 +77,6 @@ jQuery ->
             $('#from_account_id').val consumer_customer_account_id
             $('#customer_barcode_id').val customer_barcode_id
             $("#amount").prop("readonly", true)
-            alert $('#from_account_id').val()
             $('#quick_purchase_form').submit()
             $(".cash_register_chime")[0].play()
           else
