@@ -141,7 +141,7 @@ class TransactionsController < ApplicationController
 #      redirect_to barcode_customer_path(@customer), notice: 'Quick Pay submitted.'
       redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
     else
-      redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code: #{error_code}"
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code: #{ErrorDesc.find_by(error_code: error_code)}"
     end
   end
   
@@ -181,7 +181,7 @@ class TransactionsController < ApplicationController
       @transaction.send_text_message_receipt
       redirect_back fallback_location: root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
     else
-      redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_code.blank? ? 'Unknown' : error_code}."
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_code.blank? ? 'Unknown' : ErrorDesc.find_by(error_code: error_code)}."
     end
   end
   
@@ -204,7 +204,7 @@ class TransactionsController < ApplicationController
     unless @transaction.blank?
       redirect_to root_path, notice: "Tip submitted. Transaction ID #{@transaction.id}"
     else
-      redirect_back fallback_location: root_path, alert: "There was a problem creating the Tip. Error code: #{error_code.blank? ? 'Unknown' : error_code}."
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the Tip. Error code: #{error_code.blank? ? 'Unknown' : ErrorDesc.find_by(error_code: error_code)}."
     end
   end
   
@@ -227,7 +227,7 @@ class TransactionsController < ApplicationController
     unless @transaction.blank?
       redirect_back fallback_location: root_path, notice: "Payment sent. Transaction ID #{@transaction.id}"
     else
-      redirect_back fallback_location: root_path, alert: "There was a problem sending the payment. Error code: #{error_code.blank? ? 'Unknown' : error_code}."
+      redirect_back fallback_location: root_path, alert: "There was a problem sending the payment. Error code: #{error_code.blank? ? 'Unknown' : ErrorDesc.find_by(error_code: error_code)}."
     end
   end
   

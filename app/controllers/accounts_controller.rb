@@ -90,7 +90,7 @@ class AccountsController < ApplicationController
     unless transaction_id.blank?
       redirect_back fallback_location: @account.customer, notice: 'One time payment submitted.'
     else
-      redirect_back fallback_location: @account.customer, alert: "There was a problem creating the one time payment. Error code: #{error_code}"
+      redirect_back fallback_location: @account.customer, alert: "There was a problem creating the one time payment. Error code: #{ErrorDesc.find_by(error_code: error_code)}"
     end
   end
 
