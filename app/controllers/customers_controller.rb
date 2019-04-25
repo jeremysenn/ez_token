@@ -272,9 +272,9 @@ class CustomersController < ApplicationController
     @account = @customer.accounts.where(CompanyNumber: company_id).first
     respond_to do |format|
       unless @customer.blank? or @account.blank?
-        format.json {render json: {"first_name" => @customer.user.first_name, "last_name" => @customer.user.last_name, "balance" => @account.available_balance, "account_id" => @account.id, "customer_barcode_id" => @barcode.blank? ? nil : @barcode.id} }
+        format.json {render json: {"first_name" => @customer.first_name, "last_name" => @customer.last_name, "balance" => @account.available_balance, "account_id" => @account.id, "customer_barcode_id" => @barcode.blank? ? nil : @barcode.id} }
       else
-        format.json {render json: { error: ["Error: Customer cannot be found."] }, status: :unprocessable_entity}
+        format.json {render json: { error: ["Error: Customer/Account cannot be found."] }, status: :unprocessable_entity}
       end
     end
     
