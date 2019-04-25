@@ -32,8 +32,8 @@ class Account < ActiveRecord::Base
   validate :maintain_balance_not_less_than_minimum_maintain_balance, on: :update
   validate :credit_card_fields_filled
   
-  validate :customer_does_not_have_account_wallet_for_event, on: :create
-  validate :customer_does_not_have_more_than_one_account_wallet_for_event, on: :update
+#  validate :customer_does_not_have_account_wallet_for_event, on: :create
+#  validate :customer_does_not_have_more_than_one_account_wallet_for_event, on: :update
 
   before_save :encrypt_bank_account_number
   before_save :encrypt_bank_routing_number
@@ -657,7 +657,7 @@ class Account < ActiveRecord::Base
   def customer_does_not_have_account_wallet_for_event
     account_events = self.events
     customer_events = customer.events
-    if (account_events & customer_events) > 0
+    if (account_events & customer_events).count > 0
 #      errors[:base] << 'Artist already has an album by this name'
       errors[:base] << 'Cannot have more than one wallet per event.'
     end
@@ -667,7 +667,7 @@ class Account < ActiveRecord::Base
 #    if self.artist.albums.where(name: self.album.name).any?
     account_events = self.events
     customer_events = customer.events
-    if (account_events & customer_events) > 1
+    if (account_events & customer_events).count > 1
 #      errors[:base] << 'Artist already has an album by this name'
       errors[:base] << 'Cannot have more than one wallet per event.'
     end
