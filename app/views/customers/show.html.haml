@@ -19,31 +19,29 @@
               = event.title.html_safe
       - else
         (no events)
-      %i.fa.fa-google-wallet
-      = @account.account_type.description
 
-    -# unless @accounts.blank? or @accounts.count == 1
-    
-    .btn-group
-      -# @accounts.each_with_index do |account, index|
-      - @accounts.joins(:events).where(events: {id: @event.id}).each_with_index do |account, index|
-        - unless browser.device.mobile?
-          -# %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> Wallet #{index + 1} <div class='text-center'><small>(#{account.account_type.description})</small></div>"}}
-          %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> #{account.account_type.description}"}}
-            %i.fa.fa-google-wallet
-            = account.account_type.description
-            -#
-              Wallet
-              = "#{index + 1}"
-              .text-center
-                %small= "(#{account.account_type.description})"
-        - else
-          %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> Wallet #{index + 1}"}}
-            %i.fa.fa-google-wallet
-            = account.account_type.description.truncate(10)
-            -#
-              Wallet
-              = "#{index + 1}"
+    -# 
+      - unless @accounts.blank? or @accounts.count == 1
+        .btn-group
+          -# @accounts.each_with_index do |account, index|
+          - @accounts.joins(:events).where(events: {id: @event.id}).each_with_index do |account, index|
+            - unless browser.device.mobile?
+              -# %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> Wallet #{index + 1} <div class='text-center'><small>(#{account.account_type.description})</small></div>"}}
+              %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> #{account.account_type.description}"}}
+                %i.fa.fa-google-wallet
+                = account.account_type.description
+                -#
+                  Wallet
+                  = "#{index + 1}"
+                  .text-center
+                    %small= "(#{account.account_type.description})"
+            - else
+              %a.btn{href: customer_path(account_id: account.id), class: "#{@account.id == account.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-google-wallet'></i> Wallet #{index + 1}"}}
+                %i.fa.fa-google-wallet
+                = account.account_type.description.truncate(10)
+                -#
+                  Wallet
+                  = "#{index + 1}"
     
       -#
         %br
@@ -63,6 +61,9 @@
           .box-body.box-profile
             .text-center
               %h5.text-muted
+                %i.fa.fa-google-wallet
+                = @account.account_type.description
+                %br
                 Balance
                 - unless @account.MinBalance.blank? or @account.MinBalance.zero?
                   %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
