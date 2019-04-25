@@ -88,11 +88,15 @@
                 ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
                 operating rules in effect from time to time.
               .row
-                .col-xs-12.col-md-12= f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :password, label: 'Routing Number'
-                -# .col-xs-12.col-md-12= f.input :RoutingNbr,  as: :string, label: 'Routing Number'
+                - unless @account.new_record?
+                  .col-xs-12.col-md-12= f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :password, label: 'Routing Number'
+                - else
+                  .col-xs-12.col-md-12= f.input :RoutingNbr,  as: :string, label: 'Routing Number'
               .row
-                .col-xs-12.col-md-12= f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
-                -# .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number'
+                - unless @account.new_record?
+                  .col-xs-12.col-md-12= f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
+                - else
+                  .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number'
           
       .form-actions
         %br
