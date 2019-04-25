@@ -258,7 +258,7 @@ class CustomersController < ApplicationController
   # GET /customers/123456789/find_by_barcode
   def find_by_barcode
     company_id = params[:company_id]
-    event_id = params[:event_id]
+    @event = Event.find(params[:event_id])
     unless company_id.blank?
       @barcode = CustomerBarcode.where(:Barcode => params[:id], :CompanyNumber => current_user.company_id).first
     else
@@ -269,7 +269,15 @@ class CustomersController < ApplicationController
     else
       @customer = Customer.find_by(barcode_access_string: params[:id])
     end
-    @account = @customer.accounts.where(CompanyNumber: company_id).first
+    unless @customer.blank?
+      unless @event.blank?
+        if @customer.events.include?(@event)
+          @account = @customer.events.find(@event.id).account
+        end
+      else
+        @account = @customer.accounts.where(CompanyNumber: company_id).first
+      end
+    end
     respond_to do |format|
       unless @customer.blank? or @account.blank?
         format.json {render json: {"first_name" => @customer.first_name, "last_name" => @customer.last_name, "balance" => @account.available_balance, "account_id" => @account.id, "customer_barcode_id" => @barcode.blank? ? nil : @barcode.id} }
