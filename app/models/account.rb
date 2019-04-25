@@ -31,9 +31,7 @@ class Account < ActiveRecord::Base
 #  validates :MinBalance, numericality: true
   validate :maintain_balance_not_less_than_minimum_maintain_balance, on: :update
   validate :credit_card_fields_filled
-  
-#  validate :customer_does_not_have_account_wallet_for_event, on: :create
-#  validate :customer_does_not_have_more_than_one_account_wallet_for_event, on: :update
+  validate :customer_does_not_have_multiple_account_wallets_for_same_event
 
   before_save :encrypt_bank_account_number
   before_save :encrypt_bank_routing_number
@@ -605,6 +603,18 @@ class Account < ActiveRecord::Base
     self.BankActNbr
   end
   
+  def customer_does_not_have_multiple_account_wallets_for_same_event
+    unless self.new_record?
+      if customer.events.count > customer.events.uniq.count
+        errors.add(:error, 'Cannot have more than one wallet per event.')
+      end
+    else
+      if (customer.events + self.events).count > (customer.events + self.events).uniq.count
+        errors.add(:error, 'Cannot have more than one wallet per event.')
+      end
+    end
+  end
+  
   #############################
   #     Class Methods         #
   #############################
@@ -649,27 +659,6 @@ class Account < ActiveRecord::Base
       all.each do |account|
         csv << attributes.map{ |attr| account.send(attr) }
       end
-    end
-  end
-  
-  private
-  
-  def customer_does_not_have_account_wallet_for_event
-    account_events = self.events
-    customer_events = customer.events
-    if (account_events & customer_events).count > 0
-#      errors[:base] << 'Artist already has an album by this name'
-      errors[:base] << 'Cannot have more than one wallet per event.'
-    end
-  end
-
-  def customer_does_not_have_more_than_one_account_wallet_for_event
-#    if self.artist.albums.where(name: self.album.name).any?
-    account_events = self.events
-    customer_events = customer.events
-    if (account_events & customer_events).count > 1
-#      errors[:base] << 'Artist already has an album by this name'
-      errors[:base] << 'Cannot have more than one wallet per event.'
     end
   end
   

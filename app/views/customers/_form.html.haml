@@ -59,8 +59,8 @@
                   %h3.box-title 
                     = number_to_currency(account_form.object.Balance)
                   .box-tools.pull-right
-                    - if account_form.object.can_delete?
-                      = account_form.remove_nested_fields_link "<i class='fa fa-trash'></i> Delete".html_safe, data: { confirm: 'Are you sure you want to delete?' }
+                    -# if account_form.object.can_delete?
+                    = account_form.remove_nested_fields_link "<i class='fa fa-trash'></i> Delete".html_safe, data: { confirm: 'Are you sure you want to delete?' }
                 .box-body
                   = account_form.input :ActTypeID, collection: current_user.company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type"
                   = account_form.input :Active, :as => :boolean
