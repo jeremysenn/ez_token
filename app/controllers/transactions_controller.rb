@@ -149,7 +149,11 @@ class TransactionsController < ApplicationController
     amount = params[:amount]
     event_id = params[:event_id]
     to_account_id = params[:to_account_id]
-    from_account_id = params[:from_account_id]
+    unless params[:scanned_from_account_id].blank?
+      from_account_id = params[:scanned_from_account_id]
+    else
+      from_account_id = params[:from_account_id]
+    end
     customer_barcode_id = params[:customer_barcode_id]
     if params[:file]
       @file_upload = params[:file].path

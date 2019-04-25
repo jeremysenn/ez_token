@@ -74,7 +74,8 @@ jQuery ->
           if balance >= amount
             $('#scan_spinner').show()
             $('#open_consumer_qrcode_scanner_button').hide()
-            $('#from_account_id').val consumer_customer_account_id
+            # $('#from_account_id').val consumer_customer_account_id
+            $('#scanned_from_account_id').val consumer_customer_account_id
             $('#customer_barcode_id').val customer_barcode_id
             $("#amount").prop("readonly", true)
             $('#quick_purchase_form').submit()

@@ -13,7 +13,7 @@
       = hidden_field_tag :company_id, @account.CompanyNumber
       = hidden_field_tag :customer_barcode_id
       = hidden_field_tag :event_id, @event.id
-      =# hidden_field_tag :from_account_id
+      = hidden_field_tag :scanned_from_account_id
     #request_payment_button_group.btn-group{style: 'display:none;'}
       - if @account.can_request_payment_by_search?
         %a.btn.btn-default.btn-lg{id: 'open_buddy_search_button', href: "#request_payment_buddy_search_modal", "data-target" => "#request_payment_buddy_search_modal", "data-toggle" => "modal"}
