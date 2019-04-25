@@ -85,6 +85,7 @@ jQuery ->
             $('#open_consumer_qrcode_scanner_button').hide()
           return
         error: (xhr) ->
+          $('#request_payment_qrcode_scanner_modal').modal('hide')
           $('#scan_spinner').hide()
           error = $.parseJSON(xhr.responseText).error
           alert error
