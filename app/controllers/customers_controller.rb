@@ -272,7 +272,7 @@ class CustomersController < ApplicationController
     unless @customer.blank?
       unless @event.blank?
         if @customer.events.include?(@event)
-          @account = @customer.events.find(@event.id).accounts.where(CompanyNumber: company_id).first
+          @account = @customer.accounts.joins(:events).where(events: {id: @event.id}).first
         end
       else
         @account = @customer.accounts.where(CompanyNumber: company_id).first
