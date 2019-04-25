@@ -76,8 +76,15 @@ class CustomersController < ApplicationController
   # GET /customers/1.json
   def show
     @accounts = current_user.administrator? ? @customer.accounts.where(CompanyNumber: current_user.company_id) : @customer.accounts
+    @events = current_user.administrator? ? @customer.events.where(company_id: current_user.company_id) : @customer.events
+    if params[:event_id].blank?
+      @event = @events.first
+    else
+      @event = @events.find(params[:event_id])
+    end
     if params[:account_id].blank?
-      @account = @accounts.first
+#      @account = @accounts.first
+      @account = @accounts.joins(:events).where(events: {id: @event.id}).first
     else
       @account = @accounts.find(params[:account_id])
     end
@@ -89,12 +96,7 @@ class CustomersController < ApplicationController
       @check_transactions =  Kaminari.paginate_array(@customer.cashed_checks).page(params[:checks]).per(10)
       @sms_messages = @customer.sms_messages.order("created_at DESC").page(params[:messages]).per(10)
   #    @events = @customer.events
-      @events = @account.events
-      if params[:event_id].blank?
-        @event = @events.first
-      else
-        @event = @events.find(params[:event_id])
-      end
+#      @events = @account.events
     end
     if @customer.user.blank?
       @temporary_password = SecureRandom.random_number(10**6).to_s
