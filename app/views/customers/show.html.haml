@@ -228,6 +228,9 @@
                     = @customer.user.last_sign_in_ip
                   - else
                     .text-danger Waiting for user to confirm account
+                    %a.btn.btn-default{:href => send_confirmation_link_sms_message_customer_path(@customer), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Confirmation Link"}}
+                      %i.fa.fa-comment
+                      Send Confirmation Link
                 - else
                   Portal user has not been created
                   - unless @customer.phone.blank?

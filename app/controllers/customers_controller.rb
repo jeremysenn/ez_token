@@ -1,6 +1,6 @@
 class CustomersController < ApplicationController
   before_action :authenticate_user!, except: [:qr_code]
-  before_action :set_customer, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message, :barcode, :create_account_and_add_to_event]
+  before_action :set_customer, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message, :barcode, :create_account_and_add_to_event, :send_confirmation_link_sms_message]
   load_and_authorize_resource :except => [:find_by_barcode]
 #  skip_load_resource only: [:barcode]
   skip_load_resource only: [:find_by_barcode, :qr_code]
@@ -314,6 +314,16 @@ class CustomersController < ApplicationController
 #    @event.accounts << @account
     respond_to do |format|
       format.json {render json: {}, status: :ok}
+    end
+  end
+  
+  def send_confirmation_link_sms_message
+    @user = @customer.user
+    unless @user.blank? or @user.phone.blank?
+      @user.send_confirmation_sms_message
+      redirect_back fallback_location: root_path, notice: 'Confirmation link text message sent.'
+    else
+      redirect_back fallback_location: root_path, notice: 'Not able to send text message.'
     end
   end
   

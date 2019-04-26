@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       get 'find_by_barcode'
       get 'qr_code'
       get 'create_account_and_add_to_event'
+      get 'send_confirmation_link_sms_message'
     end
     collection do
       post 'send_sms_message'
