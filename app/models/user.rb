@@ -289,7 +289,7 @@ class User < ApplicationRecord
   end
   
   def can_quick_pay_customers?
-    admin? or can_quick_pay?
+    company.allowed_to_quick_pay? and (admin? or can_quick_pay?)
   end
   
   def format_phone_before_create

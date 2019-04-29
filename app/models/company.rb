@@ -160,6 +160,14 @@ class Company < ActiveRecord::Base
 #  def all_customers
 #    Customer.where(CompanyNumber: self.CompanyNumber)
 #  end
+
+  def quick_pay_account_type
+    AccountType.find_by(AccountTypeID: self.quick_pay_account_type_id)
+  end
+  
+  def allowed_to_quick_pay?
+    self.can_quick_pay? and not self.quick_pay_account_type.blank?
+  end
   
   #############################
   #     Class Methods         #

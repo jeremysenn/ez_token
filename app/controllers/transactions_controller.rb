@@ -127,10 +127,12 @@ class TransactionsController < ApplicationController
     @receipt_number = params[:receipt_number]
     @note = params[:note]
 #    @device_id = params[:device_id]
-    @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
-    @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: 6)
-    response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number)
-    response_code = response[:return]
+    if current_user.company.allowed_to_quick_pay?
+      @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
+      @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
+      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number)
+      response_code = response[:return]
+    end
     unless response_code.to_i > 0
       transaction_id = response[:tran_id]
     else

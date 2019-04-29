@@ -114,6 +114,13 @@ class Ability
       end
       can :create, AccountType
       
+      # Companies
+      ############
+      can :manage, Company do |company|
+        company == user.company
+      end
+      cannot :index, Customer
+      
     elsif user.collaborator?
       
       # Customers
