@@ -1,19 +1,41 @@
-%h2 Change your password
-= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f|
-  = devise_error_messages!
-  = f.hidden_field :reset_password_token
-  .field
-    = f.label :password, "New password"
-    %br/
-    - if @minimum_password_length
-      %em
-        (#{@minimum_password_length} characters minimum)
+= render 'shared/flash_messages'
+.login-box
+  .login-logo
+    %a{:href => root_path}
+      <strong>ez</strong>Token
+  .login-box-body
+    %p.login-box-msg Change your password
+    = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f|
+      = devise_error_messages!
+      = f.hidden_field :reset_password_token
+      .form-group
+        = f.password_field :password, autocomplete: "off",  class: 'form-control', :placeholder => "Password*", required: true
+        - if @minimum_password_length
+          %small#passwordHelpBlock.form-text.text-muted
+            = "Your password must be at least #{@minimum_password_length} characters long."
+      .form-group
+        = f.password_field :password_confirmation, autocomplete: "off",  class: 'form-control', :placeholder => "Retype password*", required: true
+      .actions
+        = f.submit "Change my password", class: 'btn btn-primary btn-block'
+      = link_to "Log in", new_user_session_path
+
+-#
+  %h2 Change your password
+  = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f|
+    = devise_error_messages!
+    = f.hidden_field :reset_password_token
+    .field
+      = f.label :password, "New password"
       %br/
-    = f.password_field :password, autofocus: true, autocomplete: "off"
-  .field
-    = f.label :password_confirmation, "Confirm new password"
-    %br/
-    = f.password_field :password_confirmation, autocomplete: "off"
-  .actions
-    = f.submit "Change my password"
-= render "devise/shared/links"
+      - if @minimum_password_length
+        %em
+          (#{@minimum_password_length} characters minimum)
+        %br/
+      = f.password_field :password, autofocus: true, autocomplete: "off"
+    .field
+      = f.label :password_confirmation, "Confirm new password"
+      %br/
+      = f.password_field :password_confirmation, autocomplete: "off"
+    .actions
+      = f.submit "Change my password"
+  = render "devise/shared/links"
