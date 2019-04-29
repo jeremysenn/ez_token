@@ -8,26 +8,28 @@ class TransactionsController < ApplicationController
   # GET /transactions
   # GET /transactions.json
   def index
-    @type = params[:type] ||= 'All'
+    @type = params[:type] ||= 'All transactions'
 #    @start_date = transaction_params[:start_date] ||= Date.today.to_s
 #    @end_date = transaction_params[:end_date] ||= Date.today.to_s
     @start_date = params[:start_date] ||= Date.today.last_week.to_s
     @end_date = params[:end_date] ||= Date.today.to_s
     @transaction_id_or_receipt_number = params[:transaction_id]
+    @event_id = params[:event_id]
+    transactions = @event_id.blank? ? current_user.company.transactions : current_user.company.transactions.where(event_id: @event_id)
     if @transaction_id_or_receipt_number.blank?
       if @type == 'Withdrawal'
-        @all_transactions = current_user.company.transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       elsif @type == 'Transfer'
-        @all_transactions = current_user.company.transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       elsif @type == 'Balance'
-        @all_transactions = current_user.company.transactions.one_sided_credits.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.one_sided_credits.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       elsif @type == 'Fee'
-        @all_transactions = current_user.company.transactions.fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       elsif @type == 'Check'
-        @all_transactions = current_user.company.transactions.checks.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.checks.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       else
 #        @all_transactions = current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
-        @all_transactions = current_user.company.transactions.not_fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.not_fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       end
     else
       @start_date = nil
