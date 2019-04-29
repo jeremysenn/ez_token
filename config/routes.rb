@@ -26,7 +26,11 @@ Rails.application.routes.draw do
   end
   
 #  resources :users
-  resources :users_admin, :controller => 'users'
+  resources :users_admin, :controller => 'users' do
+    collection do
+      get 'forgot_password'
+    end
+  end
   
   resources :transactions do
     member do

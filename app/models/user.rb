@@ -118,6 +118,16 @@ class User < ApplicationRecord
     end
   end
   
+  def send_reset_password_instructions_text_message
+    unless phone.blank?
+      token = self.set_reset_password_token
+      reset_password_link = "#{Rails.application.routes.default_url_options[:host]}/users/password/edit?reset_password_token=#{token}"
+      message = "Someone has requested a link to change your password. You can do this through the link below. If you didn't request this, please ignore this message. Your password won't change until you access the link below and create a new one. #{reset_password_link}"
+      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+      client.call(:send_sms, message: { Phone: phone, Msg: "#{message}"})
+    end
+  end
+  
   def phone_changed?
     saved_change_to_phone?
   end

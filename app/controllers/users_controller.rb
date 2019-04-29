@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: :forgot_password
   before_action :set_user, only: [:show, :edit, :update, :destroy, :pin_verification, :verify_phone]
   load_and_authorize_resource
 
@@ -91,6 +91,15 @@ class UsersController < ApplicationController
       format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+  
+  def forgot_password
+    @user = User.find_by(phone: params[:phone])
+    unless @user.blank?
+#      @user.send_reset_password_instructions
+      @user.send_reset_password_instructions_text_message
+    end
+    redirect_to new_user_session_path, notice: 'Forgot password link sent.'
   end
   
   private
