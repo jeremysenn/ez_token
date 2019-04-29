@@ -340,6 +340,18 @@ class Customer < ActiveRecord::Base
     end
   end
   
+  def identity
+    if full_name.blank? and phone.blank?
+      'Anonymous'
+    else
+      if full_name.blank?
+        phone
+      else
+        full_name
+      end
+    end
+  end
+  
   def email
     self.Email
   end

@@ -33,10 +33,10 @@
             = @transaction.company.CompanyName unless @transaction.company.blank?
           %p.lead
             To:
-            = @to_customer.blank? ? @transaction.to_account.company.name : @to_customer.full_name
+            = @to_customer.blank? ? @transaction.to_account.company.name : @to_customer.identity
           %p.lead
             From:
-            = @from_customer.blank? ? @transaction.to_account.company.name : @from_customer.full_name
+            = @from_customer.blank? ? @transaction.to_account.company.name : @from_customer.identity
           %p.lead
             Event:
             - unless @transaction.event.blank?
@@ -79,6 +79,9 @@
             %p.lead
               Total:
               = number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
+          %p.lead
+            Note:
+            = @transaction.Note
 
           -#
             %p.lead
