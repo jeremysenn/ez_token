@@ -47,31 +47,33 @@
               = f.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
                 .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: @account.events.first == event_field.object) + ' ' + event_field.text }
         %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-          - if @account.can_fund_by_cc?
-            %li.nav-item
-              %a#add-funds-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#add_funds", :role => "tab"} 
-                Add Funds
+          -#
+            - if @account.can_fund_by_cc?
+              %li.nav-item
+                %a#add-funds-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#add_funds", :role => "tab"} 
+                  Add Funds
           - if @account.can_fund_by_ach?
             %li.nav-item
               %a#ach-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#ach", :role => "tab"} 
                 ACH
         #myTabContent.tab-content
-          - if @account.can_fund_by_cc?
-            #add_funds.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-              %br
-              %strong Add Funds by Credit/Debit Card
-              = f.input :cc_charge_amount, as: :decimal, label: "Amount" do
+          -#
+            - if @account.can_fund_by_cc?
+              #add_funds.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                %br
+                %strong Add Funds by Credit/Debit Card
+                = f.input :cc_charge_amount, as: :decimal, label: "Amount" do
+                  .row
+                    .col-xs-12.col-sm-4
+                      .input-group
+                        .input-group-prepend
+                          %span.input-group-text $
+                        = f.input_field :cc_charge_amount, as: :string, class: "form-control"
                 .row
-                  .col-xs-12.col-sm-4
-                    .input-group
-                      .input-group-prepend
-                        %span.input-group-text $
-                      = f.input_field :cc_charge_amount, as: :string, class: "form-control"
-              .row
-                .col-xs-12.col-md-12= f.input :cc_number, as: :string, label: 'Card Number'
-              .row
-                .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry'
-                .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC'
+                  .col-xs-12.col-md-12= f.input :cc_number, as: :string, label: 'Card Number'
+                .row
+                  .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry'
+                  .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC'
           - if @account.can_fund_by_ach?
             #ach.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel", class: @account.can_fund_by_cc? ? '' : 'active'}
               %br
