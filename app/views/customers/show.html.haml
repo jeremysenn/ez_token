@@ -204,7 +204,7 @@
               Phone
             %p.text-muted
               = @customer.user.blank? ? @customer.phone : @customer.user.phone
-            - if current_user.administrator?
+            - if current_user.can_edit_accounts?
               %hr/
               %strong
                 %i.fa.fa-user.margin-r-5
