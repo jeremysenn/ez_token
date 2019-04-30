@@ -59,7 +59,7 @@
               %h3.box-title 
                 Transactions
                 - unless @transactions.blank?
-                  %a{href: transactions_path(format: "csv", :type => @type, 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date, transaction_id: @transaction_id_or_receipt_number), class: 'btn btn-sm btn-info'}
+                  %a{href: transactions_path(format: "csv", :event_id => @event_id, :type => @type, 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date, transaction_id: @transaction_id_or_receipt_number), class: 'btn btn-sm btn-info'}
                     %i.fa.fa-download
                     Download CSV
                   %br
