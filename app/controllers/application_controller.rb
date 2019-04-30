@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
     sign_in_url = new_user_session_url
 #    unless not current_user.temporary_password.blank? and current_user.sign_in_count > 1
     if current_user.temporary_password.blank?
-      if request.referer == sign_in_url or request.referer.include? "reset_password"
+      if request.referer == sign_in_url or (request.referer and request.referer.include? "reset_password")
         super
       else
         stored_location_for(resource) || request.referer || root_path
