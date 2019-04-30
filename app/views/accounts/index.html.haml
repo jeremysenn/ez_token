@@ -15,7 +15,7 @@
             = form_tag accounts_path, :method => 'get', :class => "form-inline" do
               = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title", @event_id), class: "form-control"
               &nbsp;
-              = select_tag :type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @type_id), class: "form-control"
+              = select_tag :type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @type_id), prompt: 'All types', class: "form-control"
               &nbsp;
               = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control"
               &nbsp;
@@ -56,7 +56,7 @@
                         None
                     %td
                       - unless account.customer.blank? 
-                        = link_to "#{account.customer.last_name.blank? ? account.customer.phone : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
+                        = link_to "#{account.customer.last_name.blank? ? '' : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
                       - else
                         None
                     -#
