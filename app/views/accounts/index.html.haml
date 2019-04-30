@@ -38,7 +38,8 @@
               %thead
                 %tr
                   %th ID
-                  %th User Account 
+                  %th First
+                  %th Last
                   -#
                     %th Type
                     %th Events
@@ -50,10 +51,12 @@
                     %td= account.id
                     %td
                       - unless account.customer.blank? 
-                        = link_to "#{account.customer.full_name.blank? ? account.customer.phone : account.customer.full_name}", customer_path(account.customer.id, account_id: account.id)
-                        -#
-                          - unless account.user.blank?
-                            = link_to "#{account.user.full_name} (#{account.user.role})", customer_path(account.customer.id, account_id: account.id)
+                        = link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
+                      - else
+                        None
+                    %td
+                      - unless account.customer.blank? 
+                        = link_to "#{account.customer.last_name.blank? ? account.customer.phone : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
                       - else
                         None
                     -#
@@ -66,7 +69,7 @@
                           None
                     %td
                       - unless account.MinBalance.blank? or account.MinBalance.zero?
-                        %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
+                        %a.btn.btn-default.btn-sm{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
                           = number_to_currency(account.Balance)
                       - else
                         = number_to_currency(account.Balance)
