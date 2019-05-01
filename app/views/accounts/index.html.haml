@@ -69,7 +69,7 @@
                           None
                     %td
                       - unless account.MinBalance.blank? or account.MinBalance.zero?
-                        %a.btn.btn-info.btn-sm{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
+                        %span.btn.btn-info.btn-sm{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
                           = number_to_currency(account.Balance)
                       - else
                         = number_to_currency(account.Balance)
