@@ -202,6 +202,14 @@ class Account < ActiveRecord::Base
     Decrypt.decryption(decoded_acctnbr)
   end
   
+  def last_4_decrypted_bank_account_number
+    decrypted_bank_account_number.last(4)
+  end
+  
+  def last_4_decrypted_bank_routing_number
+    decrypted_bank_routing_number.last(4)
+  end
+  
   def standby_auth
     StandbyAuth.find_by_account_nbr(account_number_with_leading_zeros)
   end
