@@ -24,6 +24,7 @@ class Account < ActiveRecord::Base
   
   scope :can_be_pulled_by_search, -> { where(Active: true).joins(:account_type).where('AccountTypes.CanBePulledBySearch = ?', 1) }
   scope :can_be_pulled_by_scan, -> { where(Active: true).joins(:account_type).where('AccountTypes.CanBePulledByScan = ?', 1) }
+  scope :active, -> { where(Active: 1) }
   
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
