@@ -2,7 +2,7 @@
 .login-box
   .login-logo
     %a{:href => root_path}
-      <strong>ez</strong>Token
+      <strong>ez</strong>Cash
   .login-box-body
     %p.login-box-msg Change your password
     = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f|
