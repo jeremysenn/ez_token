@@ -25,10 +25,9 @@ class User < ApplicationRecord
   before_update :format_phone_before_update
   before_create :search_for_customer_match
   after_create :send_confirmation_sms_message
-  after_update :send_new_phone_number_confirmation_sms_message, if: :phone_changed?
-  after_update :update_customer_record,
-    :if => proc {|obj| obj.phone_changed? || obj.first_name_changed? ||  obj.last_name_changed? || obj.email_changed?}  
-      
+  after_update_commit :send_new_phone_number_confirmation_sms_message, if: :phone_changed?
+  after_update_commit :update_customer_record, :if => Proc.new {|user| user.phone_changed? || user.first_name_changed? ||  user.last_name_changed? || user.email_changed?}  
+  
   validates :phone, uniqueness: true, presence: true 
   validates :email, uniqueness: {allow_blank: true}
 
