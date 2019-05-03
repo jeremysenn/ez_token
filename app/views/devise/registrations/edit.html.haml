@@ -62,11 +62,14 @@
                   = f.label "New Password Confirmation"
                   %br/
                   = f.password_field :password_confirmation, autocomplete: "off", class: 'form-control input-lg'
-                .form-group
-                  = f.label :current_password
-                  %br/
-                  = f.password_field :current_password, value: resource.temporary_password, autocomplete: "off", class: 'form-control input-lg'
-                  %small#passwordHelpBlock.form-text.text-muted (we need the current password to confirm your changes)
+                - if resource.temporary_password.blank?
+                  .form-group
+                    = f.label :current_password
+                    %br/
+                    = f.password_field :current_password, value: resource.temporary_password, autocomplete: "off", class: 'form-control input-lg'
+                    %small#passwordHelpBlock.form-text.text-muted (we need the current password to confirm your changes)
+                - else
+                  = f.hidden_field :current_password, value: resource.temporary_password
                 .actions
                   = link_to "Cancel", :back, class: 'btn btn-default'
                   = f.submit "Update", class: 'btn btn-primary'
