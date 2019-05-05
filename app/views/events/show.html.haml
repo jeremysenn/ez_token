@@ -20,9 +20,10 @@
             %li.nav-item
               %a#details-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#details", :role => "tab"} 
                 Details
-            %li.nav-item
-              %a#accounts-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#accounts", :role => "tab"} 
-                Accounts
+            -#
+              %li.nav-item
+                %a#accounts-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#accounts", :role => "tab"} 
+                  Accounts
           #myTabContent.tab-content
             #details.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
               %br
@@ -62,33 +63,33 @@
               .pull-right
                 %br
                 %p= link_to 'Delete', @event, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }
-                
-            #accounts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-              - unless @event.accounts.blank?
-                .table-responsive
-                  %table.table.table-striped.table-condensed
-                    %thead
-                      %tr
-                        %th ID
-                        %th User 
-                        %th Balance
-                        %th
-                    %tbody
-                      - @event.accounts.each do |account|
+            -#   
+              #accounts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                - unless @event.accounts.blank?
+                  .table-responsive
+                    %table.table.table-striped.table-condensed
+                      %thead
                         %tr
-                          %td= account.id
-                          %td
-                            - unless (account.user.blank? and account.customer.blank?)
-                              = link_to "#{account.customer_user_name} (#{account.description})", customer_path(account.customer.id, account_id: account.id)
-                            - else
-                              N/A
-                          %td= number_to_currency(account.Balance)
-                          %td= link_to "Show", account, class: 'btn btn-sm btn-secondary'
-              - else
-                .container
-                  .jumbotron{style: "background-color: transparent;"}
-                    %h3.text-center
-                      No accounts yet
+                          %th ID
+                          %th User 
+                          %th Balance
+                          %th
+                      %tbody
+                        - @event.accounts.each do |account|
+                          %tr
+                            %td= account.id
+                            %td
+                              - unless (account.user.blank? and account.customer.blank?)
+                                = link_to "#{account.customer_user_name} (#{account.description})", customer_path(account.customer.id, account_id: account.id)
+                              - else
+                                N/A
+                            %td= number_to_currency(account.Balance)
+                            %td= link_to "Show", account, class: 'btn btn-sm btn-secondary'
+                - else
+                  .container
+                    .jumbotron{style: "background-color: transparent;"}
+                      %h3.text-center
+                        No accounts yet
 
           .box-footer
             = link_to 'Back', :back, class: 'btn btn-default'
