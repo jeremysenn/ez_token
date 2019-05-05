@@ -191,7 +191,7 @@ class TransactionsController < ApplicationController
       redirect_back fallback_location: root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
-      redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}. Amount: #{amount}, To: #{to_account_id}, From: #{from_account_id}"
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_description.blank? ? error_code : error_description.long_desc}. Amount: #{amount}, To: #{to_account_id}, From: #{from_account_id}"
     end
   end
   
