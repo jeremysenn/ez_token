@@ -223,32 +223,32 @@ class Transaction < ActiveRecord::Base
 #    Account.where(ActID: card_nbr).last
 #  end
   
-  def images
-    images = Image.where(ticket_nbr: id.to_s)
-    unless images.blank?
-      return images
-    else
-      return []
-    end
-  end
-  
-  def front_side_check_images
-    images = Image.where(ticket_nbr: id.to_s, event_code: "FS")
-    unless images.blank?
-      return images
-    else
-      return []
-    end
-  end
-  
-  def back_side_check_images
-    images = Image.where(ticket_nbr: id.to_s, event_code: "BS")
-    unless images.blank?
-      return images
-    else
-      return []
-    end
-  end
+#  def images
+#    images = Image.where(ticket_nbr: id.to_s)
+#    unless images.blank?
+#      return images
+#    else
+#      return []
+#    end
+#  end
+#  
+#  def front_side_check_images
+#    images = Image.where(ticket_nbr: id.to_s, event_code: "FS")
+#    unless images.blank?
+#      return images
+#    else
+#      return []
+#    end
+#  end
+#  
+#  def back_side_check_images
+#    images = Image.where(ticket_nbr: id.to_s, event_code: "BS")
+#    unless images.blank?
+#      return images
+#    else
+#      return []
+#    end
+#  end
   
   def customer
 #    Customer.find(self.custID)
