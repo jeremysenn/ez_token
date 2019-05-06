@@ -9,10 +9,11 @@ class ConfirmationsController < Devise::ConfirmationsController
   private
 
   def after_confirmation_path_for(resource_name, resource)
-    if current_user.temporary_password.blank?
-      root_path
-    else
-      edit_user_registration_path(current_user)
-    end
+#    if current_user.temporary_password.blank?
+#      root_path
+#    else
+#      edit_user_registration_path(current_user)
+#    end
+    root_path
   end
 end
