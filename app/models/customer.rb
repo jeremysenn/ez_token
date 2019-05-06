@@ -10,21 +10,30 @@ class Customer < ActiveRecord::Base
   has_many :sms_messages
   
 #  has_one :account, :foreign_key => "CustomerID"
-  has_many :accounts, :foreign_key => "CustomerID", inverse_of: :customer
+  has_many :accounts, :foreign_key => "CustomerID", inverse_of: :customer, dependent: :destroy
   has_many :transactions, :through => :account
   has_one :user
   has_many :sms_messages
   has_many :payments, :foreign_key => "CustomerID"
+  has_many :customer_barcodes, :foreign_key => "CustomerID"
+  belongs_to :group, :foreign_key => "GroupID"
+  has_many :events, through: :accounts
   
+  scope :payees, -> { where(GroupID: 18) }
+  scope :vendor, -> { where(GroupID: 17) }
+  scope :consumer, -> { where(GroupID: 16) }
   scope :anonymous, -> { where(GroupID: 15) }
   scope :members, -> { where(GroupID: 14) }
-  scope :payees, -> { where(GroupID: 13) }
+  scope :caddies, -> { where(GroupID: 13) }
   scope :active, -> { where(Active: true) }
+  scope :not_anonymous, -> { where.not(GroupID: 15) }
   
   # Virtual Attributes
   attr_accessor :create_payee_user_flag
+  attr_accessor :create_basic_user_flag
   
-  accepts_nested_attributes_for :accounts
+  accepts_nested_attributes_for :accounts, allow_destroy: true
+#  accepts_nested_attributes_for :events
   
 #  validates :NameF, :NameL, presence: true
   validates :PhoneMobile, uniqueness: {allow_blank: true} #uniqueness: true, presence: true
@@ -33,21 +42,25 @@ class Customer < ActiveRecord::Base
 #  validates :PhoneMobile, presence: true
 #  validates_uniqueness_of :Email
 #  validates_uniqueness_of :PhoneMobile
-#  validates :Email, uniqueness: {allow_blank: true}
-#  validates :PhoneMobile, uniqueness: true
 
-  after_commit :create_payee_user, on: [:create]
-#  after_commit :generate_barcode_access_string, on: [:create]
+  before_create :format_phone_mobile_before_create
+  before_update :format_phone_mobile_before_update
+  after_commit :create_payee_user, on: [:create], if: :need_to_create_payee_user?
+  after_commit :create_caddy_user, on: [:create], if: :need_to_create_caddy_user?
+  after_commit :create_member_user, on: [:create], if: :need_to_create_member_user?
+  before_create :generate_barcode_access_string
   after_update :create_payee_user, if: :need_to_create_payee_user?
-  after_update :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
+  after_update :create_basic_user, if: :need_to_create_basic_user?
+  after_update_commit :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
+  before_save :encrypt_ssn
       
   #############################
   #     Instance Methods      #
   #############################
   
-  def account
-    accounts.first
-  end
+#  def account
+#    accounts.first
+#  end
   
   def active_accounts
     Account.where(CustomerID: id, active: true)
@@ -257,10 +270,6 @@ class Customer < ActiveRecord::Base
     self.update_attributes(pwd_hash: encrypted_random_password, IsTempPassword: true, pwd_needs_change: 1, Answer1: decrypted_answer_1, Answer2: decrypted_answer_2, Answer3: decrypted_answer_3 )
   end
   
-  def group
-    Group.find(self.GroupID)
-  end
-  
   def can_create_bill_payments?
     group.IsViewPayeeSection == true
   end
@@ -321,6 +330,26 @@ class Customer < ActiveRecord::Base
   
   def full_name_with_member_number
     "#{self.NameF} #{self.NameL} #{member_number}"
+  end
+  
+  def user_name
+    unless user.blank?
+      user.full_name
+    else
+      full_name
+    end
+  end
+  
+  def identity
+    if full_name.blank? and phone.blank?
+      'Anonymous'
+    else
+      if full_name.blank?
+        phone
+      else
+        full_name
+      end
+    end
   end
   
   def email
@@ -393,13 +422,17 @@ class Customer < ActiveRecord::Base
     self.PhoneMobile
   end
   
-  def account_id
-    if primary?
-      account.id
-    else
-      parent_customer.account.id
-    end
+  def twilio_formated_phone_number
+    "+1#{phone.gsub(/([-() ])/, '')}" if phone
   end
+  
+#  def account_id
+#    if primary?
+#      account.id
+#    else
+#      parent_customer.account.id
+#    end
+#  end
   
   def clear_account_balance
     if balance < 0 # Make sure it's a negative value
@@ -453,11 +486,7 @@ class Customer < ActiveRecord::Base
     end
   end
   
-#  def caddy?
-#    self.GroupID == 13
-#  end
-  
-  def employee?
+  def caddy?
     self.GroupID == 13
   end
   
@@ -467,6 +496,36 @@ class Customer < ActiveRecord::Base
   
   def anonymous?
     self.GroupID == 15
+  end
+  
+  def consumer?
+    self.GroupID == 16
+  end
+  
+  def vendor?
+    self.GroupID == 17
+  end
+  
+  def payee?
+    self.GroupID == 18
+  end
+  
+  def type
+    if caddy?
+      "Caddy"
+    elsif member?
+      "Member"
+    elsif consumer?
+      "Consumer"
+    elsif vendor?
+      "Vendor"
+    elsif payee?
+      "Payee"
+    elsif anonymous?
+      "Anonymous"
+    else
+      "Unknown"
+    end
   end
   
   def vendor_payables_with_balance
@@ -508,11 +567,11 @@ class Customer < ActiveRecord::Base
   def one_time_payment(amount, note, receipt_number)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: account.id, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number})
-    Rails.logger.debug "************** ezcash_payment_transaction_web_service_call response body: #{response.body}"
+    Rails.logger.debug "************** Customer one_time_payment response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
         unless phone.blank?
-          send_barcode_sms_message_with_info("You've just been paid #{ActiveSupport::NumberHelper.number_to_currency(amount)} by #{company.name}! Your current balance is #{ActiveSupport::NumberHelper.number_to_currency(balance)}. Get your cash from the PaymentATM. More information at www.tranact.com")
+          send_barcode_sms_message_with_info("You've just been paid #{ActiveSupport::NumberHelper.number_to_currency(amount)} by #{company.name}! Get your cash from the PaymentATM. More information at www.tranact.com")
         end
         return response.body[:ez_cash_txn_response]
       else
@@ -525,8 +584,8 @@ class Customer < ActiveRecord::Base
   
   def one_time_payment_with_no_text_message(amount, note, receipt_number)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: account.id, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, dev_id: nil})
-    Rails.logger.debug "************** ezcash_payment_transaction_web_service_call response body: #{response.body}"
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: accounts.first.id, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, dev_id: nil})
+    Rails.logger.debug "************** Customer one_time_payment_with_no_text_message response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
         return response.body[:ez_cash_txn_response]
@@ -551,9 +610,48 @@ class Customer < ActiveRecord::Base
   
   def barcode_png
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5})
+    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: 0})
     
     Rails.logger.debug "barcode_png response body: #{response.body}"
+    
+    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+      return response.body[:get_customer_barcode_png_response][:return]
+    else
+      return ""
+    end
+  end
+  
+  def barcode_png_by_company(company_id)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: company_id, Scale: 5, amount: 0})
+    
+    Rails.logger.debug "barcode_png_by_company response body: #{response.body}"
+    
+    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+      return response.body[:get_customer_barcode_png_response][:return]
+    else
+      return ""
+    end
+  end
+  
+  def barcode_png_with_amount(amount)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: amount})
+    
+    Rails.logger.debug "barcode_png_with_amount response body: #{response.body}"
+    
+    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+      return response.body[:get_customer_barcode_png_response][:return]
+    else
+      return ""
+    end
+  end
+  
+  def barcode_png_with_amount_by_company(amount, company)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: company, Scale: 5, amount: amount})
+    
+    Rails.logger.debug "barcode_png_with_amount_by_company response body: #{response.body}"
     
     unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
       return response.body[:get_customer_barcode_png_response][:return]
@@ -571,6 +669,27 @@ class Customer < ActiveRecord::Base
     end
   end
   
+  def twilio_send_sms_message(body, from_user_id)
+    unless phone.blank?
+      user = User.find(from_user_id)
+      account_sid = ENV["TWILIO_ACCOUNT_SID"]
+      auth_token = ENV["TWILIO_AUTH_TOKEN"]
+      client = Twilio::REST::Client.new account_sid, auth_token
+      from = ENV["FROM_PHONE_NUMBER"]
+      begin
+        message = client.messages.create(
+          :from => from,
+          :to => twilio_formated_phone_number,
+          :body => body #,
+        )
+        sid = message.sid
+        SmsMessage.create(sid: sid, to: twilio_formated_phone_number, from: from, customer_id: self.id, user_id: from_user_id, company_id: user.company_id, body: "#{body}")
+      rescue Twilio::REST::RestError => e
+        puts e.message
+      end
+    end
+  end
+  
   def send_barcode_link_sms_message
     unless phone.blank? or barcode_access_string.blank?
 #      SendSmsWorker.perform_async(cell_phone_number, id, self.CustomerID, self.ClubCompanyNbr, message_body)
@@ -581,10 +700,12 @@ class Customer < ActiveRecord::Base
     end
   end
   
-  def send_barcode_sms_message
-    unless phone.blank?
+  def send_barcode_sms_message(account_id, amount)
+    account = accounts.find_by(ActID: account_id)
+    unless phone.blank? or account.blank?
       client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_mms_cust_barcode, message: { CustomerID: self.CustomerID, CompanyNumber: account.CompanyNumber})
+#      client.call(:send_mms_cust_barcode, message: { CustomerID: self.CustomerID, CompanyNumber: account.CompanyNumber})
+      client.call(:send_mms_cust_barcode, message: { ActID: account_id, CustomerID: self.CustomerID, CompanyNumber: account.CompanyNumber, Amount: amount})
     end
   end
   
@@ -596,12 +717,18 @@ class Customer < ActiveRecord::Base
   end
   
   def generate_barcode_access_string
-    self.barcode_access_string = SecureRandom.urlsafe_base64
-    self.save
+#    self.barcode_access_string = SecureRandom.urlsafe_base64
+#    self.save
+    access_string = SecureRandom.urlsafe_base64
+    self.barcode_access_string = access_string
   end
   
   def need_to_create_payee_user?
     return create_payee_user_flag == "true"
+  end
+  
+  def need_to_create_basic_user?
+    return create_basic_user_flag == "true"
   end
   
   def create_payee_user
@@ -612,12 +739,67 @@ class Customer < ActiveRecord::Base
     password: temporary_password, password_confirmation: temporary_password, temporary_password: temporary_password)
   end
   
+  def create_basic_user
+    temporary_password = SecureRandom.random_number(10**6).to_s
+    User.create(first_name: first_name, last_name: last_name, email: email, company_id: company_id, customer_id: id, role: "basic", phone: phone,
+    password: temporary_password, password_confirmation: temporary_password, temporary_password: temporary_password)
+  end
+  
+  def need_to_create_caddy_user?
+    self.GroupID == 13
+  end
+  
+  def create_caddy_user
+    temporary_password = SecureRandom.random_number(10**6).to_s
+    User.create(first_name: first_name, last_name: last_name, email: email, company_id: company_id, customer_id: id, role: "caddy", phone: phone,
+    password: temporary_password, password_confirmation: temporary_password, temporary_password: temporary_password)
+  end
+  
+  def need_to_create_member_user?
+    self.GroupID == 14
+  end
+  
+  def create_member_user
+    temporary_password = SecureRandom.random_number(10**6).to_s
+    User.create(first_name: first_name, last_name: last_name, email: email, company_id: company_id, customer_id: id, role: "member", phone: phone,
+    password: temporary_password, password_confirmation: temporary_password, temporary_password: temporary_password)
+  end
+  
   def phone_changed?
     saved_change_to_PhoneMobile?
   end
   
   def update_portal_user_phone
     user.update_attribute(:phone, phone)
+  end
+  
+  def accounts_with_events
+    accounts.left_outer_joins(:events).where.not(events: {id: nil})
+  end
+  
+  def ssn
+    return self.SSN
+  end
+  
+  def encrypt_ssn
+    unless self.SSN.blank?
+      encrypted = Decrypt.encryption(self.SSN) # Encrypt ssn
+      encrypted_and_encoded = Base64.strict_encode64(encrypted) # Base 64 encode it; strict_encode64 doesn't add the \n character on the end
+      self.SSN = encrypted_and_encoded
+    end
+  end
+  
+  def decrypted_ssn
+    decoded_acctnbr = Base64.decode64(self.SSN).unpack("H*").first
+    Decrypt.decryption(decoded_acctnbr)
+  end
+  
+  def format_phone_mobile_before_create
+    self.PhoneMobile = "#{self.PhoneMobile.gsub(/([-() ])/, '')}" if self.PhoneMobile
+  end
+
+  def format_phone_mobile_before_update
+    self.PhoneMobile = "#{self.PhoneMobile.gsub(/([-() ])/, '')}" if self.PhoneMobile
   end
  
   #############################

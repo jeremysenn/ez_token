@@ -9,26 +9,31 @@
     / Main content
     %section.content
       .row
-        .col-md-6
-          .box.box-primary
-            .box-body
-              = simple_form_for(@user, url: users_admin_index_path)  do |f|
-                = f.error_notification
-                .form-inputs
-                  - if current_user.admin?
-                    = f.input :company_id, :as => :hidden, :input_html => { :value => "#{@user.new_record? ? current_user.company_id : @user.company_id}" }
-                    = f.input :role, as: :radio_buttons, collection: [['admin', 'Admin'], ['basic', 'Basic']], label_method: :second, value_method: :first, label: false
-                    = f.input :first_name, label: 'First Name'
-                    = f.input :last_name, label: 'First Name'
-                    = f.input :email, label: 'Email'  
-                    = f.input :phone, label: 'Phone', :input_html => {required: true}
-                    = f.input :time_zone, priority: /US/, collection: ActiveSupport::TimeZone.us_zones, required: true, as: :time_zone
-                    #user_devices.form-group{style: "#{@user.basic? ? 'display: block;' : 'display: none;'}"}
-                      = f.label "Devices"
-                      - current_user.company.devices.each do |device|
-                        .col-xs-6
-                          = check_box_tag "user[device_ids][]", device.id, (@user.device_ids.include? device.id.to_s), {id: "user_device_#{device.id}", class: "form_control"}
-                          = device.description
-                .form-actions
-                  = link_to 'Cancel', :back, class: 'btn btn-default'
-                  = f.button :submit, 'Create'
+        .col-xs-12.col-sm-12.col-md-6
+          = render 'form'
+    -#
+      %section.content
+        .row
+          .col-md-6
+            .box.box-primary
+              .box-body
+                = simple_form_for(@user, url: users_admin_index_path)  do |f|
+                  = f.error_notification
+                  .form-inputs
+                    - if current_user.admin?
+                      = f.input :company_id, :as => :hidden, :input_html => { :value => "#{@user.new_record? ? current_user.company_id : @user.company_id}" }
+                      = f.input :role, as: :radio_buttons, collection: [['admin', 'Admin'], ['basic', 'Basic'], ['collaborator', 'Collaborator']], label_method: :second, value_method: :first, label: false
+                      = f.input :first_name, label: 'First Name'
+                      = f.input :last_name, label: 'Last Name'
+                      = f.input :email, label: 'Email'  
+                      = f.input :phone, label: 'Phone', :input_html => {required: true}
+                      = f.input :time_zone, priority: /US/, collection: ActiveSupport::TimeZone.us_zones, required: true, as: :time_zone
+                      #user_devices.form-group{style: "#{@user.basic? ? 'display: block;' : 'display: none;'}"}
+                        = f.label "Devices"
+                        - current_user.company.devices.each do |device|
+                          .col-xs-6
+                            = check_box_tag "user[device_ids][]", device.id, (@user.device_ids.include? device.id.to_s), {id: "user_device_#{device.id}", class: "form_control"}
+                            = device.description
+                  .form-actions
+                    = link_to 'Cancel', :back, class: 'btn btn-default'
+                    = f.button :submit, 'Create'

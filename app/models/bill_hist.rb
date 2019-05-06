@@ -40,6 +40,15 @@ class BillHist < ActiveRecord::Base
     return new_start_total
   end
   
+  def self.device_new_start_total(device_id, cut_date)
+    new_start_total = 0
+    bill_hists = BillHist.where(dev_id: device_id, cut_dt: cut_date)
+    bill_hists.each do |bill_hist|
+      new_start_total += (bill_hist.new_start * bill_hist.denomination)
+    end
+    return new_start_total
+  end
+  
   def self.terminal_bill_dispensed(cut_date)
     terminal_bill_dispensed = 0
     bill_hists = BillHist.where(cut_dt: cut_date)

@@ -10,14 +10,20 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery3
+//= require jquery
+//= require jquery_ujs
 //= require popper
 //= require Layout
 //= require adminlte
 //= require BoxWidget
 //= require bootstrap-sprockets
 //= require bootstrap-datepicker
-//= require rails-ujs
+// require rails-ujs
 //= require turbolinks
+//= require jquery.maskedinput
 //= require Chart.min
+//= require zxing-js.min
+//= require nested_form_fields
+//= require select2
+//= require bootstrap.file-input
 //= require_tree .

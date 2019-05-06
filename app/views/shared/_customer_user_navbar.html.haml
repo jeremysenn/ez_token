@@ -1,6 +1,5 @@
 %nav.navbar.navbar-expand-lg.navbar-light.bg-light
   %a.navbar-brand{:href => root_path} 
-    -# <b>Payment</b>ATM
     = image_tag(image_path("tranact_logo_30.png"))
   %button.navbar-toggler{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
     %span.navbar-toggler-icon
@@ -20,7 +19,7 @@
             = current_user.company.name
             %br
             %small Payee
-          %a.dropdown-item{:href => edit_user_registration_path(current_user)} Edit account
+          %a.dropdown-item{:href => edit_user_registration_path(current_user)} Edit profile
           .dropdown-divider
           %a.dropdown-item{:href => "#"} Something else here
       .my-2.my-sm-0= link_to 'Log out', destroy_user_session_path, method: :delete, data: { confirm: 'Are you sure you want to sign out?' }, class: 'btn btn-outline-danger'

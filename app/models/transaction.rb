@@ -3,11 +3,15 @@ class Transaction < ActiveRecord::Base
   self.table_name= 'transactions'
   
   establish_connection :ez_cash
+  
+  mount_uploader :upload_file, FileUploader
+  
   belongs_to :device, :foreign_key => :dev_id
   belongs_to :account, :foreign_key => :from_acct_id # Assume from account is the main account
   has_one :transfer, :foreign_key => :ez_cash_tran_id
   belongs_to :company, :foreign_key => "DevCompanyNbr"
   has_one :payment, :foreign_key => "TranID"
+  belongs_to :event
   
   scope :withdrawals, -> { where(tran_code: ["WDL", "ALL"], sec_tran_code: ["TFR", ""]) }
   scope :transfers, -> { where(tran_code: ["CARD"], sec_tran_code: ["TFR"]) }
@@ -15,6 +19,10 @@ class Transaction < ActiveRecord::Base
   scope :fees, -> { where(tran_code: ["FEE"], sec_tran_code: ["TFR"]) }
   scope :checks, -> { where(tran_code: ["CHK"], sec_tran_code: ["TFR"]) }
   scope :not_fees, -> { where.not(tran_code: ["FEE"]) }
+  
+  scope :cuts, -> { where(tran_code: ["CUT"]) }
+  scope :adds, -> { where(tran_code: ["ADD"]) }
+  scope :adds_and_cuts, -> { where(tran_code: ["ADD", "CUT"]) }
   
   #############################
   #     Instance Methods      #
@@ -216,12 +224,13 @@ class Transaction < ActiveRecord::Base
 #  end
   
   def images
-    images = Image.where(ticket_nbr: id.to_s)
-    unless images.blank?
-      return images
-    else
-      return []
-    end
+#    images = Image.where(ticket_nbr: id.to_s)
+#    unless images.blank?
+#      return images
+#    else
+#      return []
+#    end
+    return []
   end
   
   def front_side_check_images
@@ -357,6 +366,20 @@ class Transaction < ActiveRecord::Base
     reversal_transaction.present?
   end
   
+  def send_text_message_receipt
+    from_customer = from_account.customer
+#    to_customer = to_account.customer
+    from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
+    unless from_customer_phone.blank?
+#      SendSmsWorker.perform_async(cell_phone_number, id, self.CustomerID, self.ClubCompanyNbr, message_body)
+#      message = "You have transfered #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)} to #{to_customer.company.name}. Your balance is #{ActiveSupport::NumberHelper.number_to_currency(from_account.Balance)}"
+      message = "#{to_account.customer_name} debited #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute"
+      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+      client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
+      Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
+    end
+  end
+  
   #############################
   #     Class Methods         #
   #############################
@@ -364,7 +387,25 @@ class Transaction < ActiveRecord::Base
   def self.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { FromActID: from_account_id, ToActID: to_account_id, Amount: amount})
-    Rails.logger.debug "Response body: #{response.body}"
+    Rails.logger.debug "ezcash_payment_transaction_web_service_call esponse body: #{response.body}"
+    unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
+#      return response.body[:ez_cash_txn_response][:return]
+      return response.body[:ez_cash_txn_response]
+    else
+      return nil
+    end
+  end
+  
+  def self.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:ez_cash_txn, message: { EventID: event_id, FromActID: from_account_id, ToActID: to_account_id, Amount: amount})
+    Rails.logger.debug "ezcash_event_payment_transaction_web_service_call response body: #{response.body}"
+    unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
+#      return response.body[:ez_cash_txn_response][:return]
+      return response.body[:ez_cash_txn_response]
+    else
+      return nil
+    end
   end
   
   def self.ezcash_get_barcode_png_web_service_call(customer_id, company_number, scale)

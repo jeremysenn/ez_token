@@ -31,7 +31,8 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
   
-  config.action_mailer.default_url_options = { host: ENV["APPLICATION_HOST"], port: 3000 }
+#  config.action_mailer.default_url_options = { host: ENV["APPLICATION_HOST"], port: 3000 }
+  config.action_mailer.default_url_options = { host: ENV["APPLICATION_HOST"] }
   
   config.action_mailer.delivery_method = :smtp
 
@@ -45,7 +46,7 @@ Rails.application.configure do
     password: ENV["GMAIL_PASSWORD"]
   }
   
-  Rails.application.routes.default_url_options[:host] = "http://#{ENV["APPLICATION_HOST"]}:3000"
+  Rails.application.routes.default_url_options[:host] = "http://#{ENV["APPLICATION_HOST"]}"
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

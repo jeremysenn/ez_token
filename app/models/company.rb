@@ -5,8 +5,10 @@ class Company < ActiveRecord::Base
   establish_connection :ez_cash
   
   has_many :users
-  has_many :customers, :foreign_key => "CompanyNumber" # AKA employees
-  has_many :accounts, :foreign_key => "CompanyNumber" # This is all accounts that have this company ID
+#  has_many :customers, :foreign_key => "CompanyNumber" 
+  has_many :accounts, :foreign_key => "CompanyNumber" 
+  has_many :customers, -> { distinct }, :through => :accounts
+  has_many :account_types, :foreign_key => "CompanyNumber" 
   has_many :sms_messages
   has_many :payment_batches, :foreign_key => "CompanyNbr"
   has_many :payments, :foreign_key => "CompanyNbr"
@@ -15,6 +17,8 @@ class Company < ActiveRecord::Base
   has_many :transactions, :foreign_key => "DevCompanyNbr"
   has_many :payment_batch_csv_mappings
   has_many :cards, through: :devices
+  has_many :customer_barcodes, :foreign_key => "CompanyNumber"
+  has_many :events
   
   ### Start Virtual Attributes ###
   def transaction_fee # Getter
@@ -39,11 +43,13 @@ class Company < ActiveRecord::Base
   end
   
   def fee_account
-    accounts.where(CustomerID: nil, ActTypeID: 19).last
+#    accounts.where(CustomerID: nil, ActTypeID: 19).last
+    accounts.find(self.FeeActID)
   end
   
   def transaction_account
-    accounts.where(CustomerID: nil, ActTypeID: 7).last
+#    accounts.where(CustomerID: nil, ActTypeID: 7).last
+    accounts.find(self.TxnActID)
   end
   
   def transaction_accounts
@@ -52,6 +58,12 @@ class Company < ActiveRecord::Base
   
   def transaction_and_fee_accounts
     accounts.where(CustomerID: nil, ActTypeID: [7,19])
+  end
+  
+  def customer_accounts
+#    accounts.where.not(CustomerID: nil).where(ActTypeID: 6)
+#    accounts.where.not(CustomerID: nil).where(ActTypeID: 6).customer_primary.left_outer_joins(:events).where("events.expire_accounts = 0 OR events.expire_accounts IS NULL OR events.id IS NULL").joins(:customer).order("customer.NameF")
+    accounts.where.not(CustomerID: nil).left_outer_joins(:events).where("events.expire_accounts = 0 OR events.expire_accounts IS NULL OR events.id IS NULL").joins(:customer).order("customer.NameF")
   end
   
   def perform_one_sided_credit_transaction(amount)
@@ -135,6 +147,26 @@ class Company < ActiveRecord::Base
       csv << ['', '', '', '', '', '']
       csv << ['', '', '', '', '', '']
     end
+  end
+  
+#  def customers_by_user_role(user)
+#    if user.event_admin?
+#      Customer.joins(:accounts).where("accounts.CompanyNumber = ?", self.CompanyNumber)
+#    else
+#      Customer.where(CompanyNumber: self.CompanyNumber)
+#    end
+#  end
+#  
+#  def all_customers
+#    Customer.where(CompanyNumber: self.CompanyNumber)
+#  end
+
+  def quick_pay_account_type
+    AccountType.find_by(AccountTypeID: self.quick_pay_account_type_id)
+  end
+  
+  def allowed_to_quick_pay?
+    self.can_quick_pay? and not self.quick_pay_account_type.blank?
   end
   
   #############################

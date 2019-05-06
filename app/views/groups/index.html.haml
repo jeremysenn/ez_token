@@ -1,0 +1,36 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        Groups
+        %small= link_to 'New', new_group_path, class: 'btn bg-orange'
+
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+            -# All Groups
+          .box-tools.pull-right
+            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+              %i.fa.fa-minus
+            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+              %i.fa.fa-times
+        .box-body.no-padding
+          %table.table.table-condensed
+            %thead
+              %tr
+                %th{:scope => "col"} Description
+                %th{:scope => "col"} Active
+                %th
+            %tbody
+              - @groups.each do |group|
+                %tr
+                  %td= group.description
+                  %td= group.Active == 1 ? 'Yes' : 'No'
+                  %td
+                    = link_to 'Show', group, class: 'btn btn-secondary btn-sm'
+                    = link_to "Edit", edit_group_path(group), class: 'btn btn-primary btn-sm'

@@ -2,8 +2,9 @@
   .modal-dialog.modal-sm
     .modal-content
       .modal-body
-        = form_tag send_sms_message_customers_path(@customer), id: 'send_sms_form', method: 'post', class: 'form-horizontal' do |f|
-          = hidden_field_tag "customer_ids[]", [@customer.id]
+        =# form_tag send_sms_message_customers_path(@customer), id: 'send_sms_form', method: 'post', class: 'form-horizontal' do |f|
+        = form_tag twilio_send_sms_message_accounts_path, id: 'send_sms_form', method: 'post', class: 'form-horizontal' do |f|
+          = hidden_field_tag "account_ids[]", [@account.id]
           .form-group
             = text_area_tag :message_body, @message_body, :placeholder => "Message", class: "form-control input-lg", rows: 8, style: 'width:100%', autofocus: true
           .modal-footer

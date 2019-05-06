@@ -2,6 +2,10 @@
   .box-body
     = simple_form_for(@customer) do |f|
       = f.error_notification
+      - @customer.errors.each do |attr, msg|
+        .alert.alert-danger
+          <button type="button" class="close" data-dismiss="alert">×</button>
+          = "#{attr} #{msg}" if @customer.errors[attr].first == msg
       %a{:href => "#", "data-toggle" => "modal", "data-target" => "#avatar", class: 'thumbnail', title: 'Change'}
         %span{"data-toggle" => browser.device.mobile? ? "" : "tooltip", :title => "Change"}
           - unless @customer.avatar.blank?
@@ -31,26 +35,83 @@
             / /.modal-content
           / /.modal-dialog
         / /.modal
-        - if current_user.admin?
-          = f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? current_user.company_id : @customer.CompanyNumber}" }
+        - if current_user.can_edit_accounts?
+          =# f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? current_user.company.id : @customer.CompanyNumber}" }
+          = f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 7 : @customer.CompanyNumber}" }
           = f.input :LangID, :as => :hidden, :input_html => { :value => 1 }
-          = f.input :NameF, label: 'First Name'
-          = f.input :NameL, label: 'Last Name'
-          = f.input :PhoneMobile, label: 'Phone'
-          = f.input :Email, label: 'Email'  
-          = f.input :Registration_Source, label: 'Payee ID'
+          = f.input :NameF, label: 'First Name', required: true
+          = f.input :NameL, label: 'Last Name', required: true
+          = f.input :PhoneMobile, label: 'Phone', required: true
+          = f.input :Email, label: 'Email'  , required: true
+          = f.input :Registration_Source, label: 'Source'
+          = f.input :SSN, label: 'SSN/TIN', :input_html => { :value => "#{@customer.ssn.blank? ? '' : @customer.decrypted_ssn}" }
+          = f.input :GroupID, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 5 : @customer.GroupID}" }
+          =# f.input :GroupID, collection: Group.selections_by_user_role(current_user), selected: @customer.new_record? ? params[:group_id] : @customer.GroupID, as: :select, label: "Type", prompt: "Select type", required: true
+          =# f.input :GroupID, collection: Group.selections_by_user_role(current_user), selected: @customer.GroupID, as: :select, label: "Type", prompt: "Select type", required: true
           = f.input :Active, as: :boolean, inline_label: 'Active'
-          = f.input :GroupID, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 13 : @customer.GroupID}" }
-          = f.simple_fields_for :accounts do |account_form|
-            - if account_form.object.new_record?
-              = account_form.input :CustomerID, :as => :hidden, :input_html => { :value => @customer.id }
-              = account_form.input :CompanyNumber, :as => :hidden, :input_html => { :value => current_user.company.id }
-              = account_form.input :Balance, :as => :hidden, :input_html => { :value => 0 }
-              = account_form.input :MinBalance, :as => :hidden, :input_html => { :value => 0}
-              = account_form.input :ActTypeID, :as => :hidden, :input_html => { :value => 6 }
+          %label.control-label 
+            %strong Wallets
+          =# f.simple_fields_for :accounts do |account_form|
+          = f.nested_fields_for :accounts do |account_form|
+            - if account_form.object.new_record? or account_form.object.company == current_user.company
+              .box.box-success
+                .box-header.with-border
+                  %h3.box-title 
+                    = number_to_currency(account_form.object.Balance)
+                  .box-tools.pull-right
+                    -# if account_form.object.can_delete?
+                    = account_form.remove_nested_fields_link "<i class='fa fa-trash'></i> Delete".html_safe, data: { confirm: 'Are you sure you want to delete?' }
+                .box-body
+                  = account_form.input :ActTypeID, collection: current_user.company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type"
+                  = account_form.input :Active, :as => :boolean
+                  - if account_form.object.new_record?
+                    = account_form.input :CustomerID, :as => :hidden, :input_html => { :value => @customer.id }
+                    = account_form.input :CompanyNumber, :as => :hidden, :input_html => { :value => current_user.company.id }
+                    = account_form.input :Balance, :as => :hidden, :input_html => { :value => 0 }
+                    = account_form.input :MinBalance, :as => :hidden, :input_html => { :value => 0}
+                    =# account_form.input :ActTypeID, :as => :hidden, :input_html => { :value => 6 }
+                    = account_form.input :AbleToDelete, :as => :hidden, :input_html => { :value => 0 }
+                    = account_form.input "account[event_ids][]", label: 'Events' do
+                      - unless current_user.company.events.accounts_do_not_expire.blank?
+                        %br
+                        %label.control-label.text-muted Non-expiring Wallets
+                      .row
+                        = account_form.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title, :include_hidden => false) do |event_field|
+                          .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box(checked: false) + ' ' + event_field.text }
+                      - unless current_user.company.events.accounts_expire.blank?
+                        %label.control-label.text-muted Expiring Wallets
+                      .row
+                        = account_form.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
+                          .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: false) + ' ' + event_field.text }
+
+                  - else
+                    = account_form.input "account[event_ids][]", label: 'Events' do
+                      - unless current_user.company.events.accounts_do_not_expire.blank?
+                        %br
+                        %label.control-label.text-muted Non-expiring Wallets
+                      .row
+                        = account_form.collection_check_boxes(:event_ids, current_user.company.events.accounts_do_not_expire, :id, :title) do |event_field|
+                          .col-xs-12.col-md-12= event_field.label(class:"label-checkbox") { event_field.check_box + ' ' + event_field.text }
+                      - unless current_user.company.events.accounts_expire.blank?
+                        %label.control-label.text-muted Expiring Wallets
+                      .row
+                        = account_form.collection_radio_buttons(:event_ids, current_user.company.events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
+                          .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: account_form.object.events.first == event_field.object) + ' ' + event_field.text }
+
+          .pull-right
+            = f.add_nested_fields_link :accounts, "<i class='fa fa-plus'></i> Add Wallet".html_safe, class: 'btn btn-default btn-sm', role: 'button'
+          %br
+        - else
+          = f.input :NameF, label: 'First Name', required: true
+          = f.input :NameL, label: 'Last Name', required: true
+          = f.input :PhoneMobile, label: 'Phone', required: true
+          = f.input :Email, label: 'Email', required: true
+
       .form-actions
+        %hr
         = link_to 'Cancel', :back, class: 'btn btn-default'
-        = f.button :submit, 'Save'
+        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+          Save
 
 :javascript
   $('[data-toggle="tooltip"]').tooltip()
@@ -63,3 +124,15 @@
       document.getElementById("profile_image").src = oFREvent.target.result;
     };
   };
+
+  //Un-check Check Boxes When Radio Button Selected
+  $(document).on("click", 'input[type="radio"]' , function() {
+    $(this).closest('.form-group').find('input[type="checkbox"]').attr("checked", false);
+  });
+
+  //Un-check Radio Buttons When Check Box Selected
+  $(document).on("click", 'input[type="checkbox"]' , function() {
+    $(this).closest('.form-group').find('input[type="radio"]').attr("checked", false);
+  });
+
+  $('#customer_PhoneMobile').mask("(999) 999-9999");

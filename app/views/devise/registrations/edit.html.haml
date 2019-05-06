@@ -8,35 +8,39 @@
     / Main content
     %section.content
       = render 'shared/flash_messages'
+      - unless resource.temporary_password.blank?
+        %p
+          %div{:class => "alert alert-dismissible alert-danger"}
+            %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} &times;
+            Please create a new password
       .row
         .col-md-5
           .box.box-primary
             .box-body
               = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f|
                 = devise_error_messages!
-                - if resource.temporary_password.blank?
-                  .form-group
-                    = f.label :first_name
-                    %br/
-                    = f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: 'form-control', :placeholder => "First Name", required: true
-                  .form-group
-                    = f.label :last_name
-                    %br/
-                    = f.text_field :last_name, autocomplete: "last_name", class: 'form-control', :placeholder => "Last Name", required: true
-                  .form-group
-                    = f.label :email
-                    %br/
-                    = f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control input-lg', required: true
-                  .form-group
-                    = f.label :phone
-                    %br/
-                    = f.phone_field :phone, autocomplete: "phone", class: 'form-control input-lg', :placeholder => "Phone", :type => "phone", required: true
-                  .form-group
-                    = f.label :time_zone
-                    %br/
-                    =# f.select :time_zone, priority: /US/, collection: ActiveSupport::TimeZone.us_zones, required: true, as: :time_zone
-                    =# f.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones, include_blank: false, default: "Eastern Time (US & Canada)", class: "form-control input-lg"
-                    = f.select :time_zone, ["Pacific Time (US & Canada)", "Mountain Time (US & Canada)", "Central Time (US & Canada)", "Eastern Time (US & Canada)"], {:include_blank => false}, class: "form-control"
+                .form-group
+                  = f.label :first_name
+                  %br/
+                  = f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: 'form-control', :placeholder => "First Name"
+                .form-group
+                  = f.label :last_name
+                  %br/
+                  = f.text_field :last_name, autocomplete: "last_name", class: 'form-control', :placeholder => "Last Name"
+                .form-group
+                  = f.label :email
+                  %br/
+                  = f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control input-lg', required: true
+                .form-group
+                  = f.label :phone
+                  %br/
+                  = f.phone_field :phone, autocomplete: "phone", class: 'form-control input-lg', :placeholder => "Phone", :type => "phone", required: true
+                .form-group
+                  = f.label :time_zone
+                  %br/
+                  =# f.select :time_zone, priority: /US/, collection: ActiveSupport::TimeZone.us_zones, required: true, as: :time_zone
+                  =# f.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones, include_blank: false, default: "Eastern Time (US & Canada)", class: "form-control input-lg"
+                  = f.select :time_zone, ["Pacific Time (US & Canada)", "Mountain Time (US & Canada)", "Central Time (US & Canada)", "Eastern Time (US & Canada)"], {:include_blank => false}, class: "form-control"
                 = f.hidden_field :temporary_password, value: nil
                 - if devise_mapping.confirmable? && resource.pending_reconfirmation?
                   %div
@@ -45,7 +49,8 @@
                   = f.label "New Password"
                   %br/
                   = f.password_field :password, autocomplete: "off", class: 'form-control input-lg'
-                  %small#passwordHelpBlock.form-text.text-muted (leave blank if you don't want to change it)
+                  - if resource.temporary_password.blank?
+                    %small#passwordHelpBlock.form-text.text-muted (leave blank if you don't want to change it)
                   -#
                     - if @minimum_password_length
                       %br/
@@ -57,7 +62,7 @@
                   %br/
                   = f.password_field :password_confirmation, autocomplete: "off", class: 'form-control input-lg'
                 .form-group
-                  = f.label :current_password
+                  = f.label "Current Password"
                   %br/
                   = f.password_field :current_password, autocomplete: "off", class: 'form-control input-lg'
                   %small#passwordHelpBlock.form-text.text-muted (we need the current password to confirm your changes)
@@ -65,3 +70,5 @@
                   = link_to "Cancel", :back, class: 'btn btn-default'
                   = f.submit "Update", class: 'btn btn-primary'
               
+%script
+  $('#user_phone').mask("(999) 999-9999");

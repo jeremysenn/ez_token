@@ -13,6 +13,8 @@
  * require_tree .
  *= require style
  *= require bootstrap-datepicker
+ *= require select2
+ *= require select2-bootstrap
  *= require_self
  */
 
@@ -25,3 +27,23 @@
   border-left: thin solid silver;
   padding-left: 15px;
 }  
+
+.radio {
+  margin-right: 10px;
+}
+
+.transaction-img {
+  margin: 0 auto;
+  width: 100px;
+  padding-top: 3px;
+  /*border: 3px solid #d2d6de;*/
+}
+
+.select2-search__field {
+  height: 50px;
+  font-size: 25px !important;
+}
+
+.field_with_errors input {
+  border: 1px solid red;
+}

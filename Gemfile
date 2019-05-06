@@ -87,6 +87,27 @@ gem 'exception_notification'
 
 # File uploads
 gem 'carrierwave'
+# mini replacement for RMagick http://mini_magick.rubyforge.org/
+gem "mini_magick"
+
+# Creating barcodes
+gem 'barby'
+gem 'rqrcode'
+
+# Phone
+gem 'twilio-ruby'
+
+# Dynamically add and remove nested has_many association fields in a Ruby on Rails form
+gem 'nested_form_fields'
+
+# Background jobs
+gem 'sidekiq'
+# For sidekiq web UI
+gem 'sinatra', github: 'sinatra/sinatra', require: false
+gem 'rack-protection'
+
+# Integrate Select2 javascript library with Rails asset pipeline https://github.com/argerim/select2-rails
+gem "select2-rails"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

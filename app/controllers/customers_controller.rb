@@ -1,45 +1,68 @@
 class CustomersController < ApplicationController
-  before_action :authenticate_user!
-  before_action :set_customer, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message, :barcode]
-  load_and_authorize_resource
-#  skip_load_resource only: :barcode
+  before_action :authenticate_user!, except: [:qr_code]
+  before_action :set_customer, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message, :barcode, :create_account_and_add_to_event, :send_confirmation_link_sms_message]
+  load_and_authorize_resource :except => [:find_by_barcode]
+#  skip_load_resource only: [:barcode]
+  skip_load_resource only: [:find_by_barcode, :qr_code]
   
   helper_method :customers_sort_column, :customers_sort_direction
   
   # GET /customers
   # GET /customers.json
   def index
-    @type = params[:type] ||= 'Regular'
+#    @group_id = params[:group_id] ||= 18
+#    @group_id = params[:group_id] ||= (current_user.caddy_admin?) ? 13 : (current_user.event_admin? ? 16 : 18)
     unless params[:q].blank?
       @query_string = "%#{params[:q]}%"
       if customers_sort_column == "accounts.Balance"
-        unless @type == "Anonymous"
-          @all_customers = current_user.company.customers.payees.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
-        else
-          @all_customers = current_user.company.customers.anonymous.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
-        end
+#        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
       else
-        unless @type == "Anonymous"
-          @all_customers = current_user.company.customers.payees.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).order("#{customers_sort_column} #{customers_sort_direction}") #.order("customer.NameL")
-        else
-          @all_customers = current_user.company.customers.anonymous.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).order("#{customers_sort_column} #{customers_sort_direction}") #.order("customer.NameL")
-        end
+#        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
       end
     else
       if customers_sort_column == "accounts.Balance"
-        unless @type == "Anonymous"
-          @all_customers = current_user.company.customers.payees.joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
-        else
-          @all_customers = current_user.company.customers.anonymous.joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
-        end
+#        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
       else
-        unless @type == "Anonymous"
-          @all_customers = current_user.company.customers.payees.order("#{customers_sort_column} #{customers_sort_direction}")
-        else
-          @all_customers = current_user.company.customers.anonymous.order("#{customers_sort_column} #{customers_sort_direction}")
-        end
+#        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.order("#{customers_sort_column} #{customers_sort_direction}")
       end
     end
+    
+#    @type = params[:type] ||= 'Regular'
+#    unless params[:q].blank?
+#      @query_string = "%#{params[:q]}%"
+#      if customers_sort_column == "accounts.Balance"
+#        unless @type == "Anonymous"
+#          @all_customers = current_user.company.customers.not_anonymous.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+#        else
+#          @all_customers = current_user.company.customers.anonymous.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+#        end
+#      else
+#        unless @type == "Anonymous"
+#          @all_customers = current_user.company.customers.not_anonymous.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).order("#{customers_sort_column} #{customers_sort_direction}") #.order("customer.NameL")
+#        else
+#          @all_customers = current_user.company.customers.anonymous.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).order("#{customers_sort_column} #{customers_sort_direction}") #.order("customer.NameL")
+#        end
+#      end
+#    else
+#      if customers_sort_column == "accounts.Balance"
+#        unless @type == "Anonymous"
+#          @all_customers = current_user.company.customers.not_anonymous.joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+#        else
+#          @all_customers = current_user.company.customers.anonymous.joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+#        end
+#      else
+#        unless @type == "Anonymous"
+#          @all_customers = current_user.company.customers.not_anonymous.order("#{customers_sort_column} #{customers_sort_direction}")
+#        else
+#          @all_customers = current_user.company.customers.anonymous.order("#{customers_sort_column} #{customers_sort_direction}")
+#        end
+#      end
+#    end
+
     @customers = @all_customers.page(params[:page]).per(20)
     respond_to do |format|
       format.html {}
@@ -52,21 +75,30 @@ class CustomersController < ApplicationController
   # GET /customers/1
   # GET /customers/1.json
   def show
-    @withdrawal_transactions = Kaminari.paginate_array(@customer.withdrawals).page(params[:withdrawals]).per(10)
-    @payment_transactions =  Kaminari.paginate_array(@customer.successful_payments).page(params[:payments]).per(10)
-    @check_transactions =  Kaminari.paginate_array(@customer.cashed_checks).page(params[:checks]).per(10)
-    @sms_messages = @customer.sms_messages.order("created_at DESC").page(params[:messages]).per(10)
-    @account = @customer.accounts.first
-#    @base64_barcode_string = @customer.barcode_png
-#    unless @customer.barcode_access_string.blank?
-#      @barcode_access_string = @customer.barcode_access_string
-#    else
-#      @customer.generate_barcode_access_string
-#      @barcode_access_string = @customer.barcode_access_string
-#    end
+    @accounts = current_user.administrator? ? @customer.accounts.where(CompanyNumber: current_user.company_id) : @customer.accounts
+    @events = current_user.administrator? ? @customer.events.where(company_id: current_user.company_id) : @customer.events
+    if params[:event_id].blank?
+      @event = @events.first
+    else
+      @event = @events.find(params[:event_id])
+    end
+    if params[:account_id].blank?
+#      @account = @accounts.first
+      @account = @accounts.joins(:events).where(events: {id: @event.id}).first
+    else
+      @account = @accounts.find(params[:account_id])
+    end
+    unless @account.blank?
+#      @withdrawal_transactions = Kaminari.paginate_array(@customer.withdrawals).page(params[:withdrawals]).per(10)
+      @withdrawal_transactions = Kaminari.paginate_array(@account.withdrawals).page(params[:withdrawals]).per(10)
+  #    @payment_transactions =  Kaminari.paginate_array(@customer.successful_payments).page(params[:payments]).per(10)
+      @payment_transactions =  Kaminari.paginate_array(@account.successful_wire_transactions.sort_by(&:date_time).reverse).page(params[:payments]).per(10)
+      @check_transactions =  Kaminari.paginate_array(@customer.cashed_checks).page(params[:checks]).per(10)
+      @sms_messages = @customer.sms_messages.order("created_at DESC").page(params[:messages]).per(10)
+  #    @events = @customer.events
+#      @events = @account.events
+    end
     if @customer.user.blank?
-#      @temporary_password = Devise.friendly_token.first(10)
-#      @temporary_password = SecureRandom.hex.first(6)
       @temporary_password = SecureRandom.random_number(10**6).to_s
     end
   end
@@ -88,7 +120,7 @@ class CustomersController < ApplicationController
 
     respond_to do |format|
       if @customer.save
-        format.html { redirect_to @customer, notice: 'Customer was successfully created.' }
+        format.html { redirect_to @customer, notice: "Customer account was successfully created." }
         format.json { render :show, status: :created, location: @customer }
       else
         format.html { render :new }
@@ -102,7 +134,7 @@ class CustomersController < ApplicationController
   def update
     respond_to do |format|
       if @customer.update(customer_params)
-        format.html { redirect_to @customer, notice: 'Customer was successfully updated.' }
+        format.html { redirect_to @customer, notice: 'Customer account was successfully updated.' }
         format.json { render :show, status: :ok, location: @customer }
       else
         format.html { render :edit }
@@ -114,7 +146,9 @@ class CustomersController < ApplicationController
   # DELETE /customers/1
   # DELETE /customers/1.json
   def destroy
+    user = @customer.user
     @customer.destroy
+    user.destroy unless user.blank?
     respond_to do |format|
       format.html { redirect_to customers_url, notice: 'Customer was successfully destroyed.' }
       format.json { head :no_content }
@@ -142,7 +176,8 @@ class CustomersController < ApplicationController
     unless transaction_id.blank?
       redirect_back fallback_location: @customer, notice: 'One time payment submitted.'
     else
-      redirect_back fallback_location: @customer, alert: "There was a problem creating the one time payment. Error code: #{error_code}"
+      error_description = ErrorDesc.find_by(error_code: error_code)
+      redirect_back fallback_location: @customer, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
     end
   end
   
@@ -170,10 +205,36 @@ class CustomersController < ApplicationController
 #    else
 #      redirect_back fallback_location: root_path, alert: 'Only the payee has access to that page.'
 #    end
-    unless @customer.blank?
-      @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
-    else
-      redirect_to root_path, alert: 'There was a problem getting barcode.'
+    respond_to do |format|
+      format.html {
+        unless @customer.blank?
+#          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
+          @base64_barcode_string = @customer.barcode_png
+        else
+          redirect_to root_path, alert: 'There was a problem getting barcode.'
+        end
+      }
+      format.json{
+        unless @customer.blank?
+          if params[:company_id].blank?
+            if params[:amount].blank?
+              @base64_barcode_string = @customer.barcode_png
+            else
+              @base64_barcode_string = @customer.barcode_png_with_amount(params[:amount])
+            end
+          else
+            if params[:amount].blank?
+              @base64_barcode_string = @customer.barcode_png_by_company(params[:company_id])
+            else
+              @base64_barcode_string = @customer.barcode_png_with_amount_by_company(params[:amount], params[:company_id])
+            end
+          end
+#          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, params[:company_id].blank? ? current_user.company_id : params[:company_id], 5)
+          render json: {"barcode_string" => @base64_barcode_string}
+        else
+          render json: { error: ["Error: Problem generating QR Code."] }, status: :unprocessable_entity
+        end
+      }
     end
   end
   
@@ -187,8 +248,84 @@ class CustomersController < ApplicationController
   end
   
   def send_barcode_sms_message
-    @customer.send_barcode_sms_message
-    redirect_back fallback_location: @customer, notice: 'Text message sent.'
+    amount = params[:withdrawal_amount]
+    account_id = params[:account_id]
+    unless account_id.blank?
+      @customer.send_barcode_sms_message(account_id, amount.blank? ? 0 : amount)
+      redirect_back fallback_location: @customer, notice: 'QR Code sent to phone.'
+    else
+      redirect_back fallback_location: @customer, notice: 'There was a problem sending the QR Code to phone.'
+    end
+  end
+  
+  # GET /customers/123456789/find_by_barcode
+  def find_by_barcode
+    company_id = params[:company_id]
+    @event = Event.find(params[:event_id])
+    unless company_id.blank?
+      @barcode = CustomerBarcode.where(:Barcode => params[:id], :CompanyNumber => current_user.company_id).first
+    else
+      @barcode = CustomerBarcode.where(:Barcode => params[:id]).first
+    end
+    unless @barcode.blank?
+      @customer = @barcode.customer
+    else
+      @customer = Customer.find_by(barcode_access_string: params[:id])
+    end
+    unless @customer.blank?
+      unless @event.blank?
+        if @customer.events.include?(@event)
+          @account = @customer.accounts.joins(:events).where(events: {id: @event.id}).first
+        end
+      else
+        @account = @customer.accounts.where(CompanyNumber: company_id).first
+      end
+    end
+    respond_to do |format|
+      unless @customer.blank? or @account.blank?
+        format.json {render json: {"first_name" => @customer.first_name, "last_name" => @customer.last_name, "balance" => @account.available_balance, "account_id" => @account.id, "customer_barcode_id" => @barcode.blank? ? nil : @barcode.id} }
+      else
+        format.json {render json: { error: ["Error: Customer/Account cannot be found."] }, status: :unprocessable_entity}
+      end
+    end
+    
+#    respond_to do |format|
+#      unless @barcode.blank? or @barcode.used?
+#        @customer = @barcode.customer
+#        format.json {render json: {"first_name" => @customer.user.first_name, "last_name" => @customer.user.last_name, "balance" => @customer.balance, "account_id" => @customer.account.id, "customer_barcode_id" => @barcode.id} }
+#      else
+#        format.json {render json: { error: ["Error: Customer cannot be found or QR Code has already been used."] }, status: :unprocessable_entity}
+#      end
+#    end
+  end
+  
+  # GET /customers/123456789/qr_code
+  def qr_code
+    @customer = Customer.find_by(barcode_access_string: params[:id])
+    @user = @customer.user
+    unless @customer.blank? or @user.blank?
+      send_data @user.qr_code_png, :type => 'image/png',:disposition => 'inline'
+    end
+  end
+  
+  # GET /customers/1/create_account_and_add_to_event
+  def create_account_and_add_to_event
+    @event = Event.find(params[:event_id])
+#    @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, Balance: 0, MinBalance: 0, ActTypeID: 6)
+#    @event.accounts << @account
+    respond_to do |format|
+      format.json {render json: {}, status: :ok}
+    end
+  end
+  
+  def send_confirmation_link_sms_message
+    @user = @customer.user
+    unless @user.blank? or @user.phone.blank?
+      @user.send_confirmation_sms_message
+      redirect_back fallback_location: root_path, notice: 'Confirmation link text message sent.'
+    else
+      redirect_back fallback_location: root_path, notice: 'Not able to send text message.'
+    end
   end
   
   private
@@ -200,8 +337,9 @@ class CustomersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def customer_params
       params.require(:customer).permit(:ParentCustID, :CompanyNumber, :Active, :GroupID, :NameF, :NameL, :NameS, :PhoneMobile, :Email, 
-        :LangID, :Registration_Source, :Registration_Source_ext, :create_payee_user_flag, :avatar,
-        accounts_attributes:[:CompanyNumber, :Balance, :MinBalance, :Active, :CustomerID, :ActNbr, :ActTypeID, :BankActNbr, :RoutingNbr, :_destroy,:id])
+        :LangID, :Registration_Source, :Registration_Source_ext, :create_payee_user_flag, :create_basic_user_flag, :create_caddy_user_flag, :avatar, :avatar_cache, :SSN,
+        accounts_attributes:[:CompanyNumber, :Balance, :MinBalance, :Active, :CustomerID, :ActNbr, :ActTypeID, :BankActNbr, :RoutingNbr, 
+          :AddGroupID, :AbleToDelete, :_destroy,:id, :event_ids, event_ids: []])
     end
     
     ### Secure the customeres sort direction ###

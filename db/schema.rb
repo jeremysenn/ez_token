@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180830184329) do
+ActiveRecord::Schema.define(version: 20190424163727) do
 
   create_table "sms_messages", force: :cascade do |t|
     t.string "to"
@@ -20,6 +20,8 @@ ActiveRecord::Schema.define(version: 20180830184329) do
     t.integer "customer_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "from"
+    t.string "sid"
   end
 
   create_table "users", force: :cascade do |t|
@@ -47,8 +49,18 @@ ActiveRecord::Schema.define(version: 20180830184329) do
     t.string "temporary_password"
     t.text "device_ids"
     t.string "time_zone", default: "Eastern Time (US & Canada)"
+    t.boolean "view_events"
+    t.boolean "edit_events"
+    t.boolean "view_wallet_types"
+    t.boolean "edit_wallet_types"
+    t.boolean "view_accounts"
+    t.boolean "edit_accounts"
+    t.boolean "view_users"
+    t.boolean "edit_users"
+    t.boolean "view_atms"
+    t.boolean "can_quick_pay"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["email"], name: "index_users_on_email"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 

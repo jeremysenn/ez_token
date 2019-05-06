@@ -5,20 +5,23 @@ class WelcomeController < ApplicationController
   
   def index
     if user_signed_in?
-      if current_user.payee?
-        if not current_user.temporary_password.blank?
-          flash[:error] = "You must update your password."
-          redirect_to edit_registration_path(current_user)
-        else
-          unless current_user.customer.blank?
-            redirect_to current_user.customer
-          else
-            redirect_to users_admin_path(current_user)
-          end
-        end
-      end
-      if current_user.admin? or current_user.basic?
-        @devices = current_user.devices.order("description ASC")
+#      if current_user.payee? or current_user.caddy? or current_user.consumer? or current_user.vendor?
+#        if not current_user.temporary_password.blank?
+#          flash[:error] = "You must update your password."
+#          redirect_to edit_registration_path(current_user)
+#        else
+#          unless current_user.customer.blank?
+#            unless current_user.customer.accounts.count > 1
+#              redirect_to current_user.customer
+#            end
+#          else
+#            redirect_to users_admin_path(current_user)
+#          end
+#        end
+#      end
+      if current_user.administrator? or current_user.collaborator?
+#        @devices = current_user.devices.order("description ASC")
+        @devices = current_user.company.devices.order("description ASC")
         @start_date = params[:start_date] ||= (Date.today - 1.week).to_s
         @end_date = params[:end_date] ||= Date.today.to_s
         @type = params[:type] ||= 'Transfer'
@@ -36,6 +39,10 @@ class WelcomeController < ApplicationController
           @bill_counts = @device.bill_counts
           @denoms = @device.denoms
           @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
+          
+          @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
+          @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)
+          @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: 3.months.ago..Time.now)
           
           # Withdrawals Info
           @withdrawals = @device.transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
@@ -98,6 +105,10 @@ class WelcomeController < ApplicationController
         @bin_6_column_count = @devices.select{ |device| device.bin_6_count != 0 }.select{ |device| device.bin_6_count != nil }.count
         @bin_7_column_count = @devices.select{ |device| device.bin_7_count != 0 }.select{ |device| device.bin_7_count != nil }.count
         @bin_8_column_count = @devices.select{ |device| device.bin_8_count != 0 }.select{ |device| device.bin_8_count != nil }.count
+      else
+        if current_user.accounts.count == 1
+          redirect_to customer_path(current_user.customer)
+        end
       end
     end
   end

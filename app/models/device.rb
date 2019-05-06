@@ -419,8 +419,21 @@ class Device < ActiveRecord::Base
     transactions.where("CreateDate >= ? AND CreateDate <= ?", start_date, end_date)
   end
   
+  def withdrawal_transactions_date_span_search(start_date, end_date)
+    transactions.withdrawals.where("CreateDate >= ? AND CreateDate <= ?", start_date, end_date)
+  end
+  
   def transactions_total_amount_authorized_date_span(start_date, end_date)
     transactions = transactions_date_span_search(start_date, end_date)
+    transactions_total_amount_authorized = 0
+    transactions.each do |transaction|
+      transactions_total_amount_authorized += transaction.amt_auth unless transaction.amt_auth.blank?
+    end
+    return transactions_total_amount_authorized
+  end
+  
+  def withdrawal_transactions_total_amount_authorized_date_span(start_date, end_date)
+    transactions = withdrawal_transactions_date_span_search(start_date, end_date)
     transactions_total_amount_authorized = 0
     transactions.each do |transaction|
       transactions_total_amount_authorized += transaction.amt_auth unless transaction.amt_auth.blank?

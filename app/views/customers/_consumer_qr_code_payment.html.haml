@@ -1,0 +1,32 @@
+%div{:id => "qr_code_payment_details"}
+  =# form_tag quick_purchase_transactions_path, id: 'quick_purchase_form', method: 'post', class: 'form-horizontal' do |f|
+  = form_tag '#', id: 'qr_code_payment_form', method: 'post', class: 'form-horizontal' do |f|
+    = hidden_field_tag :from_account_id, current_user.customer.account.id
+    %p{id: 'consumer_details'}
+      = hidden_field_tag :barcode_number
+      = hidden_field_tag :customer_barcode_id
+      = hidden_field_tag :to_account_id
+    %a.btn.btn-default.btn-lg.btn-block{id: 'open_qr_code_payment_scanner_button', href: "#qr_code_payment_scanner_modal", "data-target" => "#qr_code_payment_scanner_modal", "data-toggle" => "modal"}
+      %i.fa.fa-qrcode
+      Scan QR Code
+    %div{id: "scan_spinner", style: 'display:none;'}
+      %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+    = link_to "Cancel", nil, id: 'qr_code_payment_cancel_button', :onclick => "javascript:window.location.reload()", style: 'display: none;', class: 'btn btn-default btn-lg', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Cancel"}
+    %button.btn.btn-primary.btn-lg{id: 'qr_code_payment_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}, style: 'display: none;'} 
+      Submit
+
+  .modal.fade{id: "qr_code_payment_scanner_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+    .modal-dialog.modal-sm{:role => "document"}
+      .modal-content
+        .modal-header
+          Scan QR Code
+          = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
+        .modal-body
+          %video#video{:style => "border: 1px solid green; width: 100%; height: auto;"}
+          %hr
+          -#
+            %h3
+              Amount:
+              %span{id: 'amount_requested'}
+          %span.pull-right
+            = link_to "Cancel", '#', :class => "btn btn-default btn-lg", "data-dismiss" => "modal"

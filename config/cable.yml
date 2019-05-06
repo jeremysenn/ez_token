@@ -7,4 +7,4 @@ test:
 production:
   adapter: redis
   url: redis://localhost:6379/1
-  channel_prefix: payment_atm_production
+  channel_prefix: ez_token_production

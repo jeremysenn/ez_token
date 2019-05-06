@@ -5,12 +5,13 @@
         %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
           %span{"aria-hidden" => "true"} ×
       .modal-body
-        = form_tag one_time_payment_customer_path(@customer), id: 'one_time_payment_form', method: 'get', class: 'form-horizontal' do |f|
-
+        =# form_tag one_time_payment_customer_path(@customer), id: 'one_time_payment_form', method: 'get', class: 'form-horizontal' do |f|
+        = form_tag one_time_payment_account_path(@account), id: 'one_time_payment_form', method: 'get', class: 'form-horizontal' do |f|
           .input-group.mb-3
             .input-group-prepend
               %span.input-group-text $
-            = number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
+            =# number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
+            = text_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, autofocus: true, :pattern => "[0-9]*"
             .input-group-append
               %span.input-group-text .00
           .form-group

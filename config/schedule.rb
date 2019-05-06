@@ -4,8 +4,7 @@
 # http://en.wikipedia.org/wiki/Cron
 
 set :output, "#{path}/log/cron.log"
-#set :environment, 'development'
-set :environment, 'production'
+set :environment, 'development'
 
 # Example:
 #
@@ -25,10 +24,11 @@ set :environment, 'production'
 
 every :reboot do
   # CentOS VM
-  job_type :application, "cd /usr/local/Ruby/payroll_atm && :task :output"
+  job_type :application, "cd /usr/local/Ruby/ez_token && :task :output"
   # Mac Mini
-#  job_type :application, "cd /Users/jeremy/Ruby/payment_atm && :task :output"
+#  job_type :application, "cd /Users/jeremy/Ruby/ez_token && :task :output"
   
-  application "rails server" # Start application server
-#  application "bundle exec sidekiq -c 5" # Start background workers
+#  application "rails server -p 3003" # Start application server
+  application "puma -b 'ssl://0.0.0.0:3003?key=/etc/nginx/ssl/private.rsa&cert=/etc/nginx/ssl/public.crt' -e development"
+  application "bundle exec sidekiq -c 5" # Start background workers
 end

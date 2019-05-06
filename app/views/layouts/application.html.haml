@@ -2,7 +2,8 @@
 %html
   %head
     %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
-    %title PaymentATM
+    %title ezCash
+    = favicon_link_tag asset_path('favicon.ico')
     = csrf_meta_tags
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     %link{:href => "https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic", :rel => "stylesheet"}/
@@ -17,17 +18,16 @@
   %body.hold-transition{class: "#{user_signed_in? ? 'layout-top-nav' : 'login-page' }"}
     .wrapper
       - unless user_signed_in?
-        = render 'shared/no_user_navbar'
+        - unless (params[:controller] == "customers" and params[:action] == "qr_code")
+          = render 'shared/no_user_navbar'
       - else
-        - if current_user.admin?
-          - unless ((params[:controller] == "customers" and params[:action] == "barcode") or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
+        - if current_user.administrator? or current_user.collaborator?
+          - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
             = render 'shared/admin_user_navbar' 
         - elsif current_user.basic?
           = render 'shared/basic_user_navbar' 
-        - elsif current_user.payee?
-          = render 'shared/customer_user_navbar' 
       = yield
-      - unless ((params[:controller] == "customers" and params[:action] == "barcode") or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
+      - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
         %footer.main-footer
           %strong= "Copyright © #{Date.today.year}"
           = link_to "https://www.tranact.com", target: '_blank' do

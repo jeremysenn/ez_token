@@ -13,265 +13,269 @@
               %i.fa.fa-money
               = device.description
       %ol.breadcrumb
-        %li
-          %a.btn.bg-green{href: '#', "data-toggle" => "modal", "data-target" => "#quick_pay", style: 'color: white;'}
-            %i.fa.fa-dollar
-            Quick Pay
-        = render partial: "quick_pay"
-        &nbsp;
-        &nbsp;
-        %li
-          = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: 'form-inline' do |f|
-            .input-group
-              = hidden_field_tag :type, 'Transfer'
-              = search_field_tag :transaction_id, params[:transaction_id], :placeholder => "Transfer ID or Reference #", class: "form-control", autofocus: true, style: "width: 200px;"
-              .input-group-append
-                %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                  %i.fa.fa-search
+        - if current_user.can_quick_pay_customers?
+          %li
+            %a.btn.bg-green{href: '#', "data-toggle" => "modal", "data-target" => "#quick_pay", style: 'color: white;'}
+              %i.fa.fa-dollar
+              Quick Pay
+          = render partial: "quick_pay"
+          &nbsp;
+          &nbsp;
+        - if current_user.can_view_atms?
+          %li
+            = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: 'form-inline' do |f|
+              .input-group
+                = hidden_field_tag :type, 'Transfer'
+                = search_field_tag :transaction_id, params[:transaction_id], :placeholder => "Transfer ID or Reference #", class: "form-control", autofocus: true, style: "width: 200px;"
+                .input-group-append
+                  %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                    %i.fa.fa-search
+      %br
+    
     / Main content
     %section.content
-      -#
-        = form_tag root_path, id: 'device_selection_form', method: 'get', class: 'form-inline' do |f|
-          .input-group
-            %p= select_tag :device_id, options_for_select(@devices.map{ |device| ["#{device.id} - #{device.description}", device.id] }, @device.id), onchange: "this.form.submit();", class: "form-control input-lg"
-            -#
-              .input-group-append
-                %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                  Go
-
-      .row
-        .col-md-6
-          .box.box-primary{"data-widget" => "box-widget"}
-            .box-header.with-border
-              %h3.box-title 
-                %i.fa.fa-bars
-                Details
-              .box-tools.pull-right
-            - unless @device.blank?
-              .box-body.no-padding
-                .table-responsive
-                  %table.table.table-condensed.table-bordered
-                    %thead
-                      %tr
-                        %th{:scope => "col"} ID
-                        %th{:scope => "col"} Name
-                        %th{:scope => "col"} State
-                        %th{:scope => "col"} Status
-                        %th{:scope => "col"} Remaining
-                        %th
-                    %tbody
-                      %tr
-                        %td= link_to @device.id, @device
-                        %td= @device.description
-                        %td
-                          = (@device.online.blank? or device_state_descriptions[@device.online].blank?) ? 'N/A' : "#{device_state_descriptions[@device.online].truncate(15)}"
-                        %td
-                          - unless @device.dev_statuses.blank?
-                            - dev_status = @device.dev_statuses.order("date_time DESC").first
-                            %a.btn.btn-sm.bg-green{"data-content" => "#{dev_status.status_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0"} 
-                              = dev_status.status 
-                          -#
-                            - if @device.critical_status?
-                              %a.btn.btn-xs.bg-red{"data-content" => "#{@device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus", :tabindex => "0"} 
-                                Critical
-                            - elsif @device.caution_status?
-                              %a.btn.btn-xs.bg-orange{"data-content" => "#{@device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus", :tabindex => "0"}
-                                Caution
-                            - else
-                              = @device.status_string
-                        %td= number_to_currency(@device.remaining)
-                        %td
-                          =# link_to 'More', @device, class: 'btn btn-primary btn-sm'
-                          -#
-                            %a.btn.btn-default.btn-sm{:href => "#", "data-toggle" => "modal", "data-target" => "#video"}
-                              %i.fa.fa-video-camera
-                            #video.modal.fade
-                              .modal-dialog.modal-lg
+      - if current_user.can_view_atms?
+        -#
+          = form_tag root_path, id: 'device_selection_form', method: 'get', class: 'form-inline' do |f|
+            .input-group
+              %p= select_tag :device_id, options_for_select(@devices.map{ |device| ["#{device.id} - #{device.description}", device.id] }, @device.id), onchange: "this.form.submit();", class: "form-control input-lg"
+              -#
+                .input-group-append
+                  %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                    Go
+        .row
+          .col-md-6
+            .box.box-primary{"data-widget" => "box-widget"}
+              .box-header.with-border
+                %h3.box-title 
+                  %i.fa.fa-bars
+                  Details
+                .box-tools.pull-right
+              - unless @device.blank?
+                .box-body.no-padding
+                  .table-responsive
+                    %table.table.table-condensed.table-bordered
+                      %thead
+                        %tr
+                          %th{:scope => "col"} ID
+                          %th{:scope => "col"} Name
+                          %th{:scope => "col"} State
+                          %th{:scope => "col"} Status
+                          %th{:scope => "col"} Remaining
+                          %th
+                      %tbody
+                        %tr
+                          %td= link_to @device.id, @device
+                          %td= @device.description
+                          %td
+                            = (@device.online.blank? or device_state_descriptions[@device.online].blank?) ? 'N/A' : "#{device_state_descriptions[@device.online].truncate(15)}"
+                          %td
+                            - unless @device.dev_statuses.blank?
+                              - dev_status = @device.dev_statuses.order("date_time DESC").first
+                              %a.btn.btn-sm.bg-green{"data-content" => "#{dev_status.status_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0"} 
+                                = dev_status.status 
+                            -#
+                              - if @device.critical_status?
+                                %a.btn.btn-xs.bg-red{"data-content" => "#{@device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus", :tabindex => "0"} 
+                                  Critical
+                              - elsif @device.caution_status?
+                                %a.btn.btn-xs.bg-orange{"data-content" => "#{@device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus", :tabindex => "0"}
+                                  Caution
+                              - else
+                                = @device.status_string
+                          %td= number_to_currency(@device.remaining)
+                          %td
+                            =# link_to 'More', @device, class: 'btn btn-primary btn-sm'
+                            -#
+                              %a.btn.btn-default.btn-sm{:href => "#", "data-toggle" => "modal", "data-target" => "#video"}
+                                %i.fa.fa-video-camera
+                              #video.modal.fade
+                                .modal-dialog.modal-lg
+                                  .modal-content
+                                    .modal-body
+                                      .embed-responsive.embed-responsive-1by1
+                                        %iframe{:allow => "autoplay; encrypted-media", :allowfullscreen => "", :frameborder => "0", :height => "1200", :src => "http://192.168.11.54", :width => "854"}
+                            %a.btn.btn-primary.btn-sm{href: '#', "data-target" => "#commands-modal", "data-toggle" => "modal"}
+                              %i.fa.fa-arrows-alt
+                            #commands-modal.modal.fade
+                              .modal-dialog.modal-sm
                                 .modal-content
+                                  .modal-header
+                                    %h5.modal-title
+                                      %i.fa.fa-arrows-alt
+                                      ATM Commands
                                   .modal-body
-                                    .embed-responsive.embed-responsive-1by1
-                                      %iframe{:allow => "autoplay; encrypted-media", :allowfullscreen => "", :frameborder => "0", :height => "1200", :src => "http://192.168.11.54", :width => "854"}
-                          %a.btn.btn-primary.btn-sm{href: '#', "data-target" => "#commands-modal", "data-toggle" => "modal"}
-                            %i.fa.fa-arrows-alt
-                          #commands-modal.modal.fade
-                            .modal-dialog.modal-sm
-                              .modal-content
-                                .modal-header
-                                  %h5.modal-title
-                                    %i.fa.fa-arrows-alt
-                                    ATM Commands
-                                .modal-body
-                                  %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_reset"), "data-device-id" => @device.id, "data-command" => "atm_reset", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Reset"}}
-                                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                                    Reset
-                                  %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_load"), "data-device-id" => @device.id, "data-command" => "atm_load", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Load"}}
-                                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                                    Load
-                                  %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_up"), "data-device-id" => @device.id, "data-command" => "atm_up", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Up"}}
-                                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                                    Up
-                                  %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_down"), "data-device-id" => @device.id, "data-command" => "atm_down", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Down"}}
-                                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                                    Down
-                                  %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_disconnect"), "data-device-id" => @device.id, "data-command" => "atm_disconnect", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Disconnect"}}
-                                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                                    Disconnect
-                                .modal-footer
-                                  %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Done
+                                    %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_reset"), "data-device-id" => @device.id, "data-command" => "atm_reset", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Reset"}}
+                                      %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                                      Reset
+                                    %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_load"), "data-device-id" => @device.id, "data-command" => "atm_load", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Load"}}
+                                      %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                                      Load
+                                    %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_up"), "data-device-id" => @device.id, "data-command" => "atm_up", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Up"}}
+                                      %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                                      Up
+                                    %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_down"), "data-device-id" => @device.id, "data-command" => "atm_down", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Down"}}
+                                      %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                                      Down
+                                    %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_disconnect"), "data-device-id" => @device.id, "data-command" => "atm_disconnect", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Disconnect"}}
+                                      %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                                      Disconnect
+                                  .modal-footer
+                                    %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Done
+                  .box-footer
+                    -#
+                      .pull-right= paginate @customers, param_name: 'result1'
+              - else
+                %p None
+          .col-md-6
+            .box.box-warning{"data-widget" => "box-widget"}
+              -#
+                .box-header.with-border
+                  %h3.box-title 
+                    %i.fa.fa-inbox
+                    Bins
+                  .box-tools.pull-right
+              .box-body
+                %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+                  %li.nav-item
+                    %a#bins-tab.nav-link.active{"aria-controls" => "bins", "aria-selected" => "true", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
+                      %i.fa.fa-inbox
+                      Bins
+                  %li.nav-item
+                    %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
+                      %i.fa.fa-signal
+                      = "Statuses"
+                  %li.nav-item
+                    %a#cuts-tab.nav-link{"aria-controls" => "cuts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cuts", :role => "tab"} 
+                      %i.fa.fa-credit-card
+                      = "Cuts"
+                #myTabContent.tab-content
+                  #bins.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                    %br
+                    .box.box-success
+                      .box-header.with_border
+                        - unless @devices.blank?
+                          .table-responsive
+                            %table.table.table-condensed.table-bordered
+                              %thead
+                                %tr
+                                  - @device.denoms.each do |denom|
+                                    - unless denom.denomination.zero?
+                                      %th{:scope => "col"}= number_to_currency(denom.denomination, strip_insignificant_zeros: true)
+                              %tbody
+                                = render partial: "devices/bin_details", locals: {device: @device}
+                        - else
+                          &nbsp;
+                          None
+                  #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                    %br
+                    .row
+                      .col-md-12
+                        .box.box-success
+                          .box-header.with_border
+                            .box-tools.pull-right
+                              %button.btn.btn-box-tool{id: 'box_tool_collapse', "data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                                %i.fa.fa-minus
+                              %button.btn.btn-box-tool{id: 'box_tool_remove', "data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+                                %i.fa.fa-times
+                            .box-title
+                              ATM
+                          .box-body
+                            = render partial: "dev_statuses/index"
+                  #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                    = render partial: "devices/cuts"
                 .box-footer
                   -#
                     .pull-right= paginate @customers, param_name: 'result1'
-            - else
-              %p None
-        .col-md-6
-          .box.box-warning{"data-widget" => "box-widget"}
-            -#
+        .row  
+          .col-md-12
+            / Transactions and ATM transfers and withdrawals chart
+            .box.box-success
               .box-header.with-border
                 %h3.box-title 
-                  %i.fa.fa-inbox
-                  Bins
+                  %i.fa.fa-bolt
+                  EZcash
                 .box-tools.pull-right
-            .box-body
-              %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-                %li.nav-item
-                  %a#bins-tab.nav-link.active{"aria-controls" => "bins", "aria-selected" => "true", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
-                    %i.fa.fa-inbox
-                    Bins
-                %li.nav-item
-                  %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
-                    %i.fa.fa-signal
-                    = "Statuses"
-                %li.nav-item
-                  %a#cuts-tab.nav-link{"aria-controls" => "cuts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cuts", :role => "tab"} 
-                    %i.fa.fa-credit-card
-                    = "Cuts"
-              #myTabContent.tab-content
-                #bins.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                  %br
-                  .box.box-success
-                    .box-header.with_border
-                      - unless @devices.blank?
-                        .table-responsive
-                          %table.table.table-condensed.table-bordered
-                            %thead
-                              %tr
-                                - @device.denoms.each do |denom|
-                                  - unless denom.denomination.zero?
-                                    %th{:scope => "col"}= number_to_currency(denom.denomination, strip_insignificant_zeros: true)
-                            %tbody
-                              = render partial: "devices/bin_details", locals: {device: @device}
-                      - else
-                        &nbsp;
-                        None
-                #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                  %br
-                  .row
-                    .col-md-12
-                      .box.box-success
-                        .box-header.with_border
-                          .box-tools.pull-right
-                            %button.btn.btn-box-tool{id: 'box_tool_collapse', "data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
-                              %i.fa.fa-minus
-                            %button.btn.btn-box-tool{id: 'box_tool_remove', "data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
-                              %i.fa.fa-times
-                          .box-title
-                            ATM
-                        .box-body
-                          = render partial: "dev_statuses/index"
-                #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                  = render partial: "devices/cuts"
-              .box-footer
-                -#
-                  .pull-right= paginate @customers, param_name: 'result1'
-      .row  
-        .col-md-12
-          / Transactions and ATM transfers and withdrawals chart
-          .box.box-success
-            .box-header.with-border
-              %h3.box-title 
-                %i.fa.fa-bolt
-                EZcash
-              .box-tools.pull-right
-                = form_tag root_path, :method => 'get', :class => "form-inline" do
-                  = hidden_field_tag 'device_id', @device.id unless @device.blank?
-                  = text_field_tag :start_date, nil, :placeholder => "Start", value: @start_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                  To
-                  = text_field_tag :end_date, nil, :placeholder => "End", value: @end_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                  &nbsp;
-                  = button_tag(:type => 'submit', :class => 'btn btn-primary btn-sm', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-                    Go
-                -#
-                  %button.btn.btn-box-tool{"data-widget" => "collapse", :type => "button"}
-                    %i.fa.fa-minus
-                  %button.btn.btn-box-tool{"data-widget" => "remove", :type => "button"}
-                    %i.fa.fa-times
-            .box-body
-              %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-                -#
-                  %li.nav-item
-                    %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "false", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
-                      %i.fa.fa-arrows-h
-                      Transactions
-                  %li.nav-item
-                    %a#chart-tab.nav-link.active{"aria-controls" => "chart", "aria-selected" => "true", "data-toggle" => "tab", :href => "#chart", :role => "tab"} 
-                      %i.fa.fa-area-chart
-                      Chart
-              #myTabContent.tab-content
-                -#
-                  #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                  = form_tag root_path, :method => 'get', :class => "form-inline" do
+                    = hidden_field_tag 'device_id', @device.id unless @device.blank?
+                    = text_field_tag :start_date, nil, :placeholder => "Start", value: @start_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                    To
+                    = text_field_tag :end_date, nil, :placeholder => "End", value: @end_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                    &nbsp;
+                    = button_tag(:type => 'submit', :class => 'btn btn-primary btn-sm', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                      Go
+                  -#
+                    %button.btn.btn-box-tool{"data-widget" => "collapse", :type => "button"}
+                      %i.fa.fa-minus
+                    %button.btn.btn-box-tool{"data-widget" => "remove", :type => "button"}
+                      %i.fa.fa-times
+              .box-body
+                %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+                  -#
+                    %li.nav-item
+                      %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "false", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
+                        %i.fa.fa-arrows-h
+                        Transactions
+                    %li.nav-item
+                      %a#chart-tab.nav-link.active{"aria-controls" => "chart", "aria-selected" => "true", "data-toggle" => "tab", :href => "#chart", :role => "tab"} 
+                        %i.fa.fa-area-chart
+                        Chart
+                #myTabContent.tab-content
+                  -#
+                    #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                      %br
+                      - unless @transactions.blank?
+                        %p
+                          %a{href: transactions_path(format: "csv", :type => 'All', 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date,), class: 'btn btn-info btn-sm'}
+                            %i.fa.fa-download
+                            Download CSV
+                      = render partial: "transactions/index"
+                  #chart.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                     %br
-                    - unless @transactions.blank?
-                      %p
-                        %a{href: transactions_path(format: "csv", :type => 'All', 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date,), class: 'btn btn-info btn-sm'}
-                          %i.fa.fa-download
-                          Download CSV
-                    = render partial: "transactions/index"
-                #chart.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                  %br
-                  .chart
-                    %canvas#myChart{:style => "height: 180px; width: 763px;", :height => "360", :width => "1526"}
+                    .chart
+                      %canvas#myChart{:style => "height: 180px; width: 763px;", :height => "360", :width => "1526"}
 
-            / /.box-body
-          / /.box
-      -#
-        / Info boxes
-        - unless @transfers.blank? and @withdrawals.blank?
-          .row
-            -#
-              .col-md-4.col-sm-6.col-xs-12
+              / /.box-body
+            / /.box
+        -#
+          / Info boxes
+          - unless @transfers.blank? and @withdrawals.blank?
+            .row
+              -#
+                .col-md-4.col-sm-6.col-xs-12
+                  .info-box
+                    %span.info-box-icon.bg-aqua
+                      %i.fa.fa-male.fa-lg
+                    .info-box-content
+                      %span.info-box-text PAYEES
+                      %span.info-box-number
+                        = @payees_count
+                    / /.info-box-content
+                  / /.info-box
+                / /.col
+              .col-md-3.col-sm-6.col-xs-12
                 .info-box
-                  %span.info-box-icon.bg-aqua
-                    %i.fa.fa-male.fa-lg
+                  %span.info-box-icon.bg-blue
+                    %i.fa.fa-dollar.fa-lg
                   .info-box-content
-                    %span.info-box-text PAYEES
-                    %span.info-box-number
-                      = @payees_count
+                    %span.info-box-text TRANSFERS / AMOUNT
+                    %span.info-box-number= "#{@transfers_count} / #{number_to_currency(@transfers_amount)}"
                   / /.info-box-content
                 / /.info-box
               / /.col
-            .col-md-3.col-sm-6.col-xs-12
-              .info-box
-                %span.info-box-icon.bg-blue
-                  %i.fa.fa-dollar.fa-lg
-                .info-box-content
-                  %span.info-box-text TRANSFERS / AMOUNT
-                  %span.info-box-number= "#{@transfers_count} / #{number_to_currency(@transfers_amount)}"
-                / /.info-box-content
-              / /.info-box
-            / /.col
-            / fix for small devices only
-            .clearfix.visible-sm-block
-            .col-md-3.col-sm-6.col-xs-12
-              .info-box
-                %span.info-box-icon.bg-green
-                  %i.fa.fa-money.fa-lg
-                .info-box-content
-                  %span.info-box-text WITHDRAWALS / AMOUNT
-                  %span.info-box-number= "#{@withdrawals_count} / #{number_to_currency(@withdrawals_amount)}"
-                / /.info-box-content
-              / /.info-box
-            / /.col
-          / /.row
+              / fix for small devices only
+              .clearfix.visible-sm-block
+              .col-md-3.col-sm-6.col-xs-12
+                .info-box
+                  %span.info-box-icon.bg-green
+                    %i.fa.fa-money.fa-lg
+                  .info-box-content
+                    %span.info-box-text WITHDRAWALS / AMOUNT
+                    %span.info-box-number= "#{@withdrawals_count} / #{number_to_currency(@withdrawals_amount)}"
+                  / /.info-box-content
+                / /.info-box
+              / /.col
+            / /.row
 
 - unless @customer_id.blank?
   :javascript

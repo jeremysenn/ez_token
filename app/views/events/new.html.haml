@@ -1,0 +1,12 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      %h1
+        %i.fa.fa-calendar
+        New Event
+    / Main content
+    %section.content
+      .row
+        .col-sm-12
+          = render 'form'

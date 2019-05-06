@@ -1,0 +1,34 @@
+.box.box-primary
+  .box-body
+    = simple_form_for(@company) do |f|
+      = f.error_notification
+      - @company.errors.each do |attr, msg|
+        .alert.alert-danger
+          <button type="button" class="close" data-dismiss="alert">×</button>
+          = "#{attr} #{msg}" if @company.errors[attr].first == msg
+      .form-inputs
+        .row
+          .col-xs-12.col-sm-9
+            = f.input :CompanyName, as: :string, label: 'Name', required: true
+        .row
+          .col-xs-12.col-sm-6
+            = f.input :TxnActID, as: :integer, label: "Transaction Account", required: true
+          .col-xs-12.col-sm-6
+            = f.input :FeeActID, as: :integer, label: "Fee Account", required: true
+        .row
+          .col-xs-12.col-sm-6
+            = f.input :can_quick_pay, as: :boolean, label: 'Quick Pay'
+            = f.input :quick_pay_account_type_id, collection: @company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Quick Pay Wallet Type", prompt: "Select type", wrapper_html: { style: "#{@company.can_quick_pay? ? 'display:block;' : 'display:none;'}" }
+      .form-actions
+        = link_to 'Cancel', :back, class: "btn btn-default"
+        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+          Save
+
+:javascript
+  $('#company_can_quick_pay').on('click', function () {
+    if ($(this).prop('checked')) {
+      $('.company_quick_pay_account_type_id').fadeIn();
+    } else {
+      $('.company_quick_pay_account_type_id').hide();
+    }
+  });

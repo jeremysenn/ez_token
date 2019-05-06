@@ -59,7 +59,7 @@
               %h3.box-title 
                 Transactions
                 - unless @transactions.blank?
-                  %a{href: transactions_path(format: "csv", :type => @type, 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date, transaction_id: @transaction_id_or_receipt_number), class: 'btn btn-sm btn-info'}
+                  %a{href: transactions_path(format: "csv", :event_id => @event_id, :type => @type, 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date, transaction_id: @transaction_id_or_receipt_number), class: 'btn btn-sm btn-info'}
                     %i.fa.fa-download
                     Download CSV
                   %br
@@ -67,7 +67,9 @@
                     = "#{pluralize(number_with_delimiter(@all_transactions.count), 'record')} found"
               .box-tools
                 = form_tag transactions_path, :method => 'get', :class => "form-inline" do
-                  = select_tag :type, options_for_select(["All", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
+                  = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
+                  &nbsp;
+                  = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
                   &nbsp;
                   = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
                   To

@@ -2,11 +2,19 @@
   .modal-dialog.modal-sm{:role => "document"}
     .modal-content
       .modal-header
-        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
-          %span{"aria-hidden" => "true"} ×
+        -#
+          %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} ×
       .modal-body
         .text-center
-          %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
+          - unless @base64_barcode_string.blank?
+            %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
+          - else
+            %div{id: "generating_barcode_spinner", style: 'display:none;'}
+              %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+            %img{id: 'barcode_contents', :src => "", class: 'img-fluid'}
+      .modal-footer
+        = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
     / /.modal-content
   / /.modal-dialog
 / /.modal

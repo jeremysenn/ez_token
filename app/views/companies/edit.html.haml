@@ -1,0 +1,13 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    - unless browser.device.mobile?
+      %section.content-header
+        %h1
+          %i.fa.fa-building
+          Edit Company
+    / Main content
+    %section.content
+      .row
+        .col-xs-12.col-sm-12.col-md-5
+          = render 'form'

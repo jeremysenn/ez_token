@@ -5,11 +5,13 @@
       %h1
         %i.fa.fa-user
         = "#{@user.full_name}"
-        %small.text-muted= "(#{@user.role})"
+        %small.text-muted= "(#{@user.role.humanize})"
         = link_to 'Edit', edit_users_admin_path(@user), class: 'btn bg-orange'
-        - unless @user.customer.blank?
-          %br
-          %small= link_to 'Payee Account', @user.customer
+      - unless @user.customer.blank?
+        %br
+        %a{href: customer_path(@user.customer)}
+          Account
+          %i.fa.fa-chevron-right
       - if @user.confirmed?
         Sign In Count:
         = @user.sign_in_count
@@ -28,14 +30,46 @@
       - else
         .text-danger Waiting for user to confirm account
       %br
-      Devices:
+      Email:
+      = @user.email
+      %br
+      Phone:
+      = @user.phone
       %br
       - unless @devices.blank?
+        Devices:
+        %br
         - @devices.each do |device|
           = link_to device.description, device
           %br
-      - else
-        None
+      - if @user.collaborator?
+        %table.table.table-condensed
+          %thead
+            %tr
+              %th{:scope => "col"} View Events
+              %th{:scope => "col"} Edit Events
+              %th{:scope => "col"} View Wallet Types
+              %th{:scope => "col"} Edit Wallet Types
+              %th{:scope => "col"} View Accounts
+              %th{:scope => "col"} Edit Accounts
+              %th{:scope => "col"} View Users
+              %th{:scope => "col"} Edit Users
+              %th{:scope => "col"} View ATMs
+              %th{:scope => "col"} Quick Pay
+              
+          %tbody
+            %tr
+              %td= @user.view_events? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              %td= @user.edit_events? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              %td= @user.view_wallet_types? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              %td= @user.edit_wallet_types? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              %td= @user.view_accounts? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              %td= @user.edit_accounts? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              %td= @user.view_users? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              %td= @user.edit_users? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              %td= @user.view_atms? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              %td= @user.can_quick_pay? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+              
     -#
       / Main content
       %section.content

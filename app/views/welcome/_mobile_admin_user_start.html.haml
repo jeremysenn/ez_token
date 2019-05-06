@@ -6,9 +6,10 @@
     %h1
       = current_user.company.name
       %small Dashboard
-      = form_tag root_path, id: 'device_selection_form', method: 'get', class: 'form-inline' do |f|
-        .input-group
-          %p= select_tag :device_id, options_for_select(@devices.map{ |device| ["#{device.id} - #{device.description}", device.id] }, @device.id), onchange: "this.form.submit();", class: "form-control input-lg"
+      - unless @devices.blank?
+        = form_tag root_path, id: 'device_selection_form', method: 'get', class: 'form-inline' do |f|
+          .input-group
+            %p= select_tag :device_id, options_for_select(@devices.map{ |device| ["#{device.id} - #{device.description}", device.id] }, @device.id), onchange: "this.form.submit();", class: "form-control input-lg"
       = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: 'form-inline' do |f|
         .input-group
           = hidden_field_tag :type, 'Transfer'

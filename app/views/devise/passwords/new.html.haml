@@ -1,10 +1,17 @@
-%h2 Forgot your password?
-= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
-  = devise_error_messages!
-  .field
-    = f.label :email
-    %br/
-    = f.email_field :email, autofocus: true, autocomplete: "email"
-  .actions
-    = f.submit "Send me reset password instructions"
-= render "devise/shared/links"
+.login-box
+  .login-logo
+    %a{:href => root_path}
+      <strong>ez</strong>Cash
+  .login-box-body
+    %p.login-box-msg Forgot your password?
+    =# form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
+    = form_tag forgot_password_users_admin_index_path, method: 'get', class: 'form-horizontal' do
+      = devise_error_messages!
+      .form-group
+        =# f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control', :placeholder => "Email", required: true
+        = text_field_tag :phone, nil,class: 'form-control', :placeholder => "Phone", required: true, :pattern => "[0-9]*", autofocus: true
+      .actions
+        =# f.submit "Send me reset password instructions", class: 'btn btn-primary btn-block'
+        %button.btn.btn-primary{id: 'send_sms_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send me reset password instructions"}} 
+          Send me reset password instructions
+    =# render "devise/shared/links"

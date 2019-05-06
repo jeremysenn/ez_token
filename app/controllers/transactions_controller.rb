@@ -1,6 +1,6 @@
 class TransactionsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_transaction, only: [:show, :edit, :update, :destroy, :reverse]
+  before_action :set_transaction, only: [:show, :edit, :update, :destroy, :reverse, :dispute, :send_dispute_details]
   load_and_authorize_resource
   
   helper_method :transactions_sort_column, :transactions_sort_direction
@@ -8,26 +8,28 @@ class TransactionsController < ApplicationController
   # GET /transactions
   # GET /transactions.json
   def index
-    @type = params[:type] ||= 'All'
+    @type = params[:type] ||= 'All transactions'
 #    @start_date = transaction_params[:start_date] ||= Date.today.to_s
 #    @end_date = transaction_params[:end_date] ||= Date.today.to_s
     @start_date = params[:start_date] ||= Date.today.last_week.to_s
     @end_date = params[:end_date] ||= Date.today.to_s
     @transaction_id_or_receipt_number = params[:transaction_id]
+    @event_id = params[:event_id]
+    transactions = @event_id.blank? ? current_user.company.transactions : current_user.company.transactions.where(event_id: @event_id)
     if @transaction_id_or_receipt_number.blank?
       if @type == 'Withdrawal'
-        @all_transactions = current_user.company.transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       elsif @type == 'Transfer'
-        @all_transactions = current_user.company.transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       elsif @type == 'Balance'
-        @all_transactions = current_user.company.transactions.one_sided_credits.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.one_sided_credits.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       elsif @type == 'Fee'
-        @all_transactions = current_user.company.transactions.fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       elsif @type == 'Check'
-        @all_transactions = current_user.company.transactions.checks.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.checks.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       else
 #        @all_transactions = current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
-        @all_transactions = current_user.company.transactions.not_fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.not_fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       end
     else
       @start_date = nil
@@ -126,11 +128,13 @@ class TransactionsController < ApplicationController
     @amount = params[:amount]
     @receipt_number = params[:receipt_number]
     @note = params[:note]
-    @device_id = params[:device_id]
-    @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
-    @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: 6)
-    response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number)
-    response_code = response[:return]
+#    @device_id = params[:device_id]
+    if current_user.company.allowed_to_quick_pay?
+      @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
+      @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
+      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number)
+      response_code = response[:return]
+    end
     unless response_code.to_i > 0
       transaction_id = response[:tran_id]
     else
@@ -141,8 +145,117 @@ class TransactionsController < ApplicationController
 #      redirect_to barcode_customer_path(@customer), notice: 'Quick Pay submitted.'
       redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
     else
-      redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code: #{error_code}"
+      error_description = ErrorDesc.find_by(error_code: error_code)
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
     end
+  end
+  
+  def quick_purchase
+    amount = params[:amount]
+    event_id = params[:event_id]
+    to_account_id = params[:to_account_id]
+    unless params[:scanned_from_account_id].blank?
+      from_account_id = params[:scanned_from_account_id]
+    else
+      from_account_id = params[:from_account_id]
+    end
+    customer_barcode_id = params[:customer_barcode_id]
+    if params[:file]
+      @file_upload = params[:file].path
+    end
+    unless amount.blank? or to_account_id.blank? or from_account_id.blank?
+      unless event_id.blank?
+        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount)
+      else
+        response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+      end
+      unless response.blank?
+        response_code = response[:return]
+        unless response_code.to_i > 0
+          @transaction = Transaction.find(response[:tran_id])
+          unless customer_barcode_id.blank?
+            @customer_barcode = CustomerBarcode.find(customer_barcode_id)
+            @customer_barcode.update_attributes(TranID: @transaction.id, Used: 1)
+          end
+        else
+          error_code = response_code
+        end
+      end
+    end
+    Rails.logger.debug "*************Response: #{response}"
+    unless @transaction.blank?
+#      @transaction.upload_file = params[:file]
+#      @transaction.save!(validate: false)
+      FileUploadWorker.perform_async(@transaction.id, @file_upload)
+      @transaction.send_text_message_receipt
+      redirect_back fallback_location: root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
+    else
+      error_description = ErrorDesc.find_by(error_code: error_code)
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_description.blank? ? error_code : error_description.long_desc}. Amount: #{amount}, To: #{to_account_id}, From: #{from_account_id}"
+    end
+  end
+  
+  def send_payment
+    amount = params[:amount]
+    original_transaction = Transaction.find(params[:id])
+    to_account_id = original_transaction.to_acct_id
+    from_account_id = original_transaction.from_acct_id
+    unless amount.blank? or to_account_id.blank? or from_account_id.blank?
+      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+      unless response.blank?
+        response_code = response[:return]
+        unless response_code.to_i > 0
+          @transaction = Transaction.find(response[:tran_id])
+        else
+          error_code = response_code
+        end
+      end
+    end
+    unless @transaction.blank?
+      redirect_to root_path, notice: "Tip submitted. Transaction ID #{@transaction.id}"
+    else
+      error_description = ErrorDesc.find_by(error_code: error_code)
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the Tip. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+    end
+  end
+  
+  def send_payment_from_qr_code_scan
+    amount = params[:send_payment_amount]
+    to_account_id = params[:send_payment_to_account_id]
+    from_account_id = params[:from_account_id]
+    unless amount.blank? or to_account_id.blank? or from_account_id.blank?
+#      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+      response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount)
+      unless response.blank?
+        response_code = response[:return]
+        unless response_code.to_i > 0
+          @transaction = Transaction.find(response[:tran_id])
+        else
+          error_code = response_code
+        end
+      end
+    end
+    unless @transaction.blank?
+      redirect_back fallback_location: root_path, notice: "Payment sent. Transaction ID #{@transaction.id}"
+    else
+      error_description = ErrorDesc.find_by(error_code: error_code)
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+    end
+  end
+  
+  # GET /transactions/1/dispute
+  # GET /transactions/1/dispute.json
+  def dispute
+    @from_customer = @transaction.from_account_customer
+    @to_customer = @transaction.to_account_customer
+    @send_notification = params[:send_notification]
+  end
+  
+  def send_dispute_details
+    @details = params[:details]
+    ApplicationMailer.send_admins_transaction_dispute_email_notification(current_user, @transaction.company.users.admin.map{|u| u.email}, @transaction, @details).deliver
+    flash[:notice] = "We will be in contact with you to discuss further. Thank you."
+    redirect_to dispute_transaction_path(@transaction, send_notification: true)
   end
 
   private

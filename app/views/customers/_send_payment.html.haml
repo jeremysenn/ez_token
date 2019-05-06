@@ -1,0 +1,94 @@
+
+%div{:id => "send_payment_details"}
+  = form_tag send_payment_from_qr_code_scan_transactions_path, id: 'send_payment_form', method: 'post', class: 'form-inline' do |f|
+    .input-group.input-group-lg.mb-3
+      .input-group-prepend
+        %span.input-group-text $
+      =# number_field_tag :send_payment_amount, nil, :placeholder => "Amount", class: "form-control input-lg",  required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
+      = text_field_tag :send_payment_amount, nil, :placeholder => "Amount", class: "form-control input-lg",  required: true, autofocus: true, :pattern => "[0-9]*"
+      .input-group-append
+        %span.input-group-text .00
+    %p{id: 'consumer_details'}
+      = hidden_field_tag :send_payment_barcode_number
+      = hidden_field_tag :company_id, @account.CompanyNumber
+      = hidden_field_tag :customer_barcode_id
+      = hidden_field_tag :from_account_id, @account.id
+      = hidden_field_tag :account_balance, @account.available_balance
+    #send_payment_button_group.btn-group{style: 'display:none;'}
+      %a.btn.btn-default.btn-lg{id: 'open_send_payment_buddy_search_button', href: "#send_payment_buddy_search_modal", "data-target" => "#send_payment_buddy_search_modal", "data-toggle" => "modal"}
+        %i.fa.fa-search
+        Search
+      %a.btn.btn-default.btn-lg{id: 'open_send_payment_qrcode_scanner_button', href: "#send_payment_qrcode_scanner_modal", "data-target" => "#send_payment_qrcode_scanner_modal", "data-toggle" => "modal"}
+        %i.fa.fa-qrcode
+        Scan Code
+    %div{id: "send_payment_scan_spinner", style: 'display:none;'}
+      %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+    = link_to "Cancel", nil, id: 'quick_purchase_cancel_button', :onclick => "javascript:window.location.reload()", style: 'display: none;', class: 'btn btn-default btn-lg', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Cancel"}
+    %button.btn.btn-primary.btn-lg{id: 'quick_purchase_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}, style: 'display: none;'} 
+      Submit
+
+    .modal.fade{id: "send_payment_buddy_search_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+      .modal-dialog.modal-sm{:role => "document"}
+        .modal-content
+          .modal-header
+            Select Person to Send Payment
+            = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
+          .modal-body
+            %p
+              %strong
+                Amount:
+                %span{class: 'send_payment_amount'}
+            =# select_tag :send_payment_to_account_id, options_from_collection_for_select(@account.buddies, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
+            =# select_tag :send_payment_to_account_id, options_from_collection_for_select(@account.buddies, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
+            = select_tag :send_payment_to_account_id, options_from_collection_for_select(@event.accounts.active.where.not(CustomerID: @account.CustomerID), "id", "customer_user_name_and_registration_source"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
+          .modal-footer
+            %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+            %button.btn.btn-primary{id: 'send_payment_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+              Submit
+
+  .modal.fade{id: "send_payment_qrcode_scanner_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+    .modal-dialog.modal-sm{:role => "document"}
+      .modal-content
+        .modal-header
+          Scan QR Code to Send Payment
+          = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
+        .modal-body
+          %p
+            %strong
+              Amount:
+              %span{class: 'send_payment_amount'}
+          %video#send_payment_video{:style => "border: 1px solid green; width: 100%; height: auto;"}
+          -#
+            %hr
+            %h3
+              Amount:
+              %span{class: 'send_payment_amount'}
+        .modal-footer
+          = link_to "Cancel", '#', :class => "btn btn-default", "data-dismiss" => "modal"
+
+:javascript
+  $('#send_payment_details').on('keyup', '#send_payment_amount', function() {
+    var account_balance, amount;
+    amount = parseFloat($('#send_payment_amount').val());
+    account_balance = parseFloat($('#account_balance').val());
+    if (amount > 0 && account_balance >= amount) {
+      $('#send_payment_button_group').show();
+      return $('.send_payment_amount').html("$" + amount);
+    } else {
+      $('#send_payment_button_group').hide();
+      return false;
+    }
+  });
+
+  // Make sure select2 isn't applied multiple times by turbolinks
+  $(document).on('turbolinks:before-cache', function() {
+    $('#send_payment_to_account_id').select2('destroy');
+  });
+
+  $(document).on('turbolinks:load', function() {
+    $('#send_payment_to_account_id').select2({
+      theme: 'bootstrap',
+      minimumInputLength: 3,
+      dropdownParent: $("#send_payment_buddy_search_modal")
+    });
+  });

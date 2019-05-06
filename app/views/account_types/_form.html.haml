@@ -1,0 +1,41 @@
+.box.box-primary
+  .box-body
+    = simple_form_for(@account_type) do |f|
+      = f.error_notification
+      - @account_type.errors.each do |attr, msg|
+        .alert.alert-danger
+          <button type="button" class="close" data-dismiss="alert">×</button>
+          = "#{attr} #{msg}" if @account_type.errors[attr].first == msg
+      .form-inputs
+        = f.input :CompanyNumber, as: :hidden, :input_html => { :value => "#{@account_type.new_record? ? current_user.company.id : @account_type.CompanyNumber}" }
+        .row
+          .col-xs-12.col-sm-9
+            = f.input :AccountTypeDesc, as: :string, label: 'Description', required: true
+        .row
+          .col-xs-12.col-sm-6
+            = f.input :MinMaintainBal, as: :decimal, required: false, label: "Minimum Maintained Balance" do
+              .row
+                .col-xs-12.col-sm-8
+                  .input-group
+                    .input-group-prepend
+                      %span.input-group-text $
+                    = f.input_field :MinMaintainBal, as: :decimal, class: "form-control"
+        .row
+          .col-xs-12.col-sm-6
+            = f.input :CanFundByACH, as: :boolean, label: 'Fund by ACH'
+            = f.input :CanFundByCC, as: :boolean, label: 'Fund by CC'
+            = f.input :CanFundByCash, as: :boolean, label: 'Fund by Cash'
+            = f.input :CanWithdraw, as: :boolean, label: 'Can Withdraw'
+            = f.input :WithdrawAll, as: :boolean, label: 'Withdrawal All'
+            = f.input :CanPull, as: :boolean, label: 'Pull Payments'
+          .col-xs-12.col-sm-6
+            = f.input :CanRequestPmtBySearch, as: :boolean, label: 'Request Payments by Search'
+            = f.input :CanRequestPmtByScan, as: :boolean, label: 'Request Payments by Scan'
+            = f.input :CanSendPmt, as: :boolean, label: 'Send Payments'
+            = f.input :CanBePulledBySearch, as: :boolean, label: 'Can be Pulled by Search'
+            = f.input :CanBePulledByScan, as: :boolean, label: 'Can be Pulled by Scan'
+            = f.input :CanBePushedByScan, as: :boolean, label: 'Can be Pushed by Scan'
+      .form-actions
+        = link_to 'Cancel', :back, class: "btn btn-default"
+        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+          Save

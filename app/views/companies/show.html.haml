@@ -1,0 +1,32 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      %h1
+        %i.fa.fa-building
+        = @company.name
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+            Created
+            = @company.CreateDate.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+        .box-body
+          %p.lead
+            Transaction Account ID:
+            = @company.TxnActID
+          %p.lead
+            Fee Account ID:
+            = @company.FeeActID
+          %p.lead
+            Can Quick Pay:
+            = @company.can_quick_pay? ? 'Yes' : 'No'
+          - if @company.can_quick_pay?
+            %p.lead
+              Quick Pay Wallet Type:
+              = @company.quick_pay_account_type.description
+        .box-footer
+          = link_to 'Edit', edit_company_path(@company), class: 'btn btn-primary'
+          = link_to 'Back', :back, class: 'btn btn-default'

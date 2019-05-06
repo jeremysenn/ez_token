@@ -1,0 +1,127 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        %i.fa.fa-bolt
+        - unless @to_customer.blank?
+          = link_to @transaction.Description, @to_customer
+        - else
+          = @transaction.Description
+        %small= number_to_currency(@transaction.amt_auth)
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+            = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+          -#
+            .box-tools.pull-right
+              - unless @reversal_transaction.blank?
+                .text-danger
+                  %i.fa.fa-warning
+                  Transaction reversed:
+                  = link_to @reversal_transaction.id, @reversal_transaction
+              - unless @original_transaction.blank?
+                .text-warning
+                  Original Transaction:
+                  = link_to @original_transaction.id, @original_transaction
+        .box-body
+          %p.lead
+            Company:
+            = @transaction.company.CompanyName unless @transaction.company.blank?
+          - unless @to_customer.blank?
+            %p.lead
+              To:
+              = @to_customer.user.blank? ? @to_customer.full_name : @to_customer.user.full_name
+          - unless @from_customer.blank?
+            %p.lead
+              From:
+              = @from_customer.user.blank? ? @from_customer.full_name : @from_customer.user.full_name
+          -#
+            %p.lead
+              From Account:
+              - unless @from_customer.blank?
+                = link_to "#{@from_customer.full_name} (#{@transaction.from_acct_id})", @from_customer
+              - else
+                = @transaction.from_acct_id
+          %p.lead
+            Device ID:
+            = @transaction.dev_id
+          %p.lead
+            Tran ID:
+            = @transaction.id
+          %p.lead
+            Error Code:
+            = @transaction.error_code
+          %p.lead
+            Code:
+            = @transaction.error_code_long_description
+          %p.lead
+            Receipt Number:
+            - if not @to_customer.blank? and @to_customer.anonymous?
+              = "#{@transaction.receipt_nbr.blank? ? 'N/A' : @transaction.receipt_nbr}"
+          %p.lead
+            Amount Requested:
+            = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
+          %p.lead
+            Amount Authorized:
+            = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
+          %p.lead
+            Fee:
+            = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
+          - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
+            %p.lead
+              Total:
+              = number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
+
+          -#
+            %p.lead
+              Sec Tran Code:
+              = @transaction.sec_tran_code
+            %p.lead
+              Tran Code:
+              = @transaction.tran_code
+            %p.lead
+              To Account:
+              - unless @to_customer.blank?
+                = link_to "#{@to_customer.full_name} (#{@transaction.to_acct_id})", @to_customer
+              - else
+                = @transaction.to_acct_id
+            %p.lead
+              DateTime:
+              = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+            %p.lead
+              Status:
+              = @transaction.status_long_description
+            
+            %p.lead
+              Description:
+              = @transaction.Description
+            %p.lead
+              Note:
+              = @transaction.Note
+          %p
+            - @transaction.images.each do |image|
+              .col-xs-12.col-sm-2.col-md-2
+                %a{href: "#image_popup_#{image.id}", "data-toggle" => "modal"}
+                  %img.img-fluid.img-thumbnail{:alt => image.id, :src => image.preview_data_uri}
+              %div{:id => "image_popup_#{image.id}", :class => "modal fade", :tabindex => "-1", :style => "display:none;"}
+                .modal-dialog.modal-lg
+                  .modal-content
+                    .modal-body
+                      %img.img-fluid{:alt => image.id, :src => image.jpeg_image_data_uri}
+          - unless @transaction.upload_file.blank? or @transaction.upload_file.url.blank?
+            = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
+        .box-footer
+          - if @send_notification.blank?
+            = form_tag send_dispute_details_transaction_path, :method => 'post', class: 'form-horizontal' do
+              = hidden_field_tag :id, @transaction.id
+              = hidden_field_tag :send_notification, true
+              .form-group
+                = text_area_tag :details, nil, :placeholder => "Details of dispute", class: "form-control input-lg", rows: 4, style: 'width:50%', autofocus: true
+              = button_tag(:type => 'submit', :class => 'btn btn-danger', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit dispute"}) do
+                %i.fa.fa-send
+                Submit dispute
