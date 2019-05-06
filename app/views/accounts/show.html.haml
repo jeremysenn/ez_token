@@ -26,6 +26,9 @@
             - else
               N/A
           %p.lead
+            %strong Active:
+            = @account.active? ? 'Yes' : 'No'
+          %p.lead
             %strong Events:
             - unless @account.events.blank?
               %br

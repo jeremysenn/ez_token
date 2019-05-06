@@ -18,15 +18,23 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource)
     sign_in_url = new_user_session_url
 #    unless not current_user.temporary_password.blank? and current_user.sign_in_count > 1
-    if current_user.temporary_password.blank?
-      if request.referer == sign_in_url or (request.referer and request.referer.include? "reset_password")
-        super
-      else
-        stored_location_for(resource) || request.referer || root_path
-      end
+
+#    if current_user.temporary_password.blank?
+#      if request.referer == sign_in_url or (request.referer and request.referer.include? "reset_password")
+#        super
+#      else
+#        stored_location_for(resource) || request.referer || root_path
+#      end
+#    else
+#      edit_user_registration_path(current_user)
+#    end
+    
+    if request.referer == sign_in_url or (request.referer and request.referer.include? "reset_password")
+      super
     else
-      edit_user_registration_path(current_user)
+      stored_location_for(resource) || request.referer || root_path
     end
+    
   end
   
 end

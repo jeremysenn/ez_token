@@ -13,6 +13,8 @@
         .box-header.with-border
           %h3.box-title 
             = form_tag accounts_path, :method => 'get', :class => "form-inline" do
+              = select_tag :active, options_for_select([["Active",1], ["Inactive",0]], @active), class: "form-control"
+              &nbsp;
               = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title", @event_id), class: "form-control"
               &nbsp;
               = select_tag :type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @type_id), prompt: 'All types', class: "form-control"
