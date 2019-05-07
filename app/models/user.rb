@@ -301,6 +301,10 @@ class User < ApplicationRecord
     company.allowed_to_quick_pay? and (admin? or can_quick_pay?)
   end
   
+  def can_reverse_transactions?
+    admin? or collaborator?
+  end
+  
   def format_phone_before_create
     self.phone = "#{phone.gsub(/([-() ])/, '')}" if phone
   end
