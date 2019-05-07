@@ -116,6 +116,7 @@
           - unless @transaction.upload_file.blank? or @transaction.upload_file.url.blank?
             = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
         .box-footer
+          = link_to 'Home', root_path, class: "btn btn-default"
           - if @send_notification.blank?
             = form_tag send_dispute_details_transaction_path, :method => 'post', class: 'form-horizontal' do
               = hidden_field_tag :id, @transaction.id
