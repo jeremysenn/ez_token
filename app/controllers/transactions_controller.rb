@@ -183,10 +183,13 @@ class TransactionsController < ApplicationController
       end
     end
     Rails.logger.debug "*************Response: #{response}"
-    unless @transaction.blank? or @file_upload.blank?
+    unless @transaction.blank? 
 #      @transaction.upload_file = params[:file]
 #      @transaction.save!(validate: false)
-      FileUploadWorker.perform_async(@transaction.id, @file_upload)
+      unless @file_upload.blank?
+        Rails.logger.debug "****************@file_upload: #{@file_upload}"
+        FileUploadWorker.perform_async(@transaction.id, @file_upload)
+      end
       @transaction.send_text_message_receipt
       redirect_back fallback_location: root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
     else
