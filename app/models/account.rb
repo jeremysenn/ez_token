@@ -219,7 +219,11 @@ class Account < ActiveRecord::Base
   end
   
   def minimum_balance
-    self.MinBalance.abs
+    unless self.MinBalance.blank?
+      self.MinBalance.abs
+    else
+      0
+    end
   end
   
   def current_balance
