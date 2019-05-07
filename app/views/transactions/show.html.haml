@@ -129,7 +129,7 @@
               %a.btn.btn-default{href: barcode_customer_path(@to_customer.id), target: '_blank'}
                 %i.fa.fa-print
                 Print Barcode
-          - if current_user.administrator?
+          - if current_user.can_reverse_transactions?
             - if @reversal_transaction.blank? and not @transaction.reversal?
               .pull-right
                 %a{href: reverse_transaction_path(@transaction), class: 'btn btn-danger btn-sm', data: {confirm: 'Are you sure you want to reverse this transaction?', disable_with: "<i class='fa fa-spinner fa-spin'></i> Reverse"}}
