@@ -380,6 +380,18 @@ class Transaction < ActiveRecord::Base
     end
   end
   
+  def send_text_message_payment_notification
+    to_customer = to_account.customer
+#    from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
+    to_customer_phone = to_customer.user.blank? ? to_customer.phone : to_customer.user.phone
+    unless to_customer_phone.blank?
+      message = "#{from_account.customer_name} sent #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}."
+      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+      client.call(:send_sms, message: { Phone: to_customer_phone, Msg: "#{message}"})
+      Rails.logger.debug "Text message sent to #{to_customer_phone}: #{message}"
+    end
+  end
+  
   #############################
   #     Class Methods         #
   #############################
