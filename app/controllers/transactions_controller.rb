@@ -233,6 +233,9 @@ class TransactionsController < ApplicationController
         response_code = response[:return]
         unless response_code.to_i > 0
           @transaction = Transaction.find(response[:tran_id])
+          unless @transaction.blank?
+            @transaction.send_text_message_payment_notification
+          end
         else
           error_code = response_code
         end
