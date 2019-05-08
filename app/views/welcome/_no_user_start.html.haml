@@ -2,6 +2,7 @@
   = render 'shared/flash_messages'
   .login-logo
     %a{:href => root_path}
-      <strong>ez</strong>Cash
+      -# <strong>ez</strong>Cash
+      = image_tag(image_path("ezcash_logo_50.png"))
   .login-box-body
-    %p.text-center= link_to 'Log in', new_user_session_path, class: 'btn btn-success btn-block'
+    %p.text-center= link_to 'Log in', new_user_session_path, class: 'btn btn-primary btn-block'

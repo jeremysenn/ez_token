@@ -2,7 +2,8 @@
 .login-box
   .login-logo
     %a{:href => root_path}
-      <strong>ez</strong>Cash
+      -# <strong>ez</strong>Cash
+      = image_tag(image_path("ezcash_logo_50.png"))
   .login-box-body
     %p.login-box-msg Sign up
     = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
