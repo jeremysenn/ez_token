@@ -1,7 +1,8 @@
 .login-box
   .login-logo
     %a{:href => root_path}
-      <strong>ez</strong>Cash
+      -# <strong>ez</strong>Cash
+      = image_tag(image_path("ezcash_logo_50.png"))
   .login-box-body
     %p.login-box-msg Forgot your password?
     =# form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
