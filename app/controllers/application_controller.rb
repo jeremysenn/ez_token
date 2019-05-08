@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
-  skip_before_action :verify_authenticity_token, if: -> { controller_name == 'sessions' && action_name == 'create' }
   before_action :configure_permitted_parameters, if: :devise_controller?
   
   rescue_from CanCan::AccessDenied do |exception|
