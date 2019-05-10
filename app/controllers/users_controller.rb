@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!, except: :forgot_password
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :pin_verification, :verify_phone]
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :pin_verification, :verify_phone, :confirm]
   load_and_authorize_resource
 
 
@@ -100,6 +100,15 @@ class UsersController < ApplicationController
       @user.send_reset_password_instructions_text_message
     end
     redirect_to new_user_session_path, notice: 'Forgot password link sent.'
+  end
+  
+  def confirm
+    @user.confirmed_at = Time.now
+    if @user.save
+      redirect_back fallback_location: root_path, notice: 'Web user successfully confirmed.'
+    else
+      redirect_back fallback_location: root_path, notice: 'There was a problem trying to confirm the web user.'
+    end
   end
   
   private
