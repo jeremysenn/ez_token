@@ -30,6 +30,9 @@ Rails.application.routes.draw do
     collection do
       get 'forgot_password'
     end
+    member do
+      get 'confirm'
+    end
   end
   
   resources :transactions do

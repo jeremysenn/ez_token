@@ -84,7 +84,9 @@ class CustomersController < ApplicationController
     end
     if params[:account_id].blank?
 #      @account = @accounts.first
-      @account = @accounts.joins(:events).where(events: {id: @event.id}).first
+      unless @event.blank?
+        @account = @accounts.joins(:events).where(events: {id: @event.id}).first
+      end
     else
       @account = @accounts.find(params[:account_id])
     end

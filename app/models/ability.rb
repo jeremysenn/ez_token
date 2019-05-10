@@ -72,7 +72,7 @@ class Ability
       # Users
       ############
       can :manage, User do |user_record|
-        user.company == user_record.company 
+        user.company == user_record.company or (user.company.accounts & user_record.accounts).any?
       end
       can :create, User
       
