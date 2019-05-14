@@ -231,14 +231,15 @@
                     %a.btn.btn-default.btn-block{:href => send_confirmation_link_sms_message_customer_path(@customer), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Confirmation Link"}}
                       %i.fa.fa-comment
                       Send Confirmation Link
-                    %p
-                      %a{"aria-controls" => "more", "aria-expanded" => "false", "data-toggle" => "collapse", :href => "#more"}
-                        More
-                    #more.collapse
-                      .card.card-body
-                        %a.btn.btn-primary{:href => confirm_users_admin_path(@customer.user), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Confirm"}}
-                          %i.fa.fa-thumbs-up
-                          Confirm
+                    - if current_user.can_edit_users?
+                      %p
+                        %a{"aria-controls" => "more", "aria-expanded" => "false", "data-toggle" => "collapse", :href => "#more"}
+                          More
+                      #more.collapse
+                        .card.card-body
+                          %a.btn.btn-primary{:href => confirm_users_admin_path(@customer.user), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Confirm"}}
+                            %i.fa.fa-thumbs-up
+                            Confirm
 
                 - else
                   Portal user has not been created
