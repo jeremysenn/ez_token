@@ -105,7 +105,8 @@
           %i.fa.fa-user
           = current_user.full_name
         .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
-          %a.dropdown-item{:href => edit_company_path(current_user.company)}
+          -# %a.dropdown-item{:href => edit_company_path(current_user.company)}
+          %a.dropdown-item{:href => company_path(current_user.company)}
             %i.fa.fa-building
             = current_user.company.name
             %br
