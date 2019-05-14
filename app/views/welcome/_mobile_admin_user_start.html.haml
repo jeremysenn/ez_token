@@ -2,7 +2,8 @@
   -# .container
   / Content Header (Page header)
   %section.content-header
-    = render 'shared/flash_messages'
+    .col-md-6
+      = render 'shared/flash_messages'
     %h1
       = current_user.company.name
       %small Dashboard

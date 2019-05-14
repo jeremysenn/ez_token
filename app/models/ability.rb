@@ -180,7 +180,7 @@ class Ability
         if user.edit_users?
           user.company == user_record.company 
         else
-          user == user.record
+          user == user_record
         end
       end
       if user.edit_users?
