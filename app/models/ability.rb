@@ -178,9 +178,9 @@ class Ability
       
       can :manage, User do |user_record|
         if user.edit_users?
-          user.company == user_record.company 
+          (user.company == user_record.company) or (user_record.accounts.exists?(CompanyNumber: user.company.id))
         else
-          user == user.record
+          user == user_record
         end
       end
       if user.edit_users?
