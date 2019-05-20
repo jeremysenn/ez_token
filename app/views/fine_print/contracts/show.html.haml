@@ -14,7 +14,7 @@
         .box.box-primary
           .box-header.with-border
             %h3.box-title 
-              = @contract.title
+              = @contract.name
               = "(#{@contract.version ? t('fine_print.contract.status.version', version: @contract.version.to_s) : t('fine_print.contract.status.draft')})"
             .box-tools.pull-right
           .box-body

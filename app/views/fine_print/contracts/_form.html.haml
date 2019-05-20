@@ -15,6 +15,8 @@
         = f.text_field :title, size: 40, class: 'fine_print text_field'
       .field
         = f.label "Internal Name", class: 'fine_print'
+        %span.text-muted
+          %small (No spaces)
         = f.text_field :name, size: 40, class: 'fine_print text_field'
         -#
           .fine_print.field_description
