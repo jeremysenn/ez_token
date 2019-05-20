@@ -1,0 +1,63 @@
+%nav.navbar.navbar-expand-lg.navbar-light.bg-light
+  %a.navbar-brand{:href => '/'} 
+    = image_tag(image_path("ezcash_logo_50.png"))
+  %button.navbar-toggler{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
+    %span.navbar-toggler-icon
+  #navbarSupportedContent.collapse.navbar-collapse
+    %ul.navbar-nav.mr-auto
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => '/fine_print', :class => (controller.controller_name == 'contracts' or controller.controller_name == 'signatures') ? "text-light-blue" : ""}
+            %i.fa.fa-handshake-o.fa-lg
+            %br
+            Contracts
+      -#
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
+              %i.fa.fa-calendar.fa-lg
+              %br
+              Events
+      
+        - if current_user.can_view_accounts?
+          %li.nav-item.bordered.dropdown
+            %a.nav-link{ "data-toggle" => "dropdown", :href => "#", :class => (params[:controller] == 'customers' or params[:controller] == 'accounts') ?  "text-light-blue" : ""}
+              .text-center
+                %i.fa.fa-male.fa-lg
+                %br
+                Accounts
+            .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
+              %a.dropdown-item{:href => accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'index') ?  "active" : ""} All Accounts
+              - if current_user.can_edit_accounts?
+                %a.dropdown-item{:href => new_customer_path, :class => (params[:controller] == 'customers' and params[:action] == 'new') ?  "active" : ""} New Account
+    -# 
+      %form.form-inline.my-2.my-lg-0
+        .my-2.my-sm-0.dropdown
+          %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+            %i.fa.fa-user
+            = current_user.full_name
+          .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
+            %a.dropdown-item{:href => company_path(current_user.company)}
+              %i.fa.fa-building
+              = current_user.company.name
+              %br
+              %small= "(#{current_user.role.humanize})"
+            %a.dropdown-item{:href => edit_user_registration_path(current_user)} 
+              %i.fa.fa-edit
+              Edit profile
+            .dropdown-divider
+            - if current_user.can_view_users?
+              %a.dropdown-item{:href => users_admin_index_path, :class => (params[:controller] == 'users') ?  "active" : ""} 
+                %i.fa.fa-users
+                Users
+            - if current_user.can_view_atms?
+              %a.dropdown-item{:href => devices_path, :class => (params[:controller] == 'devices') ?  "active" : ""}
+                %i.fa.fa-money
+                ATMs
+            %a.dropdown-item{:href => fine_print_path}
+              %i.fa.fa-handshake-o
+              Contracts
+            %a.dropdown-item{:href => sms_messages_path, :class => (params[:controller] == 'sms_messages') ?  "active" : ""}
+              %i.fa.fa-commenting
+              Messages
+        .my-2.my-sm-0= link_to 'Log out', destroy_user_session_path, method: :delete, data: { confirm: 'Are you sure you want to sign out?' }, class: 'btn btn-outline-danger'
