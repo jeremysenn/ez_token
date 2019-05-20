@@ -29,11 +29,14 @@
         - unless (params[:controller] == "customers" and params[:action] == "qr_code")
           = render 'shared/no_user_navbar'
       - else
-        - if current_user.administrator? or current_user.collaborator?
-          - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
-            = render 'shared/admin_user_navbar' 
-        - elsif current_user.basic?
-          = render 'shared/basic_user_navbar' 
+        =# fine_print.contracts_url
+        -# unless current_page?(fine_print.contracts_url) or current_page?('/fine_print/contracts')
+        - unless controller.controller_name == 'contracts' or controller.controller_name == 'signatures'
+          - if current_user.administrator? or current_user.collaborator?
+            - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
+              = render 'shared/admin_user_navbar' 
+          - elsif current_user.basic?
+            = render 'shared/basic_user_navbar' 
       = yield
       - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
         %footer.main-footer

@@ -109,6 +109,9 @@ gem 'rack-protection'
 # Integrate Select2 javascript library with Rails asset pipeline https://github.com/argerim/select2-rails
 gem "select2-rails"
 
+# Managing web site agreements
+gem 'fine_print'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

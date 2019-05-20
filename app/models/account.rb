@@ -628,6 +628,10 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def contract
+    account_type.contract
+  end
+  
   #############################
   #     Class Methods         #
   #############################

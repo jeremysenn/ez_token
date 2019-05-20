@@ -10,7 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190424163727) do
+ActiveRecord::Schema.define(version: 20190515172616) do
+
+  create_table "fine_print_contracts", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "version"
+    t.string "title", null: false
+    t.text "content", null: false
+    t.integer "company_id", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["name", "version"], name: "index_fine_print_contracts_on_name_and_version", unique: true
+  end
+
+  create_table "fine_print_signatures", force: :cascade do |t|
+    t.integer "contract_id", null: false
+    t.string "user_type", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean "is_implicit", default: false, null: false
+    t.index ["contract_id"], name: "index_fine_print_signatures_on_contract_id"
+    t.index ["user_id", "user_type", "contract_id"], name: "index_fine_print_s_on_u_id_and_u_type_and_c_id", unique: true
+  end
 
   create_table "sms_messages", force: :cascade do |t|
     t.string "to"

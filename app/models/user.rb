@@ -4,13 +4,14 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable, :timeoutable
   
 #  ROLES = %w[admin caddy_admin event_admin basic caddy member consumer payee vendor].freeze
-  ROLES = %w[admin basic collaborator].freeze
+  ROLES = %w[admin basic collaborator super].freeze
        
   belongs_to :company
   belongs_to :customer, optional: true
   has_many :sms_messages
   has_many :accounts, through: :customer
   has_many :events, through: :customer
+  has_many :signatures
   
   serialize :device_ids, Array
   
@@ -69,6 +70,10 @@ class User < ApplicationRecord
   
   def collaborator?
     role == "collaborator"
+  end
+  
+  def super?
+    role == "super"
   end
   
   def search_for_payee_match
@@ -258,51 +263,51 @@ class User < ApplicationRecord
   end
   
   def can_view_events?
-    admin? or view_events?
+    admin? or view_events? or super?
   end
   
   def can_edit_events?
-    admin? or edit_events?
+    admin? or edit_events? or super?
   end
   
   def can_view_accounts?
-    admin? or view_accounts?
+    admin? or view_accounts? or super?
   end
   
   def can_edit_accounts?
-    admin? or edit_accounts?
+    admin? or edit_accounts? or super?
   end
   
   def can_view_wallet_types?
-    admin? or view_wallet_types?
+    admin? or view_wallet_types? or super?
   end
   
   def can_edit_wallet_types?
-    admin? or edit_wallet_types?
+    admin? or edit_wallet_types? or super?
   end
   
   def can_view_users?
-    admin? or view_users?
+    admin? or view_users? or super?
   end
   
   def can_edit_users?
-    admin? or edit_users?
+    admin? or edit_users? or super?
   end
   
   def can_view_atms?
-    admin? or view_atms?
+    admin? or view_atms? or super?
   end
   
   def can_view_atms?
-    admin? or view_atms?
+    admin? or view_atms? or super?
   end
   
   def can_quick_pay_customers?
-    company.allowed_to_quick_pay? and (admin? or can_quick_pay?)
+    (company.allowed_to_quick_pay? and (admin? or can_quick_pay?)) or super?
   end
   
   def can_reverse_transactions?
-    admin? or collaborator?
+    admin? or collaborator? or super?
   end
   
   def format_phone_before_create
@@ -315,6 +320,17 @@ class User < ApplicationRecord
   
   def plain_phone # Remove the +1 in front of the number
     phone.gsub(/\+1/, '') unless phone.blank?
+  end
+  
+  def contract_names
+    names = []
+    accounts.each do |account|
+      contract = account.contract
+      unless contract.blank?
+        names << contract.name
+      end
+    end
+    return names
   end
   
 end

@@ -74,7 +74,8 @@ class AccountTypesController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def account_type_params
       params.fetch(:account_type, {}).permit(:AccountTypeDesc, :CompanyNumber, :CanFundByACH, :CanFundByCC, :CanFundByCash, :CanWithdraw, 
-        :WithdrawAll, :CanPull, :CanRequestPmtBySearch, :CanRequestPmtByScan, :CanSendPmt, :CanBePulledBySearch, :CanBePulledByScan, :CanBePushedByScan, :MinMaintainBal)
+        :WithdrawAll, :CanPull, :CanRequestPmtBySearch, :CanRequestPmtByScan, :CanSendPmt, :CanBePulledBySearch, :CanBePulledByScan, :CanBePushedByScan, 
+        :MinMaintainBal, :contract_id)
     end
     
 end

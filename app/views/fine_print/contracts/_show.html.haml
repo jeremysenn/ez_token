@@ -1,0 +1,21 @@
+-#
+  %p= t('fine_print.contract.status.name', name: contract.name)
+  %p= t('fine_print.contract.status.updated_at', updated_at: l(contract.updated_at, format: :fine_print))
+  = @contract.content.html_safe
+
+%p
+  %strong= contract.title
+  = "(#{contract.version ? t('fine_print.contract.status.version', version: contract.version.to_s) : t('fine_print.contract.status.draft')})"
+  %br
+  %small= t('fine_print.contract.status.updated_at', updated_at: l(contract.updated_at, format: :fine_print))
+%p= @contract.content.html_safe
+
+-#
+  %h2.fine_print.heading
+    = contract.title
+    = "(#{contract.version ? t('fine_print.contract.status.version', version: contract.version.to_s) : t('fine_print.contract.status.draft')})"
+  %h4.fine_print.heading= t('fine_print.contract.status.updated_at', updated_at: l(contract.updated_at, format: :fine_print))
+  .fine_print.contract
+    %pre= @contract.content.html_safe
+
+

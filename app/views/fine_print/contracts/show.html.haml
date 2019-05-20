@@ -1,0 +1,65 @@
+.content-wrapper
+  .container
+    .col-xs-12.col-sm-12.col-md-6
+      / Content Header (Page header)
+      %section.content-header
+        = render 'shared/flash_messages'
+        %h1
+          %i.fa.fa-handshake-o
+          Contract Details
+    
+      / Main content
+      %section.content
+        / Default box
+        .box.box-primary
+          .box-header.with-border
+            %h3.box-title 
+              = @contract.title
+              = "(#{@contract.version ? t('fine_print.contract.status.version', version: @contract.version.to_s) : t('fine_print.contract.status.draft')})"
+            .box-tools.pull-right
+          .box-body
+            .col-xs-12
+              = render partial: 'show', locals: { contract: @contract }
+            -# 
+              %h1.fine_print.heading= t('fine_print.contract.actions.show')
+              %br/
+
+            %br/
+            .fine_print.links
+              - if @contract.signatures.empty?
+                = link_to t('fine_print.contract.actions.edit'), |
+                  edit_contract_path(@contract),                 |
+                  class: 'fine_print link'                       |
+                |
+                - if @contract.is_published?
+                  = link_to t('fine_print.contract.actions.unpublish'),           |
+                    unpublish_contract_path(@contract),                           |
+                    method: :put,                                                 |
+                    data: {                                                       |
+                      confirm: t('fine_print.contract.actions.confirm.unpublish') |
+                    },                                                            |
+                    class: 'fine_print link'                                      |
+                - else
+                  = link_to t('fine_print.contract.actions.publish'),           |
+                    publish_contract_path(@contract),                           |
+                    method: :put,                                               |
+                    data: {                                                     |
+                      confirm: t('fine_print.contract.actions.confirm.publish') |
+                    },                                                          |
+                    class: 'fine_print link'                                    |
+                  |
+                = link_to t('fine_print.contract.actions.delete'),           |
+                  @contract,                                                 |
+                  method: :delete,                                           |
+                  date: {                                                    |
+                    confirm: t('fine_print.contract.actions.confirm.delete') |
+                  },                                                         |
+                  class: 'fine_print link'                                   |
+              - else
+                = link_to t('fine_print.contract.actions.new_version'), |
+                  new_version_contract_path(@contract),                 |
+                  method: :post,                                        |
+                  class: 'fine_print link'                              |
+                |
+                \#{link_to t('fine_print.contract.actions.signatures'), contract_signatures_path(@contract), class: 'fine_print link'}
+              | #{link_to t('fine_print.contract.actions.list'), contracts_path, class: 'fine_print link'}
