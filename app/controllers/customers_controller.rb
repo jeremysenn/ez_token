@@ -108,7 +108,7 @@ class CustomersController < ApplicationController
       end
       if current_user.basic?
         unless @contract.blank? or FinePrint.signed_contract?(current_user, @contract.id)
-          redirect_to "/fine_print/contracts/#{contract_id}/signatures/new"
+          redirect_to "/fine_print/contracts/#{@contract.id}/signatures/new"
         end
       end
     end
