@@ -201,7 +201,7 @@
                   = @contract.title
                   = "(#{@contract.version ? t('fine_print.contract.status.version', version: @contract.version.to_s) : t('fine_print.contract.status.draft')})"
               .modal.fade{id: "contract_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
-                .modal-dialog.modal-sm{:role => "document"}
+                .modal-dialog{:role => "document"}
                   .modal-content
                     .modal-header
                       %strong
@@ -211,8 +211,13 @@
                     .modal-body
                       %p= @contract.content.html_safe
                       %p
-                        %strong Signed on
+                        %strong= "Signed by #{@customer.user.full_name} on"
                         = @signature.blank? ? 'N/A' : @signature.created_at.strftime("%B %d %Y at %I:%M%p UTC")
+                    .modal-footer
+                      %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+                      %a.btn.btn-primary{href: fine_print.signature_url(@signature, format: :pdf), target: '_blank;'}
+                        %i.fa.fa-print
+                        Print
             %strong
               %i.fa.fa-envelope.margin-r-5
               Email

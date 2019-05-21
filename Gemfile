@@ -112,6 +112,10 @@ gem "select2-rails"
 # Managing web site agreements
 gem 'fine_print'
 
+# PDF generator (from HTML) plugin for Ruby on Rails 
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

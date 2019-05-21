@@ -1,0 +1,11 @@
+%h3
+  = @contract.title
+  = "(#{@contract.version ? t('fine_print.contract.status.version', version: @contract.version.to_s) : t('fine_print.contract.status.draft')})"
+%p= @contract.content.html_safe
+%p
+  %strong= "Signed by #{@signature.user.full_name} on"
+  = @signature.blank? ? 'N/A' : @signature.created_at.strftime("%B %d %Y at %I:%M%p UTC")
+%p
+  %small 
+    Printed
+    = Time.now.strftime("%B %d %Y at %I:%M%p UTC")

@@ -10,6 +10,19 @@ module FinePrint
     def index
       @signatures = @contract.signatures
     end
+    
+    def show
+      @signature = Signature.find(params[:id])
+      @contract = @signature.contract
+      respond_to do |format|
+        format.html
+        format.pdf do
+          render pdf: "Contract_#{@contract.name}_signature_for_#{@signature.user.full_name}",
+#            :layout => 'pdf.html.haml',
+            :zoom => 5
+        end
+      end
+    end
 
     def new
       @signature = Signature.new

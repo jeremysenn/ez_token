@@ -1,0 +1,26 @@
+.content-wrapper
+  .container
+    .col-xs-12.col-sm-12.col-md-6
+      / Content Header (Page header)
+      %section.content-header
+        = render 'shared/flash_messages'
+        %h1
+          %i.fa.fa-handshake-o
+          Contract Details
+    
+      / Main content
+      %section.content
+        / Default box
+        .box.box-primary
+          .box-header.with-border
+            %h3.box-title 
+              = @contract.title
+              = "(#{@contract.version ? t('fine_print.contract.status.version', version: @contract.version.to_s) : t('fine_print.contract.status.draft')})"
+            .box-tools.pull-right
+          .box-body
+            .col-xs-12
+              %p= @contract.content.html_safe
+              %p
+                %strong= "Signed by #{@signature.user.full_name} on"
+                %br
+                = @signature.blank? ? 'N/A' : @signature.created_at.strftime("%B %d %Y at %I:%M%p UTC")

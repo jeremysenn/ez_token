@@ -1,0 +1,7 @@
+!!!
+%html
+  %head
+    %title PDF
+    = wicked_pdf_stylesheet_link_tag 'application'#, media: 'all'
+  %body{style: "color: black;"}
+    = yield
