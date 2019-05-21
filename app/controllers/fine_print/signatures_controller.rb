@@ -19,7 +19,7 @@ module FinePrint
         format.pdf do
           render pdf: "Contract_#{@contract.name}_signature_for_#{@signature.user.full_name}",
 #            :layout => 'pdf.html.haml',
-            :zoom => 5
+            :zoom => 2
         end
       end
     end
