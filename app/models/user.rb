@@ -53,7 +53,15 @@ class User < ApplicationRecord
   end
   
   def full_name
-    "#{first_name} #{last_name}"
+    unless self.first_name.blank? and self.last_name.blank?
+      "#{first_name} #{last_name}"
+    else
+      unless customer.blank?
+        customer.full_name
+      else
+        "First Last"
+      end
+    end
   end
   
   def administrator?
