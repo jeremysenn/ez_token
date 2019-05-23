@@ -192,7 +192,7 @@
                 = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')
               - else
                 = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
-            - unless @account.blank? or @contract.blank?
+            - unless @account.blank? or @contract.blank? or @signature.blank?
               %strong
                 %i.fa.fa-handshake-o.margin-r-5
                 Contract
