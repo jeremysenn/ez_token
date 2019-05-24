@@ -175,6 +175,15 @@ class Account < ActiveRecord::Base
     return transactions
   end
   
+  def ach_credit_transactions
+    transactions = Transaction.where(from_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'PPD', error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'PPD', error_code: 0)
+    return transactions
+  end
+  
+  def payment_transactions
+    successful_wire_transactions + ach_credit_transactions
+  end
+  
   def displayable_transactions
     check_transactions + check_payment_transactions + put_transactions + withdrawal_transactions + withdrawal_all_transactions + credit_transactions + fund_transfer_transactions + transfer_transactions + wire_transactions + purchase_transactions
   end
