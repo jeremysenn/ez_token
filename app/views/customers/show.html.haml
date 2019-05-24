@@ -69,7 +69,7 @@
                     = number_to_currency(@account.Balance)
                 - else
                   = number_to_currency(@account.Balance)
-                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.user == current_user)
+                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.user and @account.user == current_user)
                   %a.btn.btn-default{href: edit_account_path(@account)}
                     %i.fa.fa-credit-card
                     Fund
