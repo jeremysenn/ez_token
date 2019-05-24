@@ -69,7 +69,7 @@
                     = number_to_currency(@account.Balance)
                 - else
                   = number_to_currency(@account.Balance)
-                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?))
+                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.user and @account.user == current_user)
                   %a.btn.btn-default{href: edit_account_path(@account)}
                     %i.fa.fa-credit-card
                     Fund
@@ -192,7 +192,32 @@
                 = image_tag(asset_path(@customer.avatar.url), class: 'center image profile-user-img img-responsive img-circle')
               - else
                 = image_tag(asset_path('avatar_holder_image.png'), class: 'profile-user-img img-responsive img-circle')
-              
+            - unless @account.blank? or @contract.blank? or @signature.blank?
+              %strong
+                %i.fa.fa-handshake-o.margin-r-5
+                Contract
+              %p
+                %a{href: '#', "data-toggle" => "modal", "data-target" => "#contract_modal"}
+                  = @contract.title
+                  = "(#{@contract.version ? t('fine_print.contract.status.version', version: @contract.version.to_s) : t('fine_print.contract.status.draft')})"
+              .modal.fade{id: "contract_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+                .modal-dialog{:role => "document"}
+                  .modal-content
+                    .modal-header
+                      %strong
+                        = @contract.title
+                        = "(#{@contract.version ? t('fine_print.contract.status.version', version: @contract.version.to_s) : t('fine_print.contract.status.draft')})"
+                      = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
+                    .modal-body
+                      %p= @contract.content.html_safe
+                      %p
+                        %strong= "Signed by #{@customer.user.full_name} on"
+                        = @signature.blank? ? 'N/A' : @signature.created_at.strftime("%B %d %Y at %I:%M%p UTC")
+                    .modal-footer
+                      %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+                      %a.btn.btn-primary{href: fine_print.signature_url(@signature, format: :pdf), target: '_blank;'}
+                        %i.fa.fa-print
+                        Print
             %strong
               %i.fa.fa-envelope.margin-r-5
               Email

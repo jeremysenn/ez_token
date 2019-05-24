@@ -4,6 +4,7 @@ class CustomersController < ApplicationController
   load_and_authorize_resource :except => [:find_by_barcode]
 #  skip_load_resource only: [:barcode]
   skip_load_resource only: [:find_by_barcode, :qr_code]
+#  fine_print_require "ach_agreement", only: [:show], if: -> { current_user.basic? }
   
   helper_method :customers_sort_column, :customers_sort_direction
   
@@ -75,6 +76,7 @@ class CustomersController < ApplicationController
   # GET /customers/1
   # GET /customers/1.json
   def show
+#    fine_print_require(["caddy_agreement"])
     @accounts = current_user.administrator? ? @customer.accounts.where(CompanyNumber: current_user.company_id) : @customer.accounts
     @events = current_user.administrator? ? @customer.events.where(company_id: current_user.company_id) : @customer.events
     if params[:event_id].blank?
@@ -94,11 +96,22 @@ class CustomersController < ApplicationController
 #      @withdrawal_transactions = Kaminari.paginate_array(@customer.withdrawals).page(params[:withdrawals]).per(10)
       @withdrawal_transactions = Kaminari.paginate_array(@account.withdrawals).page(params[:withdrawals]).per(10)
   #    @payment_transactions =  Kaminari.paginate_array(@customer.successful_payments).page(params[:payments]).per(10)
-      @payment_transactions =  Kaminari.paginate_array(@account.successful_wire_transactions.sort_by(&:date_time).reverse).page(params[:payments]).per(10)
+#      @payment_transactions =  Kaminari.paginate_array(@account.successful_wire_transactions.sort_by(&:date_time).reverse).page(params[:payments]).per(10)
+      @payment_transactions =  Kaminari.paginate_array(@account.payment_transactions.sort_by(&:date_time).reverse).page(params[:payments]).per(10)
       @check_transactions =  Kaminari.paginate_array(@customer.cashed_checks).page(params[:checks]).per(10)
       @sms_messages = @customer.sms_messages.order("created_at DESC").page(params[:messages]).per(10)
   #    @events = @customer.events
 #      @events = @account.events
+      @contract = Contract.find_by(id: @account.account_type.contract_id)
+      @user = @customer.user
+      unless @user.blank? or @contract.blank?
+        @signature = Signature.where(contract_id: @contract.id, user_id: @customer.user.id).last
+      end
+      if current_user.basic?
+        unless @contract.blank? or FinePrint.signed_contract?(current_user, @contract.id)
+          redirect_to "/fine_print/contracts/#{@contract.id}/signatures/new"
+        end
+      end
     end
     if @customer.user.blank?
       @temporary_password = SecureRandom.random_number(10**6).to_s

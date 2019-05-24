@@ -1,0 +1,14 @@
+.login-box
+  .login-logo
+    %i.fa.fa-handshake-o.fa-lg.text-muted
+  .login-box-body
+    - if FinePrint.signed_any_version_of_contract?(@user, @contract)
+      .fine_print.notice
+        %h4.fine_print.heading
+          = t('fine_print.signature.status.new_version', |
+            contract: @contract.title)                   |
+    .fine_print.contract
+      = render partial: 'fine_print/contracts/show', |
+        locals: { contract: @contract }              |
+    .fine_print.new_signature
+      = render 'form'

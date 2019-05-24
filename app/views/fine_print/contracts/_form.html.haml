@@ -1,0 +1,31 @@
+.box.box-primary
+  .box-body
+    = form_for(@contract, html: { class: 'fine_print' }) do |f|
+      - if @contract.errors.any?
+        #error_explanation.fine_print.errors
+          %h4.fine_print.heading
+            = t 'fine_print.error', count: @contract.errors.count
+          %ul
+            - @contract.errors.full_messages.each do |msg|
+              %li= msg
+      = f.hidden_field :company_id, value: current_user.company_id
+      
+      .field
+        = f.label :title, class: 'fine_print'
+        = f.text_field :title, size: 40, class: 'fine_print text_field'
+      .field
+        = f.label "Internal Name", class: 'fine_print'
+        %span.text-muted
+          %small (No spaces)
+        = f.text_field :name, size: 40, class: 'fine_print text_field'
+        -#
+          .fine_print.field_description
+            = t 'fine_print.contract.descriptions.name'
+      .field
+        = f.label :content, class: 'fine_print'
+        = f.text_area :content, cols: 56, rows: 10, class: 'fine_print text_area'
+      %br/
+      .form-actions
+        %hr
+        = link_to 'Cancel', :back, class: 'btn btn-default'
+        = f.submit nil, class: 'btn btn-primary fine_print submit'

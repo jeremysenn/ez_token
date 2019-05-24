@@ -35,6 +35,13 @@
             = f.input :CanBePulledBySearch, as: :boolean, label: 'Can be Pulled by Search'
             = f.input :CanBePulledByScan, as: :boolean, label: 'Can be Pulled by Scan'
             = f.input :CanBePushedByScan, as: :boolean, label: 'Can be Pushed by Scan'
+        - unless current_user.company.contracts.blank?
+          .row
+            .col-xs-12.col-sm-6
+              = f.input :contract_id, collection: current_user.company.contracts.map{|c| [c.title, c.id]}, as: :select, selected: @account_type.contract_id, label: "Contract", prompt: "Select contract"
+              =# select_tag :contract_id, options_from_collection_for_select(current_user.company.contracts, "id", "title", @contract_id), prompt: 'Choose contract', class: "form-control"
+              %br
+      
       .form-actions
         = link_to 'Cancel', :back, class: "btn btn-default"
         %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 

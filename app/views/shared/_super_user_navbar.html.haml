@@ -76,6 +76,7 @@
             %a.dropdown-item{:href => account_types_path, :class => (params[:controller] == 'account_types' and params[:action] == 'index') ?  "active" : ""} Wallet Types
             - if current_user.can_edit_wallet_types?
               %a.dropdown-item{:href => new_account_type_path, :class => (params[:controller] == 'account_types' and params[:action] == 'new') ?  "active" : ""} New Wallet Type
+
       -#
         %li.nav-item.bordered
           .text-center
@@ -90,6 +91,7 @@
               %i.fa.fa-bolt.fa-lg
               %br
               Transactions
+      
       -#
         %li.nav-item.bordered
           .text-center
@@ -125,9 +127,6 @@
             %a.dropdown-item{:href => devices_path, :class => (params[:controller] == 'devices') ?  "active" : ""}
               %i.fa.fa-money
               ATMs
-          %a.dropdown-item{:href => fine_print_path}
-            %i.fa.fa-handshake-o
-            Contracts
           %a.dropdown-item{:href => sms_messages_path, :class => (params[:controller] == 'sms_messages') ?  "active" : ""}
             %i.fa.fa-commenting
             Messages

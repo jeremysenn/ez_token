@@ -84,4 +84,6 @@ Rails.application.routes.draw do
   
   resources :companies
   
+  mount FinePrint::Engine => "/fine_print"
+  
 end

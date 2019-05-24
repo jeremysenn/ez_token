@@ -19,6 +19,7 @@ class Company < ActiveRecord::Base
   has_many :cards, through: :devices
   has_many :customer_barcodes, :foreign_key => "CompanyNumber"
   has_many :events
+  has_many :contracts
   
   ### Start Virtual Attributes ###
   def transaction_fee # Getter

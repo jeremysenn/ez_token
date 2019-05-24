@@ -52,7 +52,7 @@
               %li.nav-item
                 %a#add-funds-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#add_funds", :role => "tab"} 
                   Add Funds
-          - if @account.can_fund_by_ach?
+          - if @account.can_fund_by_ach? and @account.user and @account.user == current_user
             %li.nav-item
               %a#ach-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#ach", :role => "tab"} 
                 ACH
@@ -74,7 +74,7 @@
                 .row
                   .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry'
                   .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC'
-          - if @account.can_fund_by_ach?
+          - if @account.can_fund_by_ach? and @account.user and @account.user == current_user
             #ach.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel", class: @account.can_fund_by_cc? ? '' : 'active'}
               %br
               %strong ACH Details

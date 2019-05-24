@@ -5,20 +5,6 @@ class WelcomeController < ApplicationController
   
   def index
     if user_signed_in?
-#      if current_user.payee? or current_user.caddy? or current_user.consumer? or current_user.vendor?
-#        if not current_user.temporary_password.blank?
-#          flash[:error] = "You must update your password."
-#          redirect_to edit_registration_path(current_user)
-#        else
-#          unless current_user.customer.blank?
-#            unless current_user.customer.accounts.count > 1
-#              redirect_to current_user.customer
-#            end
-#          else
-#            redirect_to users_admin_path(current_user)
-#          end
-#        end
-#      end
       if current_user.administrator? or current_user.collaborator?
 #        @devices = current_user.devices.order("description ASC")
         @devices = current_user.company.devices.order("description ASC")
@@ -105,10 +91,15 @@ class WelcomeController < ApplicationController
         @bin_6_column_count = @devices.select{ |device| device.bin_6_count != 0 }.select{ |device| device.bin_6_count != nil }.count
         @bin_7_column_count = @devices.select{ |device| device.bin_7_count != 0 }.select{ |device| device.bin_7_count != nil }.count
         @bin_8_column_count = @devices.select{ |device| device.bin_8_count != 0 }.select{ |device| device.bin_8_count != nil }.count
-      else
+      elsif current_user.basic?
         if current_user.accounts.count == 1
           redirect_to customer_path(current_user.customer)
         end
+      elsif current_user.super?
+        @devices = Device.all.order("description ASC")
+        @start_date = params[:start_date] ||= (Date.today - 1.week).to_s
+        @end_date = params[:end_date] ||= Date.today.to_s
+        @type = params[:type] ||= 'Transfer'
       end
     end
   end
