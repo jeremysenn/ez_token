@@ -83,13 +83,15 @@
             Note:
             = @transaction.Note
 
-          -#
-            %p.lead
-              Sec Tran Code:
-              = @transaction.sec_tran_code
+          - if current_user.administrator?
             %p.lead
               Tran Code:
               = @transaction.tran_code
+            %p.lead
+              Sec Tran Code:
+              = @transaction.sec_tran_code
+            
+          -#
             %p.lead
               To Account:
               - unless @to_customer.blank?
