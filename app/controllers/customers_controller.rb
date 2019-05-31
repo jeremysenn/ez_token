@@ -88,6 +88,8 @@ class CustomersController < ApplicationController
 #      @account = @accounts.first
       unless @event.blank?
         @account = @accounts.joins(:events).where(events: {id: @event.id}).first
+      else
+        @account = @accounts.first
       end
     else
       @account = @accounts.find(params[:account_id])
