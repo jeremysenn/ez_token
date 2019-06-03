@@ -15,27 +15,34 @@ class TransactionsController < ApplicationController
     @end_date = params[:end_date] ||= Date.today.to_s
     @transaction_id_or_receipt_number = params[:transaction_id]
     @event_id = params[:event_id]
-    transactions = @event_id.blank? ? current_user.company.transactions : current_user.company.transactions.where(event_id: @event_id)
+    if current_user.administrator? or current_user.collaborator?
+      @events = current_user.company.events
+      transactions = @event_id.blank? ? current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).where(event_id: @event_id)
+    else
+      @events = current_user.events
+      transactions = Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+      transactions = @event_id.blank? ? transactions.where(from_acct_id: current_user.accounts.map(&:id)).or(transactions.where(to_acct_id: current_user.accounts.map(&:id))) : transactions.where(from_acct_id: current_user.accounts.map(&:id)).or(transactions.where(to_acct_id: current_user.accounts.map(&:id))).where(event_id: @event_id)
+    end
     if @transaction_id_or_receipt_number.blank?
       if @type == 'Withdrawal'
-        @all_transactions = transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.withdrawals
       elsif @type == 'Transfer'
-        @all_transactions = transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.transfers
       elsif @type == 'Balance'
-        @all_transactions = transactions.one_sided_credits.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.one_sided_credits
       elsif @type == 'Fee'
-        @all_transactions = transactions.fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.fees
       elsif @type == 'Check'
-        @all_transactions = transactions.checks.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.checks
       else
 #        @all_transactions = current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
-        @all_transactions = transactions.not_fees.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @all_transactions = transactions.not_fees
       end
     else
       @start_date = nil
       @end_date = nil
 #      transactions = current_user.company.transactions.where(tranID: params[:transaction_id])
-      @all_transactions = current_user.company.transactions.where(tranID: @transaction_id_or_receipt_number).or(current_user.company.transactions.where(receipt_nbr: @transaction_id_or_receipt_number))
+      @all_transactions = transactions.where(tranID: @transaction_id_or_receipt_number).or(transactions.where(receipt_nbr: @transaction_id_or_receipt_number))
     end
     
     respond_to do |format|
@@ -153,6 +160,7 @@ class TransactionsController < ApplicationController
   def quick_purchase
     amount = params[:amount]
     event_id = params[:event_id]
+    note = params[:note]
     to_account_id = params[:to_account_id]
     unless params[:scanned_from_account_id].blank?
       from_account_id = params[:scanned_from_account_id]
@@ -165,9 +173,9 @@ class TransactionsController < ApplicationController
     end
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
       unless event_id.blank?
-        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount)
+        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note)
       else
-        response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+        response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note)
       end
       unless response.blank?
         response_code = response[:return]
@@ -200,11 +208,12 @@ class TransactionsController < ApplicationController
   
   def send_payment
     amount = params[:amount]
+    note = params[:note]
     original_transaction = Transaction.find(params[:id])
     to_account_id = original_transaction.to_acct_id
     from_account_id = original_transaction.from_acct_id
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
-      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
+      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note)
       unless response.blank?
         response_code = response[:return]
         unless response_code.to_i > 0
@@ -224,11 +233,12 @@ class TransactionsController < ApplicationController
   
   def send_payment_from_qr_code_scan
     amount = params[:send_payment_amount]
+    note = params[:note]
     to_account_id = params[:send_payment_to_account_id]
     from_account_id = params[:from_account_id]
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
 #      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
-      response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount)
+      response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount, note)
       unless response.blank?
         response_code = response[:return]
         unless response_code.to_i > 0
