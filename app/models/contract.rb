@@ -10,6 +10,9 @@ class Contract < ActiveRecord::Base
   #     Instance Methods      #
   #############################
   
+  def is_published?
+    !version.nil?
+  end
   
   #############################
   #     Class Methods         #
