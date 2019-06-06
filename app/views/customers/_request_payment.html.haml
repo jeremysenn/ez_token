@@ -45,6 +45,8 @@
             .form-group.form-group-lg
               = select_tag :from_account_id, options_from_collection_for_select(@event.accounts.can_be_pulled_by_search, "id", "customer_user_name_and_registration_source"), class: "form-control input-lg", style: 'width:100%;', prompt: 'Search/Select', required: true
             = image_tag('', id: 'file_image', class: 'img-responsive transaction-img')
+            .form-group
+              = text_area_tag :note, nil, :placeholder => "Note", class: "form-control input-lg", style: "width: 100%;"
           .modal-footer
             = file_field_tag "file", id: 'transaction_file', onchange: "PreviewImage();", class: 'btn btn-default', title: "<i class='fa fa-upload'/> Picture".html_safe
             %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel

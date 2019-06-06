@@ -6,10 +6,16 @@ class Contract < ActiveRecord::Base
   has_many :account_types
   has_many :signatures
   
+  has_many :same_name, class_name: 'Contract',
+             primary_key: :name, foreign_key: :name
+  
   #############################
   #     Instance Methods      #
   #############################
   
+  def is_published?
+    !version.nil?
+  end
   
   #############################
   #     Class Methods         #

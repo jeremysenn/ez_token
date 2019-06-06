@@ -29,7 +29,7 @@ every :reboot do
 #  job_type :application, "cd /Users/jeremy/Ruby/ez_token && :task :output"
   
 #  application "rails server -p 3003" # Start application server
-#  application "puma -b 'ssl://0.0.0.0:3003?key=/etc/nginx/ssl/private.rsa&cert=/etc/nginx/ssl/public.crt' -e development"
-  application "rails server -b 0.0.0.0 -p 3003"
+  #  application "puma -b 'ssl://0.0.0.0:3003?key=/etc/nginx/ssl/private.rsa&cert=/etc/nginx/ssl/public.crt' -e development"
+  application "bundle exec rails server -b 0.0.0.0 -p 3003"
   application "bundle exec sidekiq -c 5" # Start background workers
 end

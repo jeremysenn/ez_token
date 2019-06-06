@@ -67,7 +67,7 @@
                     = "#{pluralize(number_with_delimiter(@all_transactions.count), 'record')} found"
               .box-tools
                 = form_tag transactions_path, :method => 'get', :class => "form-inline" do
-                  = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
+                  = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
                   &nbsp;
                   = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
                   &nbsp;

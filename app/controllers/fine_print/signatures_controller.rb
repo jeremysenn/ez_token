@@ -41,6 +41,7 @@ module FinePrint
 
       @signature.user = @user
       @signature.contract = @contract
+      @signature.user_type = "User"
 
       if @signature.save
         fine_print_return

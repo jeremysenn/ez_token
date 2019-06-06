@@ -34,8 +34,8 @@ class Account < ActiveRecord::Base
   validate :credit_card_fields_filled
   validate :customer_does_not_have_multiple_account_wallets_for_same_event
 
-  before_save :encrypt_bank_account_number
-  before_save :encrypt_bank_routing_number
+  before_save :encrypt_bank_account_number, if: :will_save_change_to_BankActNbr?
+  before_save :encrypt_bank_routing_number, if: :will_save_change_to_RoutingNbr?
   
   before_save :check_for_funding_payment
   before_create :set_maintained_balance
