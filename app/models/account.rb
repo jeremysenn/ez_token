@@ -175,13 +175,23 @@ class Account < ActiveRecord::Base
     return transactions
   end
   
+#  def ach_credit_transactions
+#    transactions = Transaction.where(from_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'PPD', error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'PPD', error_code: 0)
+#    return transactions
+#  end
+  
   def ach_credit_transactions
-    transactions = Transaction.where(from_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'PPD', error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'PPD', error_code: 0)
+    transactions = Transaction.where(from_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'TFR', error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'TFR', error_code: 0)
+    return transactions
+  end
+  
+  def ach_payment_transactions
+    transactions = Transaction.where(from_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'PMT', error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'PMT', error_code: 0)
     return transactions
   end
   
   def payment_transactions
-    successful_wire_transactions + ach_credit_transactions
+    successful_wire_transactions + ach_credit_transactions + ach_payment_transactions
   end
   
   def displayable_transactions
