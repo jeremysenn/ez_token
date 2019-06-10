@@ -794,12 +794,34 @@ class Customer < ActiveRecord::Base
     Decrypt.decryption(decoded_acctnbr)
   end
   
+  def last_4_decrypted_ssn
+    decrypted_ssn.last(4)
+  end
+  
   def format_phone_mobile_before_create
     self.PhoneMobile = "#{self.PhoneMobile.gsub(/([-() ])/, '')}" if self.PhoneMobile
   end
 
   def format_phone_mobile_before_update
     self.PhoneMobile = "#{self.PhoneMobile.gsub(/([-() ])/, '')}" if self.PhoneMobile
+  end
+  
+  def date_of_birth_required?
+    unless accounts.blank?
+      dob_accounts = accounts.select { |a| (a.account_type.date_of_birth_required == 1) } 
+      return dob_accounts.present?
+    else
+      false
+    end
+  end
+  
+  def social_security_number_required?
+    unless accounts.blank?
+      ssn_accounts = accounts.select { |a| (a.account_type.social_security_number_required == 1) } 
+      return ssn_accounts.present?
+    else
+      false
+    end
   end
  
   #############################

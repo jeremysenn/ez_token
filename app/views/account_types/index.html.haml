@@ -40,6 +40,8 @@
               %th{:scope => "col"} Can be Pulled by Search
               %th{:scope => "col"} Can be Pulled by Scan
               %th{:scope => "col"} Can be Pushed by Scan
+              %th{:scope => "col"} Require DOB
+              %th{:scope => "col"} Require SSN
               %th{:scope => "col"}
           %tbody
             - @account_types.each do |account_type|
@@ -60,6 +62,8 @@
                 %td= account_type.can_be_pulled_by_search? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
                 %td= account_type.can_be_pulled_by_scan? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
                 %td= account_type.can_be_pushed_by_scan? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+                %td= account_type.date_of_birth_required? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+                %td= account_type.social_security_number_required? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
                 %td
                   = link_to 'Show', account_type_path(account_type, company_id: current_user.company_id), class: 'btn btn-default btn-sm'
                   - unless account_type.heavy_metal_debit? or account_type.company_account?

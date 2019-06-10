@@ -229,6 +229,17 @@
               Phone
             %p.text-muted
               = @customer.user.blank? ? @customer.phone : @customer.user.phone
+            - unless @customer.DOB.blank?
+              %strong
+                %i.fa.fa-calendar.margin-r-5
+                DOB
+              %p.text-muted
+                = @customer.DOB.strftime('%-m/%-d/%Y')
+            - unless @customer.SSN.blank?
+              %strong
+                SSN
+              %p.text-muted
+                = "****#{@customer.last_4_decrypted_ssn}"
             - if current_user.can_edit_accounts?
               %hr/
               %strong
