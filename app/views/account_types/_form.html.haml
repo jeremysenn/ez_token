@@ -28,6 +28,7 @@
             = f.input :CanWithdraw, as: :boolean, label: 'Can Withdraw'
             = f.input :WithdrawAll, as: :boolean, label: 'Withdrawal All'
             = f.input :CanPull, as: :boolean, label: 'Pull Payments'
+            = f.input :date_of_birth_required, as: :boolean, label: 'Require DOB'
           .col-xs-12.col-sm-6
             = f.input :CanRequestPmtBySearch, as: :boolean, label: 'Request Payments by Search'
             = f.input :CanRequestPmtByScan, as: :boolean, label: 'Request Payments by Scan'
@@ -35,6 +36,7 @@
             = f.input :CanBePulledBySearch, as: :boolean, label: 'Can be Pulled by Search'
             = f.input :CanBePulledByScan, as: :boolean, label: 'Can be Pulled by Scan'
             = f.input :CanBePushedByScan, as: :boolean, label: 'Can be Pushed by Scan'
+            = f.input :social_security_number_required, as: :boolean, label: 'Require SSN'
         - unless current_user.company.contracts.blank?
           .row
             .col-xs-12.col-sm-6

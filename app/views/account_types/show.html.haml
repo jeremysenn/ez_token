@@ -32,6 +32,8 @@
                 %th{:scope => "col"} Can be Pulled by Search
                 %th{:scope => "col"} Can be Pulled by Scan
                 %th{:scope => "col"} Can be Pushed by Scan
+                %th{:scope => "col"} Require DOB
+                %th{:scope => "col"} Require SSN
             %tbody
               %tr
                 %td= @account_type.can_fund_by_ach? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
@@ -46,6 +48,8 @@
                 %td= @account_type.can_be_pulled_by_search? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
                 %td= @account_type.can_be_pulled_by_scan? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
                 %td= @account_type.can_be_pushed_by_scan? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+                %td= @account_type.date_of_birth_required? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
+                %td= @account_type.social_security_number_required? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
           %hr
           %p.lead
             %strong Accounts:

@@ -42,9 +42,12 @@
           = f.input :NameF, label: 'First Name', required: true
           = f.input :NameL, label: 'Last Name', required: true
           = f.input :PhoneMobile, label: 'Phone', required: true
-          = f.input :Email, label: 'Email'  , required: true
+          = f.input :Email, label: 'Email', required: true
           = f.input :Registration_Source, label: 'Source'
-          = f.input :SSN, label: 'SSN/TIN', :input_html => { :value => "#{@customer.ssn.blank? ? '' : @customer.decrypted_ssn}" }
+          - if @customer.date_of_birth_required?
+            = f.input :DOB, as: :date, start_year: Date.today.year - 80, end_year: Date.today.year - 12, order: [:month, :day, :year], required: true
+          - if @customer.social_security_number_required?
+            = f.input :SSN, label: 'SSN/TIN', :input_html => { :value => "#{@customer.ssn.blank? ? '' : @customer.decrypted_ssn}" }, required: true
           = f.input :GroupID, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 5 : @customer.GroupID}" }
           =# f.input :GroupID, collection: Group.selections_by_user_role(current_user), selected: @customer.new_record? ? params[:group_id] : @customer.GroupID, as: :select, label: "Type", prompt: "Select type", required: true
           =# f.input :GroupID, collection: Group.selections_by_user_role(current_user), selected: @customer.GroupID, as: :select, label: "Type", prompt: "Select type", required: true
