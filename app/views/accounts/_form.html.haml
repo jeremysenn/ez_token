@@ -74,7 +74,7 @@
                 .row
                   .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry'
                   .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC'
-          - if @account.can_fund_by_ach? and @account.user and @account.user == current_user
+          - if @account.can_fund_by_ach? 
             #ach.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel", class: @account.can_fund_by_cc? ? '' : 'active'}
               %br
               %strong ACH Details
@@ -85,42 +85,43 @@
                       .input-group-prepend
                         %span.input-group-text $
                       = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
-              %p
-                I hereby authorize Caddyvend to debit my bank account the outstanding balance owed. I acknowledge that the origination of the 
-                ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
-                operating rules in effect from time to time.
-              .row
-                - unless @account.new_record? or @account.RoutingNbr.blank?
-                  .col-xs-12.col-md-12
-                    =# f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :password, label: 'Routing Number'
-                    %label.control-label Routing Number:
-                    = @account.decrypted_bank_routing_number
-                - else
-                  .col-xs-12.col-md-12= f.input :RoutingNbr,  as: :string, label: 'Routing Number'
-              .row
-                - unless @account.new_record? or @account.BankActNbr.blank?
-                  .col-xs-12.col-md-12
-                    =# f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
-                    %label.control-label Account Number:
-                    = "************#{@account.last_4_decrypted_bank_account_number}"
-                - else
-                  .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number'
-              - unless @account.new_record? or (@account.RoutingNbr.blank? and @account.BankActNbr.blank?)
-                %a{href: '#', "data-toggle" => "modal", "data-target" => "#change_account_or_routing_number"}
-                  %i.fa.fa-edit
-                  Change bank information
-                #change_account_or_routing_number.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "exampleModalLabel", :role => "dialog", :tabindex => "-1"}
-                  .modal-dialog.modal-sm{:role => "document"}
-                    .modal-content
-                      .modal-body
-                        = f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" }, as: :string, label: 'Routing Number'
-                        - if @account.BankActNbr.blank?
-                          = f.input :BankActNbr, as: :string, label: 'Account Number'
-                        - else
-                          = f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
-                      .modal-footer
-                        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
-                        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} Save
+              - if @account.user and @account.user == current_user
+                %p
+                  I hereby authorize Caddyvend to debit my bank account the outstanding balance owed. I acknowledge that the origination of the 
+                  ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
+                  operating rules in effect from time to time.
+                .row
+                  - unless @account.new_record? or @account.RoutingNbr.blank?
+                    .col-xs-12.col-md-12
+                      =# f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :password, label: 'Routing Number'
+                      %label.control-label Routing Number:
+                      = @account.decrypted_bank_routing_number
+                  - else
+                    .col-xs-12.col-md-12= f.input :RoutingNbr,  as: :string, label: 'Routing Number'
+                .row
+                  - unless @account.new_record? or @account.BankActNbr.blank?
+                    .col-xs-12.col-md-12
+                      =# f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
+                      %label.control-label Account Number:
+                      = "************#{@account.last_4_decrypted_bank_account_number}"
+                  - else
+                    .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number'
+                - unless @account.new_record? or (@account.RoutingNbr.blank? and @account.BankActNbr.blank?)
+                  %a{href: '#', "data-toggle" => "modal", "data-target" => "#change_account_or_routing_number"}
+                    %i.fa.fa-edit
+                    Change bank information
+                  #change_account_or_routing_number.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "exampleModalLabel", :role => "dialog", :tabindex => "-1"}
+                    .modal-dialog.modal-sm{:role => "document"}
+                      .modal-content
+                        .modal-body
+                          = f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" }, as: :string, label: 'Routing Number'
+                          - if @account.BankActNbr.blank?
+                            = f.input :BankActNbr, as: :string, label: 'Account Number'
+                          - else
+                            = f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} Save
           
       .form-actions
         %br
