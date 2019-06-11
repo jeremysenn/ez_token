@@ -808,7 +808,7 @@ class Customer < ActiveRecord::Base
   
   def date_of_birth_required?
     unless accounts.blank?
-      dob_accounts = accounts.select { |a| (a.account_type.date_of_birth_required == 1) } 
+      dob_accounts = accounts.select { |a| (a.account_type and a.account_type.date_of_birth_required == 1) } 
       return dob_accounts.present?
     else
       false
@@ -817,7 +817,7 @@ class Customer < ActiveRecord::Base
   
   def social_security_number_required?
     unless accounts.blank?
-      ssn_accounts = accounts.select { |a| (a.account_type.social_security_number_required == 1) } 
+      ssn_accounts = accounts.select { |a| (a.account_type and a.account_type.social_security_number_required == 1) } 
       return ssn_accounts.present?
     else
       false

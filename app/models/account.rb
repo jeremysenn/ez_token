@@ -677,6 +677,15 @@ class Account < ActiveRecord::Base
     account_type.contract
   end
   
+  def send_barcode_link_sms_message
+    unless customer.blank? or customer.phone.blank?
+      payment_link = "#{Rails.application.routes.default_url_options[:host]}/accounts/#{self.ActID}/withdraw_barcode"
+      message = "Get your cash from the ATM by clicking this link: #{payment_link}"
+      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+      client.call(:send_sms, message: { Phone: customer.phone, Msg: "#{message}"})
+    end
+  end 
+  
   #############################
   #     Class Methods         #
   #############################

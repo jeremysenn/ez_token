@@ -256,12 +256,19 @@ class CustomersController < ApplicationController
   end
   
   def send_barcode_link_sms_message
-    unless @customer.barcode_access_string.blank?
-      @customer.send_barcode_link_sms_message
+    @account = Account.find(params[:account_id])
+    unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+      @account.send_barcode_link_sms_message
       redirect_back fallback_location: @customer, notice: 'Text message sent.'
     else
-      redirect_back fallback_location: @customer, alert: 'There was a problem with barcode.'
+      redirect_back fallback_location: @customer, alert: 'There was a problem sending the barcode link.'
     end
+#    unless @customer.barcode_access_string.blank?
+#      @customer.send_barcode_link_sms_message
+#      redirect_back fallback_location: @customer, notice: 'Text message sent.'
+#    else
+#      redirect_back fallback_location: @customer, alert: 'There was a problem with barcode.'
+#    end
   end
   
   def send_barcode_sms_message
