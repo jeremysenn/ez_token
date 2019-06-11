@@ -132,7 +132,7 @@
                   / Withdraw all
                   =# render 'withdrawal_all'
                   -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
-                  %a.btn.btn-default.btn-lg.btn-block{href: withdraw_barcode_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
+                  %a.btn.btn-default.btn-lg.btn-block{href: withdraw_barcode_account_path(@account.id)}
                     %i.fa.fa-money
                     Withdraw
               -#

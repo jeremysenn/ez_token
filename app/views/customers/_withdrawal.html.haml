@@ -7,7 +7,7 @@
       = text_field_tag :withdrawal_amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, autofocus: true, :pattern => "[0-9]*"
       .input-group-append
         %span.input-group-text .00
-    %button.btn.btn-default{id: 'send_code_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw Cash"}, style: 'display:none;'} 
+    %button.btn.btn-default{id: 'send_code_button', :type => "submit", style: 'display:none;'} 
       %i.fa.fa-money
       Withdraw Cash
 
