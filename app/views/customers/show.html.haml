@@ -122,15 +122,17 @@
                     .panel.panel-default
                       #headingThree.panel-heading{:role => "tab"}
                         %h4.panel-title
-                          %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
+                          %a.btn.btn-lg.btn-default.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
                             %i.fa.fa-money
-                            Withdrawal
+                            Withdraw
                       #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
                         .panel-body
                           = render 'withdrawal'
                 - else
+                  / Withdraw all
                   =# render 'withdrawal_all'
-                  %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
+                  -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
+                  %a.btn.btn-default.btn-lg.btn-block{href: withdraw_barcode_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
                     %i.fa.fa-money
                     Withdraw
               -#
@@ -158,7 +160,8 @@
                   %i.fa.fa-dollar
                   One Time Payment
               - if @account and @account.available_balance > 0 and not @customer.phone.blank?
-                %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+                -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+                %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
                   %h5
                     %i.fa.fa-money
                     Send Payment Code

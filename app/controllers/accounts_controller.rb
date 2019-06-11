@@ -1,6 +1,6 @@
 class AccountsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_account, only: [:show, :edit, :update, :destroy, :one_time_payment]
+  before_action :set_account, only: [:show, :edit, :update, :destroy, :one_time_payment, :withdraw_barcode]
   load_and_authorize_resource
 
   # GET /accounts
@@ -118,6 +118,27 @@ class AccountsController < ApplicationController
       redirect_back fallback_location: accounts_path, notice: 'Text message sent.'
     else
       redirect_back fallback_location: accounts_path, alert: 'You must select at least one account to text message.'
+    end
+  end
+  
+  def withdraw_barcode
+    unless @account.blank?
+      if params[:withdrawal_amount].blank?
+        qrcode_number = @account.withdraw_barcode(0)
+        @amount = @account.available_balance
+      else
+        @amount = params[:withdrawal_amount]
+        qrcode_number = @account.withdraw_barcode(@amount)
+      end
+      @image = helpers.generate_qr(qrcode_number)
+    end
+    respond_to do |format|
+      format.html {
+        unless @account.customer and @account.customer.user and @account.customer.user == current_user 
+          flash[:alert] = "You are not authorized to view this page."
+          redirect_to root_path
+        end
+      }
     end
   end
 
