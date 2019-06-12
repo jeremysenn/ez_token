@@ -1,5 +1,6 @@
 %div{:id => "withdrawal_details"}
-  = form_tag withdraw_barcode_account_path(@account.id), method: 'get', class: 'form-horizontal' do |f|
+  =# form_tag withdraw_barcode_account_path(@account.id), method: 'get', class: 'form-horizontal' do |f|
+  = form_tag send_barcode_link_sms_message_account_path(@account.id), "data-remote" => "true", "data-type" => "json", method: 'get', class: 'form-horizontal' do |f|
     = hidden_field_tag :account_balance, @account.balance
     .input-group.input-group-lg.mb-3
       .input-group-prepend
@@ -7,7 +8,7 @@
       = text_field_tag :withdrawal_amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, autofocus: true, :pattern => "[0-9]*"
       .input-group-append
         %span.input-group-text .00
-    %button.btn.btn-default{id: 'send_code_button', :type => "submit", style: 'display:none;'} 
+    %button.btn.btn-default{id: 'send_code_button', :type => "submit", style: 'display:none;', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Sending text message..."}} 
       %i.fa.fa-money
       Withdraw Cash
 

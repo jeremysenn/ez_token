@@ -72,7 +72,8 @@ Rails.application.routes.draw do
   resources :accounts do
     member do
       get 'one_time_payment'
-      get 'withdraw_barcode'
+#      get 'withdraw_barcode'
+      get 'send_barcode_link_sms_message'
     end
     collection do
       post 'twilio_send_sms_message'

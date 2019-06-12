@@ -1,6 +1,6 @@
 class AccountsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_account, only: [:show, :edit, :update, :destroy, :one_time_payment, :withdraw_barcode]
+  before_action :set_account, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message]
   load_and_authorize_resource
 
   # GET /accounts
@@ -121,22 +121,45 @@ class AccountsController < ApplicationController
     end
   end
   
-  def withdraw_barcode
-    unless @account.blank?
-      if params[:withdrawal_amount].blank?
-        qrcode_number = @account.withdraw_barcode(0)
-        @amount = @account.available_balance
-      else
-        @amount = params[:withdrawal_amount]
-        qrcode_number = @account.withdraw_barcode(@amount)
-      end
-      @image = helpers.generate_qr(qrcode_number)
-    end
+#  def withdraw_barcode
+#    unless @account.blank?
+#      if params[:withdrawal_amount].blank?
+#        qrcode_number = @account.withdraw_barcode(0)
+#        @amount = @account.available_balance
+#      else
+#        @amount = params[:withdrawal_amount]
+#        qrcode_number = @account.withdraw_barcode(@amount)
+#      end
+#      @image = helpers.generate_qr(qrcode_number)
+#    end
+#    respond_to do |format|
+#      format.html {
+#        unless @account.customer and @account.customer.user and @account.customer.user == current_user 
+#          flash[:alert] = "You are not authorized to view this page."
+#          redirect_to root_path
+#        end
+#      }
+#    end
+#  end
+  
+  def send_barcode_link_sms_message
     respond_to do |format|
       format.html {
-        unless @account.customer and @account.customer.user and @account.customer.user == current_user 
-          flash[:alert] = "You are not authorized to view this page."
-          redirect_to root_path
+        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+          barcode_number = @account.withdraw_barcode(params[:withdrawal_amount].blank? ? 0 : params[:withdrawal_amount])
+          @account.send_barcode_link_sms_message(barcode_number)
+          redirect_to @account.customer, notice: 'Text message sent.'
+        else
+          redirect_back fallback_location: @customer, alert: 'There was a problem sending the barcode link.'
+        end
+      }
+      format.json{
+        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+          barcode_number = @account.withdraw_barcode(params[:withdrawal_amount].blank? ? 0 : params[:withdrawal_amount])
+          @account.send_barcode_link_sms_message(barcode_number)
+          render json: {"barcode_number" => barcode_number}, status: :ok
+        else
+          render json: { error: ["Error: Problem generating QR Code."] }, status: :unprocessable_entity
         end
       }
     end
