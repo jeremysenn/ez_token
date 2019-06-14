@@ -319,6 +319,14 @@ class Transaction < ActiveRecord::Base
     Account.where(ActID: from_acct_id).first
   end
   
+  def to_account_type
+    AccountType.where(AccountTypeID: to_acct_type).first
+  end
+  
+  def from_account_type
+    AccountType.where(AccountTypeID: from_acct_type).first
+  end
+  
   def to_account_customer
     unless to_account.blank?
       to_account.customer

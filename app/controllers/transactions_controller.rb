@@ -70,6 +70,8 @@ class TransactionsController < ApplicationController
     @original_transaction = @transaction.original_transaction
     @from_customer = @transaction.from_account_customer
     @to_customer = @transaction.to_account_customer
+    @from_account_type = @transaction.from_account_type
+    @to_account_type = @transaction.to_account_type
   end
 
   # GET /transactions/new
