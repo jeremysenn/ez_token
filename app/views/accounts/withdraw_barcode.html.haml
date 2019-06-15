@@ -1,0 +1,17 @@
+.jumbotron{style: 'background-color: white;'} 
+  .text-center
+    %p.lead.text-xs-center
+      = @account.customer.full_name
+      %br
+      = number_to_currency(@amount)
+    %br
+    %br
+    %table.table{:style => "height: 100px;", class: 'text-xs-center'}
+      %tbody
+        %tr
+        %tr
+        %tr
+        %tr
+          %td.align-bottom 
+            -# %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
+            %img{src: @image, class: 'img-fluid'}

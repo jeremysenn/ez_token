@@ -122,16 +122,20 @@
                     .panel.panel-default
                       #headingThree.panel-heading{:role => "tab"}
                         %h4.panel-title
-                          %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
+                          %a.btn.btn-lg.btn-default.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
                             %i.fa.fa-money
-                            Withdrawal
+                            Withdraw
                       #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
                         .panel-body
                           = render 'withdrawal'
                 - else
+                  / Withdraw all
                   =# render 'withdrawal_all'
-                  %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
+                  -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
+                  -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_link_sms_message_account_path(@account.id)}
+                  %a.btn.btn-default.btn-lg.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
                     %i.fa.fa-money
+                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
                     Withdraw
               -#
                 - if @account and @account.balance > 0 and not current_user.administrator?
@@ -157,10 +161,13 @@
                 %h5
                   %i.fa.fa-dollar
                   One Time Payment
-              - if @account and @account.available_balance > 0 and not @customer.phone.blank?
-                %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+              - if @account and @account.available_balance > 0 and @account.withdrawal_all? and not @customer.phone.blank?
+                -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+                -# %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+                %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
                   %h5
                     %i.fa.fa-money
+                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
                     Send Payment Code
               - unless @customer.phone.blank?
                 %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
@@ -477,3 +484,33 @@
 
 :javascript
   $('[data-toggle="tooltip"]').tooltip({html: true});
+
+  $('.box-profile').on('click', '.send_qrcode_button', function(e) {
+    var account_id, amount;
+    spinner_icon = $(this).find( ".fa-spinner" );
+    money_icon = $(this).find( ".fa-money" );
+    money_icon.hide();
+    spinner_icon.show();
+    account_id = $(this).data("account-id");
+    amount = $(this).data("amount");
+    $.ajax({
+      url: "/accounts/" + account_id + "/send_barcode_link_sms_message",
+      dataType: 'json',
+      data: {
+        withdrawal_amount: amount
+      },
+      success: function(data) {
+        alert("Text message code sent.");
+        money_icon.show();
+        spinner_icon.hide();
+      },
+      error: function(xhr) {
+        var error;
+        error = $.parseJSON(xhr.responseText).error;
+        alert(error);
+        console.log(error);
+        money_icon.show();
+        spinner_icon.hide();
+      }
+    });
+  });
