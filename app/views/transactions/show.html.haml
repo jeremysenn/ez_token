@@ -90,12 +90,13 @@
             %p.lead
               Sec Tran Code:
               = @transaction.sec_tran_code
-            %p.lead
-              To wallet type:
-              = "#{@transaction.to_account_type.blank? ? 'N/A' : @transaction.to_account_type}"
-            %p.lead
-              From wallet type:
-              = "#{@transaction.from_account_type.blank? ? 'N/A' : @transaction.from_account_type}"
+            -#
+              %p.lead
+                To wallet type:
+                = "#{@transaction.to_account_type.blank? ? 'N/A' : @transaction.to_account_type}"
+              %p.lead
+                From wallet type:
+                = "#{@transaction.from_account_type.blank? ? 'N/A' : @transaction.from_account_type}"
             
           -#
             %p.lead
