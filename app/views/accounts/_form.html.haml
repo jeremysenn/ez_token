@@ -91,12 +91,12 @@
                 ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
                 operating rules in effect from time to time.
               = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
-              .row
-                .col-xs-12.col-sm-6
-                  .input-group
-                    .input-group-prepend
-                      %span.input-group-text $
-                    = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
+                .row
+                  .col-xs-12.col-sm-6
+                    .input-group
+                      .input-group-prepend
+                        %span.input-group-text $
+                      = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
               .row
                 - unless @account.new_record? or @account.RoutingNbr.blank?
                   .col-xs-12.col-md-12
