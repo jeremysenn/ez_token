@@ -103,17 +103,17 @@
                   .col-xs-12.col-md-12
                     =# f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :password, label: 'Routing Number'
                     %label.control-label Routing Number:
-                    = @account.decrypted_bank_routing_number
+                    = @account.decrypted_bank_routing_number.blank? ? @account.RoutingNbr : @account.decrypted_bank_routing_number
                 - else
-                  .col-xs-12.col-md-12= f.input :RoutingNbr,  as: :string, label: 'Routing Number'
+                  .col-xs-12.col-md-12= f.input :RoutingNbr, as: :string, label: 'Routing Number', :placeholder=> "Bank Routing Number"
               .row
                 - unless @account.new_record? or @account.BankActNbr.blank?
                   .col-xs-12.col-md-12
                     =# f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
                     %label.control-label Account Number:
-                    = "************#{@account.last_4_decrypted_bank_account_number}"
+                    = "************#{@account.last_4_decrypted_bank_account_number.blank? ? (@account.BankActNbr.blank? ? '' : @account.BankActNbr.last(4)) : @account.last_4_decrypted_bank_account_number}"
                 - else
-                  .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number'
+                  .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number', :placeholder=> "Bank Account Number"
               - unless @account.new_record? or (@account.RoutingNbr.blank? and @account.BankActNbr.blank?)
                 %a{href: '#', "data-toggle" => "modal", "data-target" => "#change_account_or_routing_number"}
                   %i.fa.fa-edit
@@ -122,11 +122,13 @@
                   .modal-dialog.modal-sm{:role => "document"}
                     .modal-content
                       .modal-body
-                        = f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" }, as: :string, label: 'Routing Number'
+                        = f.input :RoutingNbr, :input_html => { :value => "#{@account.decrypted_bank_routing_number.blank? ? @account.RoutingNbr : @account.decrypted_bank_routing_number}" }, :placeholder=> "Bank Routing Number", as: :string, label: 'Routing Number'
                         - if @account.BankActNbr.blank?
-                          = f.input :BankActNbr, as: :string, label: 'Account Number'
+                          = f.input :BankActNbr, as: :string, :placeholder=> "Bank Account Number", label: 'Account Number'
+                          = f.input :BankActNbr_confirmation, :placeholder=> "Confirm Account Number", label: 'Account Number confirmation'
                         - else
-                          = f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
+                          = f.input :BankActNbr, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}" }, :placeholder=> "Bank Account Number", as: :password, label: 'Account Number'
+                          = f.input :BankActNbr_confirmation, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}" }, :placeholder=> "Confirm Account Number", as: :password, label: 'Account Number confirmation'
                       .modal-footer
                         %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
                         %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} Save
