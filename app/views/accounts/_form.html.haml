@@ -23,13 +23,14 @@
                   .input-group-prepend
                     %span.input-group-text $
                   = f.input_field :MinBalance, as: :string, class: "form-control"
-          = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
-            .row
-              .col-xs-12.col-sm-6
-                .input-group
-                  .input-group-prepend
-                    %span.input-group-text $
-                  = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
+          -#
+            = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
+              .row
+                .col-xs-12.col-sm-6
+                  .input-group
+                    .input-group-prepend
+                      %span.input-group-text $
+                    = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
           .row
             .col-xs-12.col-sm-6
               = f.input :Active, as: :boolean, inline_label: 'Active'
