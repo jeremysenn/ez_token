@@ -691,7 +691,7 @@ class Account < ActiveRecord::Base
   
   def routing_number_checksum
     unless self.RoutingNbr.blank?
-      unless Account.routing_number_check_sum(self.RoutingNbr)
+      unless self.RoutingNbr.length == 9 and Account.routing_number_check_sum(self.RoutingNbr)
         errors.add(:error, 'Routing number check sum failed.')
       end
     end
