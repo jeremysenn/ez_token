@@ -30,9 +30,12 @@ class Account < ActiveRecord::Base
 #  validates :ActNbr_confirmation, presence: true
 #  validates :MinBalance, numericality: { :greater_than_or_equal_to => 0 }
 #  validates :MinBalance, numericality: true
+  validates_confirmation_of :BankActNbr, :message => "should match confirmation", :if => :BankActNbr_changed?
+  
   validate :maintain_balance_not_less_than_minimum_maintain_balance, on: :update
   validate :credit_card_fields_filled
   validate :customer_does_not_have_multiple_account_wallets_for_same_event
+  validate :routing_number_checksum
 
   before_save :encrypt_bank_account_number, if: :will_save_change_to_BankActNbr?
   before_save :encrypt_bank_routing_number, if: :will_save_change_to_RoutingNbr?
@@ -686,6 +689,14 @@ class Account < ActiveRecord::Base
     end
   end 
   
+  def routing_number_checksum
+    unless self.RoutingNbr.blank?
+      unless self.RoutingNbr.length == 9 and Account.routing_number_check_sum(self.RoutingNbr)
+        errors.add(:error, 'Routing number check sum failed.')
+      end
+    end
+  end
+  
   #############################
   #     Class Methods         #
   #############################
@@ -731,6 +742,17 @@ class Account < ActiveRecord::Base
         csv << attributes.map{ |attr| account.send(attr) }
       end
     end
+  end
+  
+  # Returns true if a routing number string check sum is valid. 
+  def self.routing_number_check_sum(number)
+    d = []
+    number.each_char { |char| d << char.to_i }
+
+    d[8] == (7 * (d[0] + d[3] + d[6]) +
+             3 * (d[1] + d[4] + d[7]) +
+             9 * (d[2] + d[5])
+            ) % 10
   end
   
 end
