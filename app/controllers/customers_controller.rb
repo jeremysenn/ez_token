@@ -113,6 +113,10 @@ class CustomersController < ApplicationController
         unless @contract.blank? or FinePrint.signed_contract?(current_user, @contract.id)
           redirect_to "/fine_print/contracts/#{@contract.id}/signatures/new"
         end
+        if @customer.social_security_number_required? and (@customer.SSN.blank? or not Customer.valid_social_security_number_format?(@customer.decrypted_ssn))
+          flash[:error] = "Please enter your Social Security Number."
+          redirect_to edit_customer_path(@customer)
+        end
       end
     end
     if @customer.user.blank?

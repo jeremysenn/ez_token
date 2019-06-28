@@ -1,5 +1,6 @@
 .box.box-primary
   .box-body
+    = render 'shared/flash_messages'
     = simple_form_for(@customer) do |f|
       = f.error_notification
       - @customer.errors.each do |attr, msg|
@@ -109,6 +110,8 @@
           = f.input :NameL, label: 'Last Name', required: true
           = f.input :PhoneMobile, label: 'Phone', required: true
           = f.input :Email, label: 'Email', required: true
+          - if @customer.social_security_number_required?
+            = f.input :SSN, label: 'SSN/TIN', :input_html => { :value => "#{@customer.ssn.blank? ? '' : @customer.decrypted_ssn}" }, required: true
 
       .form-actions
         %hr
