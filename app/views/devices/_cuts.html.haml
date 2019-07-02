@@ -38,7 +38,7 @@
                         = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
                       %br
                   %td
-                    - unless first_bill_hist.blank?
+                    - unless first_bill_hist.blank? and transaction.amt_auth.blank?
                       = number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
                   %td= number_to_currency(add_total)
                   %td= number_to_currency(dispensed_total)

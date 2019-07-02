@@ -42,6 +42,7 @@ class Customer < ActiveRecord::Base
 #  validates :PhoneMobile, presence: true
 #  validates_uniqueness_of :Email
 #  validates_uniqueness_of :PhoneMobile
+  validates :SSN, format: { with: /\A(?!219099999|078051120)(?!666|000|9\d{2})\d{3}(?!00)\d{2}(?!0{4})\d{4}\z/, message: "please enter a valid Social Security Number"}, :allow_blank => true
 
   before_create :format_phone_mobile_before_create
   before_update :format_phone_mobile_before_update
@@ -823,6 +824,10 @@ class Customer < ActiveRecord::Base
       false
     end
   end
+  
+  def valid_social_security_number_format?
+    !!(decrypted_ssn =~ /^(?!219099999|078051120)(?!666|000|9\d{2})\d{3}(?!00)\d{2}(?!0{4})\d{4}$/)
+  end
  
   #############################
   #     Class Methods         #
@@ -844,6 +849,10 @@ class Customer < ActiveRecord::Base
         csv << attributes.map{ |attr| account.send(attr) }
       end
     end
+  end
+  
+  def self.valid_social_security_number_format?(ssn_number)
+    !!(ssn_number =~ /\A(?!219099999|078051120)(?!666|000|9\d{2})\d{3}(?!00)\d{2}(?!0{4})\d{4}\z/)
   end
   
   private
