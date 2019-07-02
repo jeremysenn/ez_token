@@ -35,7 +35,7 @@ class Account < ActiveRecord::Base
   validate :maintain_balance_not_less_than_minimum_maintain_balance, on: :update
   validate :credit_card_fields_filled
   validate :customer_does_not_have_multiple_account_wallets_for_same_event
-  validate :routing_number_checksum
+  validate :routing_number_checksum, if: :will_save_change_to_RoutingNbr?
 
   before_save :encrypt_bank_account_number, if: :will_save_change_to_BankActNbr?
   before_save :encrypt_bank_routing_number, if: :will_save_change_to_RoutingNbr?
@@ -691,7 +691,8 @@ class Account < ActiveRecord::Base
   
   def routing_number_checksum
     unless self.RoutingNbr.blank?
-      unless self.RoutingNbr.length == 9 and Account.routing_number_check_sum(self.RoutingNbr)
+#      unless self.RoutingNbr.length == 9 and Account.routing_number_check_sum(self.RoutingNbr)
+      unless self.decrypted_bank_routing_number.length == 9 and Account.routing_number_check_sum(self.decrypted_bank_routing_number)
         errors.add(:error, 'Routing number check sum failed.')
       end
     end
