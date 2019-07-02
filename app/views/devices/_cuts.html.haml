@@ -58,8 +58,8 @@
                         = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
                       %br
                   %td
-                    = number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
-                    =# number_to_currency(BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt))
+                    =# number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
+                    = number_to_currency(BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt))
                   %td= number_to_currency(add_total)
                   %td
                     - @withdrawal_transactions.where("date_time >= ? AND date_time < ?", transaction.date_time, @cut_transactions[index - 1].date_time).each do |withdrawal_transaction|
