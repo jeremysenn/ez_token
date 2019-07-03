@@ -99,7 +99,7 @@
                         %span.input-group-text $
                       = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
               .row
-                - unless @account.new_record? or @account.RoutingNbr.blank?
+                - unless @account.new_record? # or @account.RoutingNbr.blank?
                   .col-xs-12.col-md-12
                     =# f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :password, label: 'Routing Number'
                     %label.control-label Routing Number:
@@ -107,7 +107,7 @@
                 - else
                   .col-xs-12.col-md-12= f.input :RoutingNbr, as: :string, label: 'Routing Number', :placeholder=> "Bank Routing Number"
               .row
-                - unless @account.new_record? or @account.BankActNbr.blank?
+                - unless @account.new_record? # or @account.BankActNbr.blank?
                   .col-xs-12.col-md-12
                     =# f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
                     %label.control-label Account Number:
