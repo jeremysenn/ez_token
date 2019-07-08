@@ -21,7 +21,8 @@ class WelcomeController < ApplicationController
 #        
         # Device Information
         unless @device.blank?
-          @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC").first(5)
+#          @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC").first(5)
+          @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_month..Date.today.end_of_day).order("date_time DESC").page(params[:dev_statuses_page]).per(5)
           @bill_counts = @device.bill_counts
           @denoms = @device.denoms
           @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
