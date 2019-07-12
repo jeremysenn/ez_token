@@ -5,22 +5,22 @@
       .col-md-6
         = render 'shared/flash_messages'
       %h1
-        = Super User
+        Super User
         %small Dashboard
-        .btn-group
-          - @devices.each do |device|
-            %a.btn{href: root_path(device_id: device.id), class: "#{@device.id == device.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> #{device.description}"}}
-              %i.fa.fa-money
-              = device.description
+        -#
+          .btn-group
+            - @devices.each do |device|
+              %a.btn{href: root_path(device_id: device.id), class: "#{@device.id == device.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> #{device.description}"}}
+                %i.fa.fa-money
+                = device.description
+        .inline.dropdown.show
+          %a#dropdownMenuLink.btn.btn-default.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+            = @device.description
+          .dropdown-menu{"aria-labelledby" => "dropdownMenuLink"}
+            - @devices.each do |device|
+              %a.dropdown-item{:href => root_path(device_id: device.id), class: "#{@device.id == device.id ? 'active' : ''}"}= device.description
+
       %ol.breadcrumb
-        - if current_user.can_quick_pay_customers?
-          %li
-            %a.btn.bg-green{href: '#', "data-toggle" => "modal", "data-target" => "#quick_pay", style: 'color: white;'}
-              %i.fa.fa-dollar
-              Quick Pay
-          = render partial: "quick_pay"
-          &nbsp;
-          &nbsp;
         - if current_user.can_view_atms?
           %li
             = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: 'form-inline' do |f|
@@ -30,6 +30,7 @@
                 .input-group-append
                   %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
                     %i.fa.fa-search
+
       %br
     
     / Main content

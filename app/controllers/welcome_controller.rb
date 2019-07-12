@@ -5,9 +5,9 @@ class WelcomeController < ApplicationController
   
   def index
     if user_signed_in?
-      if current_user.administrator? or current_user.collaborator?
+      if current_user.administrator? or current_user.collaborator? or current_user.super?
 #        @devices = current_user.devices.order("description ASC")
-        @devices = current_user.company.devices.order("description ASC")
+        @devices = current_user.super? ? Device.all.order("description ASC") : current_user.company.devices.order("description ASC")
         @start_date = params[:start_date] ||= (Date.today - 1.week).to_s
         @end_date = params[:end_date] ||= Date.today.to_s
         @type = params[:type] ||= 'Transfer'
@@ -96,11 +96,6 @@ class WelcomeController < ApplicationController
         if current_user.accounts.count == 1
           redirect_to customer_path(current_user.customer)
         end
-      elsif current_user.super?
-        @devices = Device.all.order("description ASC")
-        @start_date = params[:start_date] ||= (Date.today - 1.week).to_s
-        @end_date = params[:end_date] ||= Date.today.to_s
-        @type = params[:type] ||= 'Transfer'
       end
     end
   end

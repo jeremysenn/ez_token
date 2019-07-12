@@ -45,12 +45,12 @@ class Company < ActiveRecord::Base
   
   def fee_account
 #    accounts.where(CustomerID: nil, ActTypeID: 19).last
-    accounts.find(self.FeeActID)
+    accounts.find_by(ActID: self.FeeActID)
   end
   
   def transaction_account
 #    accounts.where(CustomerID: nil, ActTypeID: 7).last
-    accounts.find(self.TxnActID)
+    accounts.find_by(ActID: self.TxnActID)
   end
   
   def transaction_accounts
