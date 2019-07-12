@@ -29,13 +29,13 @@ class Ability
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
     
-    if user.administrator?
+    if user.administrator? or user.super?
       
       # Customers
       ############
       can :manage, Customer do |customer|
 #        user.company == customer.company
-        customer.accounts.exists?(CompanyNumber: user.company.id)
+        customer.accounts.exists?(CompanyNumber: user.company.id) or user.super?
       end
       can :create, Customer
       
@@ -59,46 +59,46 @@ class Ability
       # SmsMessages
       ############
       can :manage, SmsMessage do |sms_message|
-        user.company == sms_message.company or user == sms_message.user
+        user.company == sms_message.company or user == sms_message.user or user.super?
       end
       can :create, SmsMessage
       
       # Transactions
       ############
       can :manage, Transaction do |transaction|
-         user.company == transaction.company
+         user.company == transaction.company or user.super?
       end
       
       # Users
       ############
       can :manage, User do |user_record|
-        user.company == user_record.company or (user.company.accounts & user_record.accounts).any?
+        user.company == user_record.company or (user.company.accounts & user_record.accounts).any? or user.super?
       end
       can :create, User
       
       # Devices
       ############
       can :manage, Device do |device|
-        user.company == device.company 
+        user.company == device.company or user.super?
       end
       
       # Cards
       ############
       can :manage, Card do |card|
-        user.company == card.device.company
+        user.company == card.device.company or user.super?
       end
       
       # Events
       ############
       can :manage, Event do |event|
-        event.company == user.company
+        event.company == user.company or user.super?
       end
       can :create, Event
       
       # Accounts
       ############
       can :manage, Account do |account|
-        account.company == user.company
+        account.company == user.company or user.super?
       end
       can :create, Account
       
@@ -110,16 +110,16 @@ class Ability
       # AccountTypes
       ############
       can :manage, AccountType do |account_type|
-        account_type.company == user.company
+        account_type.company == user.company or user.super?
       end
       can :create, AccountType
       
       # Companies
       ############
       can :manage, Company do |company|
-        company == user.company
+        company == user.company or user.super?
       end
-      cannot :index, Customer
+      cannot :index, Company unless user.super?
       
     elsif user.collaborator?
       

@@ -36,7 +36,9 @@
             - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))
               = render 'shared/admin_user_navbar' 
           - elsif current_user.basic?
-            = render 'shared/basic_user_navbar' 
+            = render 'shared/basic_user_navbar'
+          - elsif current_user.super?
+            = render 'shared/super_user_navbar'
         - else
           - if current_user.administrator?
             = render 'shared/admin_user_fine_print_navbar' 

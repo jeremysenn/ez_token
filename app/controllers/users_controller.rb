@@ -7,8 +7,8 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    if current_user.can_view_users?
-      @users = current_user.company.users
+    if current_user.can_view_users? or current_user.super?
+      @users = current_user.super? ? User.all : current_user.company.users
     else
       redirect_back fallback_location: root_path, notice: 'You are not authorized.'
     end

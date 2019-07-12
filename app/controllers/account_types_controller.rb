@@ -7,7 +7,7 @@ class AccountTypesController < ApplicationController
   # GET /account_types.json
   def index
 #    @account_types = AccountType.all
-    @account_types = current_user.company.account_types
+    @account_types = current_user.super? ? AccountType.all : current_user.company.account_types
   end
 
   # GET /account_types/1

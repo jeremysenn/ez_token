@@ -94,7 +94,7 @@
               =# render 'consumer_qr_code_payment'
 
             #accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist"}
-              - if not current_user.administrator? and @account and @event and @account.can_pull?
+              - if not (current_user.administrator? or current_user.super?) and @account and @event and @account.can_pull?
                 %p
                   .panel.panel-default
                     #headingOne.panel-heading{:role => "tab"}
@@ -105,7 +105,7 @@
                     #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
                       .panel-body
                         = render 'request_payment'
-              - if not current_user.administrator? and @account and @event and @account.available_balance > 0 and @account.can_send_payment?
+              - if not (current_user.administrator? or current_user.super?) and @account and @event and @account.available_balance > 0 and @account.can_send_payment?
                 %p
                   .panel.panel-default
                     #headingTwo.panel-heading{:role => "tab"}

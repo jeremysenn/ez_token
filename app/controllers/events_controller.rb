@@ -8,9 +8,9 @@ class EventsController < ApplicationController
   def index
     unless params[:q].blank?
       @query_string = "%#{params[:q]}%"
-      @events = current_user.company.events.where("title like ?", @query_string)
+      @events = current_user.super? ? Event.where("title like ?", @query_string) : current_user.company.events.where("title like ?", @query_string)
     else
-      @events = current_user.company.events
+      @events = current_user.super? ? Event.all : current_user.company.events
 #      @events = current_user.company.events.page(params[:page]).per(20)
     end
   end

@@ -15,9 +15,9 @@
             = form_tag accounts_path, :method => 'get', :class => "form-inline" do
               = select_tag :active, options_for_select([["Active",1], ["Inactive",0]], @active), class: "form-control"
               &nbsp;
-              = select_tag :event_id, options_from_collection_for_select(current_user.company.events, "id", "title", @event_id), class: "form-control"
+              = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), class: "form-control"
               &nbsp;
-              = select_tag :type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @type_id), prompt: 'All types', class: "form-control"
+              = select_tag :type_id, options_from_collection_for_select(@account_types, "id", "description", @type_id), prompt: 'All types', class: "form-control"
               &nbsp;
               = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control"
               &nbsp;

@@ -4,8 +4,13 @@
     = simple_form_for(@user, url: @user.new_record? ? users_admin_index_path : users_admin_path)  do |f|
       = f.error_notification
       .form-inputs
-        - if current_user.admin?
-          = f.input :company_id, :as => :hidden, :input_html => { :value => "#{@user.new_record? ? current_user.company_id : @user.company_id}" }
+        - if current_user.admin? or current_user.super?
+          - unless current_user.super?
+            = f.input :company_id, :as => :hidden, :input_html => { :value => "#{@user.new_record? ? current_user.company_id : @user.company_id}" }
+          - else
+            .row
+              .col-xs-12.col-sm-6
+                = f.input :company_id, collection: Company.all.map{|c| [c.CompanyName, c.id]}, as: :select, selected: @user.company_id, label: "Company", prompt: "Select company"
           = f.input :role, as: :radio_buttons, collection: [['admin', " Admin"], ['collaborator', " Collaborator"]], label_method: :second, value_method: :first, label: false
           .row
             .col-xs-12.col-sm-6

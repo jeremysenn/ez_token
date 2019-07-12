@@ -30,6 +30,8 @@
                 %th{:scope => "col"} Role
                 %th{:scope => "col"} Phone
                 %th{:scope => "col"} Email
+                - if current_user.super?
+                  %th{:scope => "col"} Company
                 %th
             %tbody
               - @users.each do |user|
@@ -40,6 +42,8 @@
                   %td= user.role.humanize
                   %td= user.phone
                   %td= user.email
+                  - if current_user.super?
+                    %td= user.company.CompanyName
                   %td
                     = link_to 'Show', users_admin_path(user), class: 'btn btn-default btn-sm'
                     = link_to 'Edit', edit_users_admin_path(user), class: 'btn btn-primary btn-sm'

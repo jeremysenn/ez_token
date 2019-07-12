@@ -6,7 +6,7 @@
       %h1
         %i.fa.fa-calendar
         Events
-        %small= link_to 'New', new_event_path, class: 'btn bg-orange'
+        %small= link_to 'New', new_event_path, class: 'btn bg-orange' if current_user.administrator?
     / Main content
     %section.content
       / Default box
@@ -58,8 +58,8 @@
                     %td= event.end_date
                     %td= event.expire_accounts? ? 'Yes' : 'No'
                     %td
-                      = link_to "Show", event, class: 'btn btn-secondary btn-sm'
-                      = link_to "Edit", edit_event_path(event), class: 'btn btn-primary btn-sm'
+                      = link_to "Show", event, class: 'btn btn-default btn-sm'
+                      = link_to "Edit", edit_event_path(event), class: 'btn btn-primary btn-sm' if current_user.administrator?
                     
         .box-footer
           -#

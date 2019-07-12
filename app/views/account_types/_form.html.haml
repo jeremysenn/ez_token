@@ -7,10 +7,15 @@
           <button type="button" class="close" data-dismiss="alert">×</button>
           = "#{attr} #{msg}" if @account_type.errors[attr].first == msg
       .form-inputs
-        = f.input :CompanyNumber, as: :hidden, :input_html => { :value => "#{@account_type.new_record? ? current_user.company.id : @account_type.CompanyNumber}" }
         .row
           .col-xs-12.col-sm-9
             = f.input :AccountTypeDesc, as: :string, label: 'Description', required: true
+        - unless current_user.super?
+          = f.input :CompanyNumber, as: :hidden, :input_html => { :value => "#{@account_type.new_record? ? current_user.company.id : @account_type.CompanyNumber}" }
+        - else
+          .row
+            .col-xs-12.col-sm-6
+              = f.input :CompanyNumber, collection: Company.all.map{|c| [c.CompanyName, c.id]}, as: :select, selected: @account_type.CompanyNumber, label: "Company", prompt: "Select company"
         .row
           .col-xs-12.col-sm-6
             = f.input :MinMaintainBal, as: :decimal, required: false, label: "Minimum Maintained Balance" do

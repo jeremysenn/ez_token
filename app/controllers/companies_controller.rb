@@ -5,7 +5,7 @@ class CompaniesController < ApplicationController
   # GET /companies
   # GET /companies.json
   def index
-    @companies = Company.all
+    @companies = Company.all if current_user.super?
   end
 
   # GET /companies/1
