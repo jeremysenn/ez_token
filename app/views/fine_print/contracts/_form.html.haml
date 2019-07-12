@@ -8,8 +8,12 @@
           %ul
             - @contract.errors.full_messages.each do |msg|
               %li= msg
-      = f.hidden_field :company_id, value: current_user.company_id
-      
+      - unless current_user.super?
+        = f.hidden_field :company_id, value: current_user.company_id
+      - else
+        .field
+          = f.label :company, class: 'fine_print'
+          = f.select :company_id, options_from_collection_for_select(Company.all, "id", "CompanyName", @contract.company_id), {prompt: "Select Company"}, {:class => "fine-print"}
       .field
         = f.label :title, class: 'fine_print'
         = f.text_field :title, size: 40, class: 'fine_print text_field'

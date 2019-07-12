@@ -5,7 +5,8 @@ module FinePrint
     before_action :get_contract, except: [:index, :new, :create]
 
     def index
-      @contracts = Contract.includes(:signatures).all.to_a.group_by(&:name)
+#      @contracts = Contract.includes(:signatures).all.to_a.group_by(&:name)
+      @contracts = current_user.super? ? Contract.includes(:signatures).all.to_a.group_by(&:name) : current_user.company.contracts.includes(:signatures).all.to_a.group_by(&:name)
     end
 
     def new
