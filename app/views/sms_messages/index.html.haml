@@ -43,8 +43,8 @@
                           %td= sms_message.created_at.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
                           %td= sms_message.to
                           %td= sms_message.from
-                          %td= sms_message.customer.full_name
-                          %td= sms_message.user.full_name.blank? ? sms_message.company.name : sms_message.user.full_name
+                          %td= sms_message.customer.full_name unless sms_message.customer.blank?
+                          %td= sms_message.user.full_name unless sms_message.user.blank?
                           %td= sms_message.body
                           %td= link_to "Show", sms_message, class: 'btn btn-sm btn-primary'
               - else
