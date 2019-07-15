@@ -17,15 +17,6 @@
               -#
                 %h3.box-title 
                   Companies
-              -#
-                .box-tools
-                  = form_tag sms_messages_path, :method => 'get', :class => "form-inline" do
-                    = text_field_tag 'sms_message[start_date]', nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? Date.today : @start_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                    To
-                    = text_field_tag 'sms_message[end_date]', nil, :placeholder => "End Date", value: "#{@end_date.blank? ? Date.today : @end_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                    &nbsp;
-                    = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-                      %i.fa.fa-search
             .box-body.no-padding
               - unless @companies.blank?
                 .table-responsive
