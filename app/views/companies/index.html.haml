@@ -1,5 +1,12 @@
 .content-wrapper
   .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        %i.fa.fa-building
+        Companies
+        %small= link_to 'New', new_company_path, class: 'btn bg-orange' if current_user.super?
     / Main content
     %section.content
       / Default box
@@ -7,8 +14,9 @@
         .col-md-12
           .box.box-primary
             .box-header.with-border
-              %h3.box-title 
-                Companies
+              -#
+                %h3.box-title 
+                  Companies
               -#
                 .box-tools
                   = form_tag sms_messages_path, :method => 'get', :class => "form-inline" do
