@@ -25,8 +25,16 @@
           %tr{class: transaction.reversed? ? 'table-danger' : ''}
             %th{:scope => "row"}= link_to transaction.id, transaction
             %td= transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
-            %td= to_customer.blank? ? transaction.to_account.company.name : to_customer.identity unless transaction.to_account.blank?
-            %td= from_customer.blank? ? transaction.from_account.company.name : from_customer.identity unless transaction.from_account.blank?
+            %td
+              - unless to_customer.blank?
+                = link_to to_customer.identity, customer_path(to_customer, account_id: transaction.to_acct_id) unless transaction.to_account.blank?
+              - else
+                = transaction.to_account.company.name unless transaction.to_account.blank?
+            %td
+              - unless from_customer.blank?
+                = link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
+              - else
+                = transaction.from_account.company.name unless transaction.from_account.blank?
             %td= transaction.event.blank? ? 'N/A' : transaction.event.title
             -# %td= "#{transaction.receipt_nbr.blank? ? 'N/A' : transaction.receipt_nbr}"
             -#

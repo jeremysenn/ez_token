@@ -1,5 +1,12 @@
-%h1 New sms_message
-
-= render 'form'
-
-= link_to 'Back', sms_messages_path
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      %h1
+        %i.fa.fa-building
+        New Company
+    / Main content
+    %section.content
+      .row
+        .col-sm-12
+          = render 'form'

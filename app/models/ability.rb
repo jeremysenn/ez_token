@@ -120,6 +120,9 @@ class Ability
         company == user.company or user.super?
       end
       cannot :index, Company unless user.super?
+      if user.super?
+        can :create, Company
+      end
       
     elsif user.collaborator?
       

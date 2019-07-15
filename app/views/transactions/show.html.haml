@@ -33,10 +33,16 @@
             = @transaction.company.CompanyName unless @transaction.company.blank?
           %p.lead
             To:
-            = @to_customer.blank? ? @transaction.to_account.company.name : @to_customer.identity
+            - unless @to_customer.blank?
+              = link_to @to_customer.identity, customer_path(@to_customer, account_id: @transaction.to_acct_id) unless @transaction.to_account.blank?
+            - else
+              = @transaction.to_account.company.name unless @transaction.to_account.blank?
           %p.lead
             From:
-            = @from_customer.blank? ? @transaction.to_account.company.name : @from_customer.identity
+            - unless @from_customer.blank?
+              = link_to @from_customer.identity, customer_path(@from_customer, account_id: @transaction.from_acct_id) unless @transaction.from_account.blank?
+            - else
+              = @transaction.from_account.company.name unless @transaction.from_account.blank?
           %p.lead
             Event:
             - unless @transaction.event.blank?
