@@ -13,14 +13,11 @@
             %br
             Home
       %li.nav-item.bordered.dropdown
-        %a.nav-link{ "data-toggle" => "dropdown", :href => "#", :class => (params[:controller] == 'companies') ?  "text-light-blue" : ""}
-          .text-center
+        .text-center
+          %a.nav-link{:href => companies_path, :class => params[:controller] == 'companies' ?  "text-light-blue" : ""}
             %i.fa.fa-building.fa-lg
             %br
             Companies
-        .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
-          %a.dropdown-item{:href => companies_path, :class => (params[:controller] == 'companies' and params[:action] == 'index') ?  "active" : ""} All Companies
-          %a.dropdown-item{:href => new_company_path, :class => (params[:controller] == 'companies' and params[:action] == 'new') ?  "active" : ""} New Company
       %li.nav-item.bordered
         .text-center
           %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
