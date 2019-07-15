@@ -34,20 +34,10 @@
       - if current_user.can_view_accounts?
         %li.nav-item.bordered
           .text-center
-            %a.nav-link{:href => customers_path, :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
+            %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
               %i.fa.fa-male.fa-lg
               %br
               Accounts
-      -#
-        %li.nav-item.bordered.dropdown
-          %a.nav-link{ "data-toggle" => "dropdown", :href => "#", :class => (params[:controller] == 'customers') ?  "text-light-blue" : ""}
-            .text-center
-              %i.fa.fa-male.fa-lg
-              %br
-              Accounts
-          .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
-            %a.dropdown-item{:href => customers_path, :class => (params[:controller] == 'customers' and params[:action] == 'index') ?  "active" : ""} All Accounts
-            %a.dropdown-item{:href => new_customer_path, :class => (params[:controller] == 'customers' and params[:action] == 'new') ?  "active" : ""} New Account
       -#
         - if current_user.can_view_accounts?
           %li.nav-item.bordered.dropdown
