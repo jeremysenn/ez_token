@@ -65,7 +65,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def type
-    unless tran_code.blank? or sec_tran_code.blank?
+    unless tran_code.blank? and sec_tran_code.blank?
       if (tran_code.strip == "CHK" and sec_tran_code.strip == "TFR")
         return "Check Cashed"
       elsif (tran_code.strip == "CHKP" and sec_tran_code.strip == "TFR")
