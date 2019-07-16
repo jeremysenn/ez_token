@@ -103,7 +103,34 @@
               %p.lead
                 From wallet type:
                 = "#{@transaction.from_account_type.blank? ? 'N/A' : @transaction.from_account_type}"
-            
+            - if @transaction.withdrawal? or @transaction.withdrawal_all?
+              .row
+                .col-sm-12.col-md-6
+                  .box.box-warning
+                    .box-header.with-border
+                      %h3.box-title Dispense Details
+                    .box-body
+                      .row
+                        .col-sm-6
+                          %p.lead
+                            Cassette 1:
+                            = @transaction.cassette_1_disp
+                          %p.lead
+                            Cassette 2:
+                            = @transaction.cassette_2_disp
+                          %p.lead
+                            Cassette 3:
+                            = @transaction.cassette_3_disp
+                        .col-sm-6
+                          %p.lead
+                            Cassette 4:
+                            = @transaction.cassette_4_disp
+                          %p.lead
+                            Cassette 5:
+                            = @transaction.cassette_5_disp
+                          %p.lead
+                            Cassette 6:
+                            = @transaction.cassette_6_disp
           -#
             %p.lead
               To Account:
@@ -144,7 +171,7 @@
               %a.btn.btn-default{href: barcode_customer_path(@to_customer.id), target: '_blank'}
                 %i.fa.fa-print
                 Print Barcode
-          - if current_user.can_reverse_transactions?
+          - if current_user.can_reverse_transactions? and not (@transaction.withdrawal? or @transaction.withdrawal_all?)
             - if @reversal_transaction.blank? and not @transaction.reversal?
               .pull-right
                 %a{href: reverse_transaction_path(@transaction), class: 'btn btn-danger btn-sm', data: {confirm: 'Are you sure you want to reverse this transaction?', disable_with: "<i class='fa fa-spinner fa-spin'></i> Reverse"}}
