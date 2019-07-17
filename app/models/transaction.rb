@@ -343,10 +343,15 @@ class Transaction < ActiveRecord::Base
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { TranID: tranID })
     Rails.logger.debug "Response body: #{response.body}"
-    unless response.blank? or response.body.blank? or response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
-      return true
+#    unless response.blank? or response.body.blank? or response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
+#      return true
+#    else
+#      return false
+#    end
+    if response.success?
+      return response.body[:ez_cash_txn_response]
     else
-      return false
+      return nil
     end
   end
   

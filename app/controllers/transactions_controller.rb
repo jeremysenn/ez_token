@@ -127,11 +127,23 @@ class TransactionsController < ApplicationController
   end
   
   def reverse
-    if @transaction.reverse
-      redirect_back fallback_location: root_path, notice: 'Transaction was successfully reversed.'
-    else
-      redirect_back fallback_location: root_path, alert: 'There was a problem reversing the transaction.'
+    response = @transaction.reverse
+    response_code = response[:return]
+    if response_code.to_i > 0
+      error_code = response_code
     end
+    if error_code.blank?
+      redirect_to @transaction, notice: 'Transaction was successfully reversed.'
+    else
+      error_description = ErrorDesc.find_by(error_code: error_code)
+      redirect_to @transaction, alert: "There was a problem reversing the transaction. Error: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+    end
+    
+#    if @transaction.reverse
+#      redirect_back fallback_location: root_path, notice: 'Transaction was successfully reversed.'
+#    else
+#      redirect_back fallback_location: root_path, alert: 'There was a problem reversing the transaction.'
+#    end
   end
   
   def quick_pay
