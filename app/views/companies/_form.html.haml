@@ -10,11 +10,12 @@
         .row
           .col-xs-12.col-sm-9
             = f.input :CompanyName, as: :string, label: 'Name', required: true
-        .row
-          .col-xs-12.col-sm-6
-            = f.input :TxnActID, as: :integer, label: "Transaction Account", required: true
-          .col-xs-12.col-sm-6
-            = f.input :FeeActID, as: :integer, label: "Fee Account", required: true
+        - unless @company.new_record?
+          .row
+            .col-xs-12.col-sm-6
+              = f.input :TxnActID, as: :integer, label: "Transaction Account", required: true
+            .col-xs-12.col-sm-6
+              = f.input :FeeActID, as: :integer, label: "Fee Account", required: true
         .row
           .col-xs-12.col-sm-6
             = f.input :can_quick_pay, as: :boolean, label: 'Quick Pay'

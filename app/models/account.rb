@@ -8,7 +8,7 @@ class Account < ActiveRecord::Base
   belongs_to :customer, :foreign_key => "CustomerID", optional: true
   has_many :transactions, :foreign_key => :from_acct_id
   belongs_to :company, :foreign_key => "CompanyNumber"
-  belongs_to :account_type, :foreign_key => "ActTypeID"
+  belongs_to :account_type, :foreign_key => "ActTypeID", optional: true
 #  belongs_to :event
   has_and_belongs_to_many :events, :join_table => :accounts_events, :uniq => true
   
@@ -670,13 +670,15 @@ class Account < ActiveRecord::Base
   end
   
   def customer_does_not_have_multiple_account_wallets_for_same_event
-    unless self.new_record?
-      if customer.events.count > customer.events.uniq.count
-        errors.add(:error, 'Cannot have more than one wallet per event.')
-      end
-    else
-      if (customer.events + self.events).count > (customer.events + self.events).uniq.count
-        errors.add(:error, 'Cannot have more than one wallet per event.')
+    if customer.present?
+      unless self.new_record?
+        if customer.events.count > customer.events.uniq.count
+          errors.add(:error, 'Cannot have more than one wallet per event.')
+        end
+      else
+        if (customer.events + self.events).count > (customer.events + self.events).uniq.count
+          errors.add(:error, 'Cannot have more than one wallet per event.')
+        end
       end
     end
   end

@@ -21,6 +21,8 @@ class Company < ActiveRecord::Base
   has_many :events
   has_many :contracts
   
+  after_create_commit :create_transaction_and_fee_accounts
+  
   ### Start Virtual Attributes ###
   def transaction_fee # Getter
     transaction_fee_cents.to_d / 100 if transaction_fee_cents
@@ -168,6 +170,17 @@ class Company < ActiveRecord::Base
   
   def allowed_to_quick_pay?
     self.can_quick_pay? and not self.quick_pay_account_type.blank?
+  end
+  
+  def create_transaction_and_fee_accounts
+    if self.transaction_account.blank?
+      new_transaction_account = Account.create(CompanyNumber: self.CompanyNumber)
+      self.update_attribute(:TxnActID, new_transaction_account.id)
+    end
+    if self.fee_account.blank?
+      new_fee_account = Account.create(CompanyNumber: self.CompanyNumber)
+      self.update_attribute(:FeeActID, new_fee_account.id)
+    end
   end
   
   #############################
