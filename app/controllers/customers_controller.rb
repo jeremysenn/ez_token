@@ -195,10 +195,12 @@ class CustomersController < ApplicationController
     end
     Rails.logger.debug "*********************************One time payment transaction ID: #{transaction_id}"
     unless transaction_id.blank?
-      redirect_back fallback_location: @customer, notice: 'One time payment submitted.'
+#      redirect_back fallback_location: @customer, notice: 'One time payment submitted.'
+      redirect_to @customer, notice: 'One time payment submitted.'
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
-      redirect_back fallback_location: @customer, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+#      redirect_back fallback_location: @customer, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+      redirect_to @customer, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
     end
   end
   
