@@ -17,16 +17,24 @@
         .row
           .col-xs-12.col-sm-9
             = f.input :CompanyName, as: :string, label: 'Name', required: true
-        .row
-          .col-xs-12.col-sm-6
-            .form-group
-              Transaction Account:
-              = @company.TxnActID
-        .row
-          .col-xs-12.col-sm-6
-            .form-group
-              Fee Account:
-              = @company.FeeActID
+        - unless @company.new_record?
+          .row
+            .col-xs-12.col-sm-6
+              .form-group
+                Transaction Account:
+                = @company.TxnActID.blank? ? 'None' : @company.TxnActID
+                - if current_user.super? and not @company.transaction_account.blank?
+                  .form-inputs
+                    = f.input :transaction_account_minimum_balance, required: true, label: "Minimum Balance" do
+                      .input-group
+                        .input-group-prepend
+                          %span.input-group-text $
+                        = f.input_field :transaction_account_minimum_balance, value: @transaction_account.present? ? @transaction_account.MinBalance.to_f : 0
+          .row
+            .col-xs-12.col-sm-6
+              .form-group
+                Fee Account:
+                = @company.FeeActID.blank? ? 'None' : @company.FeeActID
         .row
           .col-xs-12.col-sm-6
             = f.input :can_quick_pay, as: :boolean, label: 'Quick Pay'

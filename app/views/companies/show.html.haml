@@ -17,15 +17,20 @@
               = @company.CreateDate.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
         .box-body
           %p.lead
-            Transaction Account:
+            %strong Transaction Account
+            %small.text-muted= @company.TxnActID
+            %br
+            Balance:
             = number_to_currency(@company.transaction_account.present? ? @company.transaction_account.balance : 0)
             %br
-            %small.text-muted= @company.TxnActID
+            Minimum Balance:
+            = number_to_currency(@company.transaction_account.present? ? @company.transaction_account.MinBalance : 0)
           %p.lead
-            Fee Account:
-            = number_to_currency(@company.fee_account.present? ? @company.fee_account.balance : 0)
-            %br
+            %strong Fee Account
             %small.text-muted= @company.FeeActID
+            %br
+            Balance:
+            = number_to_currency(@company.fee_account.present? ? @company.fee_account.balance : 0)
           %p.lead
             Can Quick Pay:
             = @company.can_quick_pay? ? 'Yes' : 'No'

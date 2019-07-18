@@ -24,6 +24,8 @@ class Company < ActiveRecord::Base
   after_create_commit :create_transaction_and_fee_accounts
   
   ### Start Virtual Attributes ###
+  attr_accessor :transaction_account_minimum_balance
+  
   def transaction_fee # Getter
     transaction_fee_cents.to_d / 100 if transaction_fee_cents
   end
@@ -174,7 +176,7 @@ class Company < ActiveRecord::Base
   
   def create_transaction_and_fee_accounts
     if self.transaction_account.blank?
-      new_transaction_account = Account.create(CompanyNumber: self.CompanyNumber)
+      new_transaction_account = Account.create(CompanyNumber: self.CompanyNumber, MinBalance: -1000000)
       self.update_attribute(:TxnActID, new_transaction_account.id)
     end
     if self.fee_account.blank?
