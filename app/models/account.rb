@@ -6,7 +6,7 @@ class Account < ActiveRecord::Base
   
   has_many :bill_payments
   belongs_to :customer, :foreign_key => "CustomerID", optional: true
-  has_many :transactions, :foreign_key => :from_acct_id
+#  has_many :transactions, :foreign_key => :from_acct_id
   belongs_to :company, :foreign_key => "CompanyNumber"
   belongs_to :account_type, :foreign_key => "ActTypeID", optional: true
 #  belongs_to :event
@@ -93,7 +93,7 @@ class Account < ActiveRecord::Base
   
   def transactions
 #    transactions = Transaction.where(from_acct_id: decrypted_account_number) + Transaction.where(to_acct_id: decrypted_account_number)
-    transactions = Transaction.where(from_acct_id: id) + Transaction.where(to_acct_id: id)
+    transactions = Transaction.where(from_acct_id: id).or(Transaction.where(to_acct_id: id))
     return transactions
   end
   
@@ -157,7 +157,8 @@ class Account < ActiveRecord::Base
   
   def wire_transactions
 #    transactions = Transaction.where(from_acct_id: decrypted_account_number, tran_code: 'CARD', sec_tran_code: 'TFR') + Transaction.where(to_acct_id: decrypted_account_number, tran_code: 'CARD', sec_tran_code: 'TFR')
-    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).order("date_time DESC") + Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).order("date_time DESC")
+#    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).order("date_time DESC") + Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).order("date_time DESC")
+    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).or(Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '])).order("date_time DESC")
     return transactions
   end
   

@@ -5,7 +5,7 @@
     = render 'shared/flash_messages'
     %h3
       %i.fa.fa-male
-      = "#{@customer.full_name.blank? ? @customer.phone : @customer.full_name}"
+      = @customer.identity
       %a{href: edit_customer_path(@customer)}
         %i.fa.fa-pencil
     
