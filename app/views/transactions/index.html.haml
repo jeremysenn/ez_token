@@ -82,7 +82,15 @@
             .box-body.no-padding
               = render partial: "transactions/index"
             .box-footer
-              .pull-right= paginate @transactions, param_name: 'transactions_page'
+              -#
+                .pull-right= paginate @transactions, param_name: 'transactions_page'
+              %div{id: 'endless_page'}
+                %br
+                %p.text-center{id: "spinner", style: 'display:none;'}
+                  %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+                  %span.sr-only Loading...
+                %p.text-center= link_to "Load More...", transactions_path(:transactions_page => @transactions.next_page, event_id: @event_id, type: @type, start_date: @start_date, end_date: @end_date), :class => 'load-more-transactions btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @transactions.next_page
+
 -#
   .container-fluid
     %br

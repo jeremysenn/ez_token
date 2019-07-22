@@ -46,16 +46,19 @@ class TransactionsController < ApplicationController
       @all_transactions = transactions.where(tranID: @transaction_id_or_receipt_number).or(transactions.where(receipt_nbr: @transaction_id_or_receipt_number))
     end
     
+    @transactions_total = 0
+    @transactions_fee_total = 0
+    @transactions_count = @all_transactions.count
+    @all_transactions.each do |transaction|
+      @transactions_total = @transactions_total + transaction.amt_auth unless transaction.amt_auth.blank?
+      @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.ChpFee.blank? or transaction.ChpFee.zero?
+    end
+    @transactions = @all_transactions.order("#{transactions_sort_column} #{transactions_sort_direction}").page(params[:transactions_page]).per(2)
+    
     respond_to do |format|
       format.html {
-        @transactions_total = 0
-        @transactions_fee_total = 0
-        @transactions_count = @all_transactions.count
-        @all_transactions.each do |transaction|
-          @transactions_total = @transactions_total + transaction.amt_auth unless transaction.amt_auth.blank?
-          @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.ChpFee.blank? or transaction.ChpFee.zero?
-        end
-        @transactions = @all_transactions.order("#{transactions_sort_column} #{transactions_sort_direction}").page(params[:transactions_page]).per(20)
+      }
+      format.js { # for endless page
       }
       format.csv { 
         @transactions = @all_transactions
