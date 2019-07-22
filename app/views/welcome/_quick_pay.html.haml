@@ -5,7 +5,7 @@
         %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
           %span{"aria-hidden" => "true"} ×
       .modal-body
-        = form_tag quick_pay_transactions_path, id: 'quick_pay_form', method: 'post', class: 'form-horizontal' do |f|
+        = form_tag quick_pay_transactions_path, id: 'quick_pay_form', method: 'post', multipart: true, class: 'form-horizontal' do |f|
           =# hidden_field_tag :device_id, @device.id
           .input-group.mb-3
             .input-group-prepend
@@ -18,7 +18,11 @@
             = text_field_tag :receipt_number, nil, :placeholder => "Reference Number", class: "form-control input-lg", style: "width: 100%;"
           .form-group
             = text_area_tag :note, nil, :placeholder => "Note", class: "form-control input-lg", style: "width: 100%;"
+          = image_tag('', id: 'file_image', class: 'img-responsive transaction-img')
+          .form-group
+            = file_field_tag "file", id: 'transaction_file', onchange: "PreviewImage();", class: 'btn btn-sm bg-orange', title: "<i class='fa fa-upload'/> Picture".html_safe
           .modal-footer
+            %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
             %button.btn.btn-primary{id: 'quick_pay_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Pay & Print"}} 
               %i.fa.fa-dollar
               Pay & Print
@@ -27,6 +31,21 @@
   $('.modal').on('shown.bs.modal', function() {
     $(this).find('[autofocus]').first().focus();
   });
+
+  function PreviewImage() {
+    var oFReader = new FileReader();
+    oFReader.readAsDataURL(document.getElementById("transaction_file").files[0]);
+
+    oFReader.onload = function (oFREvent) {
+      document.getElementById("file_image").src = oFREvent.target.result;
+    };
+  };
+
+  // Prettier file upload buttons
+  // Make sure wrapper hasn't already been applied
+  if (document.querySelector('.file-input-wrapper') === null) {
+    $('input[type=file]').bootstrapFileInput();
+  };
 
 -#
   $('#one_time_payment_pay_and_print_button').click(function() {

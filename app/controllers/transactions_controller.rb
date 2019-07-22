@@ -151,6 +151,9 @@ class TransactionsController < ApplicationController
     @receipt_number = params[:receipt_number]
     @note = params[:note]
 #    @device_id = params[:device_id]
+    if params[:file]
+      @file_upload = params[:file].path
+    end
     if current_user.company.allowed_to_quick_pay?
       @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
       @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
@@ -165,6 +168,9 @@ class TransactionsController < ApplicationController
     unless transaction_id.blank?
 #      redirect_back fallback_location: root_path, notice: 'Quick Pay submitted.'
 #      redirect_to barcode_customer_path(@customer), notice: 'Quick Pay submitted.'
+      unless @file_upload.blank?
+        FileUploadWorker.perform_async(transaction_id, @file_upload)
+      end
       redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
@@ -210,7 +216,7 @@ class TransactionsController < ApplicationController
 #      @transaction.upload_file = params[:file]
 #      @transaction.save!(validate: false)
       unless @file_upload.blank?
-        Rails.logger.debug "****************@file_upload: #{@file_upload}"
+#        Rails.logger.debug "****************@file_upload: #{@file_upload}"
         FileUploadWorker.perform_async(@transaction.id, @file_upload)
       end
       @transaction.send_text_message_receipt
