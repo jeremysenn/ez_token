@@ -1,6 +1,6 @@
 class DevicesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_device, only: [:show, :edit, :update, :destroy, :send_atm_command, :add_cash]
+  before_action :set_device, only: [:show, :edit, :update, :destroy, :send_atm_command, :add_cash, :reset_cash, :add_coin, :reset_coin, :get_term_totals]
   load_and_authorize_resource
   
   helper_method :transactions_sort_column, :transactions_sort_direction
@@ -85,6 +85,63 @@ class DevicesController < ApplicationController
     else
       flash[:alert] = "There was a problem doing the cash add."
     end
+    redirect_to @device
+  end
+  
+  def reset_cash
+    bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
+    bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
+    bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
+    bin_4 = params[:bin_4].blank? ? 0 : params[:bin_4]
+    bin_5 = params[:bin_5].blank? ? 0 : params[:bin_5]
+    bin_6 = params[:bin_6].blank? ? 0 : params[:bin_6]
+    bin_7 = params[:bin_7].blank? ? 0 : params[:bin_7]
+    bin_8 = params[:bin_8].blank? ? 0 : params[:bin_8]
+    if @device.reset_cash(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
+      flash[:notice] = "Cash reset."
+    else
+      flash[:alert] = "There was a problem doing the cash reset."
+    end
+    redirect_to @device
+  end
+  
+  def add_coin
+    bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
+    bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
+    bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
+    bin_4 = params[:bin_4].blank? ? 0 : params[:bin_4]
+    bin_5 = params[:bin_5].blank? ? 0 : params[:bin_5]
+    bin_6 = params[:bin_6].blank? ? 0 : params[:bin_6]
+    bin_7 = params[:bin_7].blank? ? 0 : params[:bin_7]
+    bin_8 = params[:bin_8].blank? ? 0 : params[:bin_8]
+    if @device.add_coin(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
+      flash[:notice] = "Coin added."
+    else
+      flash[:alert] = "There was a problem doing the coin add."
+    end
+    redirect_to @device
+  end
+  
+  def reset_coin
+    bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
+    bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
+    bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
+    bin_4 = params[:bin_4].blank? ? 0 : params[:bin_4]
+    bin_5 = params[:bin_5].blank? ? 0 : params[:bin_5]
+    bin_6 = params[:bin_6].blank? ? 0 : params[:bin_6]
+    bin_7 = params[:bin_7].blank? ? 0 : params[:bin_7]
+    bin_8 = params[:bin_8].blank? ? 0 : params[:bin_8]
+    if @device.reset_coin(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
+      flash[:notice] = "Coin reset."
+    else
+      flash[:alert] = "There was a problem doing the coin reset."
+    end
+    redirect_to @device
+  end
+  
+  def get_term_totals
+    response = @device.get_term_totals
+    flash[:notice] = response
     redirect_to @device
   end
   

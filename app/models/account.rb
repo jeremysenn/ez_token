@@ -216,18 +216,30 @@ class Account < ActiveRecord::Base
   end
   
   def decrypted_account_number
-    decoded_acctnbr = Base64.decode64(self.ActNbr).unpack("H*").first
-    Decrypt.decryption(decoded_acctnbr)
+    unless self.ActNbr.blank?
+      decoded_acctnbr = Base64.decode64(self.ActNbr).unpack("H*").first
+      Decrypt.decryption(decoded_acctnbr)
+    else
+      ""
+    end
   end
   
   def decrypted_bank_account_number
-    decoded_acctnbr = Base64.decode64(self.BankActNbr).unpack("H*").first
-    Decrypt.decryption(decoded_acctnbr)
+    unless self.BankActNbr.blank?
+      decoded_acctnbr = Base64.decode64(self.BankActNbr).unpack("H*").first
+      Decrypt.decryption(decoded_acctnbr)
+    else
+      ""
+    end
   end
   
   def decrypted_bank_routing_number
-    decoded_acctnbr = Base64.decode64(self.RoutingNbr).unpack("H*").first
-    Decrypt.decryption(decoded_acctnbr)
+    unless self.RoutingNbr.blank?
+      decoded_acctnbr = Base64.decode64(self.RoutingNbr).unpack("H*").first
+      Decrypt.decryption(decoded_acctnbr)
+    else
+      ""
+    end
   end
   
   def last_4_decrypted_bank_account_number

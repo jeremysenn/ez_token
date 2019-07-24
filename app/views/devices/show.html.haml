@@ -56,8 +56,20 @@
                   Commands
               %a.btn.btn-default.btn-block{"data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
                 %b
-                  %i.fa.fa-money
                   Add Cash
+              %a.btn.btn-default.btn-block{"data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
+                %b
+                  Reset Cash
+              %a.btn.btn-default.btn-block{"data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
+                %b
+                  Add Coin
+              %a.btn.btn-default.btn-block{"data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
+                %b
+                  Reset Coin
+              -# %a.btn.btn-default.btn-block{"data-target" => "#get-term-totals-modal", "data-toggle" => "modal", :type => "button"}
+              %a.btn.btn-default.btn-block{href: get_term_totals_device_path(@device), :type => "button"}
+                %b
+                  Get Term Totals
               #commands-modal.modal.fade
                 .modal-dialog.modal-sm
                   .modal-content
@@ -91,10 +103,105 @@
                   .modal-content
                     .modal-header
                       %h5.modal-title
-                        %i.fa.fa-money
                         Add Cash
                     .modal-body
                       = form_tag add_cash_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                            Submit
+              #reset-cash-modal.modal.fade
+                .modal-dialog.modal-sm
+                  .modal-content
+                    .modal-header
+                      %h5.modal-title
+                        Reset Cash
+                    .modal-body
+                      = form_tag reset_cash_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                            Submit
+              #add-coin-modal.modal.fade
+                .modal-dialog.modal-sm
+                  .modal-content
+                    .modal-header
+                      %h5.modal-title
+                        Add Coin
+                    .modal-body
+                      = form_tag add_coin_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                            Submit
+              #reset-coin-modal.modal.fade
+                .modal-dialog.modal-sm
+                  .modal-content
+                    .modal-header
+                      %h5.modal-title
+                        Add Coin
+                    .modal-body
+                      = form_tag reset_coin_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
                         .form-group.row
                           .col-sm-6
                             = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
