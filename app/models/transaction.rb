@@ -213,7 +213,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def error?
-    error_code > 0
+    error_code and error_code > 0
   end
   
   

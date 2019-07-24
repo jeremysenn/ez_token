@@ -497,6 +497,23 @@ class Device < ActiveRecord::Base
     Rails.logger.debug "** device.send_atm_disconnect_command response body: #{response.body}"
   end
   
+  def add_cash(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:add_cash, message: {DevID: self.id, Bin1: bin_1, Bin2: bin_2, Bin3: bin_3, Bin4: bin_4, Bin5: bin_5, Bin6: bin_6,
+        Bin7: bin_7, Bin8: bin_8})
+#    Rails.logger.debug "** device.add_cash response body: #{response.body}"
+
+    if response.success?
+      unless response.body[:add_cash_response].blank? or response.body[:add_cash_response][:return] != true
+        return true
+      else
+        return nil
+      end
+    else
+      return nil
+    end
+  end
+  
   #############################
   #     Class Methods      #
   #############################

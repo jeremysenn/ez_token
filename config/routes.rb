@@ -59,6 +59,7 @@ Rails.application.routes.draw do
   resources :devices do 
     member do
       get 'send_atm_command'
+      get 'add_cash'
     end
   end
   resources :payment_batch_csv_mappings

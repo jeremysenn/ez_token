@@ -46,14 +46,18 @@
                           = @device.status_string
                 %li.list-group-item
                   %b 
-                    %i.fa.fa-info-circle.margin-r-5
-                    Some Info
-                  %a.pull-right And more info
+                    %i.fa.fa-gears.margin-r-5
+                    ATM Actions
+                  -# %a.pull-right And more info
 
               %a.btn.btn-default.btn-block{"data-target" => "#commands-modal", "data-toggle" => "modal", :type => "button"}
                 %b
                   %i.fa.fa-arrows-alt
-                  ATM Commands
+                  Commands
+              %a.btn.btn-default.btn-block{"data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
+                %b
+                  %i.fa.fa-money
+                  Add Cash
               #commands-modal.modal.fade
                 .modal-dialog.modal-sm
                   .modal-content
@@ -82,22 +86,39 @@
                         Disconnect
                     .modal-footer
                       %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Done
-              -#
-                #modal-default.modal.fade
-                  .modal-dialog
-                    .modal-content
-                      .modal-header
-                        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
-                          %span{"aria-hidden" => "true"} ×
-                        %h4.modal-title Default Modal
-                      .modal-body
-                        %p One fine body…
-                      .modal-footer
-                        %button.btn.btn-default.pull-left{"data-dismiss" => "modal", :type => "button"} Close
-                        %button.btn.btn-primary{:type => "button"} Save changes
-                    / /.modal-content
-                  / /.modal-dialog
-                / /.modal
+              #add-cash-modal.modal.fade
+                .modal-dialog.modal-sm
+                  .modal-content
+                    .modal-header
+                      %h5.modal-title
+                        %i.fa.fa-money
+                        Add Cash
+                    .modal-body
+                      = form_tag add_cash_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                            Submit
         .col-md-9
           .box.box-primary
             .box-body
