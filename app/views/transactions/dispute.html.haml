@@ -68,15 +68,16 @@
               Receipt Number:
               - if not @to_customer.blank? and @to_customer.anonymous?
                 = @transaction.receipt_nbr
-          %p.lead
-            Amount Requested:
-            = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
-          %p.lead
-            Amount Authorized:
-            = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
-          %p.lead
-            Fee:
-            = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
+          -#
+            %p.lead
+              Amount Requested:
+              = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
+            %p.lead
+              Amount Authorized:
+              = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
+            %p.lead
+              Fee:
+              = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
           - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
             %p.lead
               Total:
