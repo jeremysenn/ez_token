@@ -50,22 +50,24 @@
                 = link_to "#{@from_customer.full_name} (#{@transaction.from_acct_id})", @from_customer
               - else
                 = @transaction.from_acct_id
-          %p.lead
-            Device ID:
-            = @transaction.dev_id
-          %p.lead
-            Tran ID:
-            = @transaction.id
-          %p.lead
-            Error Code:
-            = @transaction.error_code
-          %p.lead
-            Code:
-            = @transaction.error_code_long_description
-          %p.lead
-            Receipt Number:
-            - if not @to_customer.blank? and @to_customer.anonymous?
-              = "#{@transaction.receipt_nbr.blank? ? 'N/A' : @transaction.receipt_nbr}"
+          -#
+            %p.lead
+              Device ID:
+              = @transaction.dev_id
+            %p.lead
+              Tran ID:
+              = @transaction.id
+            %p.lead
+              Error Code:
+              = @transaction.error_code
+            %p.lead
+              Code:
+              = @transaction.error_code_long_description
+          - unless @transaction.receipt_nbr.blank?
+            %p.lead
+              Receipt Number:
+              - if not @to_customer.blank? and @to_customer.anonymous?
+                = @transaction.receipt_nbr
           %p.lead
             Amount Requested:
             = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
