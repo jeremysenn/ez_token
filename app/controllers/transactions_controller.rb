@@ -1,7 +1,7 @@
 class TransactionsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:dispute, :send_dispute_details]
   before_action :set_transaction, only: [:show, :edit, :update, :destroy, :reverse, :dispute, :send_dispute_details]
-  load_and_authorize_resource
+  load_and_authorize_resource except: [:dispute, :send_dispute_details]
   
   helper_method :transactions_sort_column, :transactions_sort_direction
 
@@ -291,9 +291,15 @@ class TransactionsController < ApplicationController
   # GET /transactions/1/dispute
   # GET /transactions/1/dispute.json
   def dispute
-    @from_customer = @transaction.from_account_customer
-    @to_customer = @transaction.to_account_customer
-    @send_notification = params[:send_notification]
+    @from_customer_phone = params[:phone]
+    unless @from_customer_phone.blank?
+      @from_customer = @transaction.from_account_customer
+      @to_customer = @transaction.to_account_customer
+      @send_notification = params[:send_notification]
+    else
+      flash[:alert] = "You are not allowed to access that page."
+      redirect_to root_path
+    end
   end
   
   def send_dispute_details

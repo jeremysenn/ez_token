@@ -3,14 +3,19 @@
   %head
     %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
   %body
-    %p
-      The following transaction is being disputed by
-      = @user.full_name.blank? ? @user.email : @user.full_name
+    - unless @user.blank?
+      %p
+        The following transaction is being disputed by
+        = @user.full_name.blank? ? @user.email : @user.full_name
     %p 
       Dispute details:
       %br
       = sanitize(@details).html_safe
-    %p= @transaction.date_time.in_time_zone(@user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+    %p
+      - unless @user.blank?
+        = @transaction.date_time.in_time_zone(@user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+      - else
+        = @transaction.date_time.strftime("%-m/%-d/%y %l:%M %p")
     %p
       Tran ID:
       = @transaction.id

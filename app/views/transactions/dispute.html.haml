@@ -16,7 +16,10 @@
       .box.box-primary
         .box-header.with-border
           %h3.box-title 
-            = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+            - unless current_user.blank?
+              = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+            - else
+              = @transaction.date_time.strftime("%-m/%-d/%y %l:%M %p")
           -#
             .box-tools.pull-right
               - unless @reversal_transaction.blank?
@@ -92,7 +95,10 @@
                 = @transaction.to_acct_id
             %p.lead
               DateTime:
-              = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+              - unless current_user.blank?
+                = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+              - else
+                = @transaction.date_time.strftime("%-m/%-d/%y %l:%M %p")
             %p.lead
               Status:
               = @transaction.status_long_description

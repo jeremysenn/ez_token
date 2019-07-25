@@ -23,7 +23,7 @@
     %link{:href => "/assets/bower_components/Ionicons/css/ionicons.min.css", :rel => "stylesheet"}/
 
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
-  %body.hold-transition{class: "#{user_signed_in? ? 'layout-top-nav' : 'login-page' }"}
+  %body.hold-transition{class: "#{(user_signed_in? or params[:action] == 'dispute') ? 'layout-top-nav' : 'login-page' }"}
     .wrapper
       - unless user_signed_in?
         - unless (params[:controller] == "customers" and params[:action] == "qr_code")
