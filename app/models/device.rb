@@ -570,17 +570,16 @@ class Device < ActiveRecord::Base
     response = client.call(:get_term_totals, message: {DevID: self.id})
     Rails.logger.debug "** device.get_term_totals response body: #{response.body}"
 
-    return response
-      
-#    if response.success?
+    if response.success?
 #      unless response.body[:get_term_totals_response].blank? or response.body[:get_term_totals_response][:return] != true 
-#        return response.body[:get_term_totals_response]
-#      else
-#        return nil
-#      end
-#    else
-#      return nil
-#    end
+      unless response.body[:get_term_totals_response].blank?
+        return response.body[:get_term_totals_response]
+      else
+        return nil
+      end
+    else
+      return nil
+    end
   end
   
   #############################

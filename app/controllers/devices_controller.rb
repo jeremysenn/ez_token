@@ -141,7 +141,7 @@ class DevicesController < ApplicationController
   
   def get_term_totals
     response = @device.get_term_totals
-    flash[:notice] = response
+    flash[:notice] = "#{response}"
     redirect_to @device
   end
   
