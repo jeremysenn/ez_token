@@ -1,6 +1,11 @@
 %nav.navbar.navbar-expand-lg.navbar-light.bg-light
   %a.navbar-brand{:href => root_path} 
     = image_tag(image_path("ezcash_logo_30.png"))
+  %form.form-inline.my-2.my-lg-0
+    - if params[:action] == 'dispute'
+      .my-2.my-sm-0= link_to 'Sign up', new_user_registration_path(first_name: @from_customer.blank? ? '' : @from_customer.first_name, last_name: @from_customer.blank? ? '' : @from_customer.last_name, email: @from_customer.blank? ? '' : @from_customer.email, phone: @from_customer.blank? ? '' : @from_customer.phone), class: 'btn btn-primary'
+      &nbsp;
+    .my-2.my-sm-0= link_to 'Log in', new_user_session_path, class: 'btn btn-success'
   -#
     %button.navbar-toggler{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
       %span.navbar-toggler-icon

@@ -292,7 +292,8 @@ class TransactionsController < ApplicationController
   # GET /transactions/1/dispute.json
   def dispute
     @from_customer_phone = params[:phone]
-    unless @from_customer_phone.blank?
+    @from_customer = @transaction.from_account_customer
+    unless @from_customer_phone.blank? or @from_customer_phone != @from_customer.phone
       @from_customer = @transaction.from_account_customer
       @to_customer = @transaction.to_account_customer
       @send_notification = params[:send_notification]
