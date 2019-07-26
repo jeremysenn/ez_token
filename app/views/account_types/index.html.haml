@@ -27,6 +27,7 @@
                 -# %th{:scope => "col"} ID
                 %th{:scope => "col"} Description
                 %th{:scope => "col"} Min Maintained Balance
+                %th{:scope => "col"} Min Allowable Balance
                 -# %th{:scope => "col"} Company
                 %th{:scope => "col"} Fund by ACH
                 -# %th{:scope => "col"} Fund by CC
@@ -49,6 +50,7 @@
                   -# %td= account_type.id
                   %td= account_type.description
                   %td= account_type.MinMaintainBal.blank? ? number_to_currency(0) : number_to_currency(account_type.MinMaintainBal)
+                  %td= account_type.MinBalMax.blank? ? number_to_currency(0) : number_to_currency(account_type.MinBalMax)
                   -# %td= account_type.company.blank? ? 'None' : account_type.company.name
                   %td= account_type.can_fund_by_ach? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
                   -# %td= account_type.can_fund_by_cc? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe

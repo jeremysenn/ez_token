@@ -87,6 +87,14 @@ class AccountType < ActiveRecord::Base
     self.AccountTypeID == 7
   end
   
+  def minimum_allowable_balance
+    unless self.MinBalMax.blank?
+      self.MinBalMax
+    else
+      0
+    end
+  end
+  
   #############################
   #     Class Methods      #
   #############################
