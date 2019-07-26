@@ -30,6 +30,7 @@ class DevicesController < ApplicationController
     @bill_counts = @device.bill_counts
     @denoms = @device.denoms
     @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
+    @term_totals = params[:term_totals]
     
     @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
     @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)
@@ -141,8 +142,8 @@ class DevicesController < ApplicationController
   
   def get_term_totals
     response = @device.get_term_totals
-    flash[:notice] = "#{response}"
-    redirect_to @device
+    flash[:notice] = "Term totals requested."
+    redirect_to device_path(@device, term_totals: response)
   end
   
   private

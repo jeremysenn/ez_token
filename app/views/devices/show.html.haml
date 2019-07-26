@@ -67,9 +67,6 @@
                 %b
                   Reset Coin
               -# %a.btn.btn-default.btn-block{"data-target" => "#get-term-totals-modal", "data-toggle" => "modal", :type => "button"}
-              %a.btn.btn-default.btn-block{href: get_term_totals_device_path(@device), :type => "button"}
-                %b
-                  Get Term Totals
               #commands-modal.modal.fade
                 .modal-dialog.modal-sm
                   .modal-content
@@ -242,6 +239,10 @@
                   %a#cuts-tab.nav-link{"aria-controls" => "cuts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cuts", :role => "tab"} 
                     %i.fa.fa-credit-card
                     = "Cuts" unless browser.device.mobile?
+                %li.nav-item
+                  %a#bins-tab.nav-link{"aria-controls" => "bins", "aria-selected" => "false", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
+                    %i.fa.fa-inbox
+                    = "Bins" unless browser.device.mobile?
                 -#
                   %li.nav-item
                     %a#accounts-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#accounts", :role => "tab"} 
@@ -272,6 +273,84 @@
                 -#
                   #accounts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                     Accounts
+                  .box.box-primary{"data-widget" => "box-widget"}
+                #bins.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                  %br
+                  .box.box-warning
+                    .box-header.with-border
+                      .box-title
+                        Host
+                      .box-body
+                        .table-responsive
+                          %table.table.table-striped.table-condensed.table-bordered
+                            %thead
+                              %tr
+                                - if @device.bin_1_count != 0 and @device.bin_1_count != nil
+                                  %th{:scope => "col"} 1
+                                - if @device.bin_2_count != 0 and @device.bin_2_count != nil
+                                  %th{:scope => "col"} 2
+                                - if @device.bin_3_count != 0 and @device.bin_3_count != nil
+                                  %th{:scope => "col"} 3
+                                - if @device.bin_4_count != 0 and @device.bin_4_count != nil
+                                  %th{:scope => "col"} 4
+                                - if @device.bin_5_count != 0 and @device.bin_5_count != nil
+                                  %th{:scope => "col"} 5
+                                - if @device.bin_6_count != 0 and @device.bin_6_count != nil
+                                  %th{:scope => "col"} 6
+                                - if @device.bin_7_count != 0 and @device.bin_7_count != nil
+                                  %th{:scope => "col"} 7
+                                - if @device.bin_8_count != 0 and @device.bin_8_count != nil
+                                  %th{:scope => "col"} 8
+                            %tbody
+                              %tr
+                                = render partial: "devices/bin_details", locals: {device: @device}  
+                  - unless @term_totals.blank?
+                    .box.box-warning
+                      .box-header.with-border
+                        .box-title
+                          Term
+                        .box-body
+                          .table-responsive
+                            %table.table.table-striped.table-condensed.table-bordered
+                              %thead
+                                %tr
+                                  - if @device.bin_1_count != 0 and @device.bin_1_count != nil
+                                    %th{:scope => "col"} 1
+                                  - if @device.bin_2_count != 0 and @device.bin_2_count != nil
+                                    %th{:scope => "col"} 2
+                                  - if @device.bin_3_count != 0 and @device.bin_3_count != nil
+                                    %th{:scope => "col"} 3
+                                  - if @device.bin_4_count != 0 and @device.bin_4_count != nil
+                                    %th{:scope => "col"} 4
+                                  - if @device.bin_5_count != 0 and @device.bin_5_count != nil
+                                    %th{:scope => "col"} 5
+                                  - if @device.bin_6_count != 0 and @device.bin_6_count != nil
+                                    %th{:scope => "col"} 6
+                                  - if @device.bin_7_count != 0 and @device.bin_7_count != nil
+                                    %th{:scope => "col"} 7
+                                  - if @device.bin_8_count != 0 and @device.bin_8_count != nil
+                                    %th{:scope => "col"} 8
+                              %tbody
+                                %tr
+                                  - if @device.bin_1_count != 0 and @device.bin_1_count != nil
+                                    %td= @term_totals['bin1']
+                                  - if @device.bin_2_count != 0 and @device.bin_2_count != nil
+                                    %td= @term_totals['bin2']
+                                  - if @device.bin_3_count != 0 and @device.bin_3_count != nil
+                                    %td= @term_totals['bin3']
+                                  - if @device.bin_4_count != 0 and @device.bin_4_count != nil
+                                    %td= @term_totals['bin4']
+                                  - if @device.bin_5_count != 0 and @device.bin_5_count != nil
+                                    %td= @term_totals['bin5']
+                                  - if @device.bin_6_count != 0 and @device.bin_6_count != nil
+                                    %td= @term_totals['bin6']
+                                  - if @device.bin_7_count != 0 and @device.bin_7_count != nil
+                                    %td= @term_totals['bin7']
+                                  - if @device.bin_8_count != 0 and @device.bin_8_count != nil
+                                    %td= @term_totals['bin8']
+                  %p
+                    %a.btn.btn-default{href: get_term_totals_device_path(@device), :type => "button"}
+                      Get Term Totals
                 
 :javascript
   //*** Remember the selected tab on page refresh ***
