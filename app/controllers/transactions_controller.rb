@@ -9,10 +9,11 @@ class TransactionsController < ApplicationController
   # GET /transactions.json
   def index
     @type = params[:type] ||= 'All transactions'
-#    @start_date = transaction_params[:start_date] ||= Date.today.to_s
-#    @end_date = transaction_params[:end_date] ||= Date.today.to_s
-    @start_date = params[:start_date] ||= Date.today.last_week.to_s
-    @end_date = params[:end_date] ||= Date.today.to_s
+#    @start_date = params[:start_date] ||= Date.today.last_week.to_s
+#    @end_date = params[:end_date] ||= Date.today.to_s
+    @start_date = params[:start_date].blank? ?  Date.today.last_week.to_s : params[:start_date]
+    @end_date = params[:end_date].blank? ?  Date.today.to_s : params[:end_date]
+    
     @transaction_id_or_receipt_number = params[:transaction_id]
     @event_id = params[:event_id]
     transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
