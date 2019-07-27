@@ -234,7 +234,7 @@
                       %i.fa.fa-bolt
                       = "Transactions" unless browser.device.mobile?
                 %li.nav-item
-                  %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
+                  %a#statuses-tab.nav-link.active{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
                     %i.fa.fa-signal
                     = "Statuses" unless browser.device.mobile?
                 %li.nav-item
@@ -254,7 +254,7 @@
                 -#
                   #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                     = render partial: "transactions/index"
-                #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                #statuses.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   %br
                   .row
                     .col-md-6
