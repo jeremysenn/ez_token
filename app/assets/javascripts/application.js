@@ -26,4 +26,6 @@
 //= require nested_form_fields
 //= require select2
 //= require bootstrap.file-input
+//= require jquery.inview.min.js
+//= require jQuery.loadScroll.js
 //= require_tree .

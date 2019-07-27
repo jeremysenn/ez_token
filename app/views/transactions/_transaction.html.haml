@@ -1,0 +1,22 @@
+- to_customer = transaction.to_account_customer
+- from_customer = transaction.from_account_customer
+%tr{class: transaction.reversed? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
+  %th{:scope => "row"}= link_to transaction.id, transaction
+  %td= transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
+  %td
+    - unless to_customer.blank?
+      = link_to to_customer.identity, customer_path(to_customer, account_id: transaction.to_acct_id) unless transaction.to_account.blank?
+    - else
+      = transaction.to_account.company.name unless transaction.to_account.blank?
+  %td
+    - unless from_customer.blank?
+      = link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
+    - else
+      = transaction.from_account.company.name unless transaction.from_account.blank?
+  %td= transaction.event.blank? ? 'N/A' : transaction.event.title
+  %td= "#{transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(transaction.ChpFee)}" 
+  %td= "#{transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_auth)}"
+  %td
+    - unless to_customer.blank? or transaction.to_account.balance.blank? or transaction.to_account.balance.zero?
+      %a.btn.btn-default{href: barcode_customer_path(to_customer.id), target: '_blank'}
+        %i.fa.fa-print

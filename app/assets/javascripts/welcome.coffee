@@ -4,6 +4,18 @@
 
 jQuery ->
   $(document).on 'turbolinks:load', ->
+    
+    loading_transactions = false
+    $('a.load-more-transactions').on 'inview', (e, visible) ->
+      return if loading_transactions or not visible
+      loading_transactions = true
+      $('#spinner').show()
+      $('a.load-more-transactions').hide()
+
+      $.getScript $(this).attr('href'), ->
+        loading_transactions = false
+
+  
     $('.box').boxWidget
       animationSpeed: 500
       collapseTrigger: '#box_tool_collapse'

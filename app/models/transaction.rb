@@ -213,7 +213,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def error?
-    error_code > 0
+    error_code and error_code > 0
   end
   
   
@@ -386,7 +386,7 @@ class Transaction < ActiveRecord::Base
     unless from_customer_phone.blank?
 #      SendSmsWorker.perform_async(cell_phone_number, id, self.CustomerID, self.ClubCompanyNbr, message_body)
 #      message = "You have transfered #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)} to #{to_customer.company.name}. Your balance is #{ActiveSupport::NumberHelper.number_to_currency(from_account.Balance)}"
-      message = "#{to_account.customer_name} debited #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute"
+      message = "#{to_account.customer_name} debited #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
       client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
       client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
       Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
@@ -460,6 +460,19 @@ class Transaction < ActiveRecord::Base
       csv << attributes
 
       all.each do |transaction|
+        csv << attributes.map{ |attr| transaction.send(attr) }
+      end
+    end
+  end
+  
+  def self.export_to_csv(transactions)
+    require 'csv'
+    attributes = %w{tranID date_time Description dev_id error_code tran_code sec_tran_code from_acct_nbr to_acct_nbr amt_req amt_auth ChpFee}
+    
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+
+      transactions.each do |transaction|
         csv << attributes.map{ |attr| transaction.send(attr) }
       end
     end

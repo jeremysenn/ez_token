@@ -1,7 +1,7 @@
 class TransactionsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:dispute, :send_dispute_details]
   before_action :set_transaction, only: [:show, :edit, :update, :destroy, :reverse, :dispute, :send_dispute_details]
-  load_and_authorize_resource
+  load_and_authorize_resource except: [:dispute, :send_dispute_details]
   
   helper_method :transactions_sort_column, :transactions_sort_direction
 
@@ -9,20 +9,21 @@ class TransactionsController < ApplicationController
   # GET /transactions.json
   def index
     @type = params[:type] ||= 'All transactions'
-#    @start_date = transaction_params[:start_date] ||= Date.today.to_s
-#    @end_date = transaction_params[:end_date] ||= Date.today.to_s
-    @start_date = params[:start_date] ||= Date.today.last_week.to_s
-    @end_date = params[:end_date] ||= Date.today.to_s
+#    @start_date = params[:start_date] ||= Date.today.last_week.to_s
+#    @end_date = params[:end_date] ||= Date.today.to_s
+    @start_date = params[:start_date].blank? ?  Date.today.last_week.to_s : params[:start_date]
+    @end_date = params[:end_date].blank? ?  Date.today.to_s : params[:end_date]
+    
     @transaction_id_or_receipt_number = params[:transaction_id]
     @event_id = params[:event_id]
-    transaction_records = current_user.super? ? Transaction.all : current_user.company.transactions
+    transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
     if current_user.administrator? or current_user.collaborator? or current_user.super?
       @events = current_user.super? ? Event.all : current_user.company.events
-      transactions = @event_id.blank? ? transaction_records.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).where(event_id: @event_id)
+      transactions = @event_id.blank? ? transaction_records : transaction_records.where(event_id: @event_id)
     else
       @events = current_user.events
-      transactions = Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
-      transactions = @event_id.blank? ? transactions.where(from_acct_id: current_user.accounts.map(&:id)).or(transactions.where(to_acct_id: current_user.accounts.map(&:id))) : transactions.where(from_acct_id: current_user.accounts.map(&:id)).or(transactions.where(to_acct_id: current_user.accounts.map(&:id))).where(event_id: @event_id)
+      transactions = transaction_records
+      transactions = @event_id.blank? ? transaction_records.where(from_acct_id: current_user.accounts.map(&:id)).or(transaction_records.where(to_acct_id: current_user.accounts.map(&:id))) : transaction_records.where(from_acct_id: current_user.accounts.map(&:id)).or(transaction_records.where(to_acct_id: current_user.accounts.map(&:id))).where(event_id: @event_id)
     end
     if @transaction_id_or_receipt_number.blank?
       if @type == 'Withdrawal'
@@ -46,16 +47,19 @@ class TransactionsController < ApplicationController
       @all_transactions = transactions.where(tranID: @transaction_id_or_receipt_number).or(transactions.where(receipt_nbr: @transaction_id_or_receipt_number))
     end
     
+    @transactions_total = 0
+    @transactions_fee_total = 0
+    @transactions_count = @all_transactions.count
+    @all_transactions.each do |transaction|
+      @transactions_total = @transactions_total + transaction.amt_auth unless transaction.amt_auth.blank?
+      @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.ChpFee.blank? or transaction.ChpFee.zero?
+    end
+    @transactions = @all_transactions.order("#{transactions_sort_column} #{transactions_sort_direction}").page(params[:transactions_page]).per(10)
+    
     respond_to do |format|
       format.html {
-        @transactions_total = 0
-        @transactions_fee_total = 0
-        @transactions_count = @all_transactions.count
-        @all_transactions.each do |transaction|
-          @transactions_total = @transactions_total + transaction.amt_auth unless transaction.amt_auth.blank?
-          @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.ChpFee.blank? or transaction.ChpFee.zero?
-        end
-        @transactions = @all_transactions.order("#{transactions_sort_column} #{transactions_sort_direction}").page(params[:transactions_page]).per(20)
+      }
+      format.js { # for endless page
       }
       format.csv { 
         @transactions = @all_transactions
@@ -151,6 +155,9 @@ class TransactionsController < ApplicationController
     @receipt_number = params[:receipt_number]
     @note = params[:note]
 #    @device_id = params[:device_id]
+    if params[:file]
+      @file_upload = params[:file].path
+    end
     if current_user.company.allowed_to_quick_pay?
       @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
       @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
@@ -165,6 +172,9 @@ class TransactionsController < ApplicationController
     unless transaction_id.blank?
 #      redirect_back fallback_location: root_path, notice: 'Quick Pay submitted.'
 #      redirect_to barcode_customer_path(@customer), notice: 'Quick Pay submitted.'
+      unless @file_upload.blank?
+        FileUploadWorker.perform_async(transaction_id, @file_upload)
+      end
       redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
@@ -210,7 +220,7 @@ class TransactionsController < ApplicationController
 #      @transaction.upload_file = params[:file]
 #      @transaction.save!(validate: false)
       unless @file_upload.blank?
-        Rails.logger.debug "****************@file_upload: #{@file_upload}"
+#        Rails.logger.debug "****************@file_upload: #{@file_upload}"
         FileUploadWorker.perform_async(@transaction.id, @file_upload)
       end
       @transaction.send_text_message_receipt
@@ -282,9 +292,16 @@ class TransactionsController < ApplicationController
   # GET /transactions/1/dispute
   # GET /transactions/1/dispute.json
   def dispute
+    @from_customer_phone = params[:phone]
     @from_customer = @transaction.from_account_customer
-    @to_customer = @transaction.to_account_customer
-    @send_notification = params[:send_notification]
+    unless @from_customer_phone.blank? or @from_customer_phone != @from_customer.phone
+      @from_customer = @transaction.from_account_customer
+      @to_customer = @transaction.to_account_customer
+      @send_notification = params[:send_notification]
+    else
+      flash[:alert] = "You are not allowed to access that page."
+      redirect_to root_path
+    end
   end
   
   def send_dispute_details

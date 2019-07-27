@@ -6,7 +6,7 @@ class Account < ActiveRecord::Base
   
   has_many :bill_payments
   belongs_to :customer, :foreign_key => "CustomerID", optional: true
-  has_many :transactions, :foreign_key => :from_acct_id
+#  has_many :transactions, :foreign_key => :from_acct_id
   belongs_to :company, :foreign_key => "CompanyNumber"
   belongs_to :account_type, :foreign_key => "ActTypeID", optional: true
 #  belongs_to :event
@@ -42,6 +42,7 @@ class Account < ActiveRecord::Base
   
   before_save :check_for_funding_payment
   before_create :set_maintained_balance
+  before_create :set_minimum_allowable_balance
   
   #############################
   #     Instance Methods      #
@@ -93,7 +94,7 @@ class Account < ActiveRecord::Base
   
   def transactions
 #    transactions = Transaction.where(from_acct_id: decrypted_account_number) + Transaction.where(to_acct_id: decrypted_account_number)
-    transactions = Transaction.where(from_acct_id: id) + Transaction.where(to_acct_id: id)
+    transactions = Transaction.where(from_acct_id: id).or(Transaction.where(to_acct_id: id))
     return transactions
   end
   
@@ -157,7 +158,8 @@ class Account < ActiveRecord::Base
   
   def wire_transactions
 #    transactions = Transaction.where(from_acct_id: decrypted_account_number, tran_code: 'CARD', sec_tran_code: 'TFR') + Transaction.where(to_acct_id: decrypted_account_number, tran_code: 'CARD', sec_tran_code: 'TFR')
-    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).order("date_time DESC") + Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).order("date_time DESC")
+#    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).order("date_time DESC") + Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).order("date_time DESC")
+    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR ']).or(Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '])).order("date_time DESC")
     return transactions
   end
   
@@ -215,18 +217,30 @@ class Account < ActiveRecord::Base
   end
   
   def decrypted_account_number
-    decoded_acctnbr = Base64.decode64(self.ActNbr).unpack("H*").first
-    Decrypt.decryption(decoded_acctnbr)
+    unless self.ActNbr.blank?
+      decoded_acctnbr = Base64.decode64(self.ActNbr).unpack("H*").first
+      Decrypt.decryption(decoded_acctnbr)
+    else
+      ""
+    end
   end
   
   def decrypted_bank_account_number
-    decoded_acctnbr = Base64.decode64(self.BankActNbr).unpack("H*").first
-    Decrypt.decryption(decoded_acctnbr)
+    unless self.BankActNbr.blank?
+      decoded_acctnbr = Base64.decode64(self.BankActNbr).unpack("H*").first
+      Decrypt.decryption(decoded_acctnbr)
+    else
+      ""
+    end
   end
   
   def decrypted_bank_routing_number
-    decoded_acctnbr = Base64.decode64(self.RoutingNbr).unpack("H*").first
-    Decrypt.decryption(decoded_acctnbr)
+    unless self.RoutingNbr.blank?
+      decoded_acctnbr = Base64.decode64(self.RoutingNbr).unpack("H*").first
+      Decrypt.decryption(decoded_acctnbr)
+    else
+      ""
+    end
   end
   
   def last_4_decrypted_bank_account_number
@@ -633,9 +647,21 @@ class Account < ActiveRecord::Base
     self.MaintainBal = minimum_maintain_balance
   end
   
+  def set_minimum_allowable_balance
+    self.MinBalance = minimum_allowable_balance
+  end
+  
   def minimum_maintain_balance
     unless account_type.blank? or account_type.MinMaintainBal.blank?
       account_type.MinMaintainBal
+    else
+      0
+    end
+  end
+  
+  def minimum_allowable_balance
+    unless account_type.blank? or account_type.MinBalMax.blank?
+      account_type.MinBalMax
     else
       0
     end

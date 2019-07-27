@@ -18,11 +18,11 @@
           %th{:scope => "col"}= transactions_sort_link 'ChpFee', "Fee", @start_date, @end_date, @type, @transaction_id_or_receipt_number
           %th{:scope => "col"}= transactions_sort_link 'amt_auth', "Amt", @start_date, @end_date, @type, @transaction_id_or_receipt_number
           %th
-      %tbody
+      %tbody{id: 'transactions_list'}
         - @transactions.each do |transaction|
           - to_customer = transaction.to_account_customer
           - from_customer = transaction.from_account_customer
-          %tr{class: transaction.reversed? ? 'table-danger' : ''}
+          %tr{class: transaction.reversed? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
             %th{:scope => "row"}= link_to transaction.id, transaction
             %td= transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
             %td

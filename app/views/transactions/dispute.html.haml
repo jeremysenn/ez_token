@@ -16,7 +16,10 @@
       .box.box-primary
         .box-header.with-border
           %h3.box-title 
-            = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+            - unless current_user.blank?
+              = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+            - else
+              = @transaction.date_time.strftime("%-m/%-d/%y %l:%M %p")
           -#
             .box-tools.pull-right
               - unless @reversal_transaction.blank?
@@ -47,31 +50,34 @@
                 = link_to "#{@from_customer.full_name} (#{@transaction.from_acct_id})", @from_customer
               - else
                 = @transaction.from_acct_id
-          %p.lead
-            Device ID:
-            = @transaction.dev_id
-          %p.lead
-            Tran ID:
-            = @transaction.id
-          %p.lead
-            Error Code:
-            = @transaction.error_code
-          %p.lead
-            Code:
-            = @transaction.error_code_long_description
-          %p.lead
-            Receipt Number:
-            - if not @to_customer.blank? and @to_customer.anonymous?
-              = "#{@transaction.receipt_nbr.blank? ? 'N/A' : @transaction.receipt_nbr}"
-          %p.lead
-            Amount Requested:
-            = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
-          %p.lead
-            Amount Authorized:
-            = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
-          %p.lead
-            Fee:
-            = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
+          -#
+            %p.lead
+              Device ID:
+              = @transaction.dev_id
+            %p.lead
+              Tran ID:
+              = @transaction.id
+            %p.lead
+              Error Code:
+              = @transaction.error_code
+            %p.lead
+              Code:
+              = @transaction.error_code_long_description
+          - unless @transaction.receipt_nbr.blank?
+            %p.lead
+              Receipt Number:
+              - if not @to_customer.blank? and @to_customer.anonymous?
+                = @transaction.receipt_nbr
+          -#
+            %p.lead
+              Amount Requested:
+              = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
+            %p.lead
+              Amount Authorized:
+              = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
+            %p.lead
+              Fee:
+              = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
           - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
             %p.lead
               Total:
@@ -92,7 +98,10 @@
                 = @transaction.to_acct_id
             %p.lead
               DateTime:
-              = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+              - unless current_user.blank?
+                = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+              - else
+                = @transaction.date_time.strftime("%-m/%-d/%y %l:%M %p")
             %p.lead
               Status:
               = @transaction.status_long_description
@@ -121,8 +130,8 @@
             = form_tag send_dispute_details_transaction_path, :method => 'post', class: 'form-horizontal' do
               = hidden_field_tag :id, @transaction.id
               = hidden_field_tag :send_notification, true
-              .form-group
-                = text_area_tag :details, nil, :placeholder => "Details of dispute", class: "form-control input-lg", rows: 4, style: 'width:50%', autofocus: true
+              .form-group.col-sm-12.col-md-6
+                = text_area_tag :details, nil, :placeholder => "Details of dispute", class: "form-control input-lg", rows: 4, style: 'width:100%', autofocus: true
               = link_to 'Cancel', root_path, class: "btn btn-success"
               = button_tag(:type => 'submit', :class => 'btn btn-danger', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit dispute"}) do
                 %i.fa.fa-send

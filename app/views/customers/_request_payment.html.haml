@@ -1,5 +1,5 @@
 %div{:id => "request_payment_details"}
-  = form_tag quick_purchase_transactions_path, id: 'quick_purchase_form', method: 'post', multipart: true, class: 'form-inline' do |f|
+  = form_tag quick_purchase_transactions_path, id: 'quick_purchase_form', method: 'post', multipart: true, class: 'form-horizontal' do |f|
     =# hidden_field_tag :to_account_id, current_user.customer.account.id
     = hidden_field_tag :to_account_id, @account.id
     .input-group.input-group-lg.mb-3
@@ -44,11 +44,12 @@
             =# select_tag :from_account_id, options_from_collection_for_select(@event.member_accounts, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
             .form-group.form-group-lg
               = select_tag :from_account_id, options_from_collection_for_select(@event.accounts.can_be_pulled_by_search, "id", "customer_user_name_and_registration_source"), class: "form-control input-lg", style: 'width:100%;', prompt: 'Search/Select', required: true
-            = image_tag('', id: 'file_image', class: 'img-responsive transaction-img')
             .form-group
               = text_area_tag :note, nil, :placeholder => "Note", class: "form-control input-lg", style: "width: 100%;"
+            = image_tag('', id: 'file_image', class: 'img-responsive transaction-img')
+            .form-group
+              = file_field_tag "file", id: 'transaction_file', onchange: "PreviewImage();", class: 'btn btn-sm bg-orange', title: "<i class='fa fa-upload'/> Picture".html_safe
           .modal-footer
-            = file_field_tag "file", id: 'transaction_file', onchange: "PreviewImage();", class: 'btn btn-default', title: "<i class='fa fa-upload'/> Picture".html_safe
             %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
             %button.btn.btn-primary{id: 'quick_purchase_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
               Submit

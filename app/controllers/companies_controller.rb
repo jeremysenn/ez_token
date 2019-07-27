@@ -11,6 +11,20 @@ class CompaniesController < ApplicationController
   # GET /companies/1
   # GET /companies/1.json
   def show
+    @transaction_account = @company.transaction_account
+    unless @transaction_account.blank?
+      @start_date = params[:start_date] ||= Date.today.last_week.to_s
+      @end_date = params[:end_date] ||= Date.today.to_s
+      @all_payment_transactions = @transaction_account.transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).sort_by(&:date_time).reverse
+    end
+    respond_to do |format|
+      format.html {
+        @payment_transactions =  Kaminari.paginate_array(@all_payment_transactions).page(params[:page]).per(10) unless @all_payment_transactions.blank?
+      }
+      format.csv { 
+        send_data Transaction.export_to_csv(@all_payment_transactions), filename: "Company_#{@company.id}_payment_transactions-#{@start_date}-#{@end_date}.csv" 
+        }
+    end
   end
 
   # GET /companies/new
@@ -20,6 +34,7 @@ class CompaniesController < ApplicationController
 
   # GET /companies/1/edit
   def edit
+    @transaction_account = @company.transaction_account
   end
 
   # POST /companies
@@ -42,8 +57,12 @@ class CompaniesController < ApplicationController
   # PATCH/PUT /companies/1.json
   def update
     respond_to do |format|
+      @transaction_account_minimum_balance = company_params[:transaction_account_minimum_balance]
       if @company.update(company_params)
-        format.html { redirect_to @company, notice: 'Company was successfully updated.' }
+        format.html { 
+          @company.transaction_account.update_attribute(:MinBalance, @transaction_account_minimum_balance) unless @transaction_account_minimum_balance.blank?
+          redirect_to @company, notice: 'Company was successfully updated.' 
+          }
         format.json { render :show, status: :ok, location: @company }
       else
         format.html { render :edit }
@@ -74,6 +93,6 @@ class CompaniesController < ApplicationController
 #    end
     
     def company_params
-      params.fetch(:company, {}).permit(:CompanyName, :TxnActID, :FeeActID, :can_quick_pay, :quick_pay_account_type_id)
+      params.fetch(:company, {}).permit(:CompanyName, :TxnActID, :FeeActID, :can_quick_pay, :quick_pay_account_type_id, :transaction_account_minimum_balance)
     end
 end

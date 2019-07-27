@@ -1,6 +1,6 @@
 class DevicesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_device, only: [:show, :edit, :update, :destroy, :send_atm_command]
+  before_action :set_device, only: [:show, :edit, :update, :destroy, :send_atm_command, :add_cash, :reset_cash, :add_coin, :reset_coin, :get_term_totals]
   load_and_authorize_resource
   
   helper_method :transactions_sort_column, :transactions_sort_direction
@@ -30,6 +30,7 @@ class DevicesController < ApplicationController
     @bill_counts = @device.bill_counts
     @denoms = @device.denoms
     @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
+    @term_totals = params[:term_totals]
     
     @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
     @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)
@@ -69,6 +70,80 @@ class DevicesController < ApplicationController
         render json: { "response" => response }, :status => :ok 
       }
     end
+  end
+  
+  def add_cash
+    bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
+    bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
+    bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
+    bin_4 = params[:bin_4].blank? ? 0 : params[:bin_4]
+    bin_5 = params[:bin_5].blank? ? 0 : params[:bin_5]
+    bin_6 = params[:bin_6].blank? ? 0 : params[:bin_6]
+    bin_7 = params[:bin_7].blank? ? 0 : params[:bin_7]
+    bin_8 = params[:bin_8].blank? ? 0 : params[:bin_8]
+    if @device.add_cash(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
+      flash[:notice] = "Cash added."
+    else
+      flash[:alert] = "There was a problem doing the cash add."
+    end
+    redirect_to @device
+  end
+  
+  def reset_cash
+    bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
+    bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
+    bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
+    bin_4 = params[:bin_4].blank? ? 0 : params[:bin_4]
+    bin_5 = params[:bin_5].blank? ? 0 : params[:bin_5]
+    bin_6 = params[:bin_6].blank? ? 0 : params[:bin_6]
+    bin_7 = params[:bin_7].blank? ? 0 : params[:bin_7]
+    bin_8 = params[:bin_8].blank? ? 0 : params[:bin_8]
+    if @device.reset_cash(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
+      flash[:notice] = "Cash reset."
+    else
+      flash[:alert] = "There was a problem doing the cash reset."
+    end
+    redirect_to @device
+  end
+  
+  def add_coin
+    bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
+    bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
+    bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
+    bin_4 = params[:bin_4].blank? ? 0 : params[:bin_4]
+    bin_5 = params[:bin_5].blank? ? 0 : params[:bin_5]
+    bin_6 = params[:bin_6].blank? ? 0 : params[:bin_6]
+    bin_7 = params[:bin_7].blank? ? 0 : params[:bin_7]
+    bin_8 = params[:bin_8].blank? ? 0 : params[:bin_8]
+    if @device.add_coin(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
+      flash[:notice] = "Coin added."
+    else
+      flash[:alert] = "There was a problem doing the coin add."
+    end
+    redirect_to @device
+  end
+  
+  def reset_coin
+    bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
+    bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
+    bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
+    bin_4 = params[:bin_4].blank? ? 0 : params[:bin_4]
+    bin_5 = params[:bin_5].blank? ? 0 : params[:bin_5]
+    bin_6 = params[:bin_6].blank? ? 0 : params[:bin_6]
+    bin_7 = params[:bin_7].blank? ? 0 : params[:bin_7]
+    bin_8 = params[:bin_8].blank? ? 0 : params[:bin_8]
+    if @device.reset_coin(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
+      flash[:notice] = "Coin reset."
+    else
+      flash[:alert] = "There was a problem doing the coin reset."
+    end
+    redirect_to @device
+  end
+  
+  def get_term_totals
+    response = @device.get_term_totals
+    flash[:notice] = "Term totals requested."
+    redirect_to device_path(@device, term_totals: response)
   end
   
   private

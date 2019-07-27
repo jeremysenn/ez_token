@@ -1,4 +1,11 @@
 .box.box-primary
+  .box-header.with-border
+    - unless @company.new_record?
+      %h3.box-title 
+        = "Company #{@company.CompanyNumber}"
+        %small.text-muted
+          Created
+          = @company.CreateDate.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
   .box-body
     = simple_form_for(@company) do |f|
       = f.error_notification
@@ -13,13 +20,26 @@
         - unless @company.new_record?
           .row
             .col-xs-12.col-sm-6
-              = f.input :TxnActID, as: :integer, label: "Transaction Account", required: true
+              .form-group
+                Transaction Account:
+                = @company.TxnActID.blank? ? 'None' : @company.TxnActID
+                - if current_user.super? and not @company.transaction_account.blank?
+                  .form-inputs
+                    = f.input :transaction_account_minimum_balance, required: true, label: "Minimum Balance" do
+                      .input-group
+                        .input-group-prepend
+                          %span.input-group-text $
+                        = f.input_field :transaction_account_minimum_balance, value: @transaction_account.present? ? @transaction_account.MinBalance.to_f : 0
+          .row
             .col-xs-12.col-sm-6
-              = f.input :FeeActID, as: :integer, label: "Fee Account", required: true
-        .row
-          .col-xs-12.col-sm-6
-            = f.input :can_quick_pay, as: :boolean, label: 'Quick Pay'
-            = f.input :quick_pay_account_type_id, collection: @company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Quick Pay Wallet Type", prompt: "Select type", wrapper_html: { style: "#{@company.can_quick_pay? ? 'display:block;' : 'display:none;'}" }
+              .form-group
+                Fee Account:
+                = @company.FeeActID.blank? ? 'None' : @company.FeeActID
+        - unless @company.TxnActID.blank?
+          .row
+            .col-xs-12.col-sm-6
+              = f.input :can_quick_pay, as: :boolean, label: 'Quick Pay'
+              = f.input :quick_pay_account_type_id, collection: @company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Quick Pay Wallet Type", prompt: "Select type", wrapper_html: { style: "#{@company.can_quick_pay? ? 'display:block;' : 'display:none;'}" }
       .form-actions
         = link_to 'Cancel', :back, class: "btn btn-default"
         %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 

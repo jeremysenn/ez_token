@@ -1,5 +1,5 @@
 .content-wrapper
-  .container
+  .container-fluid
     / Content Header (Page header)
     %section.content-header
       = render 'shared/flash_messages'
@@ -17,6 +17,9 @@
           %p.lead
             %strong Minimum Maintained Balance:
             = @account_type.MinMaintainBal.blank? ? number_to_currency(0) : number_to_currency(@account_type.MinMaintainBal)
+          %p.lead
+            %strong Minimum Allowable Balance:
+            = @account_type.MinBalMax.blank? ? number_to_currency(0) : number_to_currency(@account_type.MinBalMax)
           %table.table.table-condensed
             %thead
               %tr

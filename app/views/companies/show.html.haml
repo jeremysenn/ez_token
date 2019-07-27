@@ -1,36 +1,121 @@
 .content-wrapper
-  .container
-    / Content Header (Page header)
-    %section.content-header
-      %h1
-        %i.fa.fa-building
-        = @company.name
-    / Main content
-    %section.content
-      / Default box
-      .box.box-primary
-        .box-header.with-border
-          %h3.box-title 
-            Created
-            = @company.CreateDate.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
-        .box-body
-          %p.lead
-            Transaction Account:
-            = number_to_currency(@company.transaction_account.present? ? @company.transaction_account.balance : 0)
-            %br
-            %small.text-muted= @company.TxnActID
-          %p.lead
-            Fee Account:
-            = number_to_currency(@company.fee_account.present? ? @company.fee_account.balance : 0)
-            %br
-            %small.text-muted=@company.FeeActID
-          %p.lead
-            Can Quick Pay:
-            = @company.can_quick_pay? ? 'Yes' : 'No'
-          - if @company.can_quick_pay?
+  / Content Header (Page header)
+  %section.content-header
+    = render 'shared/flash_messages'
+    %h3
+      %i.fa.fa-building
+      = @company.name
+      %a{href: edit_company_path(@company)}
+        %i.fa.fa-pencil
+  / Main content
+  %section.content
+    / Default box
+    .row
+      .col-md-3
+        / Profile Image
+        .box.box-primary
+          .box-tools.pull-right
+            -#
+              %a.btn.btn-box-tool{href: edit_company_path(@company), :type => "button"}
+                %i.fa.fa-edit.fa-lg
+          .box-header.with-border
+            %h3.box-title= "Company #{@company.CompanyNumber}"
+          .box-body.box-profile
+            %strong
+              %i.fa.fa-exchange.margin-r-5
+              Transaction Account
+            %p.text-muted
+              ID: 
+              = @company.TxnActID.blank? ? 'None' : @company.TxnActID
+              - unless @company.TxnActID.blank?
+                %br
+                Balance:
+                = number_to_currency(@company.transaction_account.present? ? @company.transaction_account.balance : 0)
+                %br
+                Minimum Balance:
+                = number_to_currency(@company.transaction_account.present? ? @company.transaction_account.MinBalance : 0)
+            %hr/
+            %strong
+              %i.fa.fa-exchange.margin-r-5
+              Fee Account
+            %p.text-muted
+              ID:
+              = @company.FeeActID.blank? ? 'None' : @company.FeeActID
+              - unless @company.FeeActID.blank?
+                %br
+                Balance:
+                = number_to_currency(@company.fee_account.present? ? @company.fee_account.balance : 0)
+            %hr/
             %p.lead
-              Quick Pay Wallet Type:
-              = @company.quick_pay_account_type.description
-        .box-footer
-          = link_to 'Edit', edit_company_path(@company), class: 'btn btn-primary'
-          = link_to 'Back', :back, class: 'btn btn-default'
+            %strong 
+              %i.fa.fa-dollar.margin-r-5
+              Can Quick Pay
+            %p.text-muted= @company.can_quick_pay? ? 'Yes' : 'No'
+            - if @company.can_quick_pay?
+              %strong 
+                %i.fa.fa-google-wallet.margin-r-5
+                Quick Pay Wallet Type
+              %p.text-muted= @company.quick_pay_account_type.description
+            %hr/
+            %strong
+              %i.fa.fa-calendar-check-o.margin-r-5
+              Created
+            %p.text-muted
+              = @company.CreateDate.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+      .col-md-9
+        .box.box-primary
+          .box-header.with-border
+            %h3.box-title 
+              Transfers
+              - unless @payment_transactions.blank?
+                %a{href: company_path(id: @company.id, format: "csv", :start_date => @start_date, :end_date => @end_date), class: 'btn btn-sm btn-info'}
+                  %i.fa.fa-download
+                  Download CSV
+                %br
+                %small.text-muted
+                  = "#{pluralize(number_with_delimiter(@all_payment_transactions.count), 'record')} found"
+            .box-tools
+              = form_tag company_path(id: @company.id), :method => 'get', :class => "form-inline" do
+                = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                To
+                = text_field_tag :end_date, nil, :placeholder => "End Date", value: "#{@end_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @end_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                &nbsp;
+                = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                  %i.fa.fa-search
+          .box-body.no-padding
+            - unless @payment_transactions.blank?
+              .table-responsive
+                %table.table.table-striped.table-condensed
+                  %thead
+                    %tr
+                      %th= '#'
+                      %th Date
+                      %th To
+                      %th From
+                      %th Fee
+                      %th Amount
+                  %tbody
+                    - @payment_transactions.each do |payment_transaction|
+                      - to_customer = payment_transaction.to_account_customer
+                      - from_customer = payment_transaction.from_account_customer
+                      %tr{class: payment_transaction.reversed? ? 'table-danger' : payment_transaction.error? ? 'table-warning' : ''}
+                        %td= link_to payment_transaction.id, payment_transaction
+                        %td= payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
+                        %td
+                          - unless to_customer.blank?
+                            = link_to to_customer.identity, customer_path(to_customer, account_id: payment_transaction.to_acct_id) unless payment_transaction.to_account.blank?
+                          - else
+                            = payment_transaction.to_account.company.name unless payment_transaction.to_account.blank?
+                        %td
+                          - unless from_customer.blank?
+                            = link_to from_customer.identity, customer_path(from_customer, account_id: payment_transaction.from_acct_id) unless payment_transaction.from_account.blank?
+                          - else
+                            = payment_transaction.from_account.company.name unless payment_transaction.from_account.blank?
+                        %td= "#{payment_transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(payment_transaction.ChpFee)}" 
+                        %td= "#{payment_transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(payment_transaction.amt_auth)}"
+            - else
+              .col-sm-12
+                %h5.lead None
+          .box-footer
+            .pull-right= paginate @payment_transactions
+           

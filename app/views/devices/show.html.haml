@@ -46,14 +46,27 @@
                           = @device.status_string
                 %li.list-group-item
                   %b 
-                    %i.fa.fa-info-circle.margin-r-5
-                    Some Info
-                  %a.pull-right And more info
+                    %i.fa.fa-gears.margin-r-5
+                    ATM Actions
+                  -# %a.pull-right And more info
 
               %a.btn.btn-default.btn-block{"data-target" => "#commands-modal", "data-toggle" => "modal", :type => "button"}
                 %b
                   %i.fa.fa-arrows-alt
-                  ATM Commands
+                  Commands
+              %a.btn.btn-default.btn-block{"data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
+                %b
+                  Add Cash
+              %a.btn.btn-default.btn-block{"data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
+                %b
+                  Reset Cash
+              %a.btn.btn-default.btn-block{"data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
+                %b
+                  Add Coin
+              %a.btn.btn-default.btn-block{"data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
+                %b
+                  Reset Coin
+              -# %a.btn.btn-default.btn-block{"data-target" => "#get-term-totals-modal", "data-toggle" => "modal", :type => "button"}
               #commands-modal.modal.fade
                 .modal-dialog.modal-sm
                   .modal-content
@@ -82,22 +95,134 @@
                         Disconnect
                     .modal-footer
                       %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Done
-              -#
-                #modal-default.modal.fade
-                  .modal-dialog
-                    .modal-content
-                      .modal-header
-                        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
-                          %span{"aria-hidden" => "true"} ×
-                        %h4.modal-title Default Modal
-                      .modal-body
-                        %p One fine body…
-                      .modal-footer
-                        %button.btn.btn-default.pull-left{"data-dismiss" => "modal", :type => "button"} Close
-                        %button.btn.btn-primary{:type => "button"} Save changes
-                    / /.modal-content
-                  / /.modal-dialog
-                / /.modal
+              #add-cash-modal.modal.fade
+                .modal-dialog.modal-sm
+                  .modal-content
+                    .modal-header
+                      %h5.modal-title
+                        Add Cash
+                    .modal-body
+                      = form_tag add_cash_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                            Submit
+              #reset-cash-modal.modal.fade
+                .modal-dialog.modal-sm
+                  .modal-content
+                    .modal-header
+                      %h5.modal-title
+                        Reset Cash
+                    .modal-body
+                      = form_tag reset_cash_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                            Submit
+              #add-coin-modal.modal.fade
+                .modal-dialog.modal-sm
+                  .modal-content
+                    .modal-header
+                      %h5.modal-title
+                        Add Coin
+                    .modal-body
+                      = form_tag add_coin_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                            Submit
+              #reset-coin-modal.modal.fade
+                .modal-dialog.modal-sm
+                  .modal-content
+                    .modal-header
+                      %h5.modal-title
+                        Add Coin
+                    .modal-body
+                      = form_tag reset_coin_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
+                        .form-group.row
+                          .col-sm-6
+                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
+                          .col-sm-6
+                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+                            Submit
         .col-md-9
           .box.box-primary
             .box-body
@@ -114,6 +239,10 @@
                   %a#cuts-tab.nav-link{"aria-controls" => "cuts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cuts", :role => "tab"} 
                     %i.fa.fa-credit-card
                     = "Cuts" unless browser.device.mobile?
+                %li.nav-item
+                  %a#bins-tab.nav-link{"aria-controls" => "bins", "aria-selected" => "false", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
+                    %i.fa.fa-inbox
+                    = "Bins" unless browser.device.mobile?
                 -#
                   %li.nav-item
                     %a#accounts-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#accounts", :role => "tab"} 
@@ -144,6 +273,84 @@
                 -#
                   #accounts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                     Accounts
+                  .box.box-primary{"data-widget" => "box-widget"}
+                #bins.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                  %br
+                  .box.box-warning
+                    .box-header.with-border
+                      .box-title
+                        Host
+                      .box-body
+                        .table-responsive
+                          %table.table.table-striped.table-condensed.table-bordered
+                            %thead
+                              %tr
+                                - if @device.bin_1_count != 0 and @device.bin_1_count != nil
+                                  %th{:scope => "col"} 1
+                                - if @device.bin_2_count != 0 and @device.bin_2_count != nil
+                                  %th{:scope => "col"} 2
+                                - if @device.bin_3_count != 0 and @device.bin_3_count != nil
+                                  %th{:scope => "col"} 3
+                                - if @device.bin_4_count != 0 and @device.bin_4_count != nil
+                                  %th{:scope => "col"} 4
+                                - if @device.bin_5_count != 0 and @device.bin_5_count != nil
+                                  %th{:scope => "col"} 5
+                                - if @device.bin_6_count != 0 and @device.bin_6_count != nil
+                                  %th{:scope => "col"} 6
+                                - if @device.bin_7_count != 0 and @device.bin_7_count != nil
+                                  %th{:scope => "col"} 7
+                                - if @device.bin_8_count != 0 and @device.bin_8_count != nil
+                                  %th{:scope => "col"} 8
+                            %tbody
+                              %tr
+                                = render partial: "devices/bin_details", locals: {device: @device}  
+                  - unless @term_totals.blank?
+                    .box.box-warning
+                      .box-header.with-border
+                        .box-title
+                          Term
+                        .box-body
+                          .table-responsive
+                            %table.table.table-striped.table-condensed.table-bordered
+                              %thead
+                                %tr
+                                  - if @device.bin_1_count != 0 and @device.bin_1_count != nil
+                                    %th{:scope => "col"} 1
+                                  - if @device.bin_2_count != 0 and @device.bin_2_count != nil
+                                    %th{:scope => "col"} 2
+                                  - if @device.bin_3_count != 0 and @device.bin_3_count != nil
+                                    %th{:scope => "col"} 3
+                                  - if @device.bin_4_count != 0 and @device.bin_4_count != nil
+                                    %th{:scope => "col"} 4
+                                  - if @device.bin_5_count != 0 and @device.bin_5_count != nil
+                                    %th{:scope => "col"} 5
+                                  - if @device.bin_6_count != 0 and @device.bin_6_count != nil
+                                    %th{:scope => "col"} 6
+                                  - if @device.bin_7_count != 0 and @device.bin_7_count != nil
+                                    %th{:scope => "col"} 7
+                                  - if @device.bin_8_count != 0 and @device.bin_8_count != nil
+                                    %th{:scope => "col"} 8
+                              %tbody
+                                %tr
+                                  - if @device.bin_1_count != 0 and @device.bin_1_count != nil
+                                    %td= @term_totals['bin1']
+                                  - if @device.bin_2_count != 0 and @device.bin_2_count != nil
+                                    %td= @term_totals['bin2']
+                                  - if @device.bin_3_count != 0 and @device.bin_3_count != nil
+                                    %td= @term_totals['bin3']
+                                  - if @device.bin_4_count != 0 and @device.bin_4_count != nil
+                                    %td= @term_totals['bin4']
+                                  - if @device.bin_5_count != 0 and @device.bin_5_count != nil
+                                    %td= @term_totals['bin5']
+                                  - if @device.bin_6_count != 0 and @device.bin_6_count != nil
+                                    %td= @term_totals['bin6']
+                                  - if @device.bin_7_count != 0 and @device.bin_7_count != nil
+                                    %td= @term_totals['bin7']
+                                  - if @device.bin_8_count != 0 and @device.bin_8_count != nil
+                                    %td= @term_totals['bin8']
+                  %p
+                    %a.btn.btn-default{href: get_term_totals_device_path(@device), :type => "button"}
+                      Get Term Totals
                 
 :javascript
   //*** Remember the selected tab on page refresh ***

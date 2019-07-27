@@ -14,73 +14,83 @@
           =# link_to "<i class='fa fa-refresh'></i>".html_safe, devices_path, class: 'btn btn-default', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}
     / Main content
     %section.content
-      .box.box-primary{"data-widget" => "box-widget"}
-        .box-header.with-border
-          %h3.box-title 
-          -#
-            .box-tools.pull-right
-              = form_tag devices_path, id: 'devices_search_form', method: 'get', class: 'form-inline' do |f|
-                .input-group.input-group-sm
-                  = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
-                  .input-group-append
-                    %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                      %i.fa.fa-search
-        .box-body.no-padding
-          - unless @devices.blank?
-            .table-responsive
-              %table.table.table-striped.table-condensed.table-bordered
-                %thead
-                  %tr
-                    %th{:scope => "col"} ID
-                    %th{:scope => "col"} Name
-                    %th{:scope => "col"} State
-                    %th{:scope => "col"} Status
-                    - if @bin_1_column_count > 0
-                      %th{:scope => "col"} 1
-                    - if @bin_2_column_count > 0
-                      %th{:scope => "col"} 2
-                    - if @bin_3_column_count > 0
-                      %th{:scope => "col"} 3
-                    - if @bin_4_column_count > 0
-                      %th{:scope => "col"} 4
-                    - if @bin_5_column_count > 0
-                      %th{:scope => "col"} 5
-                    - if @bin_6_column_count > 0
-                      %th{:scope => "col"} 6
-                    - if @bin_7_column_count > 0
-                      %th{:scope => "col"} 7
-                    - if @bin_8_column_count > 0
-                      %th{:scope => "col"} 8
-                    %th{:scope => "col"} Remaining
-                    %th
-                %tbody
-                  - @devices.each do |device|
-                    %tr
-                      %td= link_to device.id, device
-                      %td= device.description
-                      %td= device.online.blank? ? 'N/A' : "#{device_state_descriptions[device.online.to_i].truncate(15)}"
-                      %td
-                        - unless device.dev_statuses.blank?
-                          - dev_status = device.dev_statuses.order("date_time DESC").first
-                          %a.btn.btn-sm.bg-green{"data-content" => "#{dev_status.status_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{dev_status.status}"} 
-                            = dev_status.status
-                        -#
-                          - if device.critical_status?
-                            %a.btn.btn-xs.bg-red{"data-content" => "#{device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus", :tabindex => "0"} 
-                              Critical
-                          - elsif device.caution_status?
-                            %a.btn.btn-xs.bg-orange{"data-content" => "#{device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus", :tabindex => "0"}
-                              Caution
-                          - else
-                            = device.status_string
-                      = render partial: "devices/bin_details", locals: {device: device}
-                      %td= number_to_currency(device.remaining)
-                      %td= link_to 'More', device, class: 'btn btn-primary btn-sm'
-          - else
-            %p None
-          .box-footer
-            -#
-              .pull-right= paginate @customers, param_name: 'result1'
+      - unless @devices.blank?
+        - @devices.each do |device|
+          .box.box-primary{"data-widget" => "box-widget"}
+            .box-header.with-border
+              %h3.box-title 
+              -#
+                .box-tools.pull-right
+                  = form_tag devices_path, id: 'devices_search_form', method: 'get', class: 'form-inline' do |f|
+                    .input-group.input-group-sm
+                      = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
+                      .input-group-append
+                        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                          %i.fa.fa-search
+              .box-body.no-padding
+                .table-responsive
+                  %table.table.table-striped.table-condensed.table-bordered
+                    %thead
+                      %tr
+                        %th{:scope => "col"} ID
+                        %th{:scope => "col"} Name
+                        %th{:scope => "col"} State
+                        %th{:scope => "col"} Status
+                        -# if @bin_1_column_count > 0
+                        - if device.bin_1_count != 0 and device.bin_1_count != nil
+                          %th{:scope => "col"} 1
+                        -# if @bin_2_column_count > 0
+                        - if device.bin_2_count != 0 and device.bin_2_count != nil
+                          %th{:scope => "col"} 2
+                        -# if @bin_3_column_count > 0
+                        - if device.bin_3_count != 0 and device.bin_3_count != nil
+                          %th{:scope => "col"} 3
+                        -# if @bin_4_column_count > 0
+                        - if device.bin_4_count != 0 and device.bin_4_count != nil
+                          %th{:scope => "col"} 4
+                        -# if @bin_5_column_count > 0
+                        - if device.bin_5_count != 0 and device.bin_5_count != nil
+                          %th{:scope => "col"} 5
+                        -# if @bin_6_column_count > 0
+                        - if device.bin_6_count != 0 and device.bin_6_count != nil
+                          %th{:scope => "col"} 6
+                        -# if @bin_7_column_count > 0
+                        - if device.bin_7_count != 0 and device.bin_7_count != nil
+                          %th{:scope => "col"} 7
+                        -# if @bin_8_column_count > 0
+                        - if device.bin_8_count != 0 and device.bin_8_count != nil
+                          %th{:scope => "col"} 8
+                        %th{:scope => "col"} Remaining
+                        %th
+                    %tbody
+                      -# @devices.each do |device|
+                      %tr
+                        %td= link_to device.id, device
+                        %td= device.description
+                        %td= device.online.blank? ? 'N/A' : "#{device_state_descriptions[device.online.to_i].truncate(15)}"
+                        %td
+                          - unless device.dev_statuses.blank?
+                            - dev_status = device.dev_statuses.order("date_time DESC").first
+                            %a.btn.btn-sm.bg-green{"data-content" => "#{dev_status.status_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{dev_status.status}"} 
+                              = dev_status.status
+                          -#
+                            - if device.critical_status?
+                              %a.btn.btn-xs.bg-red{"data-content" => "#{device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus", :tabindex => "0"} 
+                                Critical
+                            - elsif device.caution_status?
+                              %a.btn.btn-xs.bg-orange{"data-content" => "#{device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus", :tabindex => "0"}
+                                Caution
+                            - else
+                              = device.status_string
+                        = render partial: "devices/bin_details", locals: {device: device}
+                        %td= number_to_currency(device.remaining)
+                        %td= link_to 'More', device, class: 'btn btn-primary btn-sm'
+            .box-footer
+              -#
+                .pull-right= paginate @customers, param_name: 'result1'  
+      - else
+        %p No Devices
+          
 
 :javascript
   $('[data-toggle="popover"]').popover();

@@ -1,0 +1,10 @@
+$('#transactions_list').append('<%= j render partial: 'transactions/transaction', collection: @transactions %>');
+$('#spinner').hide();
+
+<% if @transactions.next_page %>
+  $('a.load-more-transactions').show();
+  $('a.load-more-transactions').attr('href', '<%= transactions_path transactions_page: @transactions.next_page, event_id: @event_id, type: @type, start_date: @start_date, end_date: @end_date %>');
+<% else %>
+  $(window).off('scroll');
+  $('a.load-more-transactions').remove();
+<% end %>
