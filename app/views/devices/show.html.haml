@@ -25,11 +25,12 @@
               %h3.profile-username.text-center= "ATM: #{device_state_descriptions[@device.online]}"
 
               %ul.list-group.list-group-unbordered
-                %li.list-group-item
-                  %b 
-                    %i.fa.fa-bolt.margin-r-5
-                    Transactions in 30 days
-                  %a.pull-right= @transactions.count
+                -#
+                  %li.list-group-item
+                    %b 
+                      %i.fa.fa-bolt.margin-r-5
+                      Transactions in 30 days
+                    %a.pull-right= @transactions.count
                 %li.list-group-item
                   %b 
                     %i.fa.fa-signal.margin-r-5
@@ -227,10 +228,11 @@
           .box.box-primary
             .box-body
               %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-                %li.nav-item
-                  %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "true", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
-                    %i.fa.fa-bolt
-                    = "Transactions" unless browser.device.mobile?
+                -#
+                  %li.nav-item
+                    %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "true", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
+                      %i.fa.fa-bolt
+                      = "Transactions" unless browser.device.mobile?
                 %li.nav-item
                   %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
                     %i.fa.fa-signal
@@ -249,8 +251,9 @@
                       %i.fa.fa-info-circle
                       = "Acounts" unless browser.device.mobile?
               #myTabContent.tab-content
-                #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                  = render partial: "transactions/index"
+                -#
+                  #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                    = render partial: "transactions/index"
                 #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   %br
                   .row
