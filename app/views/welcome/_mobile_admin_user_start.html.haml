@@ -149,6 +149,8 @@
                             ATM
                       .box-body
                         = render partial: "dev_statuses/index"
+                      .box-footer
+                        .pull-right= paginate @dev_statuses, :param_name => "dev_statuses_page" unless @dev_statuses.blank?
               #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                 = render partial: "devices/cuts"
             .box-footer
