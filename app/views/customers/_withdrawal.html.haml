@@ -1,16 +1,17 @@
-%div{:id => "withdrawal_details"}
-  =# form_tag withdraw_barcode_account_path(@account.id), method: 'get', class: 'form-horizontal' do |f|
-  = form_tag send_barcode_link_sms_message_account_path(@account.id), "data-remote" => "true", "data-type" => "json", method: 'get', class: 'form-horizontal' do |f|
-    = hidden_field_tag :account_balance, @account.balance
-    .input-group.input-group-lg.mb-3
-      .input-group-prepend
-        %span.input-group-text $
-      = text_field_tag :withdrawal_amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, autofocus: true, :pattern => "[0-9]*"
-      .input-group-append
-        %span.input-group-text .00
-    %button.btn.btn-default{id: 'send_code_button', :type => "submit", style: 'display:none;', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Sending text message..."}} 
-      %i.fa.fa-money
-      Withdraw Cash
+-#
+  %div{:id => "withdrawal_details"}
+    =# form_tag withdraw_barcode_account_path(@account.id), method: 'get', class: 'form-horizontal' do |f|
+    = form_tag send_barcode_link_sms_message_account_path(@account.id), "data-remote" => "true", "data-type" => "json", method: 'get', class: 'form-horizontal' do |f|
+      = hidden_field_tag :account_balance, @account.balance
+      .input-group.input-group-lg.mb-3
+        .input-group-prepend
+          %span.input-group-text $
+        = text_field_tag :withdrawal_amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, autofocus: true, :pattern => "[0-9]*"
+        .input-group-append
+          %span.input-group-text .00
+      %button.btn.btn-default{id: 'send_code_button', :type => "submit", style: 'display:none;', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Sending text message..."}} 
+        %i.fa.fa-money
+        Withdraw Cash
 
 -#
   %div{:id => "withdrawal_details"}
@@ -28,8 +29,10 @@
       %button.btn.btn-default{id: 'send_code_button', :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Withdrawal Code"}, style: 'display:none;'} 
         %i.fa.fa-comment
         Send Withdrawal Code
-
-  -#
+-#
+%div{:id => "withdrawal_details"}
+  =# form_tag withdraw_barcode_account_path(@account.id), method: 'get', class: 'form-horizontal' do |f|
+  %form{id: 'withdraw_amount_form', method: 'get', class: 'form-horizontal'}
     = hidden_field_tag :account_balance, @account.balance
     .input-group.input-group-lg.mb-3
       .input-group-prepend
@@ -41,24 +44,23 @@
       %a.btn.btn-default.btn-lg.show_account_code_button{href: "#withdrawal_code", "data-toggle" => "modal", "data-target" => "#withdrawal_code", "data-customer-id" => @customer.id, "data-company-id" => @account.CompanyNumber, "data-account-id" => @account.id, id: "open_withdrawal_code_button", style: 'display:none;'}
         %i.fa.fa-qrcode
         Create Code
-  -#  
-    %div.modal.fade.in{id: "withdrawal_code"}
-      .modal-dialog.modal-sm{:role => "document"}
-        .modal-content
-          .modal-body
-            %p
-              %strong
-                Amount:
-                %span{class: 'withdrawal_code_amount'}
-            .text-center
-              - unless @base64_barcode_string.blank?
-                %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
-              - else
-                %div{class: "generating_barcode_spinner", style: 'display:none;'}
-                  %i.fa.fa-spinner.fa-spin.fa-3x.fa-fw
-                %img{id: "company_#{@account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
-          .modal-footer
-            = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
+  %div.modal.fade.in{id: "withdrawal_code"}
+    .modal-dialog.modal-sm{:role => "document"}
+      .modal-content
+        .modal-body
+          %p
+            %strong
+              Amount:
+              %span{class: 'withdrawal_code_amount'}
+          .text-center
+            - unless @base64_barcode_string.blank?
+              %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
+            - else
+              %div{class: "generating_barcode_spinner", style: 'display:none;'}
+                %i.fa.fa-spinner.fa-spin.fa-3x.fa-fw
+              %img{id: "company_#{@account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
+        .modal-footer
+          = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
 
 :javascript
   $('#withdrawal_details').on('keyup', '#withdrawal_amount', function() {
@@ -66,12 +68,44 @@
     amount = parseFloat($('#withdrawal_amount').val());
     account_balance = parseFloat($('#account_balance').val());
     if (amount > 0 && account_balance >= amount) {
-      //$('#open_withdrawal_code_button').show();
-      $('#send_code_button').show();
+      $('#open_withdrawal_code_button').show();
+      //$('#send_code_button').show();
       return $('.withdrawal_code_amount').html("$" + amount);
     } else {
-      //$('#open_withdrawal_code_button').hide();
-      $('#send_code_button').hide();
+      $('#open_withdrawal_code_button').hide();
+      //$('#send_code_button').hide();
       return false;
     }
+  });
+
+  $(document).on('click', '.show_account_code_button', function(e) {
+    var account_id, amount, company_id, customer_id;
+    $('.generating_barcode_spinner').show();
+    customer_id = $(this).data("customer-id");
+    company_id = $(this).data("company-id");
+    account_id = $(this).data("account-id");
+    amount = $('#withdrawal_amount').val();
+    $.ajax({
+      //url: "/customers/" + customer_id + "/barcode",
+      url: "/accounts/" + account_id + "/withdraw_barcode",
+      dataType: 'json',
+      data: {
+        company_id: company_id,
+        account_id: account_id,
+        amount: amount
+      },
+      success: function(data) {
+        var barcode_string;
+        $('.generating_barcode_spinner').hide();
+        barcode_string = data.barcode_string;
+        document.getElementById("company_" + company_id + "_barcode_contents").setAttribute('src', "data:image/png;base64," + barcode_string);
+      },
+      error: function(xhr) {
+        var error;
+        $('.generating_barcode_spinner').hide();
+        error = $.parseJSON(xhr.responseText).error;
+        alert(error);
+        console.log(error);
+      }
+    });
   });

@@ -125,26 +125,35 @@ class AccountsController < ApplicationController
     end
   end
   
-#  def withdraw_barcode
-#    unless @account.blank?
+  def withdraw_barcode
+    unless @account.blank?
 #      if params[:withdrawal_amount].blank?
-#        qrcode_number = @account.withdraw_barcode(0)
-#        @amount = @account.available_balance
-#      else
+      if params[:amount].blank?
+        qrcode_number = @account.withdraw_barcode(0)
+        @amount = @account.available_balance
+      else
 #        @amount = params[:withdrawal_amount]
-#        qrcode_number = @account.withdraw_barcode(@amount)
-#      end
-#      @image = helpers.generate_qr(qrcode_number)
-#    end
-#    respond_to do |format|
-#      format.html {
-#        unless @account.customer and @account.customer.user and @account.customer.user == current_user 
-#          flash[:alert] = "You are not authorized to view this page."
-#          redirect_to root_path
-#        end
-#      }
-#    end
-#  end
+        @amount = params[:amount]
+        qrcode_number = @account.withdraw_barcode(@amount)
+      end
+      @image = helpers.generate_qr(qrcode_number)
+    end
+    respond_to do |format|
+      format.html {
+        unless @account.customer and @account.customer.user and @account.customer.user == current_user 
+          flash[:alert] = "You are not authorized to view this page."
+          redirect_to root_path
+        end
+      }
+      format.json{
+        if @account.customer and @account.customer.user and @account.customer.user == current_user 
+          render json: {"barcode_string" => @image}
+        else
+          render json: { error: ["Error: Problem generating QR Code."] }, status: :unprocessable_entity
+        end
+      }
+    end
+  end
   
   def send_barcode_link_sms_message
     respond_to do |format|

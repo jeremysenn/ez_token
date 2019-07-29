@@ -130,13 +130,14 @@
                           = render 'withdrawal'
                 - else
                   / Withdraw all
-                  =# render 'withdrawal_all'
+                  = render 'withdrawal_all'
                   -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
                   -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_link_sms_message_account_path(@account.id)}
-                  %a.btn.btn-default.btn-lg.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
-                    %i.fa.fa-money
-                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                    Withdraw
+                  -#
+                    %a.btn.btn-default.btn-lg.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
+                      %i.fa.fa-money
+                      %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                      Withdraw
               -#
                 - if @account and @account.balance > 0 and not current_user.administrator?
                   .box.box-success.collapsed-box.box-solid
