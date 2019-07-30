@@ -58,26 +58,41 @@
             .box-header.with-border
               %h3.box-title 
                 Transactions
-                - unless @transactions.blank?
+                - unless @transactions.blank? or browser.device.mobile?
                   %a{href: transactions_path(format: "csv", :event_id => @event_id, :type => @type, :start_date => @start_date, :end_date => @end_date, transaction_id: @transaction_id_or_receipt_number), class: 'btn btn-sm btn-info'}
                     %i.fa.fa-download
                     Download CSV
                   %br
+                - unless @transactions.blank?
                   %small.text-muted
                     = "#{pluralize(number_with_delimiter(@all_transactions.count), 'record')} found"
-              .box-tools
-                = form_tag transactions_path, :method => 'get', :class => "form-inline" do
-                  = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
-                  &nbsp;
-                  = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
-                  &nbsp;
-                  = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                  To
-                  = text_field_tag :end_date, nil, :placeholder => "End Date", value: "#{@end_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @end_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                  &nbsp;
-                  = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-                    %i.fa.fa-search
-                -#
+              - unless browser.device.mobile?
+                .box-tools
+                  = form_tag transactions_path, :method => 'get', :class => "form-inline" do
+                    = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
+                    &nbsp;
+                    = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
+                    &nbsp;
+                    = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                    To
+                    = text_field_tag :end_date, nil, :placeholder => "End Date", value: "#{@end_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @end_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                    &nbsp;
+                    = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                      %i.fa.fa-search
+              - else
+                = form_tag transactions_path, :method => 'get', :class => "form-horizontal" do
+                  .form-group= select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
+                  .form-group= select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
+                  .form-group
+                    %label.control-label Start Date
+                    = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control ", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                  .form-group
+                    %label.control-label End Date
+                    = text_field_tag :end_date, nil, :placeholder => "End Date", value: "#{@end_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @end_date}", class: "form-control ", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                  .form-group
+                    = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                      %i.fa.fa-search
+                      Search
 
             .box-body.no-padding
               = render partial: "transactions/index"

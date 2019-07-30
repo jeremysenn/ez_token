@@ -40,7 +40,8 @@
     account_id = $(this).data("account-id");
     amount = $('#withdrawal_amount').val();
     $.ajax({
-      url: "/customers/" + customer_id + "/barcode",
+      //url: "/customers/" + customer_id + "/barcode",
+      url: "/accounts/" + account_id + "/withdraw_barcode",
       dataType: 'json',
       data: {
         company_id: company_id,
