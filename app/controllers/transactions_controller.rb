@@ -16,13 +16,13 @@ class TransactionsController < ApplicationController
     
     @transaction_id_or_receipt_number = params[:transaction_id]
     @event_id = params[:event_id]
-    transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
     if current_user.administrator? or current_user.collaborator? or current_user.super?
+      transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       @events = current_user.super? ? Event.all : current_user.company.events
       transactions = @event_id.blank? ? transaction_records : transaction_records.where(event_id: @event_id)
     else
+      transaction_records = Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
       @events = current_user.events
-      transactions = transaction_records
       transactions = @event_id.blank? ? transaction_records.where(from_acct_id: current_user.accounts.map(&:id)).or(transaction_records.where(to_acct_id: current_user.accounts.map(&:id))) : transaction_records.where(from_acct_id: current_user.accounts.map(&:id)).or(transaction_records.where(to_acct_id: current_user.accounts.map(&:id))).where(event_id: @event_id)
     end
     if @transaction_id_or_receipt_number.blank?
