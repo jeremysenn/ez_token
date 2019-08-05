@@ -22,7 +22,7 @@
                 .input-group
                   .input-group-prepend
                     %span.input-group-text $
-                  = f.input_field :MinBalance, as: :string, value: @account.MinBalance.blank? ? (@account.account_type.blank? ? 0 : @account.account_type.minimum_allowable_balance)  : @account.MinBalance, class: "form-control"
+                  = f.input_field :MinBalance, as: :string, value: @account.MinBalance.blank? ? (@account.account_type.blank? ? 0 : @account.account_type.default_minimum_balance)  : @account.MinBalance, class: "form-control"
           -#
             = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
               .row

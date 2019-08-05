@@ -26,13 +26,13 @@
                       %span.input-group-text $
                     = f.input_field :MinMaintainBal, as: :decimal, class: "form-control"
           .col-xs-12.col-sm-6
-            = f.input :MinBalMax, as: :decimal, required: false, label: "Minimum Allowable Balance" do
+            = f.input :DefaultMinBal, as: :decimal, required: false, label: "Default Minimum Balance" do
               .row
                 .col-xs-12.col-sm-8
                   .input-group
                     .input-group-prepend
                       %span.input-group-text $
-                    = f.input_field :MinBalMax, as: :decimal, value: @account_type.MinBalMax.blank? ? 0 : @account_type.MinBalMax, class: "form-control"
+                    = f.input_field :DefaultMinBal, as: :decimal, value: @account_type.DefaultMinBal.blank? ? 0 : @account_type.DefaultMinBal, class: "form-control"
         .row
           .col-xs-12.col-sm-6
             = f.input :CanFundByACH, as: :boolean, label: 'Fund by ACH'

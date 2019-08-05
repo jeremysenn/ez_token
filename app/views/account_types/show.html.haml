@@ -18,8 +18,8 @@
             %strong Minimum Maintained Balance:
             = @account_type.MinMaintainBal.blank? ? number_to_currency(0) : number_to_currency(@account_type.MinMaintainBal)
           %p.lead
-            %strong Minimum Allowable Balance:
-            = @account_type.MinBalMax.blank? ? number_to_currency(0) : number_to_currency(@account_type.MinBalMax)
+            %strong Default Minimum Balance:
+            = @account_type.DefaultMinBal.blank? ? number_to_currency(0) : number_to_currency(@account_type.DefaultMinBal)
           %table.table.table-condensed
             %thead
               %tr

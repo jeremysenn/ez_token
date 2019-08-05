@@ -17,10 +17,10 @@
         = @user.sign_in_count
         %br
         Current Sign In At:
-        = @user.current_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+        = @user.current_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y') unless @user.current_sign_in_at.blank?
         %br
         Last Sign In At:
-        = @user.last_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+        = @user.last_sign_in_at.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y') unless @user.last_sign_in_at.blank?
         %br
         Current Sign In IP:
         = @user.current_sign_in_ip

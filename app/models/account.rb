@@ -42,7 +42,7 @@ class Account < ActiveRecord::Base
   
   before_save :check_for_funding_payment
   before_create :set_maintained_balance
-  before_create :set_minimum_allowable_balance
+  before_create :set_default_minimum_balance
   
   #############################
   #     Instance Methods      #
@@ -647,8 +647,8 @@ class Account < ActiveRecord::Base
     self.MaintainBal = minimum_maintain_balance
   end
   
-  def set_minimum_allowable_balance
-    self.MinBalance = minimum_allowable_balance
+  def set_default_minimum_balance
+    self.MinBalance = default_minimum_balance
   end
   
   def minimum_maintain_balance
@@ -659,9 +659,9 @@ class Account < ActiveRecord::Base
     end
   end
   
-  def minimum_allowable_balance
-    unless account_type.blank? or account_type.MinBalMax.blank?
-      account_type.MinBalMax
+  def default_minimum_balance
+    unless account_type.blank? or account_type.DefaultMinBal.blank?
+      account_type.DefaultMinBal
     else
       0
     end
