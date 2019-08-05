@@ -61,7 +61,7 @@
                 - unless @transactions.blank? or browser.device.mobile?
                   %a{href: transactions_path(format: "csv", :event_id => @event_id, :type => @type, :start_date => @start_date, :end_date => @end_date, transaction_id: @transaction_id_or_receipt_number), class: 'btn btn-sm btn-info'}
                     %i.fa.fa-download
-                    Download CSV
+                    CSV
                   %br
                 - unless @transactions.blank?
                   %small.text-muted

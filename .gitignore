@@ -27,3 +27,5 @@
 /public/uploads/
 
 /public/.DS_Store
+
+*.rdb
