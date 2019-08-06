@@ -78,7 +78,7 @@
                   %td
                     = link_to 'Show', account_type_path(account_type, company_id: current_user.company_id), class: 'btn btn-default btn-sm'
                     - unless account_type.heavy_metal_debit? or account_type.company_account?
-                      = link_to "Edit", edit_account_type_path(account_type, company_id: current_user.company_id), class: 'btn btn-primary btn-sm'
+                      = link_to "Edit", edit_account_type_path(account_type, company_id: current_user.company_id), class: 'btn btn-primary btn-sm' if current_user.can_edit_wallet_types?
       -#
         .row
           - @account_types.each do |account_type|
