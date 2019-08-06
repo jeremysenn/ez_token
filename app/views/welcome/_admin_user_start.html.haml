@@ -7,11 +7,12 @@
       %h1
         = current_user.company.name
         %small Dashboard
-        .btn-group
-          - @devices.each do |device|
-            %a.btn{href: root_path(device_id: device.id), class: "#{@device.id == device.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> #{device.description}"}}
-              %i.fa.fa-money
-              = device.description
+        - unless @devices.blank?
+          .btn-group
+            - @devices.each do |device|
+              %a.btn{href: root_path(device_id: device.id), class: "#{@device.id == device.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> #{device.description}"}}
+                %i.fa.fa-money
+                = device.description
       %ol.breadcrumb
         - if current_user.can_quick_pay_customers?
           %li
@@ -198,19 +199,15 @@
                   %i.fa.fa-bolt
                   EZcash
                 .box-tools.pull-right
-                  = form_tag root_path, :method => 'get', :class => "form-inline" do
-                    = hidden_field_tag 'device_id', @device.id unless @device.blank?
-                    = text_field_tag :start_date, nil, :placeholder => "Start", value: @start_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                    To
-                    = text_field_tag :end_date, nil, :placeholder => "End", value: @end_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                    &nbsp;
-                    = button_tag(:type => 'submit', :class => 'btn btn-primary btn-sm', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-                      Go
-                  -#
-                    %button.btn.btn-box-tool{"data-widget" => "collapse", :type => "button"}
-                      %i.fa.fa-minus
-                    %button.btn.btn-box-tool{"data-widget" => "remove", :type => "button"}
-                      %i.fa.fa-times
+                  - unless @devices.blank?
+                    = form_tag root_path, :method => 'get', :class => "form-inline" do
+                      = hidden_field_tag 'device_id', @device.id unless @device.blank?
+                      = text_field_tag :start_date, nil, :placeholder => "Start", value: @start_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                      To
+                      = text_field_tag :end_date, nil, :placeholder => "End", value: @end_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                      &nbsp;
+                      = button_tag(:type => 'submit', :class => 'btn btn-primary btn-sm', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                        Go
               .box-body
                 %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
                   -#

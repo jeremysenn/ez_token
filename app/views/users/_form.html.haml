@@ -51,6 +51,13 @@
                 .col-xs-6
                   = check_box_tag "user[device_ids][]", device.id, (@user.device_ids.include? device.id.to_s), {id: "user_device_#{device.id}", class: "form_control"}
                   = device.description
+          #user_admin_events.form-group{style: "#{@user.collaborator? ? 'display: block;' : 'display: none;'}"}
+            - unless current_user.company.events.blank?
+              = f.label "Admin Events"
+              - current_user.company.events.each do |event|
+                .col-xs-6
+                  = check_box_tag "user[admin_event_ids][]", event.id, (@user.admin_event_ids.include? event.id.to_s), {id: "user_event_#{event.id}", class: "form_control"}
+                  = event.title
       .form-actions
         = link_to 'Cancel', :back, class: 'btn btn-default'
         %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
@@ -61,18 +68,21 @@
   $(document).on("click", '#user_role_admin' , function() {
     $('#user_permissions').hide();
     $('#user_devices').hide();
+    $('#user_admin_events').hide();
     $('#user_permissions').closest('.form-group').find('input[type="checkbox"]').attr("checked", false);
   });
 
   $(document).on("click", '#user_role_basic' , function() {
     $('#user_permissions').hide();
     $('#user_devices').hide();
+    $('#user_admin_events').hide();
     $('#user_permissions').closest('.form-group').find('input[type="checkbox"]').attr("checked", false);
   });
 
   $(document).on("click", '#user_role_collaborator' , function() {
     $('#user_permissions').show();
     $('#user_devices').show();
+    $('#user_admin_events').show();
   });
 
   $('#user_phone').mask("(999) 999-9999");

@@ -9,7 +9,8 @@ class DevicesController < ApplicationController
   # GET /devices.json
   def index
 #    @devices = current_user.company.devices
-    @devices = current_user.super? ? Device.all : current_user.devices
+    devices = current_user.super? ? Device.all : current_user.collaborator? ?  current_user.devices : current_user.company.devices
+    @devices = devices.order("description ASC") unless devices.blank?
     
     # Bin Info
     @bin_1_column_count = @devices.select{ |device| device.bin_1_count != 0 }.select{ |device| device.bin_1_count != nil }.count

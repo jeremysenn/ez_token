@@ -122,7 +122,7 @@ class UsersController < ApplicationController
       params.require(:user).permit(:first_name, :last_name, :company_id, :email, :password, :time_zone, :admin, :active, 
         :role, :pin, :phone, :time_zone, 
         :view_events, :edit_events, :view_wallet_types, :edit_wallet_types, :view_accounts, :edit_accounts, :view_users, :edit_users, :view_atms, :can_quick_pay,
-        device_ids: [])
+        device_ids: [], admin_event_ids: [])
     end
     
 end
