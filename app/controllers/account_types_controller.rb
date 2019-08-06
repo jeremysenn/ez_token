@@ -7,7 +7,11 @@ class AccountTypesController < ApplicationController
   # GET /account_types.json
   def index
 #    @account_types = AccountType.all
-    @account_types = current_user.super? ? AccountType.all : current_user.company.account_types
+    unless params[:company_id].blank?
+      @account_types = current_user.super? ? AccountType.where(CompanyNumber: params[:company_id]) : current_user.company.account_types
+    else
+      @account_types = current_user.super? ? AccountType.all : current_user.company.account_types
+    end
   end
 
   # GET /account_types/1
