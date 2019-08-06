@@ -19,6 +19,7 @@ class UsersController < ApplicationController
   def show
     if current_user.can_view_users?
       @devices = @user.devices
+      @admin_events = @user.admin_events
     else
       redirect_back fallback_location: root_path, notice: 'You are not authorized.'
     end
