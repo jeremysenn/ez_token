@@ -2,11 +2,12 @@
   .container
     / Content Header (Page header)
     %section.content-header
-      %h1
+      %h3
         %i.fa.fa-user
         = "#{@user.full_name}"
         %small.text-muted= "(#{@user.role.humanize})"
-        = link_to 'Edit', edit_users_admin_path(@user), class: 'btn bg-orange'
+        %a{href: edit_users_admin_path(@user)}
+          %i.fa.fa-pencil
       .box.box-primary
         .box-header.with-border
           %h3.box-title Info
