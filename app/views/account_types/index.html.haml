@@ -14,12 +14,21 @@
       .box.box-primary
         .box-header.with-border
           %h3.box-title 
-            -# All Account Types
-          .box-tools.pull-right
-            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
-              %i.fa.fa-minus
-            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
-              %i.fa.fa-times
+          - if current_user.super?
+            - unless browser.device.mobile?
+              .box-tools
+                = form_tag account_types_path, :method => 'get', :class => "form-inline" do
+                  = select_tag :company_id, options_for_select(Company.all.map{|c| [c.CompanyName, c.id]}, params[:company_id]), prompt: 'All companies', class: "form-control"
+                  &nbsp;
+                  = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                    %i.fa.fa-search
+            - else
+              = form_tag account_types_path, :method => 'get', :class => "form-horizontal" do
+                .form-group= select_tag :company_id, options_for_select(Company.all.map{|c| [c.CompanyName, c.id]}, params[:company_id]), prompt: 'All companies', class: "form-control"
+                .form-group
+                  = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                    %i.fa.fa-search
+                    Search
         .box-body.no-padding
           %table.table.table-condensed
             %thead
