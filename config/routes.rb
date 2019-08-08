@@ -64,6 +64,7 @@ Rails.application.routes.draw do
       get 'add_coin'
       get 'reset_coin'
       get 'get_term_totals'
+      get 'cash_position'
     end
   end
   resources :payment_batch_csv_mappings

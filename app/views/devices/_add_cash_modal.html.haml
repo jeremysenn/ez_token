@@ -1,0 +1,82 @@
+#add-cash-modal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h5.modal-title
+          Add Cash
+      .modal-body
+        %strong Term Totals
+        %div{class: 'term_totals'}
+        %div{class: 'getting_term_totals_spinner', style: 'display:none;'}
+          %p
+            %i.fa.fa-spinner.fa-spin
+            Requesting totals...
+        = form_tag add_cash_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+          .form-group.row
+            - unless @bin_1_denomination.blank?
+              .col-sm-6
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text= "$#{@bin_1_denomination}"
+                  = text_field_tag :bin_1, nil, :placeholder => "Bin 1 Notes", class: "bin_field form-control", "data-denomination" => @bin_1_denomination
+                %small.bin_help.form-text.text-muted
+            - unless @bin_2_denomination.blank?
+              .col-sm-6
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text= "$#{@bin_2_denomination}"
+                  = text_field_tag :bin_2, nil, :placeholder => "Bin 2 Notes", class: "bin_field form-control", "data-denomination" => @bin_2_denomination
+                %small.bin_help.form-text.text-muted
+          .form-group.row
+            - unless @bin_3_denomination.blank?
+              .col-sm-6
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text= "$#{@bin_3_denomination}"
+                  = text_field_tag :bin_3, nil, :placeholder => "Bin 3 Notes", class: "bin_field form-control", "data-denomination" => @bin_3_denomination
+                %small.bin_help.form-text.text-muted
+            - unless @bin_4_denomination.blank?
+              .col-sm-6
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text= "$#{@bin_4_denomination}"
+                  = text_field_tag :bin_4, nil, :placeholder => "Bin 4 Notes", class: "bin_field form-control", "data-denomination" => @bin_4_denomination
+                %small.bin_help.form-text.text-muted
+          .form-group.row
+            - unless @bin_5_denomination.blank?
+              .col-sm-6
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text= "$#{@bin_5_denomination}"
+                  = text_field_tag :bin_5, nil, :placeholder => "Bin 5 Notes", class: "bin_field form-control", "data-denomination" => @bin_5_denomination
+                %small.bin_help.form-text.text-muted
+            - unless @bin_6_denomination.blank?
+              .col-sm-6
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text= "$#{@bin_6_denomination}"
+                  = text_field_tag :bin_6, nil, :placeholder => "Bin 6 Notes", class: "bin_field form-control", "data-denomination" => @bin_6_denomination
+                %small.bin_help.form-text.text-muted
+          .form-group.row
+            - unless @bin_7_denomination.blank?
+              .col-sm-6
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text= "$#{@bin_7_denomination}"
+                  = text_field_tag :bin_7, nil, :placeholder => "Bin 7 Notes", class: "bin_field form-control", "data-denomination" => @bin_7_denomination
+                %small.bin_help.form-text.text-muted
+            - unless @bin_8_denomination.blank?
+              .col-sm-6
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text= "$#{@bin_8_denomination}"
+                  = text_field_tag :bin_8, nil, :placeholder => "Bin 8 Notes", class: "bin_field form-control", "data-denomination" => @bin_8_denomination
+                %small.bin_help.form-text.text-muted
+          .form-group.row
+            .col-sm-12
+              = check_box_tag :term_totals_reset, nil, false, {class: "term_totals_reset_check_box form_control"}
+              Terminal totals have been reset
+          .modal-footer
+            %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+            %button.btn.btn-primary{class: "submit_button", disabled: true, :type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
+              Submit

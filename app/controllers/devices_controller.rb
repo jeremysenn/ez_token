@@ -1,6 +1,6 @@
 class DevicesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_device, only: [:show, :edit, :update, :destroy, :send_atm_command, :add_cash, :reset_cash, :add_coin, :reset_coin, :get_term_totals]
+  before_action :set_device, only: [:show, :edit, :update, :destroy, :send_atm_command, :add_cash, :reset_cash, :add_coin, :reset_coin, :get_term_totals, :cash_position]
   load_and_authorize_resource
   
   helper_method :transactions_sort_column, :transactions_sort_direction
@@ -29,7 +29,17 @@ class DevicesController < ApplicationController
     @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC")
     @most_recent_dev_status = @device.dev_statuses.order("date_time DESC").first
     @bill_counts = @device.bill_counts
+    
     @denoms = @device.denoms
+    @bin_1_denomination = @denoms.where(cassette_id: "1").first.blank? ? 0 : @denoms.where(cassette_id: "1").first.denomination.round
+    @bin_2_denomination = @denoms.where(cassette_id: "2").first.blank? ? 0 : @denoms.where(cassette_id: "2").first.denomination.round
+    @bin_3_denomination = @denoms.where(cassette_id: "3").first.blank? ? 0 : @denoms.where(cassette_id: "3").first.denomination.round
+    @bin_4_denomination = @denoms.where(cassette_id: "4").first.blank? ? 0 : @denoms.where(cassette_id: "4").first.denomination.round
+    @bin_5_denomination = @denoms.where(cassette_id: "5").first.blank? ? 0 : @denoms.where(cassette_id: "5").first.denomination.round
+    @bin_6_denomination = @denoms.where(cassette_id: "6").first.blank? ? 0 : @denoms.where(cassette_id: "6").first.denomination.round
+    @bin_7_denomination = @denoms.where(cassette_id: "7").first.blank? ? 0 : @denoms.where(cassette_id: "7").first.denomination.round
+    @bin_8_denomination = @denoms.where(cassette_id: "8").first.blank? ? 0 : @denoms.where(cassette_id: "8").first.denomination.round
+    
     @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
     @term_totals = params[:term_totals]
     
@@ -143,8 +153,28 @@ class DevicesController < ApplicationController
   
   def get_term_totals
     response = @device.get_term_totals
-    flash[:notice] = "Term totals requested."
-    redirect_to device_path(@device, term_totals: response)
+    respond_to do |format|
+      format.html {
+        flash[:notice] = "Term totals requested."
+        redirect_to device_path(@device, term_totals: response)
+      }
+      format.json {
+        render json: { "bin1" => response[:bin1], "bin2" => response[:bin2], "bin3" => response[:bin3], "bin4" => response[:bin4], "bin5" => response[:bin5], "bin6" => response[:bin6], "bin7" => response[:bin7], "bin8" => response[:bin8] }, :status => :ok 
+#        render json: {"first_name" => @customer.first_name, "last_name" => @customer.last_name, "balance" => @account.available_balance, "account_id" => @account.id, "customer_barcode_id" => @barcode.blank? ? nil : @barcode.id}
+      }
+    end
+  end
+  
+  def cash_position
+    @last_cut_date = @device.transactions.cuts.last.date_time
+    @bill_hist_bin_1 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "1").last
+    @bill_hist_bin_2 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "2").last
+    @bill_hist_bin_3 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "3").last
+    @bill_hist_bin_4 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "4").last
+    @bill_hist_bin_5 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "5").last
+    @bill_hist_bin_6 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "6").last
+    @bill_hist_bin_7 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "7").last
+    @bill_hist_bin_8 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "8").last
   end
   
   private

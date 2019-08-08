@@ -1,0 +1,55 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        %i.fa.fa-money
+        = @device.id
+        = @device.description
+    / Main content
+    %section.content
+      / Default box
+      .row
+        .col-md-12
+          .box.box-primary
+            .box-header.with-border
+              %h3.box-title 
+                Cash Position
+                = @last_cut_date.strftime('%-m/%-d/%y %H:%M:%S')
+            .box-body
+              .table-responsive
+                %table.table.table-striped.table-condensed.table-bordered
+                  %thead
+                    %tr
+                      %th{:scope => "col"}
+                      %th{:scope => "col"} 1
+                      %th{:scope => "col"} 2
+                      %th{:scope => "col"} 3
+                      %th{:scope => "col"} 4
+                      %th{:scope => "col"} 5
+                      %th{:scope => "col"} 6
+                      %th{:scope => "col"} 7
+                      %th{:scope => "col"} 8
+                  %tbody
+                    %tr
+                      %td Old Start
+                      %td= @bill_hist_bin_1.old_start
+                      %td= @bill_hist_bin_2.old_start
+                      %td= @bill_hist_bin_3.old_start
+                      %td= @bill_hist_bin_4.old_start
+                      %td= @bill_hist_bin_5.old_start
+                      %td= @bill_hist_bin_6.old_start
+                      %td= @bill_hist_bin_7.old_start
+                      %td= @bill_hist_bin_8.old_start
+                    %tr
+                      %td New Start
+                      %td= @bill_hist_bin_1.new_start
+                      %td= @bill_hist_bin_2.new_start
+                      %td= @bill_hist_bin_3.new_start
+                      %td= @bill_hist_bin_4.new_start
+                      %td= @bill_hist_bin_5.new_start
+                      %td= @bill_hist_bin_6.new_start
+                      %td= @bill_hist_bin_7.new_start
+                      %td= @bill_hist_bin_8.new_start
+                      
