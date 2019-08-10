@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   # GET /users.json
   def index
     if current_user.can_view_users? or current_user.super?
-      @users = current_user.super? ? User.all : current_user.company.users
+      @users = current_user.super? ? User.all.page(params[:page]).per(20) : current_user.company.users.page(params[:page]).per(20)
     else
       redirect_back fallback_location: root_path, notice: 'You are not authorized.'
     end
@@ -19,6 +19,7 @@ class UsersController < ApplicationController
   def show
     if current_user.can_view_users?
       @devices = @user.devices
+      @admin_events = @user.admin_events
     else
       redirect_back fallback_location: root_path, notice: 'You are not authorized.'
     end
@@ -122,7 +123,7 @@ class UsersController < ApplicationController
       params.require(:user).permit(:first_name, :last_name, :company_id, :email, :password, :time_zone, :admin, :active, 
         :role, :pin, :phone, :time_zone, 
         :view_events, :edit_events, :view_wallet_types, :edit_wallet_types, :view_accounts, :edit_accounts, :view_users, :edit_users, :view_atms, :can_quick_pay,
-        device_ids: [])
+        device_ids: [], admin_event_ids: [])
     end
     
 end

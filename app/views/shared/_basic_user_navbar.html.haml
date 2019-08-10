@@ -11,6 +11,12 @@
             %i.fa.fa-dashboard.fa-lg
             %br
             Home
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => transactions_path, :class => (params[:controller] == 'transactions') ?  "text-light-blue" : ""}
+              %i.fa.fa-bolt.fa-lg
+              %br
+              Transactions
       -#
         %li.nav-item.bordered
           .text-center
@@ -48,9 +54,10 @@
             %i.fa.fa-edit
             Edit profile
           .dropdown-divider
-          %a.dropdown-item{:href => transactions_path, :class => (params[:controller] == 'transactions') ?  "text-light-blue" : ""}
-            %i.fa.fa-bolt
-            Transactions
+          -#
+            %a.dropdown-item{:href => transactions_path, :class => (params[:controller] == 'transactions') ?  "text-light-blue" : ""}
+              %i.fa.fa-bolt
+              Transactions
           -#
             %a.dropdown-item{:href => devices_path, :class => (params[:controller] == 'devices') ?  "text-light-blue" : ""}
               %i.fa.fa-money

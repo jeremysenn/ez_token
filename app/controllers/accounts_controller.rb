@@ -7,7 +7,7 @@ class AccountsController < ApplicationController
   # GET /accounts.json
   def index
     @active = params[:active] ||= 1
-    @events = current_user.super? ? Event.all : current_user.company.events
+    @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
     @account_types = current_user.super? ? AccountType.all : current_user.company.account_types
     unless @account_types.blank?
       @type_id = params[:type_id]
@@ -43,6 +43,7 @@ class AccountsController < ApplicationController
   # GET /accounts/1/edit
   def edit
     @customer = @account.customer
+    @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
   end
 
   # POST /accounts

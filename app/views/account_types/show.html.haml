@@ -78,7 +78,8 @@
 
           .box-footer
             = link_to 'Back', :back, class: 'btn btn-default'
-            = link_to 'Edit', edit_account_type_path(@account_type, company_id: current_user.company_id), class: 'btn btn-primary'
-            .pull-right
-              = link_to 'Delete', account_types_path(@account_type, company_id: current_user.company_id), :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }
+            - if current_user.can_edit_wallet_types?
+              = link_to 'Edit', edit_account_type_path(@account_type, company_id: current_user.company_id), class: 'btn btn-primary'
+              .pull-right
+                = link_to 'Delete', account_types_path(@account_type, company_id: current_user.company_id), :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }
             

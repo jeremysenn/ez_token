@@ -245,7 +245,7 @@ class Ability
         can :create, AccountType
       end
       if user.view_wallet_types?
-        can :index, Account
+        can :index, AccountType
       end
       
     elsif user.basic?

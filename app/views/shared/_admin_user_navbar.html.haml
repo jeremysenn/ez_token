@@ -12,7 +12,7 @@
             %i.fa.fa-dashboard.fa-lg
             %br
             Home
-      - if current_user.can_view_events?
+      - if current_user.can_view_events? and not current_user.admin_events.blank?
         %li.nav-item.bordered
           .text-center
             %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
@@ -115,7 +115,7 @@
             %a.dropdown-item{:href => transactions_path, :class => (params[:controller] == 'transactions') ?  "text-light-blue" : ""}
               %i.fa.fa-bolt
               Transactions
-          - if current_user.can_view_atms?
+          - if current_user.can_view_atms? and not current_user.devices.blank?
             %a.dropdown-item{:href => devices_path, :class => (params[:controller] == 'devices') ?  "active" : ""}
               %i.fa.fa-money
               ATMs

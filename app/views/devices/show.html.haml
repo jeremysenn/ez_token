@@ -21,7 +21,7 @@
       .row
         .col-md-3
           .box.box-primary
-            .box-body.box-profile
+            .box-body.box-profile{id: "atm_profile_box"}
               %h3.profile-username.text-center= "ATM: #{device_state_descriptions[@device.online]}"
 
               %ul.list-group.list-group-unbordered
@@ -50,24 +50,25 @@
                     %i.fa.fa-gears.margin-r-5
                     ATM Actions
                   -# %a.pull-right And more info
-
-              %a.btn.btn-default.btn-block{"data-target" => "#commands-modal", "data-toggle" => "modal", :type => "button"}
-                %b
-                  %i.fa.fa-arrows-alt
-                  Commands
-              %a.btn.btn-default.btn-block{"data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
-                %b
-                  Add Cash
-              %a.btn.btn-default.btn-block{"data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
-                %b
-                  Reset Cash
-              %a.btn.btn-default.btn-block{"data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
-                %b
-                  Add Coin
-              %a.btn.btn-default.btn-block{"data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
-                %b
-                  Reset Coin
-              -# %a.btn.btn-default.btn-block{"data-target" => "#get-term-totals-modal", "data-toggle" => "modal", :type => "button"}
+              - if device_state_descriptions[@device.online] == "Ready" or device_state_descriptions[@device.online] == "Down"
+                %a.btn.btn-default.btn-block{"data-target" => "#commands-modal", "data-toggle" => "modal", :type => "button"}
+                  %b
+                    %i.fa.fa-arrows-alt
+                    Commands
+                %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
+                  %b Add Cash
+                %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
+                  %b Reset Cash
+                %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
+                  %b Add Coin
+                %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
+                  %b Reset Coin
+                %a.btn.btn-default.btn-block{href: cash_position_device_path(@device), target: '_blank;', :type => "button"}
+                  %b Cash Position
+              - else
+                %p.text-danger
+                  %i.fa.fa-warning
+                  Waiting for ATM to be ready...
               #commands-modal.modal.fade
                 .modal-dialog.modal-sm
                   .modal-content
@@ -96,134 +97,12 @@
                         Disconnect
                     .modal-footer
                       %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Done
-              #add-cash-modal.modal.fade
-                .modal-dialog.modal-sm
-                  .modal-content
-                    .modal-header
-                      %h5.modal-title
-                        Add Cash
-                    .modal-body
-                      = form_tag add_cash_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
-                        .modal-footer
-                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
-                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
-                            Submit
-              #reset-cash-modal.modal.fade
-                .modal-dialog.modal-sm
-                  .modal-content
-                    .modal-header
-                      %h5.modal-title
-                        Reset Cash
-                    .modal-body
-                      = form_tag reset_cash_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
-                        .modal-footer
-                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
-                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
-                            Submit
-              #add-coin-modal.modal.fade
-                .modal-dialog.modal-sm
-                  .modal-content
-                    .modal-header
-                      %h5.modal-title
-                        Add Coin
-                    .modal-body
-                      = form_tag add_coin_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
-                        .modal-footer
-                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
-                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
-                            Submit
-              #reset-coin-modal.modal.fade
-                .modal-dialog.modal-sm
-                  .modal-content
-                    .modal-header
-                      %h5.modal-title
-                        Add Coin
-                    .modal-body
-                      = form_tag reset_coin_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_1, nil, :placeholder => "Bin 1", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_2, nil, :placeholder => "Bin 2", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_3, nil, :placeholder => "Bin 3", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_4, nil, :placeholder => "Bin 4", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_5, nil, :placeholder => "Bin 5", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_6, nil, :placeholder => "Bin 6", class: "form-control"
-                        .form-group.row
-                          .col-sm-6
-                            = text_field_tag :bin_7, nil, :placeholder => "Bin 7", class: "form-control"
-                          .col-sm-6
-                            = text_field_tag :bin_8, nil, :placeholder => "Bin 8", class: "form-control"
-                        .modal-footer
-                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
-                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit"}} 
-                            Submit
+
+              = render partial: 'add_cash_modal'
+              = render partial: 'reset_cash_modal'
+              = render partial: 'add_coin_modal'
+              = render partial: 'reset_coin_modal'
+
         .col-md-9
           .box.box-primary
             .box-body
@@ -351,9 +230,10 @@
                                     %td= @term_totals['bin7']
                                   - if @device.bin_8_count != 0 and @device.bin_8_count != nil
                                     %td= @term_totals['bin8']
-                  %p
-                    %a.btn.btn-default{href: get_term_totals_device_path(@device), :type => "button"}
-                      Get Term Totals
+                  -#
+                    %p
+                      %a.btn.btn-default{href: get_term_totals_device_path(@device), :type => "button"}
+                        Get Term Totals
                 
 :javascript
   //*** Remember the selected tab on page refresh ***

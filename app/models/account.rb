@@ -165,7 +165,7 @@ class Account < ActiveRecord::Base
   
   def successful_wire_transactions
 #    transactions = Transaction.where(from_acct_id: decrypted_account_number, tran_code: 'CARD', sec_tran_code: 'TFR') + Transaction.where(to_acct_id: decrypted_account_number, tran_code: 'CARD', sec_tran_code: 'TFR')
-    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '], error_code: 0) + Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '], error_code: 0)
+    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '], error_code: [0, nil]) + Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '], error_code: 0)
     return transactions
   end
   
@@ -186,7 +186,7 @@ class Account < ActiveRecord::Base
 #  end
   
   def ach_credit_transactions
-    transactions = Transaction.where(from_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'TFR', error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'TFR', error_code: 0)
+    transactions = Transaction.where(from_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'TFR', error_code: [0, nil]) + Transaction.where(to_acct_id: id, tran_code: ['ACH', 'ACH '], sec_tran_code: 'TFR', error_code: 0)
     return transactions
   end
   
@@ -196,7 +196,7 @@ class Account < ActiveRecord::Base
 #  end
   
   def ach_payment_transactions
-    transactions = Transaction.where(from_acct_id: id, tran_code: ['PMT', 'PmT '], sec_tran_code: 'TFR', error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['PMT', 'PMT '], sec_tran_code: 'TFR', error_code: 0)
+    transactions = Transaction.where(from_acct_id: id, tran_code: ['PMT', 'PmT '], sec_tran_code: 'TFR', error_code: [0, nil]) + Transaction.where(to_acct_id: id, tran_code: ['PMT', 'PMT '], sec_tran_code: 'TFR', error_code: 0)
     return transactions
   end
   

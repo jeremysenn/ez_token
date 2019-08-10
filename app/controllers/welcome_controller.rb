@@ -7,15 +7,18 @@ class WelcomeController < ApplicationController
     if user_signed_in?
       if current_user.administrator? or current_user.collaborator? or current_user.super?
 #        @devices = current_user.devices.order("description ASC")
-        @devices = current_user.super? ? Device.all.order("description ASC") : current_user.company.devices.order("description ASC")
+        devices = current_user.super? ? Device.all : current_user.collaborator? ?  current_user.devices : current_user.company.devices
+        @devices = devices.order("description ASC") unless devices.blank?
         @start_date = params[:start_date] ||= (Date.today - 1.week).to_s
         @end_date = params[:end_date] ||= Date.today.to_s
         @type = params[:type] ||= 'Transfer'
         @customer_id = params[:customer_id] if current_user.admin?
-        if params[:device_id].blank?
-          @device = @devices.first
-        else
-          @device = @devices.find_by(dev_id: params[:device_id])
+        unless @devices.blank?
+          if params[:device_id].blank?
+            @device = @devices.first
+          else
+            @device = @devices.find_by(dev_id: params[:device_id])
+          end
         end
 #        @processed_payment_batches = current_user.company.payment_batches.processed.order("created_at DESC").first(3)
 #        
@@ -51,6 +54,16 @@ class WelcomeController < ApplicationController
           @withdrawals.each do |withdrawal_transaction|
             @withdrawals_amount = @withdrawals_amount + withdrawal_transaction.amt_auth unless withdrawal_transaction.amt_auth.blank?
           end
+          
+          # Bin Info
+          @bin_1_column_count = @devices.select{ |device| device.bin_1_count != 0 }.select{ |device| device.bin_1_count != nil }.count
+          @bin_2_column_count = @devices.select{ |device| device.bin_2_count != 0 }.select{ |device| device.bin_2_count != nil }.count
+          @bin_3_column_count = @devices.select{ |device| device.bin_3_count != 0 }.select{ |device| device.bin_3_count != nil }.count
+          @bin_4_column_count = @devices.select{ |device| device.bin_4_count != 0 }.select{ |device| device.bin_4_count != nil }.count
+          @bin_5_column_count = @devices.select{ |device| device.bin_5_count != 0 }.select{ |device| device.bin_5_count != nil }.count
+          @bin_6_column_count = @devices.select{ |device| device.bin_6_count != 0 }.select{ |device| device.bin_6_count != nil }.count
+          @bin_7_column_count = @devices.select{ |device| device.bin_7_count != 0 }.select{ |device| device.bin_7_count != nil }.count
+          @bin_8_column_count = @devices.select{ |device| device.bin_8_count != 0 }.select{ |device| device.bin_8_count != nil }.count
         end
         
         transactions = current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
@@ -83,15 +96,7 @@ class WelcomeController < ApplicationController
 #        @week_of_dates_data = (1.week.ago.to_date..Date.today).map{ |date| date.strftime('%-m/%-d') }
         @week_of_dates_data = (@start_date.to_date..@end_date.to_date).map{ |date| date.strftime('%-m/%-d') }
         
-        # Bin Info
-        @bin_1_column_count = @devices.select{ |device| device.bin_1_count != 0 }.select{ |device| device.bin_1_count != nil }.count
-        @bin_2_column_count = @devices.select{ |device| device.bin_2_count != 0 }.select{ |device| device.bin_2_count != nil }.count
-        @bin_3_column_count = @devices.select{ |device| device.bin_3_count != 0 }.select{ |device| device.bin_3_count != nil }.count
-        @bin_4_column_count = @devices.select{ |device| device.bin_4_count != 0 }.select{ |device| device.bin_4_count != nil }.count
-        @bin_5_column_count = @devices.select{ |device| device.bin_5_count != 0 }.select{ |device| device.bin_5_count != nil }.count
-        @bin_6_column_count = @devices.select{ |device| device.bin_6_count != 0 }.select{ |device| device.bin_6_count != nil }.count
-        @bin_7_column_count = @devices.select{ |device| device.bin_7_count != 0 }.select{ |device| device.bin_7_count != nil }.count
-        @bin_8_column_count = @devices.select{ |device| device.bin_8_count != 0 }.select{ |device| device.bin_8_count != nil }.count
+        
       elsif current_user.basic?
         if current_user.accounts.count == 1
           redirect_to customer_path(current_user.customer)

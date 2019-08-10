@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_many :signatures
   
   serialize :device_ids, Array
+  serialize :admin_event_ids, Array
   
   scope :admin, -> { where(role: "admin") }
   scope :basic, -> { where(role: "basic") }
@@ -160,8 +161,18 @@ class User < ApplicationRecord
 #    company.devices
     if admin?
       company.devices
+    elsif collaborator?
+      company.devices.where(dev_id: device_ids)
     elsif basic?
       company.devices.where(dev_id: device_ids)
+    end
+  end
+  
+  def admin_events
+    if admin?
+      company.events
+    elsif collaborator?
+      company.events.where(id: admin_event_ids)
     end
   end
   
