@@ -59,10 +59,11 @@
                   %b Add Cash
                 %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
                   %b Reset Cash
-                %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
-                  %b Add Coin
-                %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
-                  %b Reset Coin
+                - unless @bin_5_denomination.blank? and @bin_6_denomination.blank? and @bin_7_denomination.blank? and @bin_8_denomination.blank?
+                  %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
+                    %b Add Coin
+                  %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
+                    %b Reset Coin
                 %a.btn.btn-default.btn-block{href: cash_position_device_path(@device), target: '_blank;', :type => "button"}
                   %b Cash Position
               - else
