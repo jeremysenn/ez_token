@@ -170,14 +170,14 @@ class DevicesController < ApplicationController
   
   def cash_position
     @last_change_date = @device.transactions.coin_or_cash_adds_and_cuts.last.date_time
-    @bill_hist_bin_1 = @device.bill_hists.where(cut_dt: @last_change_date, cassette_id: "1").last
-    @bill_hist_bin_2 = @device.bill_hists.where(cut_dt: @last_change_date, cassette_id: "2").last
-    @bill_hist_bin_3 = @device.bill_hists.where(cut_dt: @last_change_date, cassette_id: "3").last
-    @bill_hist_bin_4 = @device.bill_hists.where(cut_dt: @last_change_date, cassette_id: "4").last
-    @bill_hist_bin_5 = @device.bill_hists.where(cut_dt: @last_change_date, cassette_id: "5").last
-    @bill_hist_bin_6 = @device.bill_hists.where(cut_dt: @last_change_date, cassette_id: "6").last
-    @bill_hist_bin_7 = @device.bill_hists.where(cut_dt: @last_change_date, cassette_id: "7").last
-    @bill_hist_bin_8 = @device.bill_hists.where(cut_dt: @last_change_date, cassette_id: "8").last
+    @bill_hist_bin_1 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "1").last
+    @bill_hist_bin_2 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "2").last
+    @bill_hist_bin_3 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "3").last
+    @bill_hist_bin_4 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "4").last
+    @bill_hist_bin_5 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "5").last
+    @bill_hist_bin_6 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "6").last
+    @bill_hist_bin_7 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "7").last
+    @bill_hist_bin_8 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "8").last
   end
   
   private
