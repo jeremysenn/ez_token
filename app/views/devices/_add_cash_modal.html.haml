@@ -50,7 +50,7 @@
                     %span.input-group-text= "$#{@bin_5_denomination}"
                   = text_field_tag :bin_5, nil, :placeholder => "Bin 5 Notes", class: "bin_field form-control", "data-denomination" => @bin_5_denomination
                 %small.bin_help.form-text.text-muted
-            - unless @bin_6_denomination.blank? or @bin6_denomination < 1
+            - unless @bin_6_denomination.blank? or @bin_6_denomination < 1
               .col-sm-6
                 .input-group
                   .input-group-prepend
