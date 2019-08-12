@@ -47,6 +47,7 @@ class DevicesController < ApplicationController
     
     @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
     @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)
+    @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 3.months.ago..Time.now)
     @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: 3.months.ago..Time.now)
   end
   
@@ -168,7 +169,7 @@ class DevicesController < ApplicationController
   end
   
   def cash_position
-    @last_cut_date = @device.transactions.cuts.last.date_time
+    @last_cut_date = @device.transactions.adds_and_cuts.last.date_time
     @bill_hist_bin_1 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "1").last
     @bill_hist_bin_2 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "2").last
     @bill_hist_bin_3 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "3").last
@@ -177,6 +178,16 @@ class DevicesController < ApplicationController
     @bill_hist_bin_6 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "6").last
     @bill_hist_bin_7 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "7").last
     @bill_hist_bin_8 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "8").last
+    
+    @last_coin_cut_date = @device.transactions.coin_adds_and_cuts.last.date_time
+    @bill_hist_bin_1 = @device.bill_hists.where(cut_dt: @last_coin_cut_date, cassette_id: "1").last
+    @bill_hist_bin_2 = @device.bill_hists.where(cut_dt: @last_coin_cut_date, cassette_id: "2").last
+    @bill_hist_bin_3 = @device.bill_hists.where(cut_dt: @last_coin_cut_date, cassette_id: "3").last
+    @bill_hist_bin_4 = @device.bill_hists.where(cut_dt: @last_coin_cut_date, cassette_id: "4").last
+    @bill_hist_bin_5 = @device.bill_hists.where(cut_dt: @last_coin_cut_date, cassette_id: "5").last
+    @bill_hist_bin_6 = @device.bill_hists.where(cut_dt: @last_coin_cut_date, cassette_id: "6").last
+    @bill_hist_bin_7 = @device.bill_hists.where(cut_dt: @last_coin_cut_date, cassette_id: "7").last
+    @bill_hist_bin_8 = @device.bill_hists.where(cut_dt: @last_coin_cut_date, cassette_id: "8").last
   end
   
   private
