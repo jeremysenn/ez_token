@@ -36,7 +36,8 @@ class Customer < ActiveRecord::Base
 #  accepts_nested_attributes_for :events
   
 #  validates :NameF, :NameL, presence: true
-  validates :PhoneMobile, uniqueness: {allow_blank: true} #uniqueness: true, presence: true
+#  validates :PhoneMobile, uniqueness: {allow_blank: true} #uniqueness: true, presence: true
+  validates :PhoneMobile, uniqueness: true, presence: true
   validates :Email, uniqueness: {allow_blank: true}
   validates :Registration_Source, uniqueness: {allow_blank: true} #, presence: true
 #  validates :PhoneMobile, presence: true
