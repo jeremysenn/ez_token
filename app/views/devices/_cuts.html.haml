@@ -31,13 +31,13 @@
                   - first_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..Time.now).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.first
                   - last_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..Time.now).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.last
                   %td
-                    - @add_transactions.reverse.where(date_time: transaction.date_time..Time.now).each do |add_transaction|
+                    - @add_transactions.where(date_time: transaction.date_time..Time.now).each do |add_transaction|
                       - add_total += add_transaction.amt_auth unless add_transaction.amt_auth.blank?
                       Cash Add
                       %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
                         = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
                       %br
-                    - @coin_add_transactions.reverse.where(date_time: transaction.date_time..Time.now).each do |coin_add_transaction|
+                    - @coin_add_transactions.where(date_time: transaction.date_time..Time.now).each do |coin_add_transaction|
                       - coin_add_total += coin_add_transaction.amt_auth unless coin_add_transaction.amt_auth.blank?
                       Coin Add
                       %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(coin_add_transaction.amt_auth)}", "data-placement" => "right"}
