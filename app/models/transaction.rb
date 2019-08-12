@@ -28,6 +28,8 @@ class Transaction < ActiveRecord::Base
   scope :coin_adds, -> { where(tran_code: ["ADDC"]) }
   scope :coin_adds_and_cuts, -> { where(tran_code: ["ADDC", "CUTC"]) }
   
+  scope :coin_or_cash_adds_and_cuts, -> { where(tran_code: ["ADD", "ADDC", "CUT", "CUTC"]) }
+  
   #############################
   #     Instance Methods      #
   #############################
