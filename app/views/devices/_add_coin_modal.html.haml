@@ -11,7 +11,7 @@
           %p
             %i.fa.fa-spinner.fa-spin
             Requesting totals...
-        = form_tag add_coin_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+        = form_tag add_coin_device_path(@separate_coin_device.blank? ? @device : @separate_coin_device), method: 'get', class: 'form-horizontal' do |f|
           .form-group.row
             - unless @bin_1_denomination.blank? or @bin_1_denomination >= 1
               .col-sm-6
