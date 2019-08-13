@@ -61,6 +61,8 @@
           .box-body.box-profile
             .text-center
               %h5.text-muted
+                - if not @account.active?
+                  %strong.text-danger Inactive
                 %i.fa.fa-google-wallet
                 = @account.account_type.description
                 %br
