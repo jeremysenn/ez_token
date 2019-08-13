@@ -5,7 +5,7 @@
       = render 'shared/flash_messages'
       %h1
         %i.fa.fa-bolt
-        EZcash
+        EZcash Transactions
         .pull-right
           = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: 'form-inline' do |f|
             .input-group
@@ -57,7 +57,6 @@
           .box.box-primary
             .box-header.with-border
               %h3.box-title 
-                Transactions
                 - unless @transactions.blank? or browser.device.mobile?
                   %a{href: transactions_path(format: "csv", :event_id => @event_id, :type => @type, :start_date => @start_date, :end_date => @end_date, transaction_id: @transaction_id_or_receipt_number), class: 'btn btn-sm btn-info'}
                     %i.fa.fa-download
@@ -69,6 +68,9 @@
               - unless browser.device.mobile?
                 .box-tools
                   = form_tag transactions_path, :method => 'get', :class => "form-inline" do
+                    - if current_user.super?
+                      = select_tag :company_id, options_from_collection_for_select(Company.all, "CompanyNumber", "CompanyName", @company_id), prompt: 'All companies', class: "form-control"
+                      &nbsp;
                     = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
                     &nbsp;
                     = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
