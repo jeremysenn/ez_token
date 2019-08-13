@@ -55,7 +55,7 @@
               %strong 
                 %i.fa.fa-google-wallet.margin-r-5
                 Quick Pay Wallet Type
-              %p.text-muted= @company.quick_pay_account_type.description
+              %p.text-muted= @company.quick_pay_account_type.blank? ? 'N/A' : @company.quick_pay_account_type.description
             %hr/
             %strong
               %i.fa.fa-calendar-check-o.margin-r-5
