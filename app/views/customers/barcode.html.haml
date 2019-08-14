@@ -18,6 +18,8 @@
             %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
 
 :javascript
-  $(window).load(function () {
-    window.print();
+  $(document).ready(function () {
+    $(window).load(function () {
+      window.print();
+    });
   });
