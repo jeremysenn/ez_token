@@ -13,7 +13,7 @@
         .box-header.with-border
           %h3.box-title 
             = form_tag accounts_path, :method => 'get', :class => "form-inline" do
-              = select_tag :active, options_for_select([["Active",1], ["Inactive",0]], @active), class: "form-control"
+              = select_tag :active, options_for_select([["Active",1], ["Inactive",0]], params[:active]), prompt: 'Active & Inactive', class: "form-control"
               &nbsp;
               = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
               &nbsp;
@@ -49,7 +49,7 @@
                   %th
               %tbody
                 - @accounts.each do |account|
-                  %tr
+                  %tr{class: account.active? ? '' : 'table-danger'}
                     %td= account.id
                     %td
                       - unless account.customer.blank? 
