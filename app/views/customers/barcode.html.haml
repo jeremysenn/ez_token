@@ -15,9 +15,14 @@
         %tr
         %tr
           %td.align-bottom 
-            %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
+            %img{:src => "data:image/png;base64,#{@base64_barcode_string}", id: 'barcode_image', class: 'img-fluid'}
 
 :javascript
-  $( window ).on( "load", function() {
-    window.print();
+  $(document).ready(function () {
+    //window.print();
+    $("#barcode_image").load(function(){
+      window.print();
+    });
   });
+
+  
