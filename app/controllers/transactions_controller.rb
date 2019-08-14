@@ -177,7 +177,8 @@ class TransactionsController < ApplicationController
       unless @file_upload.blank?
         FileUploadWorker.perform_async(transaction_id, @file_upload)
       end
-      redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
+#      redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
+      redirect_to barcode_customer_path(@customer.id, amount: @amount)
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
       redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"

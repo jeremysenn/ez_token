@@ -13,6 +13,11 @@
           %div{:class => "alert alert-dismissible alert-danger"}
             %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} &times;
             Please create a new password
+      - if resource.first_name.blank? or resource.last_name.blank? 
+        %p
+          %div{:class => "alert alert-dismissible alert-danger"}
+            %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} &times;
+            Please enter your first and last name
       .row
         .col-md-5
           .box.box-primary
@@ -22,11 +27,11 @@
                 .form-group
                   = f.label :first_name
                   %br/
-                  = f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: 'form-control', :placeholder => "First Name"
+                  = f.text_field :first_name, autofocus: true, autocomplete: "first_name", class: 'form-control', :placeholder => "First Name", required: true
                 .form-group
                   = f.label :last_name
                   %br/
-                  = f.text_field :last_name, autocomplete: "last_name", class: 'form-control', :placeholder => "Last Name"
+                  = f.text_field :last_name, autocomplete: "last_name", class: 'form-control', :placeholder => "Last Name", required: true
                 .form-group
                   = f.label :email
                   %br/

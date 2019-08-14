@@ -1,0 +1,12 @@
+%nav.navbar.navbar-expand-lg.navbar-light.bg-light
+  %a.navbar-brand{:href => root_path} 
+    = image_tag(image_path("ezcash_logo_50.png"))
+  
+  #navbarSupportedContent.collapse.navbar-collapse
+    %ul.navbar-nav.mr-auto
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => root_path, :class => (current_page? root_path) ? "text-light-blue" : ""}
+            %i.fa.fa-dashboard.fa-lg
+            %br
+            Home
