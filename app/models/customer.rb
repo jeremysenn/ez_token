@@ -43,7 +43,7 @@ class Customer < ActiveRecord::Base
 #  validates :PhoneMobile, presence: true
 #  validates_uniqueness_of :Email
 #  validates_uniqueness_of :PhoneMobile
-  validates :SSN, format: { with: /\A(?!219099999|078051120)(?!666|000|9\d{2})\d{3}(?!00)\d{2}(?!0{4})\d{4}\z/, message: "please enter a valid Social Security Number"}, :allow_blank => true
+  validates :SSN, format: { with: /\A(?!219099999|078051120)(?!666|000|9\d{2})\d{3}(?!00)\d{2}(?!0{4})\d{4}\z/, message: "please enter a valid Social Security Number"}, :allow_blank => true, :if => :SSN_changed?
 
   before_create :format_phone_mobile_before_create
   before_update :format_phone_mobile_before_update
