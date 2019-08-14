@@ -3,7 +3,12 @@
   / Content Header (Page header)
   %section.content-header
     = render 'shared/flash_messages'
-    %h3
+    - if @customer.first_name.blank? or @customer.last_name.blank? 
+      %p
+        %div{:class => "alert alert-dismissible alert-danger"}
+          Please enter first and last name:
+          %a.btn.btn-primary.btn-sm{href: edit_customer_path(@customer)}
+            Update Profile
       %i.fa.fa-male
       = @customer.identity
       %a{href: edit_customer_path(@customer)}
