@@ -54,7 +54,7 @@ class Customer < ActiveRecord::Base
   after_update :create_payee_user, if: :need_to_create_payee_user?
   after_update :create_basic_user, if: :need_to_create_basic_user?
   after_update_commit :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
-  before_save :encrypt_ssn
+  before_save :encrypt_ssn, if: :SSN_changed?
       
   #############################
   #     Instance Methods      #
