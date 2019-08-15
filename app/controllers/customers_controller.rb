@@ -180,10 +180,11 @@ class CustomersController < ApplicationController
     amount = params[:amount].to_f.abs unless params[:amount].blank?
     note = params[:note]
     receipt_number = params[:receipt_number]
+    event_id = params[:event_id]
     if params[:pay_and_text]
       response = @customer.one_time_payment(amount, note, receipt_number)
     else
-      response = @customer.one_time_payment_with_no_text_message(amount, note, receipt_number)
+      response = @customer.one_time_payment_with_no_text_message(amount, note, receipt_number, event_id)
     end
 #    transaction_id = @customer.one_time_payment(amount, note)
     response_code = response[:return]

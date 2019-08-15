@@ -16,6 +16,12 @@
               %span.input-group-text .00
           .form-group
             = text_field_tag :receipt_number, nil, :placeholder => "Reference Number", class: "form-control input-lg", style: "width: 100%;"
+          - if current_user.collaborator?
+            - if current_user.admin_events.count > 1
+              .form-group
+                = select_tag :event_id, options_from_collection_for_select(current_user.admin_events, "id", "title"), class: "form-control input-lg"
+            - elsif current_user.admin_events.count == 1
+              = hidden_field_tag :event_id, current_user.admin_events.first.id
           .form-group
             = text_area_tag :note, nil, :placeholder => "Note", class: "form-control input-lg", style: "width: 100%;"
 
