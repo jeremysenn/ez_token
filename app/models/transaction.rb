@@ -80,10 +80,10 @@ class Transaction < ActiveRecord::Base
         return "Cash Deposit"
       elsif (tran_code.strip == "MON" and sec_tran_code.strip == "ORD")
         return "Money Order"
+      elsif (tran_code.strip == "WDL" and sec_tran_code.blank?)
+        return "Withdrawal"
       elsif (tran_code.strip == "WDL" and sec_tran_code.strip == "REVT")
         return "Reverse Withdrawal"
-      elsif (tran_code.strip == "WDL")
-        return "Withdrawal"
       elsif (tran_code.strip == "ALL" and sec_tran_code.strip == "TFR")
         return "Withdrawal All"
       elsif (tran_code.strip == "CARD" and sec_tran_code.strip == "TFR")
