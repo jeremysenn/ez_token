@@ -13,12 +13,13 @@
             %br
             Home
       - if current_user.can_view_events? and not current_user.admin_events.blank?
-        %li.nav-item.bordered
-          .text-center
-            %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
-              %i.fa.fa-calendar.fa-lg
-              %br
-              Events
+        - if current_user.admin? or not current_user.admin_events.blank?
+          %li.nav-item.bordered
+            .text-center
+              %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
+                %i.fa.fa-calendar.fa-lg
+                %br
+                Events
       -#
         - if current_user.can_view_events?
           %li.nav-item.bordered.dropdown
