@@ -30,21 +30,24 @@ class DevicesController < ApplicationController
     @most_recent_dev_status = @device.dev_statuses.order("date_time DESC").first
     @bill_counts = @device.bill_counts
     
+    @separate_coin_device = @device.coin_device
+    
     @denoms = @device.denoms
-    @bin_1_denomination = @denoms.where(cassette_id: "1").first.blank? ? 0 : @denoms.where(cassette_id: "1").first.denomination.round
-    @bin_2_denomination = @denoms.where(cassette_id: "2").first.blank? ? 0 : @denoms.where(cassette_id: "2").first.denomination.round
-    @bin_3_denomination = @denoms.where(cassette_id: "3").first.blank? ? 0 : @denoms.where(cassette_id: "3").first.denomination.round
-    @bin_4_denomination = @denoms.where(cassette_id: "4").first.blank? ? 0 : @denoms.where(cassette_id: "4").first.denomination.round
-    @bin_5_denomination = @denoms.where(cassette_id: "5").first.blank? ? 0 : @denoms.where(cassette_id: "5").first.denomination.round
-    @bin_6_denomination = @denoms.where(cassette_id: "6").first.blank? ? 0 : @denoms.where(cassette_id: "6").first.denomination.round
-    @bin_7_denomination = @denoms.where(cassette_id: "7").first.blank? ? 0 : @denoms.where(cassette_id: "7").first.denomination.round
-    @bin_8_denomination = @denoms.where(cassette_id: "8").first.blank? ? 0 : @denoms.where(cassette_id: "8").first.denomination.round
+    @bin_1_denomination = @denoms.where(cassette_id: "1").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "1").where.not(denomination: 0).first.denomination
+    @bin_2_denomination = @denoms.where(cassette_id: "2").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "2").where.not(denomination: 0).first.denomination
+    @bin_3_denomination = @denoms.where(cassette_id: "3").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "3").where.not(denomination: 0).first.denomination
+    @bin_4_denomination = @denoms.where(cassette_id: "4").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "4").where.not(denomination: 0).first.denomination
+    @bin_5_denomination = @denoms.where(cassette_id: "5").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "5").where.not(denomination: 0).first.denomination
+    @bin_6_denomination = @denoms.where(cassette_id: "6").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "6").where.not(denomination: 0).first.denomination
+    @bin_7_denomination = @denoms.where(cassette_id: "7").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "7").where.not(denomination: 0).first.denomination
+    @bin_8_denomination = @denoms.where(cassette_id: "8").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "8").where.not(denomination: 0).first.denomination
     
     @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
     @term_totals = params[:term_totals]
     
     @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
     @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)
+    @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 3.months.ago..Time.now)
     @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: 3.months.ago..Time.now)
   end
   
@@ -166,15 +169,15 @@ class DevicesController < ApplicationController
   end
   
   def cash_position
-    @last_cut_date = @device.transactions.cuts.last.date_time
-    @bill_hist_bin_1 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "1").last
-    @bill_hist_bin_2 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "2").last
-    @bill_hist_bin_3 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "3").last
-    @bill_hist_bin_4 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "4").last
-    @bill_hist_bin_5 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "5").last
-    @bill_hist_bin_6 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "6").last
-    @bill_hist_bin_7 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "7").last
-    @bill_hist_bin_8 = @device.bill_hists.where(cut_dt: @last_cut_date, cassette_id: "8").last
+    @last_change_date = @device.transactions.coin_or_cash_adds_and_cuts.last.date_time
+    @bill_hist_bin_1 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "1").last
+    @bill_hist_bin_2 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "2").last
+    @bill_hist_bin_3 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "3").last
+    @bill_hist_bin_4 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "4").last
+    @bill_hist_bin_5 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "5").last
+    @bill_hist_bin_6 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "6").last
+    @bill_hist_bin_7 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "7").last
+    @bill_hist_bin_8 = @device.bill_hists.where(cut_dt: (@last_change_date - 2.seconds)..(@last_change_date + 2.seconds), cassette_id: "8").last
   end
   
   private

@@ -1,8 +1,13 @@
 .jumbotron{style: 'background-color: white;'} 
   .text-center
-    %p.lead.text-xs-center= @customer.full_name
-    %br
-    %br
+    - unless @customer.full_name.blank? and params[:amount].blank?
+      %h1.text-xs-center
+        = number_to_currency(params[:amount], precision: 0) unless params[:amount].blank?
+        - unless @customer.full_name.blank?
+          %br
+          = @customer.full_name
+      %br
+      %br
     %table.table{:style => "height: 100px;", class: 'text-xs-center'}
       %tbody
         %tr
@@ -10,4 +15,14 @@
         %tr
         %tr
           %td.align-bottom 
-            %img{:src => "data:image/png;base64,#{@base64_barcode_string}", class: 'img-fluid'}
+            %img{:src => "data:image/png;base64,#{@base64_barcode_string}", id: 'barcode_image', class: 'img-fluid'}
+
+:javascript
+  $(document).ready(function () {
+    //window.print();
+    $("#barcode_image").load(function(){
+      window.print();
+    });
+  });
+
+  

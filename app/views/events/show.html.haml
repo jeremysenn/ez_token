@@ -59,6 +59,9 @@
                         %p.lead
                           %strong Join by SMS Wallet Type:
                           = @event.join_by_sms_wallet_type.description unless @event.join_by_sms_wallet_type.blank?
+                        %p.lead
+                          %strong Join by SMS Account Active Status:
+                          = @event.join_active_status? ? 'Active' : 'Inactive'
 
               .pull-right
                 %br

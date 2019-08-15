@@ -27,6 +27,7 @@
                 - if index == 0
                   - start_total = transaction.amt_auth unless transaction.amt_auth.blank?
                   - add_total = 0
+                  - coin_add_total = 0
                   - dispensed_total = @device.withdrawal_transactions_total_amount_authorized_date_span(transaction.date_time, Time.now)
                   - first_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..Time.now).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.first
                   - last_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..Time.now).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.last
@@ -36,6 +37,12 @@
                       Cash Add
                       %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
                         = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                      %br
+                    - @coin_add_transactions.where(date_time: transaction.date_time..Time.now).each do |coin_add_transaction|
+                      - coin_add_total += coin_add_transaction.amt_auth unless coin_add_transaction.amt_auth.blank?
+                      Coin Add
+                      %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(coin_add_transaction.amt_auth)}", "data-placement" => "right"}
+                        = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
                       %br
                   %td
                     - unless first_bill_hist.blank? and transaction.amt_auth.blank?

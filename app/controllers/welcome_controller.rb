@@ -69,6 +69,9 @@ class WelcomeController < ApplicationController
         transactions = current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
         @transactions = transactions.order("#{transactions_sort_column} #{transactions_sort_direction}")
         
+        @separate_coin_device = @device.coin_device
+        @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 3.months.ago..Time.now)
+        
         # Transfers Info
         @transfers = transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
         @transfers_week_data = []

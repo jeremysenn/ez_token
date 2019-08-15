@@ -11,16 +11,16 @@
           %p
             %i.fa.fa-spinner.fa-spin
             Requesting totals...
-        = form_tag reset_coin_device_path(@device), method: 'get', class: 'form-horizontal' do |f|
+        = form_tag reset_coin_device_path(@separate_coin_device.blank? ? @device : @separate_coin_device), method: 'get', class: 'form-horizontal' do |f|
           .form-group.row
-            - unless @bin_1_denomination.blank?
+            - unless @bin_1_denomination.blank? or @bin_1_denomination >= 1
               .col-sm-6
                 .input-group
                   .input-group-prepend
                     %span.input-group-text= "$#{@bin_1_denomination}"
                   = text_field_tag :bin_1, nil, :placeholder => "Bin 1 Notes", class: "bin_field form-control", "data-denomination" => @bin_1_denomination
                 %small.bin_help.form-text.text-muted
-            - unless @bin_2_denomination.blank?
+            - unless @bin_2_denomination.blank? or @bin_2_denomination >= 1
               .col-sm-6
                 .input-group
                   .input-group-prepend
@@ -28,14 +28,14 @@
                   = text_field_tag :bin_2, nil, :placeholder => "Bin 2 Notes", class: "bin_field form-control", "data-denomination" => @bin_2_denomination
                 %small.bin_help.form-text.text-muted
           .form-group.row
-            - unless @bin_3_denomination.blank?
+            - unless @bin_3_denomination.blank? or @bin_3_denomination >= 1
               .col-sm-6
                 .input-group
                   .input-group-prepend
                     %span.input-group-text= "$#{@bin_3_denomination}"
                   = text_field_tag :bin_3, nil, :placeholder => "Bin 3 Notes", class: "bin_field form-control", "data-denomination" => @bin_3_denomination
                 %small.bin_help.form-text.text-muted
-            - unless @bin_4_denomination.blank?
+            - unless @bin_4_denomination.blank? or @bin_4_denomination >= 1
               .col-sm-6
                 .input-group
                   .input-group-prepend
@@ -43,14 +43,14 @@
                   = text_field_tag :bin_4, nil, :placeholder => "Bin 4 Notes", class: "bin_field form-control", "data-denomination" => @bin_4_denomination
                 %small.bin_help.form-text.text-muted
           .form-group.row
-            - unless @bin_5_denomination.blank?
+            - unless @bin_5_denomination.blank? or @bin_5_denomination >= 1
               .col-sm-6
                 .input-group
                   .input-group-prepend
                     %span.input-group-text= "$#{@bin_5_denomination}"
                   = text_field_tag :bin_5, nil, :placeholder => "Bin 5 Notes", class: "bin_field form-control", "data-denomination" => @bin_5_denomination
                 %small.bin_help.form-text.text-muted
-            - unless @bin_6_denomination.blank?
+            - unless @bin_6_denomination.blank? or @bin_6_denomination >= 1
               .col-sm-6
                 .input-group
                   .input-group-prepend
@@ -58,14 +58,14 @@
                   = text_field_tag :bin_6, nil, :placeholder => "Bin 6 Notes", class: "bin_field form-control", "data-denomination" => @bin_6_denomination
                 %small.bin_help.form-text.text-muted
           .form-group.row
-            - unless @bin_7_denomination.blank?
+            - unless @bin_7_denomination.blank? or @bin_7_denomination >= 1
               .col-sm-6
                 .input-group
                   .input-group-prepend
                     %span.input-group-text= "$#{@bin_7_denomination}"
                   = text_field_tag :bin_7, nil, :placeholder => "Bin 7 Notes", class: "bin_field form-control", "data-denomination" => @bin_7_denomination
                 %small.bin_help.form-text.text-muted
-            - unless @bin_8_denomination.blank?
+            - unless @bin_8_denomination.blank? or @bin_8_denomination >= 1
               .col-sm-6
                 .input-group
                   .input-group-prepend

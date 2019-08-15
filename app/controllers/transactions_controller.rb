@@ -16,8 +16,10 @@ class TransactionsController < ApplicationController
     
     @transaction_id_or_receipt_number = params[:transaction_id]
     @event_id = params[:event_id]
+    @company_id = params[:company_id]
     if current_user.administrator? or current_user.collaborator? or current_user.super?
       transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+      transaction_records = transaction_records.where(DevCompanyNbr: @company_id ) unless @company_id.blank?
       @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
       transactions = @event_id.blank? ? transaction_records : transaction_records.where(event_id: @event_id)
     else
@@ -175,7 +177,8 @@ class TransactionsController < ApplicationController
       unless @file_upload.blank?
         FileUploadWorker.perform_async(transaction_id, @file_upload)
       end
-      redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
+#      redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
+      redirect_to barcode_customer_path(@customer.id, amount: @amount)
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
       redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"

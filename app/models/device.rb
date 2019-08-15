@@ -582,6 +582,10 @@ class Device < ActiveRecord::Base
     end
   end
   
+  def coin_device
+    Device.where(dev_id: coin_dev_id).first
+  end
+  
   #############################
   #     Class Methods      #
   #############################

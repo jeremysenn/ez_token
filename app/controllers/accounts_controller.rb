@@ -6,7 +6,7 @@ class AccountsController < ApplicationController
   # GET /accounts
   # GET /accounts.json
   def index
-    @active = params[:active] ||= 1
+    @active = params[:active].blank? ? [1,0] : params[:active]
     @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
     @account_types = current_user.super? ? AccountType.all : current_user.company.account_types
     unless @account_types.blank?
@@ -21,11 +21,13 @@ class AccountsController < ApplicationController
       @query_string = "%#{params[:q]}%"
 #      @accounts = current_user.company.accounts.where(ActID: @query_string)
       @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
-      @accounts = @total_accounts_results.joins(:customer).where("customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string).order("customer.NameL ASC").page(params[:page]).per(20)
+      @total_accounts_results = @total_accounts_results.joins(:customer).where("customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string).order("customer.NameL ASC")
+      @accounts = @total_accounts_results.page(params[:page]).per(20)
     else
 #      @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
       @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
-      @accounts = @total_accounts_results.joins(:customer).order("customer.NameL ASC").page(params[:page]).per(20)
+      @total_accounts_results = @total_accounts_results.joins(:customer).order("customer.NameL ASC")
+      @accounts = @total_accounts_results.page(params[:page]).per(20)
     end
   end
 

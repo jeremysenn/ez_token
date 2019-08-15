@@ -18,5 +18,5 @@
   %td= "#{transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_auth)}"
   %td
     - unless to_customer.blank? or transaction.to_account.balance.blank? or transaction.to_account.balance.zero?
-      %a.btn.btn-default{href: barcode_customer_path(to_customer.id), target: '_blank'}
+      %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth)}
         %i.fa.fa-print

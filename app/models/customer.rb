@@ -43,7 +43,7 @@ class Customer < ActiveRecord::Base
 #  validates :PhoneMobile, presence: true
 #  validates_uniqueness_of :Email
 #  validates_uniqueness_of :PhoneMobile
-  validates :SSN, format: { with: /\A(?!219099999|078051120)(?!666|000|9\d{2})\d{3}(?!00)\d{2}(?!0{4})\d{4}\z/, message: "please enter a valid Social Security Number"}, :allow_blank => true
+  validates :SSN, format: { with: /\A(?!219099999|078051120)(?!666|000|9\d{2})\d{3}(?!00)\d{2}(?!0{4})\d{4}\z/, message: "please enter a valid Social Security Number"}, :allow_blank => true, :if => :SSN_changed?
 
   before_create :format_phone_mobile_before_create
   before_update :format_phone_mobile_before_update
@@ -54,7 +54,7 @@ class Customer < ActiveRecord::Base
   after_update :create_payee_user, if: :need_to_create_payee_user?
   after_update :create_basic_user, if: :need_to_create_basic_user?
   after_update_commit :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
-  before_save :encrypt_ssn
+  before_save :encrypt_ssn, if: :SSN_changed?
       
   #############################
   #     Instance Methods      #
