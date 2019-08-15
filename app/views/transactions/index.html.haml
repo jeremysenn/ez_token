@@ -71,7 +71,7 @@
                     - if current_user.super?
                       = select_tag :company_id, options_from_collection_for_select(Company.all, "CompanyNumber", "CompanyName", @company_id), prompt: 'All companies', class: "form-control"
                       &nbsp;
-                    = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
+                    = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: current_user.collaborator? ? nil : 'All events', class: "form-control"
                     &nbsp;
                     = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
                     &nbsp;
