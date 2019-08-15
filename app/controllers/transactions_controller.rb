@@ -15,7 +15,17 @@ class TransactionsController < ApplicationController
     @end_date = params[:end_date].blank? ?  Date.today.to_s : params[:end_date]
     
     @transaction_id_or_receipt_number = params[:transaction_id]
-    @event_id = params[:event_id]
+    if current_user.collaborator?
+      if params[:event_id].blank?
+        unless current_user.admin_events.empty?
+          @event_id = current_user.admin_events.first.id
+        end
+      else
+        @event_id = params[:event_id]
+      end
+    else
+      @event_id = params[:event_id]
+    end
     @company_id = params[:company_id]
     if current_user.administrator? or current_user.collaborator? or current_user.super?
       transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
