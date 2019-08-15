@@ -14,6 +14,12 @@
             = text_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, autofocus: true, :pattern => "[0-9]*"
             .input-group-append
               %span.input-group-text .00
+          - if current_user.collaborator?
+            - if current_user.admin_events.count > 1
+              .form-group
+                = select_tag :event_id, options_from_collection_for_select(current_user.admin_events, "id", "title"), class: "form-control"
+            - elsif current_user.admin_events.count == 1
+              = hidden_field_tag :event_id, current_user.admin_events.first.id
           .form-group
             = text_field_tag :receipt_number, nil, :placeholder => "Reference Number", class: "form-control input-lg", style: "width: 100%;"
           .form-group
