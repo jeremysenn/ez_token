@@ -87,6 +87,7 @@ class DevicesController < ApplicationController
   end
   
   def add_cash
+    @device.send_atm_down_command
     bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
     bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
     bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
@@ -100,10 +101,12 @@ class DevicesController < ApplicationController
     else
       flash[:alert] = "There was a problem doing the cash add."
     end
+    @device.send_atm_up_command
     redirect_to @device
   end
   
   def reset_cash
+    @device.send_atm_down_command
     bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
     bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
     bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
@@ -117,10 +120,12 @@ class DevicesController < ApplicationController
     else
       flash[:alert] = "There was a problem doing the cash reset."
     end
+    @device.send_atm_up_command
     redirect_to @device
   end
   
   def add_coin
+    @device.send_atm_down_command
     bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
     bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
     bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
@@ -134,10 +139,12 @@ class DevicesController < ApplicationController
     else
       flash[:alert] = "There was a problem doing the coin add."
     end
+    @device.send_atm_up_command
     redirect_to @device
   end
   
   def reset_coin
+    @device.send_atm_down_command
     bin_1 = params[:bin_1].blank? ? 0 : params[:bin_1]
     bin_2 = params[:bin_2].blank? ? 0 : params[:bin_2]
     bin_3 = params[:bin_3].blank? ? 0 : params[:bin_3]
@@ -151,6 +158,7 @@ class DevicesController < ApplicationController
     else
       flash[:alert] = "There was a problem doing the coin reset."
     end
+    @device.send_atm_up_command
     redirect_to @device
   end
   
