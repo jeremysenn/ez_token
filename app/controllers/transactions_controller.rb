@@ -39,7 +39,8 @@ class TransactionsController < ApplicationController
     end
     if @transaction_id_or_receipt_number.blank?
       if @type == 'Withdrawal'
-        @all_transactions = transactions.withdrawals
+        # For collaborators, not event-specific, but device-specific
+        @all_transactions = current_user.collaborator? ? transaction_records.where(dev_id: current_user.device_ids).withdrawals : transactions.withdrawals
       elsif @type == 'Transfer'
         @all_transactions = transactions.transfers
       elsif @type == 'Balance'

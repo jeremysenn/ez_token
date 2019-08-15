@@ -69,33 +69,31 @@ class WelcomeController < ApplicationController
         @separate_coin_device = @device.coin_device
         @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 3.months.ago..Time.now)
         
-        if current_user.admin?
-          transactions = current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
-          @transactions = transactions.order("#{transactions_sort_column} #{transactions_sort_direction}")
+        transactions = current_user.collaborator? ? current_user.company.transactions.where(event_id: current_user.admin_event_ids, date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+        @transactions = transactions.order("#{transactions_sort_column} #{transactions_sort_direction}")
 
-          # Transfers Info
-          @transfers = transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
-          @transfers_week_data = []
-          grouped_transfers = @transfers.group_by{ |t| t.date_time.beginning_of_day }
-          (@start_date.to_date..@end_date.to_date).each do |date|
-            transfers_group_total = 0
-            grouped_transfers.each do |group, transfers|
-              if date.beginning_of_day == group
-                transfers.each do |transfer|
-                  transfers_group_total = transfers_group_total + transfer.amt_auth.to_f
-                end
+        # Transfers Info
+        @transfers = transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
+        @transfers_week_data = []
+        grouped_transfers = @transfers.group_by{ |t| t.date_time.beginning_of_day }
+        (@start_date.to_date..@end_date.to_date).each do |date|
+          transfers_group_total = 0
+          grouped_transfers.each do |group, transfers|
+            if date.beginning_of_day == group
+              transfers.each do |transfer|
+                transfers_group_total = transfers_group_total + transfer.amt_auth.to_f
               end
             end
-            @transfers_week_data << transfers_group_total
           end
-          @transfers_count = @transfers.count
-          @transfers_amount = 0
-          @transfers.each do |transfer_transaction|
-            @transfers_amount = @transfers_amount + transfer_transaction.amt_auth unless transfer_transaction.amt_auth.blank?
-          end
-
-          @week_of_dates_data = (@start_date.to_date..@end_date.to_date).map{ |date| date.strftime('%-m/%-d') }
+          @transfers_week_data << transfers_group_total
         end
+        @transfers_count = @transfers.count
+        @transfers_amount = 0
+        @transfers.each do |transfer_transaction|
+          @transfers_amount = @transfers_amount + transfer_transaction.amt_auth unless transfer_transaction.amt_auth.blank?
+        end
+
+        @week_of_dates_data = (@start_date.to_date..@end_date.to_date).map{ |date| date.strftime('%-m/%-d') }
         
       elsif current_user.basic?
         if current_user.accounts.count == 1
