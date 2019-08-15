@@ -12,7 +12,7 @@
             %i.fa.fa-dashboard.fa-lg
             %br
             Home
-      - if current_user.can_view_events? and not current_user.admin_events.blank?
+      - if current_user.can_view_events?
         - if current_user.admin? or not current_user.admin_events.blank?
           %li.nav-item.bordered
             .text-center
