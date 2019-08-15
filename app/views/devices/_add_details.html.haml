@@ -1,0 +1,28 @@
+- bill_hists = @device.bill_hists.where(cut_dt: transaction.date_time).where.not(denomination: 0)
+.row
+  .col-md-12
+    = number_to_currency(transaction.amt_auth)
+  .table-responsive
+    %table.table.table-striped.table-condensed.table-bordered
+      %thead
+        %tr
+          - unless @bin_1_denomination.blank? or @bin_1_denomination == 0
+            %th{:scope => "col"} Bin 1
+          - unless @bin_2_denomination.blank? or @bin_2_denomination == 0
+            %th{:scope => "col"} Bin 2
+          - unless @bin_3_denomination.blank? or @bin_3_denomination == 0
+            %th{:scope => "col"} Bin 3
+          - unless @bin_4_denomination.blank? or @bin_4_denomination == 0
+            %th{:scope => "col"} Bin 4
+          - unless @bin_5_denomination.blank? or @bin_5_denomination == 0
+            %th{:scope => "col"} Bin 5
+          - unless @bin_6_denomination.blank? or @bin_6_denomination == 0
+            %th{:scope => "col"} Bin 6
+          - unless @bin_7_denomination.blank? or @bin_7_denomination == 0
+            %th{:scope => "col"} Bin 7
+          - unless @bin_8_denomination.blank? or @bin_8_denomination == 0
+            %th{:scope => "col"} Bin 8
+      %tbody
+        %tr
+          - bill_hists.each do |bill_hist|
+            %td= bill_hist.added
