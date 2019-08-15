@@ -34,15 +34,23 @@
                   %td
                     - @add_transactions.where(date_time: transaction.date_time..Time.now).each do |add_transaction|
                       - add_total += add_transaction.amt_auth unless add_transaction.amt_auth.blank?
-                      Cash Add
-                      %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
+                      %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
+                        Cash Add
                         = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                      -#
+                        Cash Add
+                        %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
+                          = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
                       %br
                     - @coin_add_transactions.where(date_time: transaction.date_time..Time.now).each do |coin_add_transaction|
                       - coin_add_total += coin_add_transaction.amt_auth unless coin_add_transaction.amt_auth.blank?
-                      Coin Add
-                      %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(coin_add_transaction.amt_auth)}", "data-placement" => "right"}
+                      %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: coin_add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
+                        Coin Add
                         = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                      -#
+                        Coin Add
+                        %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(coin_add_transaction.amt_auth)}", "data-placement" => "right"}
+                          = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
                       %br
                   %td
                     - unless first_bill_hist.blank? and transaction.amt_auth.blank?
@@ -53,6 +61,7 @@
                 - else
                   - start_total = transaction.amt_auth unless transaction.amt_auth.blank?
                   - add_total = 0
+                  - coin_add_total = 0
                   - first_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..@cut_transactions[index - 1].date_time).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.first
                   - last_bill_hist = @device.bill_hists.where("cut_dt >= ? AND cut_dt < ?", transaction.date_time, @cut_transactions[index - 1].date_time).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.last
                   -# dispensed_total = @device.withdrawal_transactions_total_amount_authorized_date_span(transaction.date_time, last_bill_hist.cut_dt)
@@ -60,9 +69,19 @@
                   %td
                     - @add_transactions.where("date_time >= ? AND date_time < ?", transaction.date_time, @cut_transactions[index - 1].date_time).each do |add_transaction|
                       - add_total += add_transaction.amt_auth unless add_transaction.amt_auth.blank?
-                      Cash Add
-                      %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
+                      %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
+                        Cash Add
                         = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                      -#
+                        Cash Add
+                        %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
+                          = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                      %br
+                    - @coin_add_transactions.where("date_time >= ? AND date_time < ?", transaction.date_time, @cut_transactions[index - 1].date_time).each do |coin_add_transaction|
+                      - coin_add_total += coin_add_transaction.amt_auth unless coin_add_transaction.amt_auth.blank?
+                      %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: coin_add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
+                        Coin Add
+                        = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
                       %br
                   %td
                     =# number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
@@ -218,3 +237,6 @@
                       = number_to_currency(@device.remaining)
   - else
     %p None
+
+:javascript
+  $('[data-toggle="popover"]').popover();
