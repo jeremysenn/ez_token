@@ -9,10 +9,11 @@
           Please enter first and last name:
           %a.btn.btn-primary.btn-sm{href: edit_customer_path(@customer)}
             Update Profile
-    %i.fa.fa-male
-    = @customer.identity
-    %a{href: edit_customer_path(@customer)}
-      %i.fa.fa-pencil
+    %h3
+      %i.fa.fa-male
+      = @customer.identity
+      %a{href: edit_customer_path(@customer)}
+        %i.fa.fa-pencil
     
     %p
       - unless @events.blank?
