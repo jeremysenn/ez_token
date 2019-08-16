@@ -183,9 +183,9 @@ class CustomersController < ApplicationController
     event_id = params[:event_id]
     device_id = params[:device_id]
     if params[:pay_and_text]
-      response = @customer.one_time_payment(amount, note, receipt_number)
+      response = @customer.one_time_payment(amount, note, receipt_number, event_id, device_id)
     else
-      response = @customer.one_time_payment_with_no_text_message(amount, note, receipt_number, device_id)
+      response = @customer.one_time_payment_with_no_text_message(amount, note, receipt_number, event_id, device_id)
     end
 #    transaction_id = @customer.one_time_payment(amount, note)
     response_code = response[:return]
