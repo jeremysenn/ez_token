@@ -22,34 +22,46 @@
                 %table.table.table-striped.table-condensed.table-bordered
                   %thead
                     %tr
-                      %th{:scope => "col"}
-                      %th{:scope => "col"} 1
-                      %th{:scope => "col"} 2
-                      %th{:scope => "col"} 3
-                      %th{:scope => "col"} 4
-                      %th{:scope => "col"} 5
-                      %th{:scope => "col"} 6
-                      %th{:scope => "col"} 7
-                      %th{:scope => "col"} 8
+                      %th{:scope => "col"} 
+                      %th{:scope => "col"} Bin 1
+                      %th{:scope => "col"} Bin 2
+                      %th{:scope => "col"} Bin 3
+                      %th{:scope => "col"} Bin 4
+                      %th{:scope => "col"} Bin 5
+                      %th{:scope => "col"} Bin 6
+                      %th{:scope => "col"} Bin 7
+                      %th{:scope => "col"} Bin 8
                   %tbody
                     %tr
-                      %td Old Start
-                      %td= @bill_hist_bin_1.old_start unless @bill_hist_bin_1.blank?
-                      %td= @bill_hist_bin_2.old_start unless @bill_hist_bin_2.blank?
-                      %td= @bill_hist_bin_3.old_start unless @bill_hist_bin_3.blank?
-                      %td= @bill_hist_bin_4.old_start unless @bill_hist_bin_4.blank?
-                      %td= @bill_hist_bin_5.old_start unless @bill_hist_bin_5.blank?
-                      %td= @bill_hist_bin_6.old_start unless @bill_hist_bin_6.blank?
-                      %td= @bill_hist_bin_7.old_start unless @bill_hist_bin_7.blank?
-                      %td= @bill_hist_bin_8.old_start unless @bill_hist_bin_8.blank?
-                    %tr
-                      %td New Start
-                      %td= @bill_hist_bin_1.new_start unless @bill_hist_bin_1.blank?
-                      %td= @bill_hist_bin_2.new_start unless @bill_hist_bin_2.blank?
-                      %td= @bill_hist_bin_3.new_start unless @bill_hist_bin_3.blank?
-                      %td= @bill_hist_bin_4.new_start unless @bill_hist_bin_4.blank?
-                      %td= @bill_hist_bin_5.new_start unless @bill_hist_bin_5.blank?
-                      %td= @bill_hist_bin_6.new_start unless @bill_hist_bin_6.blank?
-                      %td= @bill_hist_bin_7.new_start unless @bill_hist_bin_7.blank?
-                      %td= @bill_hist_bin_8.new_start unless @bill_hist_bin_8.blank?
+                      %td 
+                        %strong Host Start Count
+                      %td= @bill_count_bin_1.host_start_count
+                      %td= @bill_count_bin_2.host_start_count
+                      %td= @bill_count_bin_3.host_start_count
+                      %td= @bill_count_bin_4.host_start_count
+                      %td= @bill_count_bin_5.host_start_count
+                      %td= @bill_count_bin_6.host_start_count
+                      %td= @bill_count_bin_7.host_start_count
+                      %td= @bill_count_bin_8.host_start_count
+                    -#
+                      %tr
+                        %td Old Start
+                        %td= @bill_hist_bin_1.old_start unless @bill_hist_bin_1.blank?
+                        %td= @bill_hist_bin_2.old_start unless @bill_hist_bin_2.blank?
+                        %td= @bill_hist_bin_3.old_start unless @bill_hist_bin_3.blank?
+                        %td= @bill_hist_bin_4.old_start unless @bill_hist_bin_4.blank?
+                        %td= @bill_hist_bin_5.old_start unless @bill_hist_bin_5.blank?
+                        %td= @bill_hist_bin_6.old_start unless @bill_hist_bin_6.blank?
+                        %td= @bill_hist_bin_7.old_start unless @bill_hist_bin_7.blank?
+                        %td= @bill_hist_bin_8.old_start unless @bill_hist_bin_8.blank?
+                      %tr
+                        %td New Start
+                        %td= @bill_hist_bin_1.new_start unless @bill_hist_bin_1.blank?
+                        %td= @bill_hist_bin_2.new_start unless @bill_hist_bin_2.blank?
+                        %td= @bill_hist_bin_3.new_start unless @bill_hist_bin_3.blank?
+                        %td= @bill_hist_bin_4.new_start unless @bill_hist_bin_4.blank?
+                        %td= @bill_hist_bin_5.new_start unless @bill_hist_bin_5.blank?
+                        %td= @bill_hist_bin_6.new_start unless @bill_hist_bin_6.blank?
+                        %td= @bill_hist_bin_7.new_start unless @bill_hist_bin_7.blank?
+                        %td= @bill_hist_bin_8.new_start unless @bill_hist_bin_8.blank?
                       

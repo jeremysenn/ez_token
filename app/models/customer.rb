@@ -584,9 +584,9 @@ class Customer < ActiveRecord::Base
     end
   end
   
-  def one_time_payment_with_no_text_message(amount, note, receipt_number, event_id)
+  def one_time_payment_with_no_text_message(amount, note, receipt_number, event_id, device_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: accounts.first.id, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, dev_id: nil, event_id: event_id})
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: accounts.first.id, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, dev_id: device_id, event_id: event_id})
     Rails.logger.debug "************** Customer one_time_payment_with_no_text_message response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
@@ -613,6 +613,19 @@ class Customer < ActiveRecord::Base
   def barcode_png
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: 0})
+    
+    Rails.logger.debug "barcode_png response body: #{response.body}"
+    
+    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+      return response.body[:get_customer_barcode_png_response][:return]
+    else
+      return ""
+    end
+  end
+  
+  def barcode_png_by_device(device_id)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:get_customer_barcode_png, message: {DevID: device_id, CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: 0})
     
     Rails.logger.debug "barcode_png response body: #{response.body}"
     

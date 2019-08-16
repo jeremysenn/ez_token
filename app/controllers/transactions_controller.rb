@@ -168,6 +168,7 @@ class TransactionsController < ApplicationController
     @receipt_number = params[:receipt_number]
     @note = params[:note]
     @event_id = params[:event_id]
+    @device_id = params[:device_id]
 #    @device_id = params[:device_id]
     if params[:file]
       @file_upload = params[:file].path
@@ -175,7 +176,7 @@ class TransactionsController < ApplicationController
     if current_user.company.allowed_to_quick_pay?
       @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
       @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
-      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id)
+      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id)
       response_code = response[:return]
     end
     unless response_code.to_i > 0
@@ -190,7 +191,7 @@ class TransactionsController < ApplicationController
         FileUploadWorker.perform_async(transaction_id, @file_upload)
       end
 #      redirect_to root_path(customer_id: @customer.id), notice: 'Quick Pay submitted.'
-      redirect_to barcode_customer_path(@customer.id, amount: @amount)
+      redirect_to barcode_customer_path(@customer.id, amount: @amount, device_id: @device_id)
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
       redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
