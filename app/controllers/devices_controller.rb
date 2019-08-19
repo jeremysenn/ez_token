@@ -9,7 +9,7 @@ class DevicesController < ApplicationController
   # GET /devices.json
   def index
 #    @devices = current_user.company.devices
-    devices = current_user.super? ? Device.all : current_user.collaborator? ?  current_user.devices : current_user.company.devices
+    devices = current_user.super? ? Device.all : (current_user.collaborator? and not current_user.devices.blank?) ?  current_user.devices : current_user.company.devices
     @devices = devices.order("description ASC") unless devices.blank?
     
     # Bin Info

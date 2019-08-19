@@ -7,7 +7,7 @@ class WelcomeController < ApplicationController
     if user_signed_in?
       if current_user.administrator? or current_user.collaborator? or current_user.super?
 #        @devices = current_user.devices.order("description ASC")
-        devices = current_user.super? ? Device.all : current_user.collaborator? ?  current_user.devices : current_user.company.devices
+        devices = current_user.super? ? Device.all : (current_user.collaborator? and not current_user.devices.blank?) ?  current_user.devices : current_user.company.devices
         @devices = devices.order("description ASC") unless devices.blank?
         @start_date = params[:start_date] ||= (Date.today - 1.week).to_s
         @end_date = params[:end_date] ||= Date.today.to_s

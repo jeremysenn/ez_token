@@ -46,7 +46,8 @@
 
           #user_devices.form-group{style: "#{@user.collaborator? ? 'display: block;' : 'display: none;'}"}
             - unless current_user.company.devices.blank?
-              = f.label "Devices"
+              = f.label "Restrict ATMs to"
+              = hidden_field_tag "user[device_ids][]", []
               - current_user.company.devices.each do |device|
                 .col-xs-6
                   = check_box_tag "user[device_ids][]", device.id, (@user.device_ids.include? device.id.to_s), {id: "user_device_#{device.id}", class: "form_control"}
@@ -54,6 +55,7 @@
           #user_admin_events.form-group{style: "#{@user.collaborator? ? 'display: block;' : 'display: none;'}"}
             - unless current_user.company.events.blank?
               = f.label "Admin Events"
+              = hidden_field_tag "user[admin_event_ids][]", []
               - current_user.company.events.each do |event|
                 .col-xs-6
                   = check_box_tag "user[admin_event_ids][]", event.id, (@user.admin_event_ids.include? event.id.to_s), {id: "user_event_#{event.id}", class: "form_control"}

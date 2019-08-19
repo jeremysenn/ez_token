@@ -48,9 +48,24 @@
             %td= "#{transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_auth)}"
             %td
               - unless to_customer.blank? or transaction.to_account.balance.blank? or transaction.to_account.balance.zero?
-                %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: transaction.dev_id)}
-                  %i.fa.fa-print
-            
+                - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?)
+                  %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: transaction.dev_id)}
+                    %i.fa.fa-print
+                - else
+                  - if current_user.devices.count > 1
+                    .dropdown
+                      %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+                        %i.fa.fa-print
+                        %span.caret
+                      %ul.dropdown-menu
+                        - current_user.devices.each do |device|
+                          %li
+                            %a{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: device.id)}
+                              = device.description
+                  - else
+                    %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: current_user.devices.first.id)}
+                      %i.fa.fa-print
+
 - else
   &nbsp;
   None

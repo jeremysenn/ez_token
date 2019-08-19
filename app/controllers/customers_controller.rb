@@ -235,10 +235,14 @@ class CustomersController < ApplicationController
         unless @customer.blank?
 #          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
           if params[:device_id].blank?
-            unless current_user.collaborator?
-              @base64_barcode_string = @customer.barcode_png
+            if current_user.collaborator?
+              if current_user.devices.blank?
+                @base64_barcode_string = @customer.barcode_png
+              else
+                redirect_to root_path, alert: 'No device specified for barcode.'
+              end
             else
-              redirect_to root_path, alert: 'No device specified for barcode.'
+              @base64_barcode_string = @customer.barcode_png
             end
           else
             @base64_barcode_string = @customer.barcode_png_by_device(params[:device_id])
