@@ -33,7 +33,9 @@
                           %td= company.CompanyName
                           %td= company.FeeActID
                           %td= company.TxnActID
-                          %td= link_to "Show", company, class: 'btn btn-sm btn-primary'
+                          %td
+                            = link_to "Show", company, class: 'btn btn-sm btn-default'
+                            = link_to "Edit", edit_company_path(company.id), class: 'btn btn-primary btn-sm'
               - else
                 .jumbotron
                   %p.text-center None

@@ -24,7 +24,7 @@
                   .input-group
                     .input-group-prepend
                       %span.input-group-text $
-                    = f.input_field :MinMaintainBal, as: :decimal, class: "form-control"
+                    = f.input_field :MinMaintainBal, as: :decimal, value: @account_type.MinMaintainBal.blank? ? 0 : @account_type.MinMaintainBal, class: "form-control"
           .col-xs-12.col-sm-6
             = f.input :DefaultMinBal, as: :decimal, required: false, label: "Default Minimum Balance" do
               .row
@@ -50,12 +50,18 @@
             = f.input :CanBePulledByScan, as: :boolean, label: 'Can be Pulled by Scan'
             = f.input :CanBePushedByScan, as: :boolean, label: 'Can be Pushed by Scan'
             = f.input :social_security_number_required, as: :boolean, label: 'Require SSN'
-        - unless current_user.company.contracts.blank?
-          .row
-            .col-xs-12.col-sm-6
-              = f.input :contract_id, collection: current_user.company.contracts.map{|c| [c.title, c.id]}, as: :select, selected: @account_type.contract_id, label: "Contract", prompt: "Select contract"
-              =# select_tag :contract_id, options_from_collection_for_select(current_user.company.contracts, "id", "title", @contract_id), prompt: 'Choose contract', class: "form-control"
-              %br
+        - unless current_user.super?
+          - unless current_user.company.contracts.blank?
+            .row
+              .col-xs-12.col-sm-6
+                = f.input :contract_id, collection: current_user.company.contracts.map{|c| [c.title, c.id]}, as: :select, selected: @account_type.contract_id, label: "Contract", prompt: "Select contract"
+                %br
+        - else
+          - unless Contract.all.blank?
+            .row
+              .col-xs-12.col-sm-6
+                = f.input :contract_id, collection: Contract.all.map{|c| [c.title, c.id]}, as: :select, selected: @account_type.contract_id, label: "Contract", prompt: "Select contract"
+                %br
       
       .form-actions
         = link_to 'Cancel', :back, class: "btn btn-default"

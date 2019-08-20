@@ -25,7 +25,6 @@ $(document).on 'turbolinks:load', ->
         spinner_icon.hide()
         alert 'There was a problem sending the ATM Reset command'
         return
-    return
   ### ATM Reset Command ###
 
   ### Get Term Totals on Replenish Command ###
@@ -53,7 +52,6 @@ $(document).on 'turbolinks:load', ->
         spinner_icon.hide()
         alert 'There was a problem getting term totals'
         return
-    return
   ### End Get Term Totals on Replenish Command ###
 
   $('.term_totals_reset_check_box').click ->
