@@ -12,14 +12,15 @@
             %i.fa.fa-dashboard.fa-lg
             %br
             Home
-      - if current_user.can_view_events?
-        - if current_user.admin? or not current_user.admin_events.blank?
-          %li.nav-item.bordered
-            .text-center
-              %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
-                %i.fa.fa-calendar.fa-lg
-                %br
-                Events
+      -#
+        - if current_user.can_view_events?
+          - if current_user.admin? or not current_user.admin_events.blank?
+            %li.nav-item.bordered
+              .text-center
+                %a.nav-link{:href => events_path, :class => (params[:controller] == 'events') ?  "text-light-blue" : ""}
+                  %i.fa.fa-calendar.fa-lg
+                  %br
+                  Events
       -#
         - if current_user.can_view_events?
           %li.nav-item.bordered.dropdown
@@ -51,13 +52,14 @@
               %a.dropdown-item{:href => accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'index') ?  "active" : ""} All Accounts
               - if current_user.can_edit_accounts?
                 %a.dropdown-item{:href => new_customer_path, :class => (params[:controller] == 'customers' and params[:action] == 'new') ?  "active" : ""} New Account
-      - if current_user.can_view_wallet_types?
-        %li.nav-item.bordered
-          .text-center
-            %a.nav-link{:href => account_types_path, :class => (params[:controller] == 'account_types') ?  "text-light-blue" : ""}
-              %i.fa.fa-google-wallet.fa-lg
-              %br
-              Wallets
+      -#
+        - if current_user.can_view_wallet_types?
+          %li.nav-item.bordered
+            .text-center
+              %a.nav-link{:href => account_types_path, :class => (params[:controller] == 'account_types') ?  "text-light-blue" : ""}
+                %i.fa.fa-google-wallet.fa-lg
+                %br
+                Wallets
       -#
         - if current_user.can_view_wallet_types?
           %li.nav-item.bordered.dropdown
@@ -71,13 +73,6 @@
               - if current_user.can_edit_wallet_types?
                 %a.dropdown-item{:href => new_account_type_path, :class => (params[:controller] == 'account_types' and params[:action] == 'new') ?  "active" : ""} New Wallet Type
 
-      -#
-        %li.nav-item.bordered
-          .text-center
-            %a.nav-link{:href => payment_batches_path, :class => (params[:controller] == 'payment_batches') ?  "text-light-blue" : ""}
-              %i.fa.fa-dollar.fa-lg
-              %br
-              Transfer
       - if current_user.can_view_atms?
         %li.nav-item.bordered
           .text-center
@@ -86,13 +81,6 @@
               %br
               Transactions
       
-      -#
-        %li.nav-item.bordered
-          .text-center
-            %a.nav-link{:href => cards_path, :class => (params[:controller] == 'cards') ?  "text-light-blue" : ""}
-              %i.fa.fa-qrcode.fa-lg
-              %br
-              Barcodes
     %form.form-inline.my-2.my-lg-0
       .my-2.my-sm-0.dropdown
         %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
@@ -109,14 +97,20 @@
             %i.fa.fa-edit
             Edit profile
           .dropdown-divider
+          .dropdown-header Advanced
           - if current_user.can_view_users?
             %a.dropdown-item{:href => users_admin_index_path, :class => (params[:controller] == 'users') ?  "active" : ""} 
               %i.fa.fa-users
               Users
-          -#
-            %a.dropdown-item{:href => transactions_path, :class => (params[:controller] == 'transactions') ?  "text-light-blue" : ""}
-              %i.fa.fa-bolt
-              Transactions
+          - if current_user.can_view_events? 
+            - if current_user.admin? or not current_user.admin_events.blank?
+              %a.dropdown-item{:href => events_path, :class => (params[:controller] == 'events') ?  "active" : ""} 
+                %i.fa.fa-calendar
+                Events
+          - if current_user.can_view_wallet_types?
+            %a.dropdown-item{:href => account_types_path, :class => (params[:controller] == 'account_types') ?  "active" : ""} 
+              %i.fa.fa-google-wallet
+              Wallets
           - if current_user.can_view_atms? and not current_user.devices.blank?
             %a.dropdown-item{:href => devices_path, :class => (params[:controller] == 'devices') ?  "active" : ""}
               %i.fa.fa-money
