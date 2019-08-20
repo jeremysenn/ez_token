@@ -11,7 +11,10 @@
             .row
               .col-xs-12.col-sm-6
                 = f.input :company_id, collection: Company.all.map{|c| [c.CompanyName, c.id]}, as: :select, selected: @user.company_id, label: "Company", prompt: "Select company"
-          = f.input :role, as: :radio_buttons, collection: [['admin', " Admin"], ['collaborator', " Collaborator"]], label_method: :second, value_method: :first, label: false
+          - unless current_user.super?
+            = f.input :role, as: :radio_buttons, collection: [['admin', " Admin"], ['collaborator', " Collaborator"]], label_method: :second, value_method: :first, label: false
+          - else
+            = f.input :role, as: :radio_buttons, collection: [['admin', " Admin"], ['basic', " Basic"], ['collaborator', " Collaborator"]], label_method: :second, value_method: :first, label: false
           .row
             .col-xs-12.col-sm-6
               = f.input :first_name, label: 'First Name'
