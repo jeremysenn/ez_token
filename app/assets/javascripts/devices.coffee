@@ -31,6 +31,7 @@ $(document).on 'turbolinks:load', ->
   $('#atm_profile_box').on 'click', '.replenish_command_button', (e) ->
     e.preventDefault()
     device_id = $(this).data( "device-id" )
+    alert "Device " + device_id + " get term totals"
     spinner_icon = $(".getting_term_totals_spinner")
     spinner_icon.show()
     $.ajax
