@@ -75,8 +75,10 @@ class WelcomeController < ApplicationController
           @bin_8_column_count = @devices.select{ |device| device.bin_8_count != 0 }.select{ |device| device.bin_8_count != nil }.count
         end
         
-        @separate_coin_device = @device.coin_device
-        @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 3.months.ago..Time.now)
+        unless @device.blank?
+          @separate_coin_device = @device.coin_device
+          @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 3.months.ago..Time.now)
+        end
         
         transactions = current_user.collaborator? ? current_user.company.transactions.where(event_id: current_user.admin_event_ids, date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
         @transactions = transactions.order("#{transactions_sort_column} #{transactions_sort_direction}")
