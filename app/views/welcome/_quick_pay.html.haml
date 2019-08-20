@@ -14,6 +14,12 @@
             = text_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, autofocus: true, :pattern => "[0-9]*"
             .input-group-append
               %span.input-group-text .00
+          - if current_user.collaborator? and not current_user.devices.blank?
+            - if current_user.devices.count > 1
+              .form-group
+                = select_tag :device_id, options_from_collection_for_select(current_user.devices, "dev_id", "description"), class: "form-control"
+            - elsif current_user.devices.count == 1
+              = hidden_field_tag :device_id, current_user.devices.first.id
           - if current_user.collaborator?
             - if current_user.admin_events.count > 1
               .form-group

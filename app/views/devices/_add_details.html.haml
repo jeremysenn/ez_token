@@ -25,4 +25,4 @@
       %tbody
         %tr
           - bill_hists.each do |bill_hist|
-            %td= bill_hist.added
+            %td= (bill_hist.added - bill_hist.old_added)

@@ -181,10 +181,11 @@ class CustomersController < ApplicationController
     note = params[:note]
     receipt_number = params[:receipt_number]
     event_id = params[:event_id]
+    device_id = params[:device_id]
     if params[:pay_and_text]
-      response = @customer.one_time_payment(amount, note, receipt_number)
+      response = @customer.one_time_payment(amount, note, receipt_number, event_id, device_id)
     else
-      response = @customer.one_time_payment_with_no_text_message(amount, note, receipt_number, event_id)
+      response = @customer.one_time_payment_with_no_text_message(amount, note, receipt_number, event_id, device_id)
     end
 #    transaction_id = @customer.one_time_payment(amount, note)
     response_code = response[:return]
@@ -233,7 +234,19 @@ class CustomersController < ApplicationController
       format.html {
         unless @customer.blank?
 #          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
-          @base64_barcode_string = @customer.barcode_png
+          if params[:device_id].blank?
+            if current_user.collaborator?
+              if current_user.devices.blank?
+                @base64_barcode_string = @customer.barcode_png
+              else
+                redirect_to root_path, alert: 'No device specified for barcode.'
+              end
+            else
+              @base64_barcode_string = @customer.barcode_png
+            end
+          else
+            @base64_barcode_string = @customer.barcode_png_by_device(params[:device_id])
+          end
         else
           redirect_to root_path, alert: 'There was a problem getting barcode.'
         end

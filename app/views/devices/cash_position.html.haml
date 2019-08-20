@@ -16,40 +16,117 @@
             .box-header.with-border
               %h3.box-title 
                 Cash Position
-                = @last_change_date.strftime('%-m/%-d/%y %H:%M:%S')
             .box-body
               .table-responsive
                 %table.table.table-striped.table-condensed.table-bordered
                   %thead
                     %tr
-                      %th{:scope => "col"}
-                      %th{:scope => "col"} 1
-                      %th{:scope => "col"} 2
-                      %th{:scope => "col"} 3
-                      %th{:scope => "col"} 4
-                      %th{:scope => "col"} 5
-                      %th{:scope => "col"} 6
-                      %th{:scope => "col"} 7
-                      %th{:scope => "col"} 8
+                      %th{:scope => "col"} 
+                      %th{:scope => "col"} Bin 1
+                      %th{:scope => "col"} Bin 2
+                      %th{:scope => "col"} Bin 3
+                      %th{:scope => "col"} Bin 4
+                      %th{:scope => "col"} Bin 5
+                      %th{:scope => "col"} Bin 6
+                      %th{:scope => "col"} Bin 7
+                      %th{:scope => "col"} Bin 8
                   %tbody
                     %tr
-                      %td Old Start
-                      %td= @bill_hist_bin_1.old_start unless @bill_hist_bin_1.blank?
-                      %td= @bill_hist_bin_2.old_start unless @bill_hist_bin_2.blank?
-                      %td= @bill_hist_bin_3.old_start unless @bill_hist_bin_3.blank?
-                      %td= @bill_hist_bin_4.old_start unless @bill_hist_bin_4.blank?
-                      %td= @bill_hist_bin_5.old_start unless @bill_hist_bin_5.blank?
-                      %td= @bill_hist_bin_6.old_start unless @bill_hist_bin_6.blank?
-                      %td= @bill_hist_bin_7.old_start unless @bill_hist_bin_7.blank?
-                      %td= @bill_hist_bin_8.old_start unless @bill_hist_bin_8.blank?
+                      %td 
+                        %strong Host Start Count
+                      %td= @bill_count_bin_1.host_start_count
+                      %td= @bill_count_bin_2.host_start_count
+                      %td= @bill_count_bin_3.host_start_count
+                      %td= @bill_count_bin_4.host_start_count
+                      %td= @bill_count_bin_5.host_start_count
+                      %td= @bill_count_bin_6.host_start_count
+                      %td= @bill_count_bin_7.host_start_count
+                      %td= @bill_count_bin_8.host_start_count
                     %tr
-                      %td New Start
-                      %td= @bill_hist_bin_1.new_start unless @bill_hist_bin_1.blank?
-                      %td= @bill_hist_bin_2.new_start unless @bill_hist_bin_2.blank?
-                      %td= @bill_hist_bin_3.new_start unless @bill_hist_bin_3.blank?
-                      %td= @bill_hist_bin_4.new_start unless @bill_hist_bin_4.blank?
-                      %td= @bill_hist_bin_5.new_start unless @bill_hist_bin_5.blank?
-                      %td= @bill_hist_bin_6.new_start unless @bill_hist_bin_6.blank?
-                      %td= @bill_hist_bin_7.new_start unless @bill_hist_bin_7.blank?
-                      %td= @bill_hist_bin_8.new_start unless @bill_hist_bin_8.blank?
+                      %td 
+                        %strong Device Start Count
+                      %td= @bill_count_bin_1.dev_start_count
+                      %td= @bill_count_bin_2.dev_start_count
+                      %td= @bill_count_bin_3.dev_start_count
+                      %td= @bill_count_bin_4.dev_start_count
+                      %td= @bill_count_bin_5.dev_start_count
+                      %td= @bill_count_bin_6.dev_start_count
+                      %td= @bill_count_bin_7.dev_start_count
+                      %td= @bill_count_bin_8.dev_start_count
+                    %tr
+                      %td 
+                        %strong Host Cycle Count
+                      %td= @bill_count_bin_1.host_cycle_count
+                      %td= @bill_count_bin_2.host_cycle_count
+                      %td= @bill_count_bin_3.host_cycle_count
+                      %td= @bill_count_bin_4.host_cycle_count
+                      %td= @bill_count_bin_5.host_cycle_count
+                      %td= @bill_count_bin_6.host_cycle_count
+                      %td= @bill_count_bin_7.host_cycle_count
+                      %td= @bill_count_bin_8.host_cycle_count
+                    %tr
+                      %td 
+                        %strong Device Cycle Count
+                      %td= @bill_count_bin_1.dev_cycle_count
+                      %td= @bill_count_bin_2.dev_cycle_count
+                      %td= @bill_count_bin_3.dev_cycle_count
+                      %td= @bill_count_bin_4.dev_cycle_count
+                      %td= @bill_count_bin_5.dev_cycle_count
+                      %td= @bill_count_bin_6.dev_cycle_count
+                      %td= @bill_count_bin_7.dev_cycle_count
+                      %td= @bill_count_bin_8.dev_cycle_count
+                    %tr
+                      %td 
+                        %strong Added Count
+                      %td= @bill_count_bin_1.added_count
+                      %td= @bill_count_bin_2.added_count
+                      %td= @bill_count_bin_3.added_count
+                      %td= @bill_count_bin_4.added_count
+                      %td= @bill_count_bin_5.added_count
+                      %td= @bill_count_bin_6.added_count
+                      %td= @bill_count_bin_7.added_count
+                      %td= @bill_count_bin_8.added_count
+                    %tr
+                      %td 
+                        %strong Old Added Count
+                      %td= @bill_count_bin_1.old_added
+                      %td= @bill_count_bin_2.old_added
+                      %td= @bill_count_bin_3.old_added
+                      %td= @bill_count_bin_4.old_added
+                      %td= @bill_count_bin_5.old_added
+                      %td= @bill_count_bin_6.old_added
+                      %td= @bill_count_bin_7.old_added
+                      %td= @bill_count_bin_8.old_added
+                    %tr
+                      %td 
+                        %strong Status
+                      %td= @bill_count_bin_1.status_description
+                      %td= @bill_count_bin_2.status_description
+                      %td= @bill_count_bin_3.status_description
+                      %td= @bill_count_bin_4.status_description
+                      %td= @bill_count_bin_5.status_description
+                      %td= @bill_count_bin_6.status_description
+                      %td= @bill_count_bin_7.status_description
+                      %td= @bill_count_bin_8.status_description
+                    -#
+                      %tr
+                        %td Old Start
+                        %td= @bill_hist_bin_1.old_start unless @bill_hist_bin_1.blank?
+                        %td= @bill_hist_bin_2.old_start unless @bill_hist_bin_2.blank?
+                        %td= @bill_hist_bin_3.old_start unless @bill_hist_bin_3.blank?
+                        %td= @bill_hist_bin_4.old_start unless @bill_hist_bin_4.blank?
+                        %td= @bill_hist_bin_5.old_start unless @bill_hist_bin_5.blank?
+                        %td= @bill_hist_bin_6.old_start unless @bill_hist_bin_6.blank?
+                        %td= @bill_hist_bin_7.old_start unless @bill_hist_bin_7.blank?
+                        %td= @bill_hist_bin_8.old_start unless @bill_hist_bin_8.blank?
+                      %tr
+                        %td New Start
+                        %td= @bill_hist_bin_1.new_start unless @bill_hist_bin_1.blank?
+                        %td= @bill_hist_bin_2.new_start unless @bill_hist_bin_2.blank?
+                        %td= @bill_hist_bin_3.new_start unless @bill_hist_bin_3.blank?
+                        %td= @bill_hist_bin_4.new_start unless @bill_hist_bin_4.blank?
+                        %td= @bill_hist_bin_5.new_start unless @bill_hist_bin_5.blank?
+                        %td= @bill_hist_bin_6.new_start unless @bill_hist_bin_6.blank?
+                        %td= @bill_hist_bin_7.new_start unless @bill_hist_bin_7.blank?
+                        %td= @bill_hist_bin_8.new_start unless @bill_hist_bin_8.blank?
                       

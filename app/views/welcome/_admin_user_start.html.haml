@@ -190,7 +190,7 @@
                 .box-footer
                   -#
                     .pull-right= paginate @customers, param_name: 'result1'
-        - if current_user.admin?
+        - if current_user.can_view_atms?
           .row  
             .col-md-12
               / Transactions and ATM transfers and withdrawals chart
@@ -237,6 +237,7 @@
 
                 / /.box-body
               / /.box
+
 - unless @customer_id.blank?
   :javascript
     var url = "#{barcode_customer_url(@customer_id)}";
@@ -245,7 +246,7 @@
 :javascript
   $('[data-toggle="popover"]').popover();
 
-- if current_user.admin?
+- if current_user.can_view_atms?
   :javascript
     $(document).on("turbolinks:load", function() {
       var ctx = document.getElementById("myChart").getContext("2d");

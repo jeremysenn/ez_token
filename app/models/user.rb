@@ -317,10 +317,6 @@ class User < ApplicationRecord
     admin? or view_atms? or super?
   end
   
-  def can_view_atms?
-    admin? or view_atms? or super?
-  end
-  
   def can_quick_pay_customers?
     (company.allowed_to_quick_pay? and (admin? or can_quick_pay?)) or super?
   end
