@@ -21,7 +21,7 @@ class Company < ActiveRecord::Base
   has_many :events
   has_many :contracts
   
-  after_create_commit :create_transaction_and_fee_accounts
+  after_create_commit :create_transaction_and_fee_accounts, :create_default_contract_and_account_type
   
   ### Start Virtual Attributes ###
   attr_accessor :transaction_account_minimum_balance
@@ -177,11 +177,23 @@ class Company < ActiveRecord::Base
   def create_transaction_and_fee_accounts
     if self.transaction_account.blank?
       new_transaction_account = Account.create(CompanyNumber: self.CompanyNumber, MinBalance: -1000000)
-      self.update_attribute(:TxnActID, new_transaction_account.id)
+#      self.update_attribute(:TxnActID, new_transaction_account.id)
+      self.update_column(:TxnActID, new_transaction_account.id)
     end
     if self.fee_account.blank?
       new_fee_account = Account.create(CompanyNumber: self.CompanyNumber)
-      self.update_attribute(:FeeActID, new_fee_account.id)
+#      self.update_attribute(:FeeActID, new_fee_account.id)
+      self.update_column(:FeeActID, new_fee_account.id)
+    end
+  end
+  
+  def create_default_contract_and_account_type
+    if contracts.blank?
+      company_default_contract = Contract.create(company_id: self.CompanyNumber, title: "#{self.CompanyName} Default Contract", name: "#{self.CompanyName} Default Contract".parameterize(separator: "_"), content: "#{self.CompanyName} default contract verbiage.")
+      company_default_contract.publish
+    end
+    if account_types.blank?
+      AccountType.create(CompanyNumber: self.CompanyNumber, AccountTypeDesc: "#{self.CompanyName} Default Wallet Type", WithdrawAll: 1, contract_id: company_default_contract.id)
     end
   end
   

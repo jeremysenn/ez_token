@@ -648,7 +648,9 @@ class Account < ActiveRecord::Base
   end
   
   def set_default_minimum_balance
-    self.MinBalance = default_minimum_balance
+    unless account_type.blank?
+      self.MinBalance = default_minimum_balance
+    end
   end
   
   def minimum_maintain_balance
@@ -662,8 +664,6 @@ class Account < ActiveRecord::Base
   def default_minimum_balance
     unless account_type.blank? or account_type.DefaultMinBal.blank?
       account_type.DefaultMinBal
-    else
-      0
     end
   end
   
