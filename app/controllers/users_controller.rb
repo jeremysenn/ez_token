@@ -12,8 +12,10 @@ class UsersController < ApplicationController
       @role = params[:role].blank? ? ['admin', 'basic', 'collaborator'] : params[:role] 
       unless params[:q].blank?
         @query_string = "%#{params[:q]}%"
+        users = User.where(company_id: @company_id, role: @role).where("first_name like ? OR last_name like ? OR phone like ? OR email like ?", @query_string, @query_string, @query_string, @query_string)
+      else
+        users = User.where(company_id: @company_id, role: @role)
       end
-      users = User.where(company_id: @company_id) 
       @users = users.page(params[:page]).per(20)
     elsif current_user.can_view_users?
       users = current_user.company.users

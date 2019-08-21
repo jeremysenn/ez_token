@@ -18,7 +18,7 @@
               = form_tag users_admin_index_path, :method => 'get', :class => "form-inline" do
                 = select_tag :company_id, options_for_select(Company.all.map{|c| [c.CompanyName, c.id]}, params[:company_id]), prompt: 'All companies', class: "form-control"
                 &nbsp;
-                = select_tag :role, options_for_select([["Admin",'admin'], ["Basic",'basic'], ["Collaborator",'collaborator']], params[:role]), prompt: 'All ', class: "form-control"
+                = select_tag :role, options_for_select([["Admin",'admin'], ["Basic",'basic'], ["Collaborator",'collaborator']], params[:role]), prompt: 'All roles', class: "form-control"
                 &nbsp;
                 = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control"
                 &nbsp;
