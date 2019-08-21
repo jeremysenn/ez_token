@@ -7,8 +7,17 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    if current_user.can_view_users? or current_user.super?
-      @users = current_user.super? ? User.all.page(params[:page]).per(20) : current_user.company.users.page(params[:page]).per(20)
+    if current_user.super?
+      @company_id = params[:company_id].blank? ? Company.all.map{|c| c.CompanyNumber} : params[:company_id] 
+      @role = params[:role].blank? ? ['admin', 'basic', 'collaborator'] : params[:role] 
+      unless params[:q].blank?
+        @query_string = "%#{params[:q]}%"
+      end
+      users = User.where(company_id: @company_id) 
+      @users = users.page(params[:page]).per(20)
+    elsif current_user.can_view_users?
+      users = current_user.company.users
+      @users = users.page(params[:page]).per(20)
     else
       redirect_back fallback_location: root_path, notice: 'You are not authorized.'
     end
