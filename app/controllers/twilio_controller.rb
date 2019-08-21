@@ -34,7 +34,7 @@ class TwilioController < ApplicationController
     keyword = body.downcase.strip
     event = Event.now_open.find_by(join_code: keyword)
     message_sid = params[:MessageSid]
-    SmsMessage.create(sid: message_sid, to: to, from: from, company_id: event.blank? ? Company.find_by(CompanyName: 'ezToken Biz') : event.company_id, body: "#{body}")
+    SmsMessage.create(sid: message_sid, to: to, from: from, company_id: event.blank? ? Company.find_by(CompanyName: 'ezToken Biz').id : event.company_id, body: "#{body}")
     
     response = Twilio::TwiML::MessagingResponse.new
     response.message do |message|
