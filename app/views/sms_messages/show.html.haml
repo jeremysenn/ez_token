@@ -23,10 +23,10 @@
             = @sms_message.from
           %p.lead
             To:
-            = @sms_message.customer.full_name
+            = @sms_message.customer.blank? ? 'N/A' : @sms_message.customer.full_name 
           %p.lead
             From:
-            = @sms_message.user.full_name unless @sms_message.user.blank?
+            = @sms_message.user.blank? ? 'N/A' : @sms_message.user.full_name
           %p.lead
             Body:
             %br
