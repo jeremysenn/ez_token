@@ -24,7 +24,9 @@
           - from_customer = transaction.from_account_customer
           %tr{class: transaction.reversed? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
             %th{:scope => "row"}= link_to transaction.id, transaction
-            %td= transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
+            %td
+              =# transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
+              = transaction.date_time.strftime("%-m/%-d/%y")
             %td
               - unless to_customer.blank?
                 = link_to to_customer.identity, customer_path(to_customer, account_id: transaction.to_acct_id) unless transaction.to_account.blank?

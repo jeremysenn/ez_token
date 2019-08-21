@@ -16,7 +16,8 @@
       .box.box-primary
         .box-header.with-border
           %h3.box-title 
-            = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+            =# @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+            = "#{@transaction.date_time.strftime('%-m/%-d/%y %l:%M %p')} Eastern"
           .box-tools.pull-right
             - unless @reversal_transaction.blank?
               .text-danger
