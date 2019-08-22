@@ -411,6 +411,19 @@ class Transaction < ActiveRecord::Base
     end
   end
   
+  def can_reverse?
+    unless withdrawal? or withdrawal_all?
+      return true
+    else
+      # tran_status of 12 means the withdrawal went through successfully, so should not be able to reverse
+      if tran_status == 12
+        return false
+      else
+        return true
+      end
+    end
+  end
+  
   #############################
   #     Class Methods         #
   #############################
