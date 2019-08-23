@@ -26,7 +26,7 @@ class DevicesController < ApplicationController
   def show
 #    @transactions = @device.transactions.where(DevCompanyNbr: current_user.company_id, date_time: Date.today.beginning_of_day.last_month..Date.today.end_of_day).order("date_time DESC")
 #    @transactions = @device.transactions.where(date_time: Date.today.beginning_of_day.last_month..Date.today.end_of_day).order("date_time DESC")
-    @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC").page(params[:dev_statuses_page]).per(10)
+    @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC").page(params[:dev_statuses_page]).per(5)
     @most_recent_dev_status = @device.dev_statuses.order("date_time DESC").first
     @bill_counts = @device.bill_counts
     @type = "Withdrawal"
