@@ -60,7 +60,7 @@
           %p.lead
             Device ID:
             - unless current_user.basic?
-              = link_to @transaction.dev_id, device_path(@transaction.dev_id)
+              = link_to @transaction.dev_id, device_path(@transaction.dev_id) unless @transaction.dev_id.blank?
             - else
               = @transaction.dev_id
           %p.lead
@@ -172,9 +172,30 @@
           - if current_user.administrator?
             -# unless @to_customer.blank? or @to_customer.balance.blank? or @to_customer.balance.zero?
             - unless @to_customer.blank? or @transaction.to_account.balance.blank? or @transaction.to_account.balance.zero?
-              %a.btn.btn-default{href: barcode_customer_path(@to_customer.id), target: '_blank'}
-                %i.fa.fa-print
-                Print Barcode
+              - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?) or current_user.super?
+                %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: @transaction.amt_auth), target: '_blank'}
+                  %i.fa.fa-print
+                  Print Barcode
+              - else
+                - if current_user.devices.count > 1
+                  .dropdown
+                    %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+                      %i.fa.fa-print
+                      %span.caret
+                    %ul.dropdown-menu
+                      - current_user.devices.each do |device|
+                        %li
+                          %a{href: barcode_customer_path(@to_customer.id, amount: @transaction.amt_auth, device_id: device.id)}
+                            = device.description
+                - elsif current_user.devices.count == 1
+                  %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: @transaction.amt_auth, device_id: current_user.devices.first.id)}
+                    %i.fa.fa-print
+                    Print Barcode
+                - else
+                  %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: @transaction.amt_auth)}
+                    %i.fa.fa-print
+                    Print Barcode
+
           - if current_user.can_reverse_transactions? and @transaction.can_reverse?
             - if @reversal_transaction.blank? and not @transaction.reversal?
               .pull-right

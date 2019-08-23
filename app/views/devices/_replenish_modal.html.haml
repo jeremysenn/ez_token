@@ -1,0 +1,21 @@
+#replenish-modal.modal.fade
+  .modal-dialog.modal-sm
+    .modal-content
+      .modal-header
+        %h5.modal-title
+          %i.fa.fa-inbox
+          Replenish
+      .modal-body
+        %a.btn.btn-primary.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, href: "#add-cash-modal", "data-target" => "#add-cash-modal", "data-toggle" => "modal"}
+          Add Cash
+        %a.btn.btn-primary.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, href: "#reset-cash-modal", "data-target" => "#reset-cash-modal", "data-toggle" => "modal"}
+          Reset Cash
+        - unless @bin_5_denomination.blank? and @bin_6_denomination.blank? and @bin_7_denomination.blank? and @bin_8_denomination.blank?
+          %a.btn.btn-primary.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, href: "#add-coin-modal", "data-target" => "#add-coin-modal", "data-toggle" => "modal"}
+            Add Coin
+          %a.btn.btn-primary.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, href: "#reset-coin-modal", "data-target" => "#reset-coin-modal", "data-toggle" => "modal"}
+            Reset Coin
+        %a.btn.btn-primary.btn-block{href: cash_position_device_path(@device), target: '_blank;'}
+          Cash Position
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Done

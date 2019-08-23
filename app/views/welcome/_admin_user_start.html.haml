@@ -162,7 +162,10 @@
                                 %tr
                                   - @device.denoms.each do |denom|
                                     - unless denom.denomination.zero?
-                                      %th{:scope => "col"}= number_to_currency(denom.denomination, strip_insignificant_zeros: true)
+                                      %th{:scope => "col"}
+                                        = "Bin #{denom.cassette_id}"
+                                        %br
+                                        = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
                               %tbody
                                 = render partial: "devices/bin_details", locals: {device: @device}
                         - else

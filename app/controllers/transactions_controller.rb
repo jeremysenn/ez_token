@@ -38,10 +38,11 @@ class TransactionsController < ApplicationController
       transactions = @event_id.blank? ? transaction_records.where(from_acct_id: current_user.accounts.map(&:id)).or(transaction_records.where(to_acct_id: current_user.accounts.map(&:id))) : transaction_records.where(from_acct_id: current_user.accounts.map(&:id)).or(transaction_records.where(to_acct_id: current_user.accounts.map(&:id))).where(event_id: @event_id)
     end
     if @transaction_id_or_receipt_number.blank?
-      if @type == 'Withdrawal'
-        # For collaborators, not event-specific, but device-specific
-        @all_transactions = current_user.collaborator? ? transaction_records.where(dev_id: current_user.device_ids).withdrawals : transactions.withdrawals
-      elsif @type == 'Transfer'
+#      if @type == 'Withdrawal'
+#        # For collaborators, not event-specific, but device-specific
+#        @all_transactions = current_user.collaborator? ? transaction_records.where(dev_id: current_user.device_ids).withdrawals : transactions.withdrawals
+#      elsif @type == 'Transfer'
+      if @type == 'Transfer'
         @all_transactions = transactions.transfers
       elsif @type == 'Balance'
         @all_transactions = transactions.one_sided_credits
@@ -51,7 +52,7 @@ class TransactionsController < ApplicationController
         @all_transactions = transactions.checks
       else
 #        @all_transactions = current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
-        @all_transactions = transactions.not_fees
+        @all_transactions = transactions.not_fees_and_not_withdrawals
       end
     else
       @start_date = nil

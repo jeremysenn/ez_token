@@ -73,7 +73,8 @@
                       &nbsp;
                     = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: current_user.collaborator? ? nil : 'All events', class: "form-control"
                     &nbsp;
-                    = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
+                    =# select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
+                    = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer"], @type), class: "form-control"
                     &nbsp;
                     = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
                     To
@@ -84,7 +85,9 @@
               - else
                 = form_tag transactions_path, :method => 'get', :class => "form-horizontal" do
                   .form-group= select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
-                  .form-group= select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
+                  -#
+                    .form-group= select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
+                  .form-group= select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer"], @type), class: "form-control"
                   .form-group
                     %label.control-label Start Date
                     = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control ", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
@@ -107,79 +110,3 @@
                   %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
                   %span.sr-only Loading...
                 %p.text-center= link_to "Load More...", transactions_path(:transactions_page => @transactions.next_page, company_id: @company_id, event_id: @event_id, type: @type, start_date: @start_date, end_date: @end_date), :class => 'load-more-transactions btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @transactions.next_page
-
--#
-  .container-fluid
-    %br
-    -# if params[:withdrawals].blank?
-    %p
-      = form_tag transactions_path, :method => 'get', :class => "form-inline" do
-        = select_tag :type, options_for_select(["All", "Balance", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
-        = text_field_tag 'transaction[start_date]', nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? Date.today : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-        To
-        = text_field_tag 'transaction[end_date]', nil, :placeholder => "End Date", value: "#{@end_date.blank? ? Date.today : @end_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-        = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-          %i.fa.fa-search
-    %p.lead.text-muted= "#{pluralize(number_with_delimiter(@transactions_count), 'transaction')} found"
-
-    .card.card-block
-      %h4.card-title 
-        %i.fa.fa-bolt
-        = "EZcash: #{@type} Transactions"
-        .pull-right= number_to_currency(@transactions_total)
-        -#
-          .pull-right
-            = number_to_currency(@transactions_total)
-      - unless @transactions.blank?
-        .table-responsive
-          %table.table.table-striped
-            %thead
-              %tr
-                -# %th Tran ID
-                %th= transaction_sort_link 'tranID', "ID"
-                %th= transaction_sort_link 'Description', "Description"
-                -#
-                  -# %th Device ID
-                  %th= transaction_sort_link 'dev_id', "Device"
-                %th= transaction_sort_link 'from_acct_id', "From"
-                %th= transaction_sort_link 'to_acct_id', "To"
-                -# %th DateTime
-                %th= transaction_sort_link 'date_time', "DateTime"
-                -# %th Code
-                %th= transaction_sort_link 'error_code', "Code"
-                -# %th Status
-                %th= transaction_sort_link 'tran_status', "Status"
-                %th= transaction_sort_link 'tran_code', "Tran Code"
-                %th= transaction_sort_link 'sec_tran_code', "Sec Tran Code"
-                -# %th Amount
-                %th= transaction_sort_link 'amt_req', "Requested"
-                %th= transaction_sort_link 'amt_auth', "Authorized"
-                %th= transaction_sort_link 'ChpFee', "Fee"
-                %th
-            %tbody
-              - @transactions.each do |transaction|
-                %tr{class: "#{transaction.error? ? 'table-danger' : '' }"}
-                  %td= transaction.id
-                  %td= transaction.Description
-                  -#
-                    %td= transaction.dev_id
-                  %td
-                    = transaction.from_account_customer.full_name unless transaction.from_account_customer.blank?
-                    = transaction.from_acct_id
-                  %td
-                    = transaction.to_account_customer.full_name unless transaction.to_account_customer.blank?
-                    = transaction.to_acct_id
-                  %td= transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
-                  %td= transaction.error_code_description
-                  %td= transaction.status_description
-                  %td= transaction.tran_code
-                  %td= transaction.sec_tran_code
-                  %td= number_to_currency(transaction.amt_req)
-                  %td= number_to_currency(transaction.amt_auth)
-                  %td= number_to_currency(transaction.ChpFee)
-                  %td
-                    = link_to "Show", transaction, class: 'btn btn-secondary'
-      - else
-        %p.lead None
-
-    = paginate @transactions

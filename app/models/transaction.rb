@@ -19,6 +19,7 @@ class Transaction < ActiveRecord::Base
   scope :fees, -> { where(tran_code: ["FEE"], sec_tran_code: ["TFR"]) }
   scope :checks, -> { where(tran_code: ["CHK"], sec_tran_code: ["TFR"]) }
   scope :not_fees, -> { where.not(tran_code: ["FEE"]) }
+  scope :not_fees_and_not_withdrawals, -> { where.not(tran_code: ["FEE", "WDL", "ALL"]) }
   
   scope :cuts, -> { where(tran_code: ["CUT"]) }
   scope :adds, -> { where(tran_code: ["ADD"]) }

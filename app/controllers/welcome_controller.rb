@@ -27,17 +27,15 @@ class WelcomeController < ApplicationController
 #          @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC").first(5)
           @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_month..Date.today.end_of_day).order("date_time DESC").page(params[:dev_statuses_page]).per(5)
           @bill_counts = @device.bill_counts
-          @denoms = @device.denoms
           @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
-          @bin_1_denomination = @denoms.where(cassette_id: "1").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "1").where.not(denomination: 0).first.denomination
-          @bin_2_denomination = @denoms.where(cassette_id: "2").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "2").where.not(denomination: 0).first.denomination
-          @bin_3_denomination = @denoms.where(cassette_id: "3").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "3").where.not(denomination: 0).first.denomination
-          @bin_4_denomination = @denoms.where(cassette_id: "4").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "4").where.not(denomination: 0).first.denomination
-          @bin_5_denomination = @denoms.where(cassette_id: "5").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "5").where.not(denomination: 0).first.denomination
-          @bin_6_denomination = @denoms.where(cassette_id: "6").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "6").where.not(denomination: 0).first.denomination
-          @bin_7_denomination = @denoms.where(cassette_id: "7").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "7").where.not(denomination: 0).first.denomination
-          @bin_8_denomination = @denoms.where(cassette_id: "8").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "8").where.not(denomination: 0).first.denomination
-    
+          @bin_1_denomination = @device.bin_1_denomination
+          @bin_2_denomination = @device.bin_2_denomination
+          @bin_3_denomination = @device.bin_3_denomination
+          @bin_4_denomination = @device.bin_4_denomination
+          @bin_5_denomination = @device.bin_5_denomination
+          @bin_6_denomination = @device.bin_6_denomination
+          @bin_7_denomination = @device.bin_7_denomination
+          @bin_8_denomination = @device.bin_8_denomination
           
           @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
           @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)

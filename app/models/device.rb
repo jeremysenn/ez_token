@@ -414,6 +414,134 @@ class Device < ActiveRecord::Base
 #    return bin_1_remaining + bin_2_remaining + bin_3_remaining + bin_4_remaining + bin_5_remaining + bin_6_remaining + bin_7_remaining + bin_8_remaining
   end
   
+  def bin_1_denom
+    denoms.where(cassette_id: "1").where.not(denomination: 0).first
+  end
+  
+  def bin_2_denom
+    denoms.where(cassette_id: "2").where.not(denomination: 0).first
+  end
+  
+  def bin_3_denom
+    denoms.where(cassette_id: "3").where.not(denomination: 0).first
+  end
+  
+  def bin_4_denom
+    denoms.where(cassette_id: "4").where.not(denomination: 0).first
+  end
+  
+  def bin_5_denom
+    denoms.where(cassette_id: "5").where.not(denomination: 0).first
+  end
+  
+  def bin_6_denom
+    denoms.where(cassette_id: "6").where.not(denomination: 0).first
+  end
+  
+  def bin_7_denom
+    denoms.where(cassette_id: "7").where.not(denomination: 0).first
+  end
+  
+  def bin_8_denom
+    denoms.where(cassette_id: "8").where.not(denomination: 0).first
+  end
+  
+  def bin_1_denomination
+    bin_1_denom.denomination unless bin_1_denom.blank?
+  end
+  
+  def bin_2_denomination
+    bin_2_denom.denomination unless bin_2_denom.blank?
+  end
+  
+  def bin_3_denomination
+    bin_3_denom.denomination unless bin_3_denom.blank?
+  end
+  
+  def bin_4_denomination
+    bin_4_denom.denomination unless bin_4_denom.blank?
+  end
+  
+  def bin_5_denomination
+    bin_5_denom.denomination unless bin_5_denom.blank?
+  end
+  
+  def bin_6_denomination
+    bin_6_denom.denomination unless bin_6_denom.blank?
+  end
+  
+  def bin_7_denomination
+    bin_7_denom.denomination unless bin_7_denom.blank?
+  end
+  
+  def bin_8_denomination
+    bin_8_denom.denomination unless bin_8_denom.blank?
+  end
+  
+  def bin_1_total_amount
+    unless bin_1_count.blank? or bin_1_denomination.blank?
+      return (bin_1_count * bin_1_denomination).round
+    else
+      nil
+    end
+  end
+  
+  def bin_2_total_amount
+    unless bin_2_count.blank? or bin_2_denomination.blank?
+      return (bin_2_count * bin_2_denomination).round
+    else
+      nil
+    end
+  end
+  
+  def bin_3_total_amount
+    unless bin_3_count.blank? or bin_3_denomination.blank?
+      return (bin_3_count * bin_3_denomination).round
+    else
+      nil
+    end
+  end
+  
+  def bin_4_total_amount
+    unless bin_4_count.blank? or bin_4_denomination.blank?
+      return (bin_4_count * bin_4_denomination).round
+    else
+      nil
+    end
+  end
+  
+  def bin_5_total_amount
+    unless bin_5_count.blank? or bin_5_denomination.blank?
+      return (bin_5_count * bin_5_denomination).round
+    else
+      nil
+    end
+  end
+  
+  def bin_6_total_amount
+    unless bin_6_count.blank? or bin_6_denomination.blank?
+      return (bin_6_count * bin_6_denomination).round
+    else
+      nil
+    end
+  end
+  
+  def bin_7_total_amount
+    unless bin_7_count.blank? or bin_7_denomination.blank?
+      return (bin_7_count * bin_7_denomination).round
+    else
+      nil
+    end
+  end
+  
+  def bin_8_total_amount
+    unless bin_8_count.blank? or bin_8_denomination.blank?
+      return (bin_8_count * bin_8_denomination).round
+    else
+      nil
+    end
+  end
+  
   def transactions_date_span_search(start_date, end_date)
 #    transactions.where("CreateDate" => start_date..end_date)
     transactions.where("CreateDate >= ? AND CreateDate <= ?", start_date, end_date)
