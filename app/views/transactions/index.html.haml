@@ -34,7 +34,7 @@
               %ul.list-group.list-group-unbordered
                 %li.list-group-item
                   %b 
-                    Amount
+                    Total
                   .pull-right= number_to_currency(@transactions_total)
                 - unless @transactions_reversal_total.blank? or @transactions_reversal_total.zero?
                   %li.list-group-item
