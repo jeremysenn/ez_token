@@ -46,7 +46,7 @@
                       Total
                     .pull-right
                       %mark= "#{number_to_currency(@transactions_total - @transactions_reversal_total)}"
-                - unless @type == 'Fee'
+                - unless @type == 'Fee' or @transactions_fee_total.blank? or @transactions_fee_total.zero?
                   %li.list-group-item
                     %b 
                       Fees
