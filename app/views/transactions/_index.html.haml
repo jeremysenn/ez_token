@@ -59,7 +59,7 @@
             %td
               - unless to_customer.blank? or transaction.to_account.balance.blank? or transaction.to_account.balance.zero?
                 - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?) or current_user.super?
-                  %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth)}
+                  %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, transaction_id: transaction.id)}
                     %i.fa.fa-print
                 - else
                   - if current_user.devices.count > 1
@@ -70,13 +70,13 @@
                       %ul.dropdown-menu
                         - current_user.devices.each do |device|
                           %li
-                            %a{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: device.id)}
+                            %a{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: device.id, transaction_id: transaction.id)}
                               = device.description
                   - elsif current_user.devices.count == 1
-                    %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: current_user.devices.first.id)}
+                    %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: current_user.devices.first.id, transaction_id: transaction.id)}
                       %i.fa.fa-print
                   - else
-                    %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth)}
+                    %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, transaction_id: transaction.id)}
                       %i.fa.fa-print
 
 - else

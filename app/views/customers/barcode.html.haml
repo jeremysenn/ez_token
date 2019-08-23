@@ -6,6 +6,9 @@
         - unless @customer.full_name.blank?
           %br
           = @customer.full_name
+      - unless @transaction_id.blank?
+        .text-xs-center
+          %strong= @transaction_id
       %br
       %br
     %table.table{:style => "height: 100px;", class: 'text-xs-center'}

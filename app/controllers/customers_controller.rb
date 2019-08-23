@@ -232,6 +232,7 @@ class CustomersController < ApplicationController
 #    end
     respond_to do |format|
       format.html {
+        @transaction_id = params[:transaction_id]
         unless @customer.blank?
 #          @base64_barcode_string = Transaction.ezcash_get_barcode_png_web_service_call(@customer.CustomerID, current_user.company_id, 5)
           if params[:device_id].blank?
