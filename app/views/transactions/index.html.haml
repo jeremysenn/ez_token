@@ -34,13 +34,18 @@
               %ul.list-group.list-group-unbordered
                 %li.list-group-item
                   %b 
-                    Total
+                    Amount
                   .pull-right= number_to_currency(@transactions_total)
-                - unless @transactions_reversal_total.blank? or @transactions_reversal_total.zero?
-                  %li.list-group-item
+                  - unless @transactions_reversal_total.blank? or @transactions_reversal_total.zero?
+                    %br
                     %b 
                       Reversals
-                    .pull-right.text-danger= number_to_currency(@transactions_reversal_total)
+                    .pull-right.text-danger= "(#{number_to_currency(@transactions_reversal_total)})"
+                    %br
+                    %b 
+                      Total
+                    .pull-right
+                      %mark= "#{number_to_currency(@transactions_total - @transactions_reversal_total)}"
                 - unless @type == 'Fee'
                   %li.list-group-item
                     %b 

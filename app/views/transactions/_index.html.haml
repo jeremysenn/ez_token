@@ -30,7 +30,7 @@
         - @transactions.each do |transaction|
           - to_customer = transaction.to_account_customer
           - from_customer = transaction.from_account_customer
-          %tr{class: transaction.reversed? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
+          %tr{class: transaction.reversal? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
             %th{:scope => "row"}= link_to transaction.id, transaction
             %td
               =# transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
