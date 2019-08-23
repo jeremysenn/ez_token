@@ -63,10 +63,12 @@ class TransactionsController < ApplicationController
     
     @transactions_total = 0
     @transactions_fee_total = 0
+    @transactions_reversal_total = 0
     @transactions_count = @all_transactions.count
     @all_transactions.each do |transaction|
       @transactions_total = @transactions_total + transaction.amt_auth unless transaction.amt_auth.blank?
       @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.ChpFee.blank? or transaction.ChpFee.zero?
+      @transactions_reversal_total = @transactions_reversal_total + transaction.amt_auth if transaction.reversal? and not (transaction.amt_auth.blank? or transaction.amt_auth.zero?)
     end
     @transactions = @all_transactions.order("#{transactions_sort_column} #{transactions_sort_direction}").page(params[:transactions_page]).per(10)
     

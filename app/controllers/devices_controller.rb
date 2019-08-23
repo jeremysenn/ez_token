@@ -29,6 +29,7 @@ class DevicesController < ApplicationController
     @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC")
     @most_recent_dev_status = @device.dev_statuses.order("date_time DESC").first
     @bill_counts = @device.bill_counts
+    @type = "Withdrawal"
     
     @separate_coin_device = @device.coin_device
     
@@ -50,11 +51,12 @@ class DevicesController < ApplicationController
     @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 3.months.ago..Time.now)
     @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: 3.months.ago..Time.now).order("date_time DESC")
     @transactions = @withdrawal_transactions
-    
+    @transactions_count = @transactions.count unless @transactions.blank?
     @transactions_total = 0
     @withdrawal_transactions.each do |transaction|
       @transactions_total = @transactions_total + transaction.amt_auth unless transaction.amt_auth.blank?
     end
+    @transactions_average_amount = @transactions_count.blank? ? 0 : @transactions_total / @transactions_count
   end
   
   def send_atm_command

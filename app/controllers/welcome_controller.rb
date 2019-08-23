@@ -101,6 +101,27 @@ class WelcomeController < ApplicationController
         @transfers.each do |transfer_transaction|
           @transfers_amount = @transfers_amount + transfer_transaction.amt_auth unless transfer_transaction.amt_auth.blank?
         end
+        
+        # Reversals Info
+        @reversals = transactions.reversals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
+        @reversals_week_data = []
+        grouped_reversals = @reversals.group_by{ |t| t.date_time.beginning_of_day }
+        (@start_date.to_date..@end_date.to_date).each do |date|
+          reversals_group_total = 0
+          grouped_reversals.each do |group, reversals|
+            if date.beginning_of_day == group
+              reversals.each do |reversal|
+                reversals_group_total = reversals_group_total + reversal.amt_auth.to_f
+              end
+            end
+          end
+          @reversals_week_data << reversals_group_total
+        end
+        @reversals_count = @reversals.count
+        @reversals_amount = 0
+        @reversals.each do |reversal_transaction|
+          @reversals_amount = @reversals_amount + reversal_transaction.amt_auth unless reversal_transaction.amt_auth.blank?
+        end
 
         @week_of_dates_data = (@start_date.to_date..@end_date.to_date).map{ |date| date.strftime('%-m/%-d') }
         
