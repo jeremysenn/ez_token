@@ -30,7 +30,7 @@
                     %b 
                       %i.fa.fa-bolt.margin-r-5
                       Transactions in 30 days
-                    %a.pull-right= @transactions.count
+                    %a.pull-right= @withdrawal_transactions.count
                 %li.list-group-item
                   %b 
                     %i.fa.fa-signal.margin-r-5
@@ -126,6 +126,7 @@
               #myTabContent.tab-content
                 #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   = render partial: "transactions/index"
+                  .pull-right= paginate @transactions, param_name: 'transactions_page'
                 #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   %br
                   .row
@@ -136,13 +137,15 @@
                             ATM
                         .box-body
                           = render partial: "dev_statuses/index"
+                        .box-footer
+                          .pull-right= paginate @dev_statuses
                     .col-md-6
                       .box.box-warning
                         .box-header.with_border
                           .box-title
                             Cassettes
                         .box-body
-                          = render partial: "cassettes"
+                          = render partial: "cassettes", param_name: 'dev_statuses_page'
                 #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   = render partial: "cuts"
                 -#
