@@ -145,7 +145,7 @@
                             Cassettes
                         .box-body
                           = render partial: "cassettes"
-                  .pull-right= paginate @dev_statuses, param_name: 'dev_statuses_page'
+                  = paginate @dev_statuses, param_name: 'dev_statuses_page'
                 #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   = render partial: "cuts"
                 -#
