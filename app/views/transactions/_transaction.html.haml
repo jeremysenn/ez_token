@@ -51,3 +51,8 @@
         - else
           %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, transaction_id: transaction.id)}
             %i.fa.fa-print
+
+:javascript
+  $(function() {
+    $('[data-toggle="popover"]').popover();
+  });
