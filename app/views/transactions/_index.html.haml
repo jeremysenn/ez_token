@@ -6,20 +6,21 @@
           %th{:scope => "col"}= transactions_sort_link 'tranID', "#", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
           %th{:scope => "col"}= transactions_sort_link 'date_time', "Date", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
           - if @device.blank?
-            %td{:scope => "col"} 
+            %th{:scope => "col"} 
               - unless @type == 'Withdrawal'
                 To
               - else
                 Device
-          %td{:scope => "col"} 
+          %th{:scope => "col"} 
             - unless @type == 'Withdrawal'
               From
             - else
               Account
-          %td{:scope => "col"} Location/Event
+          %th{:scope => "col"} Location/Event
           -# %th{:scope => "col"} Ref
           -#
           %th{:scope => "col"}= transactions_sort_link 'error_code', "Code", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
+          -# %th{:scope => "col"} Code
           -# %th{:scope => "col"} Desc
           -# %th{:scope => "col"}= transactions_sort_link 'Description', "Desc", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
           -#

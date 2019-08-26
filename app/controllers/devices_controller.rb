@@ -49,8 +49,8 @@ class DevicesController < ApplicationController
     @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
     @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)
     @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 3.months.ago..Time.now)
-    @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: 3.months.ago..Time.now).order("date_time DESC")
-    @transactions = @withdrawal_transactions.page(params[:transactions_page]).per(10)
+    @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: 3.months.ago..Time.now)
+    @transactions = @withdrawal_transactions.order("#{transactions_sort_column} #{transactions_sort_direction}").page(params[:transactions_page]).per(10)
     @transactions_count = @transactions.count unless @transactions.blank?
     @transactions_total = 0
     @transactions_fee_total = 0
@@ -221,6 +221,6 @@ class DevicesController < ApplicationController
 
     ### Secure the transactions sort column name ###
     def transactions_sort_column
-      ["tranID", "dev_id", "date_time", "error_code", "tran_status", "amt_auth", "ChpFee"].include?(params[:transactions_column]) ? params[:transactions_column] : "tranID"
+      ["tranID", "dev_id", "date_time", "error_code", "tran_status", "amt_auth", "ChpFee"].include?(params[:transactions_column]) ? params[:transactions_column] : "date_time"
     end
 end
