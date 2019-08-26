@@ -53,8 +53,10 @@ class DevicesController < ApplicationController
     @transactions = @withdrawal_transactions.page(params[:transactions_page]).per(10)
     @transactions_count = @transactions.count unless @transactions.blank?
     @transactions_total = 0
+    @transactions_fee_total = 0
     @withdrawal_transactions.each do |transaction|
       @transactions_total = @transactions_total + transaction.amt_auth unless transaction.amt_auth.blank?
+      @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.ChpFee.blank? or transaction.ChpFee.zero?
     end
     @transactions_average_amount = @transactions_count.blank? ? 0 : @transactions_total / @transactions_count
   end

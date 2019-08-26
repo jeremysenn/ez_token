@@ -83,8 +83,7 @@
                       &nbsp;
                     = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: current_user.collaborator? ? nil : 'All events', class: "form-control"
                     &nbsp;
-                    =# select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
-                    = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer"], @type), class: "form-control"
+                    = select_tag :type, options_for_select(["All transactions", "Balance", "Check", "Fee", "Transfer", "Withdrawal"], @type), class: "form-control"
                     &nbsp;
                     = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
                     To
