@@ -114,27 +114,47 @@
                     .box-header.with-border
                       %h3.box-title Dispense Details
                     .box-body
-                      .row
-                        .col-sm-6
-                          %p.lead
-                            Cassette 1:
-                            = @transaction.cassette_1_disp
-                          %p.lead
-                            Cassette 2:
-                            = @transaction.cassette_2_disp
-                          %p.lead
-                            Cassette 3:
-                            = @transaction.cassette_3_disp
-                        .col-sm-6
-                          %p.lead
-                            Cassette 4:
-                            = @transaction.cassette_4_disp
-                          %p.lead
-                            Cassette 5:
-                            = @transaction.cassette_5_disp
-                          %p.lead
-                            Cassette 6:
-                            = @transaction.cassette_6_disp
+                      =# render partial: 'devices/dispensed_details', locals: {transaction: @transaction}}"
+                      -#
+                        .row
+                          .col-sm-6
+                            %p.lead
+                              Cassette 1:
+                              = @transaction.cassette_1_disp
+                              - unless @transaction.device.blank? or @transaction.device.bin_1_denomination.blank? or @transaction.cassette_1_disp.blank? or @transaction.cassette_1_disp.zero?
+                                = " x #{number_to_currency(@transaction.device.bin_1_denomination)}" 
+                                = " = #{number_to_currency(@transaction.cassette_1_disp * @transaction.device.bin_1_denomination)}"
+                            %p.lead
+                              Cassette 2:
+                              = @transaction.cassette_2_disp
+                              - unless @transaction.device.blank? or @transaction.device.bin_2_denomination.blank? or @transaction.cassette_2_disp.blank? or @transaction.cassette_2_disp.zero?
+                                = " x #{number_to_currency(@transaction.device.bin_2_denomination)}" 
+                                = " = #{number_to_currency(@transaction.cassette_2_disp * @transaction.device.bin_2_denomination)}"
+                            %p.lead
+                              Cassette 3:
+                              = @transaction.cassette_3_disp
+                              - unless @transaction.device.blank? or @transaction.device.bin_3_denomination.blank? or @transaction.cassette_3_disp.blank? or @transaction.cassette_3_disp.zero?
+                                = " x #{number_to_currency(@transaction.device.bin_3_denomination)}" 
+                                = " = #{number_to_currency(@transaction.cassette_3_disp * @transaction.device.bin_3_denomination)}"
+                          .col-sm-6
+                            %p.lead
+                              Cassette 4:
+                              = @transaction.cassette_4_disp
+                              - unless @transaction.device.blank? or @transaction.device.bin_1_denomination.blank? or @transaction.cassette_1_disp.blank? or @transaction.cassette_1_disp.zero?
+                                = " x #{number_to_currency(@transaction.device.bin_1_denomination)}" 
+                                = " = #{number_to_currency(@transaction.cassette_1_disp * @transaction.device.bin_1_denomination)}"
+                            %p.lead
+                              Cassette 5:
+                              = @transaction.cassette_5_disp
+                              - unless @transaction.device.blank? or @transaction.device.bin_5_denomination.blank? or @transaction.cassette_5_disp.blank? or @transaction.cassette_5_disp.zero?
+                                = " x #{number_to_currency(@transaction.device.bin_5_denomination)}" 
+                                = " = #{number_to_currency(@transaction.cassette_5_disp * @transaction.device.bin_5_denomination)}"
+                            %p.lead
+                              Cassette 6:
+                              = @transaction.cassette_6_disp
+                              - unless @transaction.device.blank? or @transaction.device.bin_6_denomination.blank? or @transaction.cassette_6_disp.blank? or @transaction.cassette_6_disp.zero?
+                                = " x #{number_to_currency(@transaction.device.bin_6_denomination)}" 
+                                = " = #{number_to_currency(@transaction.cassette_6_disp * @transaction.device.bin_6_denomination)}"
           -#
             %p.lead
               To Account:
