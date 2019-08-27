@@ -4,7 +4,8 @@
     .box.box-success{"data-widget" => "box-widget"}
       .box-header.with-border
         %h3.box-title
-          = "#{transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')} - Current" if index == 0
+          =# "#{transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')} - Current" if index == 0
+          = "#{transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')}" if index == 0
           = "#{transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')} - #{@cut_transactions[index - 1].date_time.strftime('%-m/%-d/%y %H:%M:%S')}" unless index == 0
           =# "#{bill_hist.cut_dt.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%y %H:%M:%S')} - #{@bill_hists[index - 1].cut_dt.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%y %H:%M:%S')}" unless index == 0
         .box-tools.pull-right

@@ -61,6 +61,13 @@ class DevicesController < ApplicationController
       @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.ChpFee.blank? or transaction.ChpFee.zero?
     end
     @transactions_average_amount = @transactions_count.blank? ? 0 : @transactions_total / @transactions_count
+    
+    respond_to do |format|
+      format.html {
+      }
+      format.js { # for endless page
+      }
+    end
   end
   
   def send_atm_command

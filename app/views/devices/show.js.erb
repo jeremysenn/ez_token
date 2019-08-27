@@ -1,0 +1,10 @@
+$('#transactions_list').append('<%= j render partial: 'transactions/transaction', collection: @transactions %>');
+$('#withdrawals_spinner').hide();
+
+<% if @transactions.next_page %>
+  $('a.load-more-withdrawals').show();
+  $('a.load-more-withdrawals').attr('href', '<%= device_path @device, transactions_page: @transactions.next_page, start_date: @start_date, end_date: @end_date %>');
+<% else %>
+  $(window).off('scroll');
+  $('a.load-more-withdrawals').remove();
+<% end %>

@@ -134,7 +134,15 @@
               #myTabContent.tab-content
                 #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   = render partial: "transactions/index"
-                  .pull-right= paginate @transactions, param_name: 'transactions_page'
+                  -#
+                    .pull-right= paginate @transactions, param_name: 'transactions_page'
+                  %div{id: 'withdrawals_endless_page'}
+                    %br
+                    %p.text-center{id: "withdrawals_spinner", style: 'display:none;'}
+                      %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+                      %span.sr-only Loading...
+                    %p.text-center= link_to "Load More...", device_path(@device, :transactions_page => @transactions.next_page, start_date: @start_date, end_date: @end_date), :class => 'load-more-withdrawals btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#withdrawals_spinner').show();" if @transactions.next_page
+
                 #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   %br
                   .row
