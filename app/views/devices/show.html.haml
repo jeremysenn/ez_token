@@ -100,6 +100,14 @@
 
         .col-md-9
           .box.box-primary
+            .box-header.with-border
+              = form_tag device_path(@device), :method => 'get', :class => "form-inline" do
+                = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? Date.today : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                To
+                = text_field_tag :end_date, nil, :placeholder => "End Date", value: "#{@end_date.blank? ? Date.today : @end_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                &nbsp;
+                = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                  %i.fa.fa-search
             .box-body
               %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
                 %li.nav-item

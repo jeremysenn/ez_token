@@ -26,7 +26,10 @@ class DevicesController < ApplicationController
   def show
 #    @transactions = @device.transactions.where(DevCompanyNbr: current_user.company_id, date_time: Date.today.beginning_of_day.last_month..Date.today.end_of_day).order("date_time DESC")
 #    @transactions = @device.transactions.where(date_time: Date.today.beginning_of_day.last_month..Date.today.end_of_day).order("date_time DESC")
-    @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC").page(params[:dev_statuses_page]).per(5)
+    @start_date = params[:start_date].blank? ?  Date.today.last_week.to_s : params[:start_date]
+    @end_date = params[:end_date].blank? ?  Date.today.to_s : params[:end_date]
+#    @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC").page(params[:dev_statuses_page]).per(5)
+    @dev_statuses = @device.dev_statuses.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC").page(params[:dev_statuses_page]).per(5)
     @most_recent_dev_status = @device.dev_statuses.order("date_time DESC").first
     @bill_counts = @device.bill_counts
     @type = "Withdrawal"
@@ -46,10 +49,10 @@ class DevicesController < ApplicationController
     @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
     @term_totals = params[:term_totals]
     
-    @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
-    @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)
-    @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 3.months.ago..Time.now)
-    @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: 3.months.ago..Time.now).order("#{transactions_sort_column} #{transactions_sort_direction}")
+    @cut_transactions = @device.transactions.cuts.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).select(:date_time, :amt_auth).distinct.order("date_time DESC")
+    @add_transactions = @device.transactions.adds.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+    @coin_add_transactions = @device.transactions.coin_adds.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+    @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("#{transactions_sort_column} #{transactions_sort_direction}")
     @transactions = @withdrawal_transactions.page(params[:transactions_page]).per(10)
     @transactions_count = @transactions.count unless @transactions.blank?
     @transactions_total = 0
