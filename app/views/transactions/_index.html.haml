@@ -52,10 +52,10 @@
                 = transaction.from_account.company.name unless transaction.from_account.blank?
             %td= transaction.event.blank? ? 'N/A' : transaction.event.title
             -# %td= "#{transaction.receipt_nbr.blank? ? 'N/A' : transaction.receipt_nbr}"
-            -#
             %td
-              %a{"data-content" => "#{transaction.status_long_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{transaction.error_code_long_description}"} 
-                = transaction.error_code_description
+              -#
+                %a{"data-content" => "#{transaction.status_long_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{transaction.error_code_long_description}"} 
+              = transaction.error_code_description
             -# %td= transaction.Description.blank? ? 'N/A' : truncate(transaction.Description, length: 15, omission: '..')
             -#
               %td= "#{transaction.Note.blank? ? 'N/A' : transaction.Note}"

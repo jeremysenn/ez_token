@@ -18,8 +18,9 @@
       = transaction.from_account.company.name unless transaction.from_account.blank?
   %td= transaction.event.blank? ? 'N/A' : transaction.event.title
   %td
-    %a{"data-content" => "#{transaction.status_long_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{transaction.error_code_long_description}"} 
-      = transaction.error_code_description
+    -#
+      %a{"data-content" => "#{transaction.status_long_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{transaction.error_code_long_description}"} 
+    = transaction.error_code_description
   - unless @transactions_fee_total.blank? or @transactions_fee_total.zero?
     %td= "#{transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(transaction.ChpFee)}" 
   %td= "#{transaction.amt_req.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_req)}"

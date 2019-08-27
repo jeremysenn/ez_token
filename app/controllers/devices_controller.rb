@@ -32,7 +32,6 @@ class DevicesController < ApplicationController
     @dev_statuses = @device.dev_statuses.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC").page(params[:dev_statuses_page]).per(5)
     @most_recent_dev_status = @device.dev_statuses.order("date_time DESC").first
     @bill_counts = @device.bill_counts
-    @type = "Withdrawal"
     
     @separate_coin_device = @device.coin_device
     
