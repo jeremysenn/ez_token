@@ -74,3 +74,14 @@ $(document).on 'turbolinks:load', ->
 
     $.getScript $(this).attr('href'), ->
       loading_withdrawals = false
+
+  # Endless page for dev_statuses
+  loading_dev_statuses = false
+  $('a.load-more-dev-statuses').on 'inview', (e, visible) ->
+    return if loading_dev_statuses or not visible
+    loading_dev_statuses = true
+    $('#dev_statuses_spinner').show()
+    $('a.load-more-dev-statuses').hide()
+
+    $.getScript $(this).attr('href'), ->
+      loading_dev_statuses = false

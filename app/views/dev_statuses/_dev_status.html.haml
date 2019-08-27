@@ -1,0 +1,4 @@
+%tr
+  %td= dev_status.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+  %td= dev_status.status
+  %td= dev_status.status_description

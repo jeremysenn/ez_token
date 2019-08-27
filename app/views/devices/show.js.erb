@@ -8,3 +8,14 @@ $('#withdrawals_spinner').hide();
   $(window).off('scroll');
   $('a.load-more-withdrawals').remove();
 <% end %>
+  
+$('#dev_statuses_list').append('<%= j render partial: 'dev_statuses/dev_status', collection: @dev_statuses %>');
+$('#dev_statuses_spinner').hide();
+
+<% if @dev_statuses.next_page %>
+  $('a.load-more-dev-statuses').show();
+  $('a.load-more-dev-statuses').attr('href', '<%= device_path @device, dev_statuses_page: @dev_statuses.next_page, start_date: @start_date, end_date: @end_date %>');
+<% else %>
+  $(window).off('scroll');
+  $('a.load-more-dev-statuses').remove();
+<% end %>
