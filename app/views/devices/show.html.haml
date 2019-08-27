@@ -153,12 +153,12 @@
                             ATM
                         .box-body
                           = render partial: "dev_statuses/index"
-                      %div{id: 'dev_statuses_endless_page'}
-                        %br
-                        %p.text-center{id: "dev_statuses_spinner", style: 'display:none;'}
-                          %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
-                          %span.sr-only Loading...
-                        %p.text-center= link_to "Load More...", device_path(@device, :dev_statuses_page => @dev_statuses.next_page, start_date: @start_date, end_date: @end_date), :class => 'load-more-dev-statuses btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#dev_statuses_spinner').show();" if @dev_statuses.next_page
+                          %div{id: 'dev_statuses_endless_page'}
+                            %br
+                            %p.text-center{id: "dev_statuses_spinner", style: 'display:none;'}
+                              %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+                              %span.sr-only Loading...
+                            %p.text-center= link_to "Load More...", device_path(@device, :dev_statuses_page => @dev_statuses.next_page, start_date: @start_date, end_date: @end_date), :class => 'load-more-dev-statuses btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#dev_statuses_spinner').show();" if @dev_statuses.next_page
                           
                     .col-md-6
                       .box.box-warning
