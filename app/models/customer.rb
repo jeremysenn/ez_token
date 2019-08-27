@@ -344,7 +344,7 @@ class Customer < ActiveRecord::Base
   
   def identity
     if full_name.blank? and phone.blank?
-      'Anonymous'
+      'N/A'
     else
       if full_name.blank?
         phone

@@ -15,10 +15,12 @@ class Transaction < ActiveRecord::Base
   
   scope :withdrawals, -> { where(tran_code: ["WDL", "ALL"], sec_tran_code: ["TFR", ""]) }
   scope :transfers, -> { where(tran_code: ["CARD"], sec_tran_code: ["TFR"]) }
+  scope :reversals, -> { where(tran_code: ["CRED"], sec_tran_code: ["TFR"]) }
   scope :one_sided_credits, -> { where(tran_code: ["DEP"], sec_tran_code: ["REFD"]) }
   scope :fees, -> { where(tran_code: ["FEE"], sec_tran_code: ["TFR"]) }
   scope :checks, -> { where(tran_code: ["CHK"], sec_tran_code: ["TFR"]) }
   scope :not_fees, -> { where.not(tran_code: ["FEE"]) }
+  scope :not_fees_and_not_withdrawals, -> { where.not(tran_code: ["FEE", "WDL", "ALL"]) }
   
   scope :cuts, -> { where(tran_code: ["CUT"]) }
   scope :adds, -> { where(tran_code: ["ADD"]) }
@@ -80,7 +82,7 @@ class Transaction < ActiveRecord::Base
         return "Cash Deposit"
       elsif (tran_code.strip == "MON" and sec_tran_code.strip == "ORD")
         return "Money Order"
-      elsif (tran_code.strip == "WDL" and sec_tran_code.blank?)
+      elsif (tran_code.strip == "WDL" and (sec_tran_code.blank? or sec_tran_code.strip == "TFR"))
         return "Withdrawal"
       elsif (tran_code.strip == "WDL" and sec_tran_code.strip == "REVT")
         return "Reverse Withdrawal"
@@ -408,6 +410,19 @@ class Transaction < ActiveRecord::Base
       client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
       client.call(:send_sms, message: { Phone: to_customer_phone, Msg: "#{message}"})
       Rails.logger.debug "Text message sent to #{to_customer_phone}: #{message}"
+    end
+  end
+  
+  def can_reverse?
+    unless withdrawal? or withdrawal_all?
+      return true
+    else
+      # tran_status of 12 means the withdrawal went through successfully, so should not be able to reverse
+      if tran_status == 12
+        return false
+      else
+        return true
+      end
     end
   end
   

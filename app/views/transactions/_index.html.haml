@@ -3,35 +3,48 @@
     %table.table.table-striped.table-condensed
       %thead
         %tr
-          %th{:scope => "col"}= transactions_sort_link 'tranID', "#", @start_date, @end_date, @type, @transaction_id_or_receipt_number
-          %th{:scope => "col"}= transactions_sort_link 'date_time', "Date", @start_date, @end_date, @type, @transaction_id_or_receipt_number
-          %td{:scope => "col"} To
-          %td{:scope => "col"} From
-          %td{:scope => "col"} Location/Event
+          %th{:scope => "col"}= transactions_sort_link 'tranID', "#", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
+          %th{:scope => "col"}= transactions_sort_link 'date_time', "Date", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
+          - if @device.blank?
+            %th{:scope => "col"} 
+              - unless @type == 'Withdrawal'
+                To
+              - else
+                Device
+          %th{:scope => "col"} 
+            - unless @type == 'Withdrawal'
+              From
+            - else
+              Account
+          %th{:scope => "col"} Event
           -# %th{:scope => "col"} Ref
           -#
-            %th{:scope => "col"}= transactions_sort_link 'error_code', "Code", @start_date, @end_date, @type, @transaction_id_or_receipt_number
+          %th{:scope => "col"}= transactions_sort_link 'error_code', "Code", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
+          -# %th{:scope => "col"} Code
           -# %th{:scope => "col"} Desc
-          -# %th{:scope => "col"}= transactions_sort_link 'Description', "Desc", @start_date, @end_date, @type, @transaction_id_or_receipt_number
+          -# %th{:scope => "col"}= transactions_sort_link 'Description', "Desc", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
           -#
             %th{:scope => "col"} Note
-          %th{:scope => "col"}= transactions_sort_link 'ChpFee', "Fee", @start_date, @end_date, @type, @transaction_id_or_receipt_number
-          %th{:scope => "col"}= transactions_sort_link 'amt_auth', "Amt", @start_date, @end_date, @type, @transaction_id_or_receipt_number
+          - unless @transactions_fee_total.blank? or @transactions_fee_total.zero?
+            %th{:scope => "col"}= transactions_sort_link 'ChpFee', "Fee", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
+          %th{:scope => "col"}= transactions_sort_link 'amt_req', "Req", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
+          %th{:scope => "col"}= transactions_sort_link 'amt_auth', "Auth", @start_date, @end_date, @type, @transaction_id_or_receipt_number, @event_id
           %th
       %tbody{id: 'transactions_list'}
         - @transactions.each do |transaction|
           - to_customer = transaction.to_account_customer
           - from_customer = transaction.from_account_customer
-          %tr{class: transaction.reversed? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
+          %tr{class: transaction.reversal? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
             %th{:scope => "row"}= link_to transaction.id, transaction
             %td
               =# transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
               = transaction.date_time.strftime("%-m/%-d/%y")
-            %td
-              - unless to_customer.blank?
-                = link_to to_customer.identity, customer_path(to_customer, account_id: transaction.to_acct_id) unless transaction.to_account.blank?
-              - else
-                = transaction.to_account.company.name unless transaction.to_account.blank?
+            - if @device.blank?
+              %td
+                - unless to_customer.blank?
+                  = link_to to_customer.identity, customer_path(to_customer, account_id: transaction.to_acct_id) unless transaction.to_account.blank?
+                - else
+                  = transaction.to_account.company.name unless transaction.to_account.blank?
             %td
               - unless from_customer.blank?
                 = link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
@@ -39,19 +52,26 @@
                 = transaction.from_account.company.name unless transaction.from_account.blank?
             %td= transaction.event.blank? ? 'N/A' : transaction.event.title
             -# %td= "#{transaction.receipt_nbr.blank? ? 'N/A' : transaction.receipt_nbr}"
-            -#
-              %td
+            %td
+              -#
                 %a{"data-content" => "#{transaction.status_long_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{transaction.error_code_long_description}"} 
-                  = transaction.error_code_description
+              = transaction.error_code_description
             -# %td= transaction.Description.blank? ? 'N/A' : truncate(transaction.Description, length: 15, omission: '..')
             -#
               %td= "#{transaction.Note.blank? ? 'N/A' : transaction.Note}"
-            %td= "#{transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(transaction.ChpFee)}" 
-            %td= "#{transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_auth)}"
+            - unless @transactions_fee_total.blank? or @transactions_fee_total.zero?
+              %td= "#{transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(transaction.ChpFee)}" 
+            %td= "#{transaction.amt_req.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_req)}"
+            %td
+              - if (transaction.withdrawal? or transaction.withdrawal_all?) and not (transaction.amt_auth.blank? or transaction.amt_auth < 1)
+                %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/dispensed_details', locals: {transaction: transaction}}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "Dispensed: #{transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_auth)}"} 
+                  = "#{transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_auth)}"
+              - else
+                = "#{transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_auth)}"
             %td
               - unless to_customer.blank? or transaction.to_account.balance.blank? or transaction.to_account.balance.zero?
                 - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?) or current_user.super?
-                  %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth)}
+                  %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, transaction_id: transaction.id)}
                     %i.fa.fa-print
                 - else
                   - if current_user.devices.count > 1
@@ -62,13 +82,13 @@
                       %ul.dropdown-menu
                         - current_user.devices.each do |device|
                           %li
-                            %a{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: device.id)}
+                            %a{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: device.id, transaction_id: transaction.id)}
                               = device.description
                   - elsif current_user.devices.count == 1
-                    %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: current_user.devices.first.id)}
+                    %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: current_user.devices.first.id, transaction_id: transaction.id)}
                       %i.fa.fa-print
                   - else
-                    %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth)}
+                    %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, transaction_id: transaction.id)}
                       %i.fa.fa-print
 
 - else

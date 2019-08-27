@@ -27,17 +27,15 @@ class WelcomeController < ApplicationController
 #          @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_week..Date.today.end_of_day).order("date_time DESC").first(5)
           @dev_statuses = @device.dev_statuses.where(date_time: Date.today.beginning_of_day.last_month..Date.today.end_of_day).order("date_time DESC").page(params[:dev_statuses_page]).per(5)
           @bill_counts = @device.bill_counts
-          @denoms = @device.denoms
           @bill_hists = @device.bill_hists.select(:cut_dt).distinct.order("cut_dt DESC").first(5)
-          @bin_1_denomination = @denoms.where(cassette_id: "1").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "1").where.not(denomination: 0).first.denomination
-          @bin_2_denomination = @denoms.where(cassette_id: "2").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "2").where.not(denomination: 0).first.denomination
-          @bin_3_denomination = @denoms.where(cassette_id: "3").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "3").where.not(denomination: 0).first.denomination
-          @bin_4_denomination = @denoms.where(cassette_id: "4").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "4").where.not(denomination: 0).first.denomination
-          @bin_5_denomination = @denoms.where(cassette_id: "5").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "5").where.not(denomination: 0).first.denomination
-          @bin_6_denomination = @denoms.where(cassette_id: "6").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "6").where.not(denomination: 0).first.denomination
-          @bin_7_denomination = @denoms.where(cassette_id: "7").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "7").where.not(denomination: 0).first.denomination
-          @bin_8_denomination = @denoms.where(cassette_id: "8").where.not(denomination: 0).blank? ? nil : @denoms.where(cassette_id: "8").where.not(denomination: 0).first.denomination
-    
+          @bin_1_denomination = @device.bin_1_denomination
+          @bin_2_denomination = @device.bin_2_denomination
+          @bin_3_denomination = @device.bin_3_denomination
+          @bin_4_denomination = @device.bin_4_denomination
+          @bin_5_denomination = @device.bin_5_denomination
+          @bin_6_denomination = @device.bin_6_denomination
+          @bin_7_denomination = @device.bin_7_denomination
+          @bin_8_denomination = @device.bin_8_denomination
           
           @cut_transactions = @device.transactions.cuts.where(date_time: 3.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
           @add_transactions = @device.transactions.adds.where(date_time: 3.months.ago..Time.now)
@@ -102,6 +100,27 @@ class WelcomeController < ApplicationController
         @transfers_amount = 0
         @transfers.each do |transfer_transaction|
           @transfers_amount = @transfers_amount + transfer_transaction.amt_auth unless transfer_transaction.amt_auth.blank?
+        end
+        
+        # Reversals Info
+        @reversals = transactions.reversals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
+        @reversals_week_data = []
+        grouped_reversals = @reversals.group_by{ |t| t.date_time.beginning_of_day }
+        (@start_date.to_date..@end_date.to_date).each do |date|
+          reversals_group_total = 0
+          grouped_reversals.each do |group, reversals|
+            if date.beginning_of_day == group
+              reversals.each do |reversal|
+                reversals_group_total = reversals_group_total + reversal.amt_auth.to_f
+              end
+            end
+          end
+          @reversals_week_data << reversals_group_total
+        end
+        @reversals_count = @reversals.count
+        @reversals_amount = 0
+        @reversals.each do |reversal_transaction|
+          @reversals_amount = @reversals_amount + reversal_transaction.amt_auth unless reversal_transaction.amt_auth.blank?
         end
 
         @week_of_dates_data = (@start_date.to_date..@end_date.to_date).map{ |date| date.strftime('%-m/%-d') }

@@ -30,7 +30,7 @@
                     %b 
                       %i.fa.fa-bolt.margin-r-5
                       Transactions in 30 days
-                    %a.pull-right= @transactions.count
+                    %a.pull-right= @withdrawal_transactions.count
                 %li.list-group-item
                   %b 
                     %i.fa.fa-signal.margin-r-5
@@ -47,58 +47,52 @@
                           = @device.status_string
                 %li.list-group-item
                   %b 
-                    %i.fa.fa-gears.margin-r-5
-                    ATM Actions
-                  -# %a.pull-right And more info
+                    Withdrawals
+                  .pull-right= @transactions.count
+                  %br
+                  %b 
+                    Average
+                  .pull-right= number_to_currency(@transactions_average_amount.round)
+                  
+                %li.list-group-item
+                  %b 
+                    %i.fa.fa-money.margin-r-5
+                    Total
+                  .pull-right= number_to_currency(@transactions_total)
+                -#
+                  %li.list-group-item
+                    %b 
+                      %i.fa.fa-gears.margin-r-5
+                      Actions
+                    -# %a.pull-right And more info
               - if device_state_descriptions[@device.online] == "Ready" or device_state_descriptions[@device.online] == "Down"
                 %a.btn.btn-default.btn-block{"data-target" => "#commands-modal", "data-toggle" => "modal", :type => "button"}
                   %b
                     %i.fa.fa-arrows-alt
                     Commands
-                %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
-                  %b Add Cash
-                %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
-                  %b Reset Cash
-                - unless @bin_5_denomination.blank? and @bin_6_denomination.blank? and @bin_7_denomination.blank? and @bin_8_denomination.blank?
-                  %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
-                    %b Add Coin
-                  %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
-                    %b Reset Coin
-                %a.btn.btn-default.btn-block{href: cash_position_device_path(@device), target: '_blank;', :type => "button"}
-                  %b Cash Position
+                %a.btn.btn-default.btn-block{"data-target" => "#replenish-modal", "data-toggle" => "modal", :type => "button"}
+                  %b
+                    %i.fa.fa-inbox
+                    Replenish
+                -#
+                  %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
+                    %b Add Cash
+                  %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
+                    %b Reset Cash
+                  - unless @bin_5_denomination.blank? and @bin_6_denomination.blank? and @bin_7_denomination.blank? and @bin_8_denomination.blank?
+                    %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
+                      %b Add Coin
+                    %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
+                      %b Reset Coin
+                  %a.btn.btn-default.btn-block{href: cash_position_device_path(@device), target: '_blank;', :type => "button"}
+                    %b Cash Position
               - else
                 %p.text-danger
                   %i.fa.fa-warning
                   Waiting for ATM to be ready...
-              #commands-modal.modal.fade
-                .modal-dialog.modal-sm
-                  .modal-content
-                    .modal-header
-                      -#
-                        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
-                          %span{"aria-hidden" => "true"} ×
-                      %h5.modal-title
-                        %i.fa.fa-arrows-alt
-                        ATM Commands
-                    .modal-body
-                      %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_reset"), "data-device-id" => @device.id, "data-command" => "atm_reset", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Reset"}}
-                        %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                        Reset
-                      %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_load"), "data-device-id" => @device.id, "data-command" => "atm_load", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Load"}}
-                        %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                        Load
-                      %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_up"), "data-device-id" => @device.id, "data-command" => "atm_up", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Up"}}
-                        %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                        Up
-                      %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_down"), "data-device-id" => @device.id, "data-command" => "atm_down", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Down"}}
-                        %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                        Down
-                      %a.btn.btn-primary.btn-block{href: send_atm_command_device_path(@device, command: "atm_disconnect"), "data-device-id" => @device.id, "data-command" => "atm_disconnect", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Disconnect"}}
-                        %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                        Disconnect
-                    .modal-footer
-                      %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Done
-
+              
+              = render partial: 'commands_modal'
+              = render partial: 'replenish_modal'
               = render partial: 'add_cash_modal'
               = render partial: 'reset_cash_modal'
               = render partial: 'add_coin_modal'
@@ -106,15 +100,22 @@
 
         .col-md-9
           .box.box-primary
+            .box-header.with-border
+              = form_tag device_path(@device), :method => 'get', :class => "form-inline" do
+                = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? Date.today : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                To
+                = text_field_tag :end_date, nil, :placeholder => "End Date", value: "#{@end_date.blank? ? Date.today : @end_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                &nbsp;
+                = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                  %i.fa.fa-search
             .box-body
               %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-                -#
-                  %li.nav-item
-                    %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "true", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
-                      %i.fa.fa-bolt
-                      = "Transactions" unless browser.device.mobile?
                 %li.nav-item
-                  %a#statuses-tab.nav-link.active{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
+                  %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "true", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
+                    %i.fa.fa-money
+                    = "Withdrawals" unless browser.device.mobile?
+                %li.nav-item
+                  %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
                     %i.fa.fa-signal
                     = "Statuses" unless browser.device.mobile?
                 %li.nav-item
@@ -131,10 +132,18 @@
                       %i.fa.fa-info-circle
                       = "Acounts" unless browser.device.mobile?
               #myTabContent.tab-content
-                -#
-                  #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                    = render partial: "transactions/index"
-                #statuses.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                  = render partial: "transactions/index"
+                  -#
+                    .pull-right= paginate @transactions, param_name: 'transactions_page'
+                  %div{id: 'withdrawals_endless_page'}
+                    %br
+                    %p.text-center{id: "withdrawals_spinner", style: 'display:none;'}
+                      %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+                      %span.sr-only Loading...
+                    %p.text-center= link_to "Load More...", device_path(@device, :transactions_page => @transactions.next_page, start_date: @start_date, end_date: @end_date), :class => 'load-more-withdrawals btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#withdrawals_spinner').show();" if @transactions.next_page
+
+                #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   %br
                   .row
                     .col-md-6
@@ -144,6 +153,13 @@
                             ATM
                         .box-body
                           = render partial: "dev_statuses/index"
+                          %div{id: 'dev_statuses_endless_page'}
+                            %br
+                            %p.text-center{id: "dev_statuses_spinner", style: 'display:none;'}
+                              %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+                              %span.sr-only Loading...
+                            %p.text-center= link_to "Load More...", device_path(@device, :dev_statuses_page => @dev_statuses.next_page, start_date: @start_date, end_date: @end_date), :class => 'load-more-dev-statuses btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#dev_statuses_spinner').show();" if @dev_statuses.next_page
+                          
                     .col-md-6
                       .box.box-warning
                         .box-header.with_border
@@ -151,6 +167,8 @@
                             Cassettes
                         .box-body
                           = render partial: "cassettes"
+                  =# paginate @dev_statuses, param_name: 'dev_statuses_page'
+                  
                 #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   = render partial: "cuts"
                 -#
@@ -168,22 +186,28 @@
                           %table.table.table-striped.table-condensed.table-bordered
                             %thead
                               %tr
-                                - if @device.bin_1_count != 0 and @device.bin_1_count != nil
-                                  %th{:scope => "col"} 1
-                                - if @device.bin_2_count != 0 and @device.bin_2_count != nil
-                                  %th{:scope => "col"} 2
-                                - if @device.bin_3_count != 0 and @device.bin_3_count != nil
-                                  %th{:scope => "col"} 3
-                                - if @device.bin_4_count != 0 and @device.bin_4_count != nil
-                                  %th{:scope => "col"} 4
-                                - if @device.bin_5_count != 0 and @device.bin_5_count != nil
-                                  %th{:scope => "col"} 5
-                                - if @device.bin_6_count != 0 and @device.bin_6_count != nil
-                                  %th{:scope => "col"} 6
-                                - if @device.bin_7_count != 0 and @device.bin_7_count != nil
-                                  %th{:scope => "col"} 7
-                                - if @device.bin_8_count != 0 and @device.bin_8_count != nil
-                                  %th{:scope => "col"} 8
+                                - @device.denoms.each do |denom|
+                                  - unless denom.denomination.zero?
+                                    %th{:scope => "col"}
+                                      = "Bin #{denom.cassette_id}: "
+                                      = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
+                                -#
+                                  - if @device.bin_1_count != 0 and @device.bin_1_count != nil
+                                    %th{:scope => "col"} Bin 1
+                                  - if @device.bin_2_count != 0 and @device.bin_2_count != nil
+                                    %th{:scope => "col"} Bin 2
+                                  - if @device.bin_3_count != 0 and @device.bin_3_count != nil
+                                    %th{:scope => "col"} Bin 3
+                                  - if @device.bin_4_count != 0 and @device.bin_4_count != nil
+                                    %th{:scope => "col"} Bin 4
+                                  - if @device.bin_5_count != 0 and @device.bin_5_count != nil
+                                    %th{:scope => "col"} Bin 5
+                                  - if @device.bin_6_count != 0 and @device.bin_6_count != nil
+                                    %th{:scope => "col"} Bin 6
+                                  - if @device.bin_7_count != 0 and @device.bin_7_count != nil
+                                    %th{:scope => "col"} Bin 7
+                                  - if @device.bin_8_count != 0 and @device.bin_8_count != nil
+                                    %th{:scope => "col"} Bin 8
                             %tbody
                               %tr
                                 = render partial: "devices/bin_details", locals: {device: @device}  

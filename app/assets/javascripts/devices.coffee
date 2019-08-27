@@ -63,3 +63,25 @@ $(document).on 'turbolinks:load', ->
     bin_notes = parseFloat($(this).val())
     total = denomination * bin_notes
     $(this).parent().next('.bin_help').html('$' + total)
+
+  # Endless page for withdrawals
+  loading_withdrawals = false
+  $('a.load-more-withdrawals').on 'inview', (e, visible) ->
+    return if loading_withdrawals or not visible
+    loading_withdrawals = true
+    $('#withdrawals_spinner').show()
+    $('a.load-more-withdrawals').hide()
+
+    $.getScript $(this).attr('href'), ->
+      loading_withdrawals = false
+
+  # Endless page for dev_statuses
+  loading_dev_statuses = false
+  $('a.load-more-dev-statuses').on 'inview', (e, visible) ->
+    return if loading_dev_statuses or not visible
+    loading_dev_statuses = true
+    $('#dev_statuses_spinner').show()
+    $('a.load-more-dev-statuses').hide()
+
+    $.getScript $(this).attr('href'), ->
+      loading_dev_statuses = false

@@ -7,7 +7,7 @@
           %th{:scope => "col"} Status
           %th{:scope => "col"} Description
           %th
-      %tbody
+      %tbody{id: 'dev_statuses_list'}
         - @dev_statuses.each do |dev_status|
           %tr
             %td= dev_status.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
