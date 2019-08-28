@@ -230,6 +230,6 @@ class DevicesController < ApplicationController
 
     ### Secure the transactions sort column name ###
     def transactions_sort_column
-      ["tranID", "dev_id", "date_time", "error_code", "tran_status", "amt_auth", "ChpFee"].include?(params[:transactions_column]) ? params[:transactions_column] : "date_time"
+      ["tranID", "dev_id", "date_time", "error_code", "tran_status", "amt_auth", "ChpFee"].include?(params[:transactions_column]) ? params[:transactions_column] : "tranID"
     end
 end
