@@ -1,51 +1,55 @@
-.row
-  .col-sm-6
+.text-center
+  %p
     - unless transaction.cassette_1_disp.blank?
-      %p
-        %strong Bin 1:
-        = transaction.cassette_1_disp
-        - unless transaction.device.blank? or transaction.device.bin_1_denomination.blank? or transaction.cassette_1_disp.zero?
-          %br
-          = "#{transaction.cassette_1_disp} x #{number_to_currency(transaction.device.bin_1_denomination)}" 
-          %mark= "#{number_to_currency(transaction.cassette_1_disp * transaction.device.bin_1_denomination)}"
+      %strong Bin 1:
+      = transaction.cassette_1_disp
+      - unless transaction.device.blank? or transaction.device.bin_1_denomination.blank? or transaction.cassette_1_disp.zero?
+        %br
+        = "#{transaction.cassette_1_disp} x #{number_to_currency(transaction.device.bin_1_denomination)}" 
+        %br
+        %mark= "#{number_to_currency(transaction.cassette_1_disp * transaction.device.bin_1_denomination)}"
+  %p
     - unless transaction.cassette_2_disp.blank?
-      %p
-        %strong Bin 2:
-        = transaction.cassette_2_disp
-        - unless transaction.device.blank? or transaction.device.bin_2_denomination.blank? or transaction.cassette_2_disp.zero?
-          %br
-          = "#{transaction.cassette_2_disp} x #{number_to_currency(transaction.device.bin_2_denomination)}" 
-          %mark= "#{number_to_currency(transaction.cassette_2_disp * transaction.device.bin_2_denomination)}"
+      %strong Bin 2:
+      = transaction.cassette_2_disp
+      - unless transaction.device.blank? or transaction.device.bin_2_denomination.blank? or transaction.cassette_2_disp.zero?
+        %br
+        = "#{transaction.cassette_2_disp} x #{number_to_currency(transaction.device.bin_2_denomination)}"
+        %br
+        %mark= "#{number_to_currency(transaction.cassette_2_disp * transaction.device.bin_2_denomination)}"
+  %p
     - unless transaction.cassette_3_disp.blank?
-      %p
-        %strong Bin 3:
-        = transaction.cassette_3_disp
-        - unless transaction.device.blank? or transaction.device.bin_3_denomination.blank? or transaction.cassette_3_disp.zero?
-          %br
-          = "#{transaction.cassette_3_disp} x #{number_to_currency(transaction.device.bin_3_denomination)}" 
-          %mark= "#{number_to_currency(transaction.cassette_3_disp * transaction.device.bin_3_denomination)}"
-  .col-sm-6
+      %strong Bin 3:
+      = transaction.cassette_3_disp
+      - unless transaction.device.blank? or transaction.device.bin_3_denomination.blank? or transaction.cassette_3_disp.zero?
+        %br
+        = "#{transaction.cassette_3_disp} x #{number_to_currency(transaction.device.bin_3_denomination)}" 
+        %br
+        %mark= "#{number_to_currency(transaction.cassette_3_disp * transaction.device.bin_3_denomination)}"
+  %p
     - unless transaction.cassette_4_disp.blank?
-      %p
-        %strong Bin 4:
-        = transaction.cassette_4_disp
-        - unless transaction.device.blank? or transaction.device.bin_4_denomination.blank? or transaction.cassette_4_disp.zero?
-          %br
-          = "#{transaction.cassette_4_disp} x #{number_to_currency(transaction.device.bin_4_denomination)}" 
-          %mark= "#{number_to_currency(transaction.cassette_4_disp * transaction.device.bin_4_denomination)}"
+      %strong Bin 4:
+      = transaction.cassette_4_disp
+      - unless transaction.device.blank? or transaction.device.bin_4_denomination.blank? or transaction.cassette_4_disp.zero?
+        %br
+        = "#{transaction.cassette_4_disp} x #{number_to_currency(transaction.device.bin_4_denomination)}" 
+        %br
+        %mark= "#{number_to_currency(transaction.cassette_4_disp * transaction.device.bin_4_denomination)}"
+  %p
     - unless transaction.cassette_5_disp.blank?
-      %p
-        %strong Bin 5:
-        = transaction.cassette_5_disp
-        - unless transaction.device.blank? or transaction.device.bin_5_denomination.blank? or transaction.cassette_5_disp.zero?
-          %br
-          = "#{transaction.cassette_5_disp} x #{number_to_currency(transaction.device.bin_5_denomination)}" 
-          %mark= "#{number_to_currency(transaction.cassette_5_disp * transaction.device.bin_5_denomination)}"
+      %strong Bin 5:
+      = transaction.cassette_5_disp
+      - unless transaction.device.blank? or transaction.device.bin_5_denomination.blank? or transaction.cassette_5_disp.zero?
+        %br
+        = "#{transaction.cassette_5_disp} x #{number_to_currency(transaction.device.bin_5_denomination)}" 
+        %br
+        %mark= "#{number_to_currency(transaction.cassette_5_disp * transaction.device.bin_5_denomination)}"
+  %p
     - unless transaction.cassette_6_disp.blank?
-      %p
-        %strong Bin 6:
-        = transaction.cassette_6_disp
-        - unless transaction.device.blank? or transaction.device.bin_6_denomination.blank? or transaction.cassette_6_disp.zero?
-          %br
-          = "#{transaction.cassette_6_disp} x #{number_to_currency(transaction.device.bin_6_denomination)}" 
-          %mark= "#{number_to_currency(transaction.cassette_6_disp * transaction.device.bin_6_denomination)}"
+      %strong Bin 6:
+      = transaction.cassette_6_disp
+      - unless transaction.device.blank? or transaction.device.bin_6_denomination.blank? or transaction.cassette_6_disp.zero?
+        %br
+        = "#{transaction.cassette_6_disp} x #{number_to_currency(transaction.device.bin_6_denomination)}"
+        %br
+        %mark= "#{number_to_currency(transaction.cassette_6_disp * transaction.device.bin_6_denomination)}"
