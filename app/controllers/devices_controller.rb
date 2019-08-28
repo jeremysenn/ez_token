@@ -53,7 +53,7 @@ class DevicesController < ApplicationController
     @coin_add_transactions = @device.transactions.coin_adds.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
     @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("#{transactions_sort_column} #{transactions_sort_direction}")
     @transactions = @withdrawal_transactions.page(params[:transactions_page]).per(10)
-    @transactions_count = @transactions.count unless @transactions.blank?
+    @transactions_count = @withdrawal_transactions.count unless @withdrawal_transactions.blank?
     @transactions_total = 0
     @transactions_fee_total = 0
     @withdrawal_transactions.each do |transaction|
