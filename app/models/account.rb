@@ -731,6 +731,27 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def twilio_send_sms_message(body, from_user_id)
+    unless customer.blank? or customer.phone.blank?
+      account_sid = ENV["TWILIO_ACCOUNT_SID"]
+      auth_token = ENV["TWILIO_AUTH_TOKEN"]
+      client = Twilio::REST::Client.new account_sid, auth_token
+      from = account.company.twilio_number.phone_number
+      to = customer.twilio_formated_phone_number
+      begin
+        message = client.messages.create(
+          :from => from,
+          :to => to,
+          :body => body #,
+        )
+        sid = message.sid
+        SmsMessage.create(sid: sid, to: to, from: from, customer_id: customer.id, user_id: from_user_id, company_id: self.CompanyNumber, body: "#{body}")
+      rescue Twilio::REST::RestError => e
+        puts e.message
+      end
+    end
+  end
+  
   #############################
   #     Class Methods         #
   #############################

@@ -354,6 +354,20 @@ class Customer < ActiveRecord::Base
     end
   end
   
+  def initials
+    if first_name.blank? and last_name.blank?
+      nil
+    else
+      if first_name.blank?
+        last_name.first
+      elsif last_name.blank?
+        first_name.first
+      else
+        "#{first_name.first}#{last_name.first}"
+      end
+    end
+  end
+  
   def email
     self.Email
   end

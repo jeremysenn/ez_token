@@ -9,11 +9,24 @@ class SmsMessagesController < ApplicationController
     @start_date = sms_message_params[:start_date] ||= Date.today.to_s
     @end_date = sms_message_params[:end_date] ||= Date.today.to_s
 #    sms_messages = current_user.company.sms_messages.where(created_at: @start_date.to_date.in_time_zone(current_user.time_zone).beginning_of_day..@end_date.to_date.in_time_zone(current_user.time_zone).end_of_day)
-    message_records = current_user.super? ? SmsMessage.all : current_user.company.sms_messages
-    @all_sms_messages = message_records.where(created_at: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+#    @all_sms_messages = message_records.where(created_at: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+#    @all_sms_messages = message_records
+#    @customer_id = params[:customer_id] ||= @all_sms_messages.last.customer_id unless @all_sms_messages.blank? or @all_sms_messages.last.customer_id.blank?
+#    @sms_messages = @all_sms_messages.order("created_at DESC").page(params[:page]).per(10)
+    
+    customer_ids = current_user.super? ? SmsMessage.all.order("created_at DESC").distinct.pluck(:customer_id) : current_user.company.sms_messages.order("created_at DESC").distinct.pluck(:customer_id)
+    @customers = Customer.where(CustomerID: customer_ids)
+    unless params[:customer_id].blank?
+      @active_customer = Customer.find(params[:customer_id])
+    else
+      @active_customer = @customers.first unless @customers.blank?
+    end
+    @sms_messages = @active_customer.sms_messages.order("created_at DESC").page(params[:page]).per(10)
+    
     respond_to do |format|
       format.html {
-        @sms_messages = @all_sms_messages.order("created_at DESC").page(params[:page]).per(20)
+      }
+      format.js { # for endless page
       }
     end
   end
@@ -45,6 +58,22 @@ class SmsMessagesController < ApplicationController
         format.html { render :new }
         format.json { render json: @sms_message.errors, status: :unprocessable_entity }
       end
+    end
+  end
+  
+  # POST /sms_messages/send_text
+  def send_text
+    twilio_number = current_user.company.twilio_number
+    unless twilio_number.blank?
+      to = params[:to]
+      body = params[:body]
+      customer_id = params[:customer_id]
+      twilio_number.send_sms(to, body, current_user.id)
+#      redirect_back fallback_location: sms_messages_path, notice: 'Text message sent.'
+      redirect_to sms_messages_path(customer_id: customer_id), notice: 'Text message sent.'
+    else
+#      redirect_back fallback_location: sms_messages_path, alert: 'No Twilio Number found for this company.'
+      redirect_to sms_messages_path(customer_id: customer_id), alert: 'No Twilio Number found for this company.'
     end
   end
 

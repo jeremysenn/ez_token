@@ -1,0 +1,10 @@
+$('#sms_messages_list').append('<%= j render partial: 'sms_messages/sms_message', collection: @sms_messages %>');
+$('#spinner').hide();
+
+<% if @sms_messages.next_page %>
+  $('a.load-more-sms-messages').show();
+  $('a.load-more-sms-messages').attr('href', '<%= sms_messages_path page: @sms_messages.next_page %>');
+<% else %>
+  $(window).off('scroll');
+  $('a.load-more-sms-messages').remove();
+<% end %>

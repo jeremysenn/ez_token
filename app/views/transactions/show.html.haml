@@ -82,9 +82,10 @@
           %p.lead
             Amount Authorized:
             = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
-          %p.lead
-            Fee:
-            = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
+          - unless @transaction.fee_transfer?
+            %p.lead
+              Fee:
+              = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
           - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
             %p.lead
               Total:
