@@ -36,30 +36,36 @@
                         %th{:scope => "col"} Name
                         %th{:scope => "col"} State
                         %th{:scope => "col"} Status
-                        -# if @bin_1_column_count > 0
-                        - if device.bin_1_count != 0 and device.bin_1_count != nil
-                          %th{:scope => "col"} 1
-                        -# if @bin_2_column_count > 0
-                        - if device.bin_2_count != 0 and device.bin_2_count != nil
-                          %th{:scope => "col"} 2
-                        -# if @bin_3_column_count > 0
-                        - if device.bin_3_count != 0 and device.bin_3_count != nil
-                          %th{:scope => "col"} 3
-                        -# if @bin_4_column_count > 0
-                        - if device.bin_4_count != 0 and device.bin_4_count != nil
-                          %th{:scope => "col"} 4
-                        -# if @bin_5_column_count > 0
-                        - if device.bin_5_count != 0 and device.bin_5_count != nil
-                          %th{:scope => "col"} 5
-                        -# if @bin_6_column_count > 0
-                        - if device.bin_6_count != 0 and device.bin_6_count != nil
-                          %th{:scope => "col"} 6
-                        -# if @bin_7_column_count > 0
-                        - if device.bin_7_count != 0 and device.bin_7_count != nil
-                          %th{:scope => "col"} 7
-                        -# if @bin_8_column_count > 0
-                        - if device.bin_8_count != 0 and device.bin_8_count != nil
-                          %th{:scope => "col"} 8
+                        - device.denoms.each do |denom|
+                          - unless denom.denomination.zero?
+                            %th{:scope => "col"}
+                              = "Bin #{denom.cassette_id}: "
+                              = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
+                        -#
+                          -# if @bin_1_column_count > 0
+                          - if device.bin_1_count != nil
+                            %th{:scope => "col"} 1
+                          -# if @bin_2_column_count > 0
+                          - if device.bin_2_count != nil
+                            %th{:scope => "col"} 2
+                          -# if @bin_3_column_count > 0
+                          - if device.bin_3_count != nil
+                            %th{:scope => "col"} 3
+                          -# if @bin_4_column_count > 0
+                          - if device.bin_4_count != nil
+                            %th{:scope => "col"} 4
+                          -# if @bin_5_column_count > 0
+                          - if device.bin_5_count != nil
+                            %th{:scope => "col"} 5
+                          -# if @bin_6_column_count > 0
+                          - if device.bin_6_count != nil
+                            %th{:scope => "col"} 6
+                          -# if @bin_7_column_count > 0
+                          - if device.bin_7_count != nil
+                            %th{:scope => "col"} 7
+                          -# if @bin_8_column_count > 0
+                          - if device.bin_8_count != nil
+                            %th{:scope => "col"} 8
                         %th{:scope => "col"} Remaining
                         %th
                     %tbody
