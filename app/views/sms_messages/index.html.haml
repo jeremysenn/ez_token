@@ -4,37 +4,38 @@
     %section.content
       .row
         - unless browser.device.mobile? and params[:customer_id].present?
-          %div#customer_list.col-sm-12.col-md-4{style: "height: 550px; overflow-y: scroll;"}
-            - @customers.each do |customer|
-              - if @active_customer and customer == @active_customer and not browser.device.mobile?
-                #active_customer.info-box
-                  %span.info-box-icon.bg-blue
-                    - unless customer.blank? or customer.initials.blank?
-                      = customer.initials
-                    - else
-                      %i.fa.fa-user
-                  .info-box-content
-                    %span.info-box-number
-                      .pull-right
-                        %small= customer.sms_messages.last.created_at.strftime("%-m/%-d/%y")
-                      = customer.identity
-                      %p
-                        %small= truncate(customer.sms_messages.last.body)
-              - else
-                %a.info-box{:href => customer_sms_messages_path(customer)}
-                  %span.info-box-icon
-                    .text-muted
+          %div#customer_list.col-sm-12.col-md-4
+            #customer_list{style: "height: 550px; overflow-y: scroll;"}
+              - @customers.each do |customer|
+                - if @active_customer and customer == @active_customer and not browser.device.mobile?
+                  #active_customer.info-box
+                    %span.info-box-icon.bg-blue
                       - unless customer.blank? or customer.initials.blank?
                         = customer.initials
                       - else
                         %i.fa.fa-user
-                  .info-box-content
-                    %span.info-box-number.text-muted
-                      .pull-right
-                        %small= customer.sms_messages.last.created_at.strftime("%-m/%-d/%y")
-                      = customer.identity
-                      %p
-                        %small= truncate(customer.sms_messages.last.body)
+                    .info-box-content
+                      %span.info-box-number
+                        .pull-right
+                          %small= customer.sms_messages.last.created_at.strftime("%-m/%-d/%y")
+                        = customer.identity
+                        %p
+                          %small= truncate(customer.sms_messages.last.body)
+                - else
+                  %a.info-box{:href => customer_sms_messages_path(customer)}
+                    %span.info-box-icon
+                      .text-muted
+                        - unless customer.blank? or customer.initials.blank?
+                          = customer.initials
+                        - else
+                          %i.fa.fa-user
+                    .info-box-content
+                      %span.info-box-number.text-muted
+                        .pull-right
+                          %small= customer.sms_messages.last.created_at.strftime("%-m/%-d/%y")
+                        = customer.identity
+                        %p
+                          %small= truncate(customer.sms_messages.last.body)
         - unless browser.device.mobile? and params[:customer_id].blank?
           .col-sm-12.col-md-8
             .box.box-primary
