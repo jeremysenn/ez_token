@@ -5,7 +5,7 @@
       .row
         - unless browser.device.mobile? and params[:customer_id].present?
           %div.col-sm-12.col-md-4
-            #customer_list{style: "height: 550px; overflow-y: scroll;"}
+            #customer_list{style: "height: 75%; overflow-y: auto;"}
               - @customers.each do |customer|
                 - if @active_customer and customer == @active_customer and not browser.device.mobile?
                   #active_customer.info-box
