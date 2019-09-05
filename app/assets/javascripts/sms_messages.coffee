@@ -20,4 +20,5 @@ jQuery ->
 
     #$("#customer_list").animate({scrollTop: $("#active_customer").offset().top});
 
-    document.getElementById("active_customer").scrollIntoView(true);
+   customerTopPosition = $('#active_customer').position().top
+   $('#customer_list').animate scrollTop: customerTopPosition
