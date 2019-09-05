@@ -20,4 +20,5 @@ jQuery ->
 
     #$("#customer_list").animate({scrollTop: $("#active_customer").offset().top});
 
-    $('#customer_list').scrollTop($('#active_customer').scrollTop());
+    contactTopPosition = $('#active_customer').position().top
+    $('#customer_list').animate scrollTop: contactTopPosition
