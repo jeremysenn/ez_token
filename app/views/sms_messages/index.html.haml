@@ -4,10 +4,10 @@
     %section.content
       .row
         - unless browser.device.mobile? and params[:customer_id].present?
-          .col-sm-12.col-md-4{style: "height: 100%; overflow-y: scroll;"}
+          %div#customer_list.col-sm-12.col-md-4{style: "height: 100%; overflow-y: scroll;"}
             - @customers.each do |customer|
               - if @active_customer and customer == @active_customer and not browser.device.mobile?
-                .info-box
+                #active_customer.info-box
                   %span.info-box-icon.bg-blue
                     - unless customer.blank? or customer.initials.blank?
                       = customer.initials
