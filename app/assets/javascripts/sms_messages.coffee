@@ -18,4 +18,6 @@ jQuery ->
     #$('#customer_list').animate { scrollTop: $('#active_customer').offset().top }, 'slow'
     #  return
 
-    $("#customer_list").animate({scrollTop: $("#active_customer").offset(50).top});
+    #$("#customer_list").animate({scrollTop: $("#active_customer").offset().top});
+
+    document.getElementById("active_customer").scrollIntoView(true);
