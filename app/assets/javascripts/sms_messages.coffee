@@ -20,4 +20,4 @@ jQuery ->
 
     #$("#customer_list").animate({scrollTop: $("#active_customer").offset().top});
 
-    #$("#active_customer").animate({scrollTop: $("#customer_list").offset().top});
+    $('#customer_list').scrollTop($('#active_customer').scrollTop());
