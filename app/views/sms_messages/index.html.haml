@@ -4,7 +4,7 @@
     %section.content
       .row
         - unless browser.device.mobile? and params[:customer_id].present?
-          %div#customer_list.col-sm-12.col-md-4{style: "height: 100%; overflow-y: scroll;"}
+          %div#customer_list.col-sm-12.col-md-4{style: "height: 50%; overflow-y: scroll;"}
             - @customers.each do |customer|
               - if @active_customer and customer == @active_customer and not browser.device.mobile?
                 #active_customer.info-box
