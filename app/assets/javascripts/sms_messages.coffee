@@ -15,10 +15,7 @@ jQuery ->
       $.getScript $(this).attr('href'), ->
         loading_sms_messages = false
 
-    #$('#customer_list').animate { scrollTop: $('#active_customer').offset().top }, 'slow'
-    #  return
-
-    #$("#customer_list").animate({scrollTop: $("#active_customer").offset().top});
-
-    contactTopPosition = $('#active_customer').position().top
-    $('#customer_list').animate scrollTop: contactTopPosition
+    # Scroll customer into view if active
+    customerTopPosition = $('#active_customer').position().top
+    #$('#customer_list').animate scrollTop: customerTopPosition
+    $('#customer_list').scrollTop customerTopPosition
