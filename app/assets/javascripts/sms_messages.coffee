@@ -23,5 +23,5 @@ jQuery ->
     #$('html, body').animate { scrollTop: $('#active_customer').offset().top }, 'slow'
     #return
 
-    $("#customer_list").animate {scrollTop: $("#active_customer").offset().top}, 'fast
+    $("#customer_list").animate {scrollTop: $("#active_customer").offset().top}, 'fast'
     return
