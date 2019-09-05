@@ -18,10 +18,4 @@ jQuery ->
     #$('#customer_list').animate { scrollTop: $('#active_customer').offset().top }, 'slow'
     #  return
 
-  $(document).ready ->
-    # Handler for .ready() called.
-    #$('html, body').animate { scrollTop: $('#active_customer').offset().top }, 'slow'
-    #return
-
     $("#customer_list").animate({scrollTop: $("#active_customer").offset().top});
-    return
