@@ -20,4 +20,19 @@ jQuery ->
       customerTopPosition = $('#active_customer').position().top
       #$('#customer_list').scrollTop customerTopPosition
       $('#customer_list').animate scrollTop: customerTopPosition, 'fast'
-    
+
+    $('select#customer_id').select2
+      theme: 'bootstrap'
+      minimumInputLength: 3
+      dropdownParent: $('#new_customer_message_form')
+      ajax:
+        url: '/accounts'
+        dataType: 'json'
+        delay: 250
+    return
+
+  # Make sure select2 isn't applied multiple times by turbolinks
+  $(document).on 'turbolinks:before-cache', ->
+    $('select#customer_id').select2 'destroy'
+    return
+

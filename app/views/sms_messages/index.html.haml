@@ -16,7 +16,7 @@
         - if params[:new_customer_message].blank?
           %div.col-sm-12.col-md-8
             .pull-right
-              %a#new_customer_message.btn.btn-default{:href => sms_messages_path(new_customer_message: true), title: 'New Message'}
+              %a#new_customer_message.btn.btn-default.btn-sm{:href => sms_messages_path(new_customer_message: true), title: 'New Message'}
                 %i.fa.fa-edit.fa-lg
                 New Message
       .row
@@ -163,22 +163,3 @@
                             %p.text-center= link_to "Load More...", sms_messages_path(:page => @sms_messages.next_page), :class => 'load-more-sms-messages btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @sms_messages.next_page
           - else
             %h3.text-center No Messages
-
-:javascript
-  // Make sure select2 isn't applied multiple times by turbolinks
-  $(document).on('turbolinks:before-cache', function() {
-    $('select#customer_id').select2('destroy');
-  });
-
-  $(document).on('turbolinks:load', function() {
-    $('select#customer_id').select2({
-      theme: 'bootstrap',
-      minimumInputLength: 3,
-      dropdownParent: $("#new_customer_message_form"),
-      ajax: {
-        url: '/accounts',
-        dataType: 'json',
-        delay: 250
-      }
-    });
-  });
