@@ -19,8 +19,8 @@ class SmsMessagesController < ApplicationController
     @customers = Customer.where(CustomerID: customer_ids).sort_by { |c| [ c.sms_messages.last.created_at ] }.reverse
     unless params[:customer_id].blank?
       @active_customer = Customer.find(params[:customer_id])
-    else
-      @active_customer = @customers.first unless @customers.blank? or params[:new_customer_message]
+    #else
+     # @active_customer = @customers.first unless @customers.blank? or params[:new_customer_message]
     end
     @sms_messages = @active_customer.sms_messages.where(created_at: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("created_at DESC").page(params[:page]).per(10) unless @active_customer.blank?
     
