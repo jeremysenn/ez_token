@@ -46,7 +46,7 @@
                         %p
                           %small= truncate(customer.sms_messages.last.body)
                 - else
-                  %a.info-box{:href => customer_sms_messages_path(customer)}
+                  %a.info-box{:href => customer_sms_messages_path(customer, start_date: @start_date, end_date: @end_date)}
                     %span.info-box-icon
                       .text-muted
                         - unless customer.blank? or customer.initials.blank?
@@ -94,7 +94,7 @@
                       %p.text-center{id: "spinner", style: 'display:none;'}
                         %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
                         %span.sr-only Loading...
-                      %p.text-center= link_to "Load More...", sms_messages_path(:page => @sms_messages.next_page), :class => 'load-more-sms-messages btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @sms_messages.next_page
+                      %p.text-center= link_to "Load More...", sms_messages_path(:page => @sms_messages.next_page, start_date: @start_date, end_date: @end_date), :class => 'load-more-sms-messages btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @sms_messages.next_page
               - elsif params[:new_customer_message].present?
                 .box-header.with-border
                   = form_tag send_text_sms_messages_path, :method => 'post', :class => "form-inline" do
