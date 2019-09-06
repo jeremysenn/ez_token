@@ -13,14 +13,14 @@
               &nbsp;
               = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
                 %i.fa.fa-search
+        - if params[:new_customer_message].blank?
+          %div.col-sm-12.col-md-4
+            %p
+              %a#new_customer_message.btn.btn-default.btn-sm{:href => sms_messages_path(new_customer_message: true), title: 'New Message'}
+                %i.fa.fa-edit.fa-lg
+                New Message
       .row
         - unless browser.device.mobile? and params[:customer_id].present?
-          %div.col-sm-12.col-md-4
-            - if params[:new_customer_message].blank?
-              %p
-                %a#new_customer_message.btn.btn-default.btn-sm{:href => sms_messages_path(new_customer_message: true), title: 'New Message'}
-                  %i.fa.fa-edit.fa-lg
-                  New Message
             #customer_list{style: "height: 70%; overflow-y: auto;"}
               - unless params[:new_customer_message].blank?
                 .info-box
