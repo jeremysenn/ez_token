@@ -3,19 +3,20 @@
     / Main content
     %section.content
       .row
-        %div.col-sm-12
+        %div.col-sm-12.col-md-4
           = form_tag sms_messages_path, :method => 'get', :class => "form-inline" do
             = hidden_field_tag :customer_id, @active_customer.id unless @active_customer.blank?
             %p
-              = text_field_tag :start_date, nil, :placeholder => "Start Date", value: @start_date, class: "form-control input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+              = text_field_tag :start_date, nil, :placeholder => "Start Date", value: @start_date, class: "form-control input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, style: 'width: 33%;', readonly: true
               To
-              = text_field_tag :end_date, nil, :placeholder => "End Date", value: @end_date, class: "form-control input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+              = text_field_tag :end_date, nil, :placeholder => "End Date", value: @end_date, class: "form-control input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, style: 'width: 33%;', readonly: true
               &nbsp;
               = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
                 %i.fa.fa-search
-          - if params[:new_customer_message].blank?
-            %p
-              %a#new_customer_message.btn.btn-default.btn-sm{:href => sms_messages_path(new_customer_message: true), title: 'New Message'}
+        - if params[:new_customer_message].blank?
+          %div.col-sm-12.col-md-8
+            .pull-right
+              %a#new_customer_message.btn.btn-default{:href => sms_messages_path(new_customer_message: true), title: 'New Message'}
                 %i.fa.fa-edit.fa-lg
                 New Message
       .row
