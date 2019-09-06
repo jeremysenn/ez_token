@@ -16,7 +16,7 @@ class SmsMessagesController < ApplicationController
     
     customer_ids = current_user.super? ? SmsMessage.all.order("created_at DESC").distinct.pluck(:customer_id) : current_user.company.sms_messages.order("created_at DESC").distinct.pluck(:customer_id)
 #    @customers = Customer.where(CustomerID: customer_ids)
-    @customers = Customer.where(CustomerID: customer_ids).sort_by { |c| [ c.sms_messages.last.created_at ] }
+    @customers = Customer.where(CustomerID: customer_ids).sort_by { |c| [ c.sms_messages.last.created_at ] }.reverse
     unless params[:customer_id].blank?
       @active_customer = Customer.find(params[:customer_id])
     else
