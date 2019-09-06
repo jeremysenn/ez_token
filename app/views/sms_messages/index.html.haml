@@ -63,7 +63,7 @@
         - unless browser.device.mobile? and params[:customer_id].blank?
           .col-sm-12.col-md-8
             .box.box-primary
-              - unless @sms_messages.blank?
+              - if @sms_messages.present?
                 - @sms_messages.order(:created_at).group_by{|s| s.customer}.each_with_index do |(customer, sms_messages), index|
                   .box-header.with-border
                     = form_tag send_text_sms_messages_path, :method => 'post', :class => "form-inline" do
