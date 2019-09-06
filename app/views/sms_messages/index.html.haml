@@ -21,7 +21,7 @@
                 %a#new_customer_message.btn.btn-default.btn-sm{:href => sms_messages_path(new_customer_message: true), title: 'New Message'}
                   %i.fa.fa-edit.fa-lg
                   New Message
-            #customer_list{style: "height: 50%; overflow-y: auto;"}
+            #customer_list{style: "height: 70%; overflow-y: auto;"}
               - unless params[:new_customer_message].blank?
                 .info-box
                   %span.info-box-icon.bg-blue
@@ -95,7 +95,7 @@
                         %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
                         %span.sr-only Loading...
                       %p.text-center= link_to "Load More...", sms_messages_path(:page => @sms_messages.next_page), :class => 'load-more-sms-messages btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @sms_messages.next_page
-              - else
+              - elsif params[:new_customer_message].present?
                 .box-header.with-border
                   = form_tag send_text_sms_messages_path, :method => 'post', :class => "form-inline" do
                     #new_customer_message_form.col-md-12
@@ -117,6 +117,10 @@
                       %small= customer.phone unless customer.blank?
                 .box-body{style: 'height: 200px;'}
                   %div{id: 'sms_messages_list'}
+              - else
+                .box-header.with-border
+                .box-body{style: 'height: 200px;'}
+                  %h3 No Conversation Selected
 
           -#
             .col-md-8
