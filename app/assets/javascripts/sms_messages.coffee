@@ -16,7 +16,8 @@ jQuery ->
         loading_sms_messages = false
 
     # Scroll customer into view if active
-    customerTopPosition = $('#active_customer').position().top
-    #$('#customer_list').scrollTop customerTopPosition
-    $('#customer_list').animate scrollTop: customerTopPosition, 'fast'
+    if $('#active_customer').length
+      customerTopPosition = $('#active_customer').position().top
+      #$('#customer_list').scrollTop customerTopPosition
+      $('#customer_list').animate scrollTop: customerTopPosition, 'fast'
     

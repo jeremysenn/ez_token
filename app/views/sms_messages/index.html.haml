@@ -3,9 +3,33 @@
     / Main content
     %section.content
       .row
+        %div.col-sm-12
+          = form_tag sms_messages_path, :method => 'get', :class => "form-inline" do
+            = hidden_field_tag :customer_id, @active_customer.id unless @active_customer.blank?
+            %p
+              = text_field_tag :start_date, nil, :placeholder => "Start Date", value: @start_date, class: "form-control input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+              To
+              = text_field_tag :end_date, nil, :placeholder => "End Date", value: @end_date, class: "form-control input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+              &nbsp;
+              = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                %i.fa.fa-search
+      .row
         - unless browser.device.mobile? and params[:customer_id].present?
           %div.col-sm-12.col-md-4
+            - if params[:new_customer_message].blank?
+              %p
+                %a#new_customer_message.btn.btn-default.btn-sm{:href => sms_messages_path(new_customer_message: true), title: 'New Message'}
+                  %i.fa.fa-edit.fa-lg
+                  New Message
             #customer_list{style: "height: 50%; overflow-y: auto;"}
+              - unless params[:new_customer_message].blank?
+                .info-box
+                  %span.info-box-icon.bg-blue
+                    %i.fa.fa-user
+                  .info-box-content
+                    %span.info-box-number
+                      %i.fa.fa-user
+                      New Message
               - @customers.each do |customer|
                 - if @active_customer and customer == @active_customer and not browser.device.mobile?
                   #active_customer.info-box
@@ -39,8 +63,8 @@
         - unless browser.device.mobile? and params[:customer_id].blank?
           .col-sm-12.col-md-8
             .box.box-primary
-              - @sms_messages.order(:created_at).group_by{|s| s.customer}.each_with_index do |(customer, sms_messages), index|
-                .tab-pane.fade{class: index == 0 ? 'active show' : '', id: "customer_#{customer.id}", "aria-labelledby" => "v-pills-home-tab", :role => "tabpanel"}
+              - unless @sms_messages.blank?
+                - @sms_messages.order(:created_at).group_by{|s| s.customer}.each_with_index do |(customer, sms_messages), index|
                   .box-header.with-border
                     = form_tag send_text_sms_messages_path, :method => 'post', :class => "form-inline" do
                       .col-md-12
@@ -71,24 +95,29 @@
                         %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
                         %span.sr-only Loading...
                       %p.text-center= link_to "Load More...", sms_messages_path(:page => @sms_messages.next_page), :class => 'load-more-sms-messages btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @sms_messages.next_page
+              - else
+                .box-header.with-border
+                  = form_tag send_text_sms_messages_path, :method => 'post', :class => "form-inline" do
+                    #new_customer_message_form.col-md-12
+                      .form-group
+                        = select_tag :customer_id, options_for_select([]), class: "form-control input-lg", prompt: 'Select Account', style: 'width: 33%;', required: true
+                      %br
+                      .input-group.mb-12
+                        -# %input.form-control{"aria-describedby" => "basic-addon2", "aria-label" => "Recipient's username", :placeholder => "Message", :type => "text"}/
+                        =# text_field_tag :to, nil, value: customer.twilio_formated_phone_number
+                        =# text_field_tag :customer_id, nil, value: @active_customer.id
+                        = text_field_tag :body, nil, :placeholder => "Message", class: "form-control", type: 'text', required: true
+                        .input-group-append
+                          %button.btn.btn-primary{:type => 'submit', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                            %i.fa.fa-send
+                  -#
+                    .pull-left
+                      %small= customer.identity unless customer.blank?
+                    .pull-right
+                      %small= customer.phone unless customer.blank?
+                .box-body{style: 'height: 200px;'}
+                  %div{id: 'sms_messages_list'}
 
-            -#
-              #v-pills-tab.nav.flex-column.nav-pills{"aria-orientation" => "vertical", :role => "tablist"}
-                - @sms_messages.order(:created_at).group_by{|s| s.customer}.each_with_index do |(customer, sms_messages), index|
-                  -# %a.nav-link.info-box{class: index == 0 ? 'active' : '', "aria-controls" => "v-pills-home", "aria-selected" => "true", "data-toggle" => "pill", :href => "#customer_#{customer.id}", :role => "tab"}
-                  %a.nav-link.info-box{class: @customer_id == customer.id ? 'active' : '', :href => sms_messages_path(customer_id: customer.id), "aria-controls" => "v-pills-home", "aria-selected" => "true", "data-toggle" => "pill", :role => "tab"}
-                    %span.info-box-icon.bg-blue
-                      - unless customer.blank? or customer.initials.blank?
-                        = customer.initials
-                      - else
-                        %i.fa.fa-user
-                    .info-box-content
-                      %span.info-box-number
-                        .pull-right
-                          %small= sms_messages.first.created_at.strftime("%-m/%-d/%y")
-                        = customer.identity
-                        %p
-                          %small= truncate(sms_messages.first.body)
           -#
             .col-md-8
               .box.box-primary
@@ -128,54 +157,21 @@
           - else
             %h3.text-center No Messages
 
-      -#
-        / Default box
-        .row
-          .col-md-12
-            .box.box-primary
-              .box-header.with-border
-                %h3.box-title 
-                  SMS Messages
-                  - unless @sms_messages.blank?
-                    %a{href: sms_messages_path(format: "csv", :type => @type, 'sms_message[start_date]' => @start_date, 'sms_message[end_date]' => @end_date), class: 'btn btn-sm btn-info'}
-                      %i.fa.fa-download
-                      Download CSV
-                    %br
-                    %small.text-muted
-                      = "#{pluralize(number_with_delimiter(@all_sms_messages.count), 'record')} found"
-                .box-tools
-                  = form_tag sms_messages_path, :method => 'get', :class => "form-inline" do
-                    = text_field_tag 'sms_message[start_date]', nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? Date.today : @start_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                    To
-                    = text_field_tag 'sms_message[end_date]', nil, :placeholder => "End Date", value: "#{@end_date.blank? ? Date.today : @end_date}", class: "form-control", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                    &nbsp;
-                    = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-                      %i.fa.fa-search
-              .box-body.no-padding
-                - unless @sms_messages.blank?
-                  .table-responsive
-                    %table.table.table-striped
-                      %thead
-                        %tr
-                          %th Date/Time
-                          %th To phone
-                          %th From phone
-                          %th To
-                          %th From
-                          %th Body
-                          %th
-                      %tbody
-                        - @sms_messages.each do |sms_message|
-                          %tr
-                            %td= sms_message.created_at.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
-                            %td= sms_message.to
-                            %td= sms_message.from
-                            %td= sms_message.customer.identity unless sms_message.customer.blank?
-                            %td= sms_message.user.full_name unless sms_message.user.blank?
-                            %td= sms_message.body
-                            %td= link_to "Show", sms_message, class: 'btn btn-sm btn-primary'
-                - else
-                  .jumbotron
-                    %p.text-center None
-              .box-footer
-                .pull-right= paginate @sms_messages
+:javascript
+  // Make sure select2 isn't applied multiple times by turbolinks
+  $(document).on('turbolinks:before-cache', function() {
+    $('select#customer_id').select2('destroy');
+  });
+
+  $(document).on('turbolinks:load', function() {
+    $('select#customer_id').select2({
+      theme: 'bootstrap',
+      minimumInputLength: 3,
+      dropdownParent: $("#new_customer_message_form"),
+      ajax: {
+        url: '/accounts',
+        dataType: 'json',
+        delay: 250
+      }
+    });
+  });
