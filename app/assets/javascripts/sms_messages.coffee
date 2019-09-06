@@ -17,5 +17,6 @@ jQuery ->
 
     # Scroll customer into view if active
     customerTopPosition = $('#active_customer').position().top
-    $('#customer_list').animate scrollTop: customerTopPosition, 'fast'
     #$('#customer_list').scrollTop customerTopPosition
+    $('#customer_list').animate scrollTop: customerTopPosition, 'fast'
+    
