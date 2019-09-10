@@ -29,10 +29,22 @@ jQuery ->
         url: '/accounts'
         dataType: 'json'
         delay: 250
-    return
 
+    $('#send_new_sms_message').on 'click', '#send_message_button', (e) ->
+      $('#sending_message_spinner_icon').show()
+      $('#send_message_icon').hide()
+
+    #$('#send_new_sms_message').on 'ajax:success', (a, b, c) ->
+    $('#send_new_sms_message').on 'ajax:complete', (a, b, c) ->
+      $(this).find('input[type="text"]').val ''
+      $('#sending_message_spinner_icon').hide()
+      $('#send_message_icon').show()
+      return
+    
   # Make sure select2 isn't applied multiple times by turbolinks
   $(document).on 'turbolinks:before-cache', ->
     $('select#customer_id').select2 'destroy'
     return
+
+  
 

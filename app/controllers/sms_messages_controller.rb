@@ -74,10 +74,21 @@ class SmsMessagesController < ApplicationController
       end
       twilio_number.send_sms(to, body, current_user.id)
 #      redirect_back fallback_location: sms_messages_path, notice: 'Text message sent.'
-      redirect_to sms_messages_path(customer_id: customer_id), notice: 'Text message sent.'
+#      redirect_to sms_messages_path(customer_id: customer_id), notice: 'Text message sent.'
     else
 #      redirect_back fallback_location: sms_messages_path, alert: 'No Twilio Number found for this company.'
-      redirect_to sms_messages_path(customer_id: customer_id), alert: 'No Twilio Number found for this company.'
+#      redirect_to sms_messages_path(customer_id: customer_id), alert: 'No Twilio Number found for this company.'
+    end
+    
+    respond_to do |format|
+      format.html { 
+        unless twilio_number.blank?
+          redirect_to sms_messages_path(customer_id: customer_id), notice: 'Text message sent.'
+        else
+          redirect_to sms_messages_path(customer_id: customer_id), alert: 'No Twilio Number found for this company.'
+        end
+      }
+      format.js {}
     end
   end
 

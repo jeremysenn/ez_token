@@ -45,7 +45,8 @@
                           %small= customer.sms_messages.last.created_at.strftime("%-m/%-d/%y")
                         = customer.identity
                         %p
-                          %small= truncate(customer.sms_messages.last.body)
+                          %small{"data-channel-subscribe" => "last_sms_message", "data-customer-id" => "#{customer.id}"}
+                            = truncate(customer.sms_messages.last.body)
                 - else
                   %a.info-box{:href => customer_sms_messages_path(customer, start_date: @start_date, end_date: @end_date)}
                     %span.info-box-icon
@@ -60,14 +61,16 @@
                           %small= customer.sms_messages.last.created_at.strftime("%-m/%-d/%y")
                         = customer.identity
                         %p
-                          %small= truncate(customer.sms_messages.last.body)
+                          %small{"data-channel-subscribe" => "last_sms_message", "data-customer-id" => "#{customer.id}"}
+                            = truncate(customer.sms_messages.last.body)
         - unless browser.device.mobile? and params[:customer_id].blank?
           .col-sm-12.col-md-8
             .box.box-primary
               - if @sms_messages.present?
                 - @sms_messages.order(:created_at).group_by{|s| s.customer}.each_with_index do |(customer, sms_messages), index|
                   .box-header.with-border
-                    = form_tag send_text_sms_messages_path, :method => 'post', :class => "form-inline" do
+                    =# form_tag send_text_sms_messages_path, :method => 'post', :class => "form-inline" do
+                    = form_tag send_text_sms_messages_path, :method => 'post', remote: true, id: 'send_new_sms_message', :class => "form-inline" do
                       .col-md-12
                         .input-group.mb-12
                           -# %input.form-control{"aria-describedby" => "basic-addon2", "aria-label" => "Recipient's username", :placeholder => "Message", :type => "text"}/
@@ -75,27 +78,46 @@
                           = hidden_field_tag :customer_id, nil, value: @active_customer.id
                           = text_field_tag :body, nil, :placeholder => "Message", class: "form-control", type: 'text', required: true
                           .input-group-append
-                            %button.btn.btn-primary{:type => 'submit', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                              %i.fa.fa-send
+                            %button.btn.btn-primary{id: 'send_message_button', :type => 'submit'}
+                              %i.fa.fa-spinner.fa-spin{id: 'sending_message_spinner_icon', style: 'display:none;'}
+                              %i.fa.fa-send{id: 'send_message_icon'}
                     .pull-left
                       %small= customer.identity unless customer.blank?
                     .pull-right
                       %small= customer.phone unless customer.blank?
                   .box-body
                     %div{id: 'sms_messages_list'}
+                      %div{"data-channel-subscribe" => "sms_message", "data-customer-id" => "#{@active_customer.id}"}
                       - sms_messages.each do |sms_message|
                         .row
                           .col-md-12
-                            %div{class: sms_message.sent_from_company? ? 'pull-right' : 'pull-left'}
+                            %div{id: "sms_message_#{sms_message.id}", class: sms_message.sent_from_company? ? 'pull-right' : 'pull-left'}
                               .card{class: sms_message.sent_from_company? ? 'text-white bg-primary' : 'bg-light'}
                                 .card-body= sms_message.body
                               %small.text-muted= sms_message.created_at.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M%p")
+                      -#
+                        .row{"data-role" => "message-template"}
+                          .col-md-12
+                            %div{class: 'pull-right'}
+                              .card{class: 'text-white bg-primary'}
+                                .card-body{"data-role" => "message-text"}
+                              %small.text-muted{"data-role" => "message-date"}
+                      -#
+                        .d-none{"data-role" => "message-template"}
+                          .chat-message-container
+                            .row.no-gutters
+                              .col
+                                .message-content
+                                  %p.mb-1{"data-role" => "message-text"}
+                                  .text-right
+                                    %small{"data-role" => "message-date"}
+
                     %div{id: 'endless_page'}
                       %br
                       %p.text-center{id: "spinner", style: 'display:none;'}
                         %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
                         %span.sr-only Loading...
-                      %p.text-center= link_to "Load More...", sms_messages_path(:page => @sms_messages.next_page, start_date: @start_date, end_date: @end_date), :class => 'load-more-sms-messages btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @sms_messages.next_page
+                      %p.text-center= link_to "Load More...", sms_messages_path(customer_id: @active_customer.id, :page => @sms_messages.next_page, start_date: @start_date, end_date: @end_date), :class => 'load-more-sms-messages btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @sms_messages.next_page
               - elsif params[:new_customer_message].present?
                 .box-header.with-border
                   = form_tag send_text_sms_messages_path, :method => 'post', :class => "form-inline" do
