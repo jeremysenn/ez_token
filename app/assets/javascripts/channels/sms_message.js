@@ -1,7 +1,7 @@
 $(function() {
   $('[data-channel-subscribe="sms_message"]').each(function(index, element) {
     var $element = $(element),
-        customer_id = $element.data('customer-id')
+        customer_id = $element.data('customer-id');
         messageTemplate = $('[data-role="message-template"]');
 
     //$element.animate({ scrollTop: $element.prop("scrollHeight")}, 1000)        
@@ -29,9 +29,9 @@ $(function() {
 $(function() {
   $('[data-channel-subscribe="last_sms_message"]').each(function(index, element) {
     var $element = $(element),
-        customer_id = $element.data('customer-id')
+        customer_id = $element.data('customer-id');
 
-    $element.animate({ scrollTop: $element.prop("scrollHeight")}, 1000)        
+    $element.animate({ scrollTop: $element.prop("scrollHeight")}, 1000);      
 
     App.cable.subscriptions.create(
       {
