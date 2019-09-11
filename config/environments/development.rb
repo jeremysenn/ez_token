@@ -70,6 +70,6 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
   
   
-  config.action_cable.url = "ws://https://ezdev.tranact.com/cable"
+  config.action_cable.url = "ws://ezdev.tranact.com/cable"
   config.action_cable.allowed_request_origins = [/http:\/\/*/, /https:\/\/*/]
 end
