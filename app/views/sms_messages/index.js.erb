@@ -1,0 +1,10 @@
+$('#sms_messages_list').prepend('<%= j render partial: 'sms_messages/sms_message', collection: @sms_messages %>');
+$('#spinner').hide();
+
+<% if @sms_messages.next_page %>
+  $('a.load-more-sms-messages').show();
+  $('a.load-more-sms-messages').attr('href', '<%= sms_messages_path customer_id: @active_customer.id, page: @sms_messages.next_page, start_date: @start_date,  end_date: @end_date %>');
+<% else %>
+  $(window).off('scroll');
+  $('a.load-more-sms-messages').remove();
+<% end %>

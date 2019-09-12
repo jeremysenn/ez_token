@@ -26,15 +26,17 @@ class TwilioController < ApplicationController
   end
 
   def sms
+    to = params[:To] 
     from = params[:From]
     plain_cell_number = from.gsub(/\+1/, '')
     user = User.find_by(phone: plain_cell_number)
-    to = params[:To] 
+    customer = Customer.find_by(PhoneMobile: plain_cell_number)
+    twilio_number = TwilioNumber.find_by(phone_number: to)
     body = params[:Body].truncate(255) # Do not allow to be larger than 255 so doesn't cause a DB error
     keyword = body.downcase.strip
     event = Event.now_open.find_by(join_code: keyword)
     message_sid = params[:MessageSid]
-    SmsMessage.create(sid: message_sid, to: to, from: from, company_id: event.blank? ? Company.find_by(CompanyName: 'ezToken Biz').id : event.company_id, body: "#{body}")
+    SmsMessage.create(sid: message_sid, to: to, from: from, customer_id: customer.blank? ? nil : customer.id, company_id: event.blank? ? (twilio_number.blank? ? Company.find_by(CompanyName: 'ezToken Biz').id : twilio_number.company_id) : event.company_id, body: "#{body}")
     
     response = Twilio::TwiML::MessagingResponse.new
     response.message do |message|
@@ -63,9 +65,7 @@ class TwilioController < ApplicationController
           
           end
         else
-          if event.blank?
-            message.body("Welcome back to ezToken #{user.full_name}! Sorry, we're not able to find an open event with that join code.")
-          else
+          unless event.blank?
 #            message.body("Welcome back to ezToken!")
             CreateEventAccountWalletWorker.perform_async(event.id, user.id)
             ### Put all of this into background process

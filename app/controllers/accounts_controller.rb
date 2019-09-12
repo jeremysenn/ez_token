@@ -29,6 +29,21 @@ class AccountsController < ApplicationController
       @total_accounts_results = @total_accounts_results.joins(:customer).order("customer.NameL ASC")
       @accounts = @total_accounts_results.page(params[:page]).per(20)
     end
+    respond_to do |format|
+      format.html {}
+      format.json {
+#        @customers = Kaminari.paginate_array(results).page(params[:page]).per(10)
+#        render json: @customers.map{|c| c['Id']}
+#        @customers = results.map {|customer| ["#{customer['FirstName']} #{customer['LastName']}", customer['Id']]}
+        unless @total_accounts_results.blank?
+          @accounts = @total_accounts_results.collect{ |account| {id: account.CustomerID, text: account.customer_user_name} }.uniq
+        else
+          @accounts = nil
+        end
+        Rails.logger.info "results: {#{@accounts}}"
+        render json: {results: @accounts}
+      }
+    end
   end
 
   # GET /accounts/1

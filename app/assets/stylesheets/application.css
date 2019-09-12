@@ -47,3 +47,8 @@
 .field_with_errors input {
   border: 1px solid red;
 }
+
+.nav-pills .nav-link.active, .nav-pills .show .info-box > .nav-link {
+    color: #fff;
+    background-color: #007bff;
+}

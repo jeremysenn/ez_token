@@ -8,11 +8,15 @@
         = current_user.company.name
         %small Dashboard
         - unless @devices.blank?
-          .btn-group
-            - @devices.each do |device|
-              %a.btn{href: root_path(device_id: device.id), class: "#{@device.id == device.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> #{device.description}"}}
-                %i.fa.fa-money
-                = device.description
+          - unless @devices.count > 4
+            .btn-group
+              - @devices.each do |device|
+                %a.btn{href: root_path(device_id: device.id), class: "#{@device.id == device.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> #{device.description}"}}
+                  %i.fa.fa-money
+                  = device.description
+          - else
+            = form_tag root_path, :method => 'get', :class => "form-inline" do
+              = select_tag :device_id, options_for_select(@devices.each.map{|d| [d.description, d.id]}, @device.id), onchange: "this.form.submit();", class: "form-control"
       %ol.breadcrumb
         - if current_user.can_quick_pay_customers?
           %li
@@ -163,7 +167,7 @@
                                   - @device.denoms.each do |denom|
                                     - unless denom.denomination.zero?
                                       %th{:scope => "col"}
-                                        = "Bin #{denom.cassette_id}: "
+                                        = "#{denom.cassette_id}: "
                                         = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
                               %tbody
                                 = render partial: "devices/bin_details", locals: {device: @device}

@@ -62,6 +62,18 @@
               Created
             %p.text-muted
               = @company.CreateDate.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
+            - unless @company.twilio_number.blank?
+              %hr
+              %strong 
+                %i.fa.fa-mobile-phone
+                Twilio Phone
+              %p.text-muted
+                %strong Number
+                = @company.twilio_number.pretty_phone_number
+                %br
+                %strong SID
+                = @company.twilio_number.sid
+              
       .col-md-9
         .box.box-primary
           .box-header.with-border

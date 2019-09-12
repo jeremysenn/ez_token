@@ -1,0 +1,6 @@
+.row
+  .col-md-12
+    %div{class: sms_message.sent_from_company? ? 'pull-right' : 'pull-left'}
+      .card{class: sms_message.sent_from_company? ? 'text-white bg-primary' : 'bg-light'}
+        .card-body= sms_message.body
+      %small.text-muted= sms_message.created_at.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M%p")

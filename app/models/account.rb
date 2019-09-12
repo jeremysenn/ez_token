@@ -25,6 +25,7 @@ class Account < ActiveRecord::Base
   scope :can_be_pulled_by_search, -> { where(Active: true).joins(:account_type).where('AccountTypes.CanBePulledBySearch = ?', 1) }
   scope :can_be_pulled_by_scan, -> { where(Active: true).joins(:account_type).where('AccountTypes.CanBePulledByScan = ?', 1) }
   scope :active, -> { where(Active: 1) }
+  scope :customer, -> { where.not(CustomerID: nil) }
   
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
@@ -727,6 +728,27 @@ class Account < ActiveRecord::Base
       unless self.RoutingNbr.length == 9 and Account.routing_number_check_sum(self.RoutingNbr)
 #      unless self.decrypted_bank_routing_number.length == 9 and Account.routing_number_check_sum(self.decrypted_bank_routing_number)
         errors.add(:error, 'Routing number check sum failed.')
+      end
+    end
+  end
+  
+  def twilio_send_sms_message(body, from_user_id)
+    unless customer.blank? or customer.phone.blank?
+      account_sid = ENV["TWILIO_ACCOUNT_SID"]
+      auth_token = ENV["TWILIO_AUTH_TOKEN"]
+      client = Twilio::REST::Client.new account_sid, auth_token
+      from = account.company.twilio_number.phone_number
+      to = customer.twilio_formated_phone_number
+      begin
+        message = client.messages.create(
+          :from => from,
+          :to => to,
+          :body => body #,
+        )
+        sid = message.sid
+        SmsMessage.create(sid: sid, to: to, from: from, customer_id: customer.id, user_id: from_user_id, company_id: self.CompanyNumber, body: "#{body}")
+      rescue Twilio::REST::RestError => e
+        puts e.message
       end
     end
   end

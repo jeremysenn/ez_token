@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     collection do
       post 'send_sms_message'
     end
+    resources :sms_messages, only: [:index]
   end
   
 #  resources :users
@@ -48,7 +49,12 @@ Rails.application.routes.draw do
       post 'send_payment_from_qr_code_scan'
     end
   end
-  resources :sms_messages
+  resources :sms_messages do 
+    collection do
+      post 'send_text'
+    end
+  end
+  
   resources :payment_batches do
     collection do
       get 'csv_template'
