@@ -13,7 +13,7 @@
               &nbsp;
               = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
                 %i.fa.fa-search
-        - if params[:new_customer_message].blank?
+        - if params[:new_customer_message].blank? and @active_customer.present?
           %div.col-sm-12.col-md-8
             .pull-right
               %a#new_customer_message.btn.btn-default.btn-sm{:href => sms_messages_path(new_customer_message: true), title: 'New Message'}
@@ -215,4 +215,7 @@
 
 
 :javascript
-  $('#messages_box').scrollTop($('#messages_box')[0].scrollHeight);
+  if ($('#messages_box').length) {
+    $('#messages_box').scrollTop($('#messages_box')[0].scrollHeight);
+  }
+  
