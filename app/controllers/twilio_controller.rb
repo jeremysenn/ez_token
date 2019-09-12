@@ -41,9 +41,10 @@ class TwilioController < ApplicationController
     response = Twilio::TwiML::MessagingResponse.new
     response.message do |message|
         if user.blank?
-          if event.blank?
-            message.body("Welcome to EZ Token #{plain_cell_number}! Sorry, we're not able to find an open event with that join code.")
-          else
+#          if event.blank?
+#            message.body("Welcome to EZ Token #{plain_cell_number}! Sorry, we're not able to find an open event with that join code.")
+#          else
+          unless event.blank?
             message.body(event.join_response)
             CreateUserCustomerEventAccountWalletWorker.perform_async(event.id, plain_cell_number)
             ### Put all of this into background process
