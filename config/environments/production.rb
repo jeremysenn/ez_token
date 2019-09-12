@@ -106,4 +106,10 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+  
+  # Action cable access
+  config.action_cable.url = "ws://#{ENV['APPLICATION_HOST']}/cable"
+#  config.action_cable.allowed_request_origins = [/http:\/\//, /https:\/\//]
+  config.action_cable.allowed_request_origins = [/(?:^(http|https):\/\/)?(?:([^.]+)\.)?token.tranact.com/]
+  
 end
