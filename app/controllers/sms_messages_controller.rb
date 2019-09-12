@@ -6,7 +6,7 @@ class SmsMessagesController < ApplicationController
   # GET /sms_messages
   # GET /sms_messages.json
   def index
-    @start_date = params[:start_date] ||= Date.today.to_s
+    @start_date = params[:start_date] ||= Date.today.last_week.to_s
     @end_date = params[:end_date] ||= Date.today.to_s
 #    sms_messages = current_user.company.sms_messages.where(created_at: @start_date.to_date.in_time_zone(current_user.time_zone).beginning_of_day..@end_date.to_date.in_time_zone(current_user.time_zone).end_of_day)
 #    @all_sms_messages = message_records.where(created_at: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
@@ -22,7 +22,8 @@ class SmsMessagesController < ApplicationController
     #else
      # @active_customer = @customers.first unless @customers.blank? or params[:new_customer_message]
     end
-    @sms_messages = @active_customer.sms_messages.where(created_at: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("created_at DESC").page(params[:page]).per(10) unless @active_customer.blank?
+#    @sms_messages = @active_customer.sms_messages.where(created_at: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("created_at ASC").page(params[:page]).per(200) unless @active_customer.blank?
+    @sms_messages = @active_customer.sms_messages.where(created_at: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("created_at ASC") unless @active_customer.blank?
     
     respond_to do |format|
       format.html {

@@ -14,7 +14,9 @@ $(function() {
           },
           {
             received: function(data) {
-              $element.prepend(data);
+              $element.append(data);
+              $('#messages_box').scrollTop($('#messages_box')[0].scrollHeight);
+              //$('#sms_message_box_body').append(data);
 
               //var content = messageTemplate.children().clone(true, true);
               //content.find('[data-role="message-text"]').text(data);

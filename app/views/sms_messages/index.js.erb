@@ -1,4 +1,4 @@
-$('#sms_messages_list').append('<%= j render partial: 'sms_messages/sms_message', collection: @sms_messages %>');
+$('#sms_messages_list').prepend('<%= j render partial: 'sms_messages/sms_message', collection: @sms_messages %>');
 $('#spinner').hide();
 
 <% if @sms_messages.next_page %>

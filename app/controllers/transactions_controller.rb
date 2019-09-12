@@ -46,7 +46,7 @@ class TransactionsController < ApplicationController
       elsif @type == 'Balance'
         @all_transactions = transactions.one_sided_credits
       elsif @type == 'Fee'
-        @all_transactions = transactions.fees
+        @all_transactions = transactions.fees_and_fee_reversals
       elsif @type == 'Check'
         @all_transactions = transactions.checks
       else
@@ -63,11 +63,15 @@ class TransactionsController < ApplicationController
     @transactions_total = 0
     @transactions_fee_total = 0
     @transactions_reversal_total = 0
+    @transaction_fee_reversal_total = 0
     @transactions_count = @all_transactions.count
     @all_transactions.each do |transaction|
       @transactions_total = @transactions_total + transaction.amt_auth unless transaction.reversal? or transaction.amt_auth.blank?
-      @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.reversal? or transaction.ChpFee.blank? or transaction.ChpFee.zero? or transaction.amt_auth.blank?
+      @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.reversal? or transaction.ChpFee.blank? or transaction.ChpFee.zero? or transaction.amt_auth.blank? or transaction.amt_auth.zero?
       @transactions_reversal_total = @transactions_reversal_total + transaction.amt_auth if transaction.reversal? and not (transaction.amt_auth.blank? or transaction.amt_auth.zero?)
+    end
+    @all_transactions.fee_reversals.each do |transaction|
+      @transaction_fee_reversal_total = @transaction_fee_reversal_total + transaction.amt_auth
     end
     @all_transactions = @all_transactions.order("#{transactions_sort_column} #{transactions_sort_direction}")
     @transactions = @all_transactions.page(params[:transactions_page]).per(10)
