@@ -239,65 +239,67 @@
   $('[data-toggle="popover"]').popover();
 
   $(document).on("turbolinks:load", function() {
-    var ctx = document.getElementById("myChart").getContext("2d");
+    if ($('#myChart').length) {
+      var ctx = document.getElementById("myChart").getContext("2d");
 
-    const colors = {
-      green: {
-        fill: '#e0eadf',
-        stroke: '#5eb84d',
-      },
-      lightBlue: {
-        stroke: '#6fccdd',
-      },
-      darkBlue: {
-        fill: '#92bed2',
-        stroke: '#3282bf',
-      },
-      purple: {
-        fill: '#8fa8c8',
-        stroke: '#75539e',
-      },
-    };
+      const colors = {
+        green: {
+          fill: '#e0eadf',
+          stroke: '#5eb84d',
+        },
+        lightBlue: {
+          stroke: '#6fccdd',
+        },
+        darkBlue: {
+          fill: '#92bed2',
+          stroke: '#3282bf',
+        },
+        purple: {
+          fill: '#8fa8c8',
+          stroke: '#75539e',
+        },
+      };
 
-    const transferred = #{@transfers_week_data};
-    const withdrawn = #{@withdrawals_week_data};
-    const xData = #{raw @week_of_dates_data.uniq};
+      const transferred = #{@transfers_week_data};
+      const withdrawn = #{@withdrawals_week_data};
+      const xData = #{raw @week_of_dates_data.uniq};
 
-    const myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: xData,
-        datasets: [{
-          label: "Withdrawn",
-          fill: true,
-          backgroundColor: colors.green.fill,
-          pointBackgroundColor: colors.green.stroke,
-          borderColor: colors.green.stroke,
-          pointHighlightStroke: colors.green.stroke,
-          borderCapStyle: 'butt',
-          data: withdrawn,
-        }, {
-          label: "Transferred",
-          fill: true,
-          backgroundColor: colors.darkBlue.fill,
-          pointBackgroundColor: colors.darkBlue.stroke,
-          borderColor: colors.darkBlue.stroke,
-          pointHighlightStroke: colors.darkBlue.stroke,
-          data: transferred,
-        }]
-      },
-      options: {
-        responsive: true,
-        // Can't just use `stacked: true` like the docs say
-        scales: {
-          yAxes: [{
-            //stacked: true,
-            stacked: false,
+      const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: xData,
+          datasets: [{
+            label: "Withdrawn",
+            fill: true,
+            backgroundColor: colors.green.fill,
+            pointBackgroundColor: colors.green.stroke,
+            borderColor: colors.green.stroke,
+            pointHighlightStroke: colors.green.stroke,
+            borderCapStyle: 'butt',
+            data: withdrawn,
+          }, {
+            label: "Transferred",
+            fill: true,
+            backgroundColor: colors.darkBlue.fill,
+            pointBackgroundColor: colors.darkBlue.stroke,
+            borderColor: colors.darkBlue.stroke,
+            pointHighlightStroke: colors.darkBlue.stroke,
+            data: transferred,
           }]
         },
-        animation: {
-          duration: 750,
-        },
-      }
-    });
+        options: {
+          responsive: true,
+          // Can't just use `stacked: true` like the docs say
+          scales: {
+            yAxes: [{
+              //stacked: true,
+              stacked: false,
+            }]
+          },
+          animation: {
+            duration: 750,
+          },
+        }
+      });
+    }
   });
