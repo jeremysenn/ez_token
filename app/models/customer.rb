@@ -704,7 +704,7 @@ class Customer < ActiveRecord::Base
       account_sid = ENV["TWILIO_ACCOUNT_SID"]
       auth_token = ENV["TWILIO_AUTH_TOKEN"]
       client = Twilio::REST::Client.new account_sid, auth_token
-      from = ENV["FROM_PHONE_NUMBER"]
+      from = user.company.twilio_number.blank? ? ENV["FROM_PHONE_NUMBER"] : user.company.twilio_number.phone_number
       begin
         message = client.messages.create(
           :from => from,
