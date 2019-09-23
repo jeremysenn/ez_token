@@ -67,7 +67,6 @@
                           - if device.bin_8_count != nil
                             %th{:scope => "col"} 8
                         %th{:scope => "col"} Remaining
-                        %th
                     %tbody
                       -# @devices.each do |device|
                       %tr
@@ -90,7 +89,6 @@
                               = device.status_string
                         = render partial: "devices/bin_details", locals: {device: device}
                         %td= number_to_currency(device.remaining)
-                        %td= link_to 'More', device, class: 'btn btn-primary btn-sm'
             .box-footer
               -#
                 .pull-right= paginate @customers, param_name: 'result1'  
