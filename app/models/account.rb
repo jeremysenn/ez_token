@@ -201,8 +201,13 @@ class Account < ActiveRecord::Base
     return transactions
   end
   
+  def cash_deposits
+    transactions = Transaction.where(from_acct_id: id, tran_code: ['DEP', 'DEP '], sec_tran_code: 'TFR', error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['DEP', 'DEP '], sec_tran_code: 'TFR', error_code: 0)
+    return transactions
+  end
+  
   def payment_transactions
-    successful_wire_transactions + ach_credit_transactions + ach_payment_transactions
+    successful_wire_transactions + ach_credit_transactions + ach_payment_transactions + cash_deposits
   end
   
   def displayable_transactions
