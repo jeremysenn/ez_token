@@ -46,7 +46,7 @@
                 - else
                   = transaction.to_account.company.name unless transaction.to_account.blank?
             %td
-              - if transaction.cash_deposit?
+              - if transaction.cash_deposit? or transaction.ach_deposit?
                 = transaction.Description
               - else
                 - unless from_customer.blank?

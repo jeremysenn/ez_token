@@ -382,7 +382,7 @@
                               - else
                                 = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
                             %td
-                              - if payment_transaction.cash_deposit?
+                              - if payment_transaction.cash_deposit? or payment_transaction.ach_deposit?
                                 = payment_transaction.Description
                               - else
                                 - unless payment_transaction.from_account_customer.blank?
