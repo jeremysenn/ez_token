@@ -22,7 +22,11 @@ body {
   font-weight: 400;
   overflow-x: hidden;
   overflow-y: auto;
+  
+  /* For navbar-fixed-top*/
+  padding-top: 75px;
 }
+
 /* Layout */
 .wrapper {
   height: 100%;

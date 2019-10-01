@@ -80,7 +80,7 @@ class Transaction < ActiveRecord::Base
         return "Check Cashed"
       elsif (tran_code.strip == "CHKP" and sec_tran_code.strip == "TFR")
         return "Positive Check Cashed"
-      elsif (tran_code.strip == "CASH" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "CASH" and sec_tran_code.strip == "TFR") or (tran_code.strip == "DEP" and sec_tran_code.strip == "TFR"))
         return "Cash Deposit"
       elsif (tran_code.strip == "MON" and sec_tran_code.strip == "ORD")
         return "Money Order"

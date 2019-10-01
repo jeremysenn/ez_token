@@ -46,10 +46,13 @@
                 - else
                   = transaction.to_account.company.name unless transaction.to_account.blank?
             %td
-              - unless from_customer.blank?
-                = link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
+              - if transaction.cash_deposit?
+                = transaction.Description
               - else
-                = transaction.from_account.company.name unless transaction.from_account.blank?
+                - unless from_customer.blank?
+                  = link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
+                - else
+                  = transaction.from_account.company.name unless transaction.from_account.blank?
             %td= transaction.event.blank? ? 'N/A' : transaction.event.title
             -# %td= "#{transaction.receipt_nbr.blank? ? 'N/A' : transaction.receipt_nbr}"
             %td

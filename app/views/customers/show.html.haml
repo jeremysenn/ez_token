@@ -382,10 +382,13 @@
                               - else
                                 = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
                             %td
-                              - unless payment_transaction.from_account_customer.blank?
-                                = payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
+                              - if payment_transaction.cash_deposit?
+                                = payment_transaction.Description
                               - else
-                                = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
+                                - unless payment_transaction.from_account_customer.blank?
+                                  = payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
+                                - else
+                                  = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
                             %td= number_to_currency(payment_transaction.amt_auth)
                             -#
                               %td
