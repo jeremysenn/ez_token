@@ -67,7 +67,7 @@ class AccountsController < ApplicationController
   # POST /accounts.json
   def create
     @account = Account.new(account_params)
-
+    @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
     respond_to do |format|
       if @account.save
         format.html { redirect_to @account, notice: 'Account was successfully created.' }
@@ -83,6 +83,7 @@ class AccountsController < ApplicationController
   # PATCH/PUT /accounts/1.json
   def update
     respond_to do |format|
+      @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
       if @account.update(account_params)
 #        format.html { redirect_to @account, notice: 'Wallet was successfully updated.' }
         format.html { redirect_to @account.customer, notice: 'Wallet was successfully updated.' }
