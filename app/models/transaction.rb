@@ -80,8 +80,10 @@ class Transaction < ActiveRecord::Base
         return "Check Cashed"
       elsif (tran_code.strip == "CHKP" and sec_tran_code.strip == "TFR")
         return "Positive Check Cashed"
-      elsif (tran_code.strip == "CASH" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "CASH" and sec_tran_code.strip == "TFR") or (tran_code.strip == "DEP" and sec_tran_code.strip == "TFR"))
         return "Cash Deposit"
+      elsif (tran_code.strip == "ACH" and sec_tran_code.strip == "TFR")
+        return "ACH Deposit"
       elsif (tran_code.strip == "MON" and sec_tran_code.strip == "ORD")
         return "Money Order"
       elsif (tran_code.strip == "WDL" and (sec_tran_code.blank? or sec_tran_code.strip == "TFR"))
@@ -166,6 +168,10 @@ class Transaction < ActiveRecord::Base
   
   def cash_deposit?
     type == "Cash Deposit"
+  end
+  
+  def ach_deposit?
+    type == "ACH Deposit"
   end
   
   def purchase?
