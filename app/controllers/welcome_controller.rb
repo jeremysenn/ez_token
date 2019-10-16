@@ -126,9 +126,10 @@ class WelcomeController < ApplicationController
         @week_of_dates_data = (@start_date.to_date..@end_date.to_date).map{ |date| date.strftime('%-m/%-d') }
         
       elsif current_user.basic?
-        if current_user.accounts.count == 1
-          redirect_to customer_path(current_user.customer)
-        end
+        redirect_to customer_path(current_user.customer)
+#        if current_user.accounts.count == 1
+#          redirect_to customer_path(current_user.customer)
+#        end
       end
     end
   end
