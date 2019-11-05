@@ -30,47 +30,50 @@
           %strong.pull-right= "Total: #{number_to_currency(@balances_sum)}"
 
         .box-body.no-padding
-          .table-responsive
-            %table.table.table-striped.table-condensed
-              %thead
-                %tr
-                  %th ID
-                  %th First
-                  %th Last
-                  %th Type
-                  %th Event
-                  %th Balance
-                  %th
-              %tbody
-                - @accounts.each do |account|
-                  %tr{class: account.active? ? '' : 'table-danger'}
-                    %td= account.id
-                    %td
-                      - unless account.customer.blank? 
-                        = link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
-                      - else
-                        None
-                    %td
-                      - unless account.customer.blank? 
-                        = link_to "#{account.customer.last_name.blank? ? '' : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
-                      - else
-                        None
-                    %td= account.account_type.description
-                    %td
-                      - unless account.events.blank?
-                        - account.events.each do |event|
-                          = link_to "#{event.title}#{event != account.events.last ? ', ' : ''}", event
-                      - else
-                        None
-                    %td
-                      - unless account.MinBalance.blank? or account.MinBalance.zero?
-                        %span.btn.btn-info.btn-sm{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
+          - unless @accounts.blank?
+            .table-responsive
+              %table.table.table-striped.table-condensed
+                %thead
+                  %tr
+                    %th ID
+                    %th First
+                    %th Last
+                    %th Type
+                    %th Event
+                    %th Balance
+                    %th
+                %tbody
+                  - @accounts.each do |account|
+                    %tr{class: account.active? ? '' : 'table-danger'}
+                      %td= account.id
+                      %td
+                        - unless account.customer.blank? 
+                          = link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
+                        - else
+                          None
+                      %td
+                        - unless account.customer.blank? 
+                          = link_to "#{account.customer.last_name.blank? ? '' : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
+                        - else
+                          None
+                      %td= account.account_type.description
+                      %td
+                        - unless account.events.blank?
+                          - account.events.each do |event|
+                            = link_to "#{event.title}#{event != account.events.last ? ', ' : ''}", event
+                        - else
+                          None
+                      %td
+                        - unless account.MinBalance.blank? or account.MinBalance.zero?
+                          %span.btn.btn-info.btn-sm{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
+                            = number_to_currency(account.Balance)
+                        - else
                           = number_to_currency(account.Balance)
-                      - else
-                        = number_to_currency(account.Balance)
-                    %td
-                      = link_to "Show", account, class: 'btn btn-default btn-sm'
-                      =# link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
+                      %td
+                        = link_to "Show", account, class: 'btn btn-default btn-sm'
+                        =# link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
+          - else
+            %h3.text-center None found
                     
         .box-footer
           .pull-right= paginate @accounts
