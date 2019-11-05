@@ -201,10 +201,10 @@ class Device < ActiveRecord::Base
   ### End - bill_count records ###
   
   def bin_1_count
-    start = bill_count_1.host_start_count ||= 0
-    added = bill_count_1.added_count ||= 0
-    host_cycle = bill_count_1.host_cycle_count ||= 0
     unless bill_count_1.blank?
+      start = bill_count_1.host_start_count ||= 0
+      added = bill_count_1.added_count ||= 0
+      host_cycle = bill_count_1.host_cycle_count ||= 0
       start + added - host_cycle
     else
       return nil
@@ -212,10 +212,10 @@ class Device < ActiveRecord::Base
   end
   
   def bin_2_count
-    start = bill_count_2.host_start_count ||= 0
-    added = bill_count_2.added_count ||= 0
-    host_cycle = bill_count_2.host_cycle_count ||= 0
     unless bill_count_2.blank?
+      start = bill_count_2.host_start_count ||= 0
+      added = bill_count_2.added_count ||= 0
+      host_cycle = bill_count_2.host_cycle_count ||= 0
       start + added - host_cycle
     else
       return nil
@@ -223,10 +223,10 @@ class Device < ActiveRecord::Base
   end
   
   def bin_3_count
-    start = bill_count_3.host_start_count ||= 0
-    added = bill_count_3.added_count ||= 0
-    host_cycle = bill_count_3.host_cycle_count ||= 0
     unless bill_count_3.blank?
+      start = bill_count_3.host_start_count ||= 0
+      added = bill_count_3.added_count ||= 0
+      host_cycle = bill_count_3.host_cycle_count ||= 0
       start + added - host_cycle
     else
       return nil
@@ -234,10 +234,10 @@ class Device < ActiveRecord::Base
   end
   
   def bin_4_count
-    start = bill_count_4.host_start_count ||= 0
-    added = bill_count_4.added_count ||= 0
-    host_cycle = bill_count_4.host_cycle_count ||= 0
     unless bill_count_4.blank?
+      start = bill_count_4.host_start_count ||= 0
+      added = bill_count_4.added_count ||= 0
+      host_cycle = bill_count_4.host_cycle_count ||= 0
       start + added - host_cycle
     else
       return nil
@@ -245,10 +245,10 @@ class Device < ActiveRecord::Base
   end
   
   def bin_5_count
-    start = bill_count_5.host_start_count ||= 0
-    added = bill_count_5.added_count ||= 0
-    host_cycle = bill_count_5.host_cycle_count ||= 0
     unless bill_count_5.blank?
+      start = bill_count_5.host_start_count ||= 0
+      added = bill_count_5.added_count ||= 0
+      host_cycle = bill_count_5.host_cycle_count ||= 0
       start + added - host_cycle
     else
       return nil
@@ -256,10 +256,10 @@ class Device < ActiveRecord::Base
   end
   
   def bin_6_count
-    start = bill_count_6.host_start_count ||= 0
-    added = bill_count_6.added_count ||= 0
-    host_cycle = bill_count_6.host_cycle_count ||= 0
     unless bill_count_6.blank?
+      start = bill_count_6.host_start_count ||= 0
+      added = bill_count_6.added_count ||= 0
+      host_cycle = bill_count_6.host_cycle_count ||= 0
       start + added - host_cycle
     else
       return nil
@@ -267,10 +267,10 @@ class Device < ActiveRecord::Base
   end
   
   def bin_7_count
-    start = bill_count_7.host_start_count ||= 0
-    added = bill_count_7.added_count ||= 0
-    host_cycle = bill_count_7.host_cycle_count ||= 0
     unless bill_count_7.blank?
+      start = bill_count_7.host_start_count ||= 0
+      added = bill_count_7.added_count ||= 0
+      host_cycle = bill_count_7.host_cycle_count ||= 0
       start + added - host_cycle
     else
       return nil
@@ -278,10 +278,10 @@ class Device < ActiveRecord::Base
   end
   
   def bin_8_count
-    start = bill_count_8.host_start_count ||= 0
-    added = bill_count_8.added_count ||= 0
-    host_cycle = bill_count_8.host_cycle_count ||= 0
     unless bill_count_8.blank?
+      start = bill_count_8.host_start_count ||= 0
+      added = bill_count_8.added_count ||= 0
+      host_cycle = bill_count_8.host_cycle_count ||= 0
       start + added - host_cycle
     else
       return nil
@@ -289,10 +289,10 @@ class Device < ActiveRecord::Base
   end
   
   def bin_a_count # Cash acceptor
-    start = bill_count_a.host_start_count ||= 0
-    added = bill_count_a.added_count ||= 0
-    host_cycle = bill_count_a.host_cycle_count ||= 0
     unless bill_count_a.blank?
+      start = bill_count_a.host_start_count ||= 0
+      added = bill_count_a.added_count ||= 0
+      host_cycle = bill_count_a.host_cycle_count ||= 0
       start + added - host_cycle
     else
       return nil

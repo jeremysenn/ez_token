@@ -1,0 +1,79 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        Accounts with Balances
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+            = form_tag balances_accounts_path, :method => 'get', :class => "form-inline" do
+              -#
+                = select_tag :active, options_for_select([["Active",1], ["Inactive",0]], params[:active]), prompt: 'Active & Inactive', class: "form-control"
+                &nbsp;
+              = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
+              &nbsp;
+              = select_tag :type_id, options_from_collection_for_select(@account_types, "id", "description", @type_id), prompt: 'All types', class: "form-control"
+              -#
+                &nbsp;
+                = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control"
+              &nbsp;
+              = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                %i.fa.fa-search
+          .box-tools.pull-left
+          %small.text-muted
+            = "#{pluralize(number_with_delimiter(@total_accounts_results.count), 'account')} found"
+          %strong.pull-right= "Total: #{number_to_currency(@balances_sum)}"
+
+        .box-body.no-padding
+          .table-responsive
+            %table.table.table-striped.table-condensed
+              %thead
+                %tr
+                  %th ID
+                  %th First
+                  %th Last
+                  %th Type
+                  %th Event
+                  %th Balance
+                  %th
+              %tbody
+                - @accounts.each do |account|
+                  %tr{class: account.active? ? '' : 'table-danger'}
+                    %td= account.id
+                    %td
+                      - unless account.customer.blank? 
+                        = link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
+                      - else
+                        None
+                    %td
+                      - unless account.customer.blank? 
+                        = link_to "#{account.customer.last_name.blank? ? '' : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
+                      - else
+                        None
+                    %td= account.account_type.description
+                    %td
+                      - unless account.events.blank?
+                        - account.events.each do |event|
+                          = link_to "#{event.title}#{event != account.events.last ? ', ' : ''}", event
+                      - else
+                        None
+                    %td
+                      - unless account.MinBalance.blank? or account.MinBalance.zero?
+                        %span.btn.btn-info.btn-sm{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
+                          = number_to_currency(account.Balance)
+                      - else
+                        = number_to_currency(account.Balance)
+                    %td
+                      = link_to "Show", account, class: 'btn btn-default btn-sm'
+                      =# link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
+                    
+        .box-footer
+          .pull-right= paginate @accounts
+
+:javascript
+  $('[data-toggle="tooltip"]').tooltip({html: true});
