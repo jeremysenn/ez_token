@@ -119,6 +119,9 @@
             %a.dropdown-item{:href => fine_print_path}
               %i.fa.fa-handshake-o
               Contracts
+            %a.dropdown-item{:href => balances_accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'balances') ?  "active" : ""}
+              %i.fa.fa-dollar
+              Balances
           - unless current_user.company.twilio_number.blank?
             %a.dropdown-item{:href => sms_messages_path, :class => (params[:controller] == 'sms_messages') ?  "active" : ""}
               %i.fa.fa-commenting
