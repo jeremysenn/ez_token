@@ -218,23 +218,13 @@ class AccountsController < ApplicationController
       @balances_sum = @balances_sum + a.Balance
     end
     
-#    account_records = current_user.super? ? Account.all : current_user.company.accounts
-#    @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
-#    @total_accounts_results = @total_accounts_results.joins(:customer).order("customer.NameL ASC")
-#    @accounts = @total_accounts_results.page(params[:page]).per(20)
-#    @total_accounts = account_records.where("Balance > ?", 0)
-#    @accounts = @total_accounts.page(params[:page]).per(20)
-#    @balances_sum = 0
-#    @total_accounts.each do |a|
-#      @balances_sum = @balances_sum + a.Balance
-#    end
     respond_to do |format|
       format.html {}
       format.json {
         render json: {results: @accounts}
       }
-      format.csv {
-        
+      format.csv { 
+        send_data @total_accounts_results.to_csv, filename: "accounts-with-balances-#{Time.now}.csv" 
       }
     end
   end

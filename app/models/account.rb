@@ -93,6 +93,10 @@ class Account < ActiveRecord::Base
     return "#{customer_user_name} (#{events.blank? ? 'No events' : events.map(&:title).join(', ')})"
   end
   
+  def events_list
+    return "#{events.blank? ? 'No events' : events.map(&:title).join(', ')}"
+  end
+  
   def transactions
 #    transactions = Transaction.where(from_acct_id: decrypted_account_number) + Transaction.where(to_acct_id: decrypted_account_number)
     transactions = Transaction.where(from_acct_id: id).or(Transaction.where(to_acct_id: id))
@@ -794,7 +798,7 @@ class Account < ActiveRecord::Base
   
   def self.to_csv
     require 'csv'
-    attributes = %w{first_name last_name balance}
+    attributes = %w{first_name last_name description events_list balance}
     
     CSV.generate(headers: true) do |csv|
       csv << attributes

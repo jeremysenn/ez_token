@@ -12,6 +12,11 @@
         .box-header.with-border
           %h3.box-title 
             = form_tag balances_accounts_path, :method => 'get', :class => "form-inline" do
+              - unless @accounts.blank? or browser.device.mobile?
+                %a{href: balances_accounts_path(format: "csv", :event_id => @event_id, :type_id => @type_id), class: 'btn btn-sm btn-info'}
+                  %i.fa.fa-download
+                  CSV
+                &nbsp;
               -#
                 = select_tag :active, options_for_select([["Active",1], ["Inactive",0]], params[:active]), prompt: 'Active & Inactive', class: "form-control"
                 &nbsp;
