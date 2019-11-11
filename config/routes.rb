@@ -90,6 +90,7 @@ Rails.application.routes.draw do
     collection do
       post 'twilio_send_sms_message'
       get 'balances'
+      get 'bill_members'
     end
   end
   

@@ -820,4 +820,17 @@ class Account < ActiveRecord::Base
             ) % 10
   end
   
+  def self.bill_members(event_id, club_account_id, run_transactions_boolean)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:bill_members, message: { EventID: event_id, ClubActID: club_account_id, RunTransactions: run_transactions_boolean})
+    
+    Rails.logger.debug "Account.bill_members response body: #{response.body}"
+    
+    unless response.body[:bill_members_response].blank? or response.body[:bill_members_response][:return].blank?
+      return response.body[:bill_members_response][:return]
+    else
+      return nil
+    end
+  end
+  
 end

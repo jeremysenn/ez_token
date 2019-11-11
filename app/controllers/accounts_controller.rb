@@ -199,6 +199,7 @@ class AccountsController < ApplicationController
   
   # GET /accounts/balances
   # GET /accounts/balances.json
+  # GET /accounts/balances.csv
   def balances
     @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
     @account_types = current_user.super? ? AccountType.all : current_user.company.account_types
@@ -207,6 +208,7 @@ class AccountsController < ApplicationController
     end
     unless @events.blank?
       @event_id = params[:event_id] #||= @events.first.id
+      @event = Event.find(@event_id) unless @event_id.blank?
     end
     account_records = current_user.super? ? Account.all : current_user.company.accounts.where("Balance > ?", 0)
     accounts = @type_id.blank? ? account_records : account_records.where(ActTypeID: @type_id)
@@ -225,6 +227,29 @@ class AccountsController < ApplicationController
       }
       format.csv { 
         send_data @total_accounts_results.to_csv, filename: "accounts-with-balances-#{Time.now}.csv" 
+      }
+    end
+  end
+  
+  # GET /accounts/bill_members
+  def bill_members
+    respond_to do |format|
+      format.html {
+        events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
+        unless params[:event_id].blank? or params[:club_account_id].blank? or params[:run_transactions_boolean].blank?
+          event = events.find(params[:event_id])
+          if current_user.company.TxnActID and current_user.company.TxnActID.to_s == params[:club_account_id] and not event.blank?
+            if Account.bill_members(params[:event_id], params[:club_account_id], params[:run_transactions_boolean])
+              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), notice: 'BillMembers successfully called.'
+            else
+              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers.'
+            end
+          else
+            redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers.'
+          end
+        else
+          redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers - missing parameters.'
+        end
       }
     end
   end
