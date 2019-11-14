@@ -36,7 +36,7 @@
             = "Total: #{number_to_currency(@balances_sum)}"
             - if current_user.admin? and not @accounts.blank? and not @event_id.blank? and @type_id == '1' and not current_user.company.TxnActID.blank?
               %br
-              = link_to "<i class='fa fa-calendar-check-o'></i> Bill Members".html_safe, bill_members_accounts_path(event_id: @event_id, club_account_id: current_user.company.TxnActID, run_transactions_boolean: 1, type_id: @type_id), class: 'btn bg-orange btn-sm', data: { confirm: "Are you sure you want to bill all #{@event.blank? ? '' : @event.title} members with a balance?" }
+              = link_to "<i class='fa fa-calendar-check-o'></i> Bill Members".html_safe, bill_members_accounts_path(event_id: @event_id, club_account_id: current_user.company.TxnActID, run_transactions_boolean: 1, type_id: @type_id), class: 'btn bg-orange btn-sm', data: { confirm: "Are you sure you want to bill all #{@event.blank? ? '' : @event.title} members with a balance?", disable_with: "<i class='fa fa-spinner fa-spin'></i> Bill Members" }
 
         .box-body.no-padding
           - unless @accounts.blank?
