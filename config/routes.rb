@@ -100,6 +100,8 @@ Rails.application.routes.draw do
   
   resources :companies
   
+  resources :ach_logs
+  
   mount FinePrint::Engine => "/fine_print"
   
 end

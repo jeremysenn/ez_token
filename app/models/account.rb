@@ -827,7 +827,8 @@ class Account < ActiveRecord::Base
     Rails.logger.debug "Account.bill_members response body: #{response.body}"
     
     unless response.body[:bill_members_response].blank? or response.body[:bill_members_response][:return].blank?
-      return response.body[:bill_members_response][:return]
+#      return response.body[:bill_members_response][:return]
+      return response.body[:bill_members_response]
     else
       return nil
     end

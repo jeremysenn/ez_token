@@ -239,8 +239,11 @@ class AccountsController < ApplicationController
         unless params[:event_id].blank? or params[:club_account_id].blank? or params[:run_transactions_boolean].blank?
           event = events.find(params[:event_id])
           if current_user.company.TxnActID and current_user.company.TxnActID.to_s == params[:club_account_id] and not event.blank?
-            if Account.bill_members(params[:event_id], params[:club_account_id], params[:run_transactions_boolean])
-              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), notice: 'BillMembers successfully called.'
+            bill_members_response = Account.bill_members(params[:event_id], params[:club_account_id], params[:run_transactions_boolean])
+            if bill_members_response
+              club_report_id = bill_members_response[:club_report_id]
+              details_report_id = bill_members_response[:details_report_id]
+              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id], club_report_id: club_report_id, details_report_id: details_report_id), notice: 'BillMembers successfully called.'
             else
               redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers.'
             end

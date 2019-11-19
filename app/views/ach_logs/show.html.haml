@@ -1,0 +1,40 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        ACH Log
+        %small= number_to_currency(@ach_log.Total) unless @ach_log.Total.blank?
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+            = "#{@ach_log.CreateDate.strftime('%-m/%-d/%y %l:%M %p')} Eastern"
+          .box-tools.pull-right
+            
+        .box-body
+          %p.lead
+            Event:
+            = link_to @ach_log.event.title, @ach_log.event unless @ach_log.event.blank?
+          %p.lead
+            - unless @ach_log.decoded_csv_report.blank?
+              .table-responsive
+                %table.table
+                  - CSV.parse(@ach_log.decoded_csv_report).each_with_index do |row, index|
+                    - if index == 0
+                      %tr
+                        - row.each do |element|
+                          %th= element
+                    - else
+                      %tr
+                        - row.each do |element|
+                          %td= element
+            
+        .box-footer
+          = link_to 'Back', :back, class: 'btn btn-default'
+          %a{href: ach_log_path(format: "csv"), class: 'btn btn-info'}
+            %i.fa.fa-download
+            Download 

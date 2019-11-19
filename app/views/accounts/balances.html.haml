@@ -5,6 +5,12 @@
       = render 'shared/flash_messages'
       %h1
         Accounts with Negative Balances
+      - unless params[:club_report_id].blank?
+        %br
+        .alert.alert-dark{:role => "alert"}
+          View and download the report by going
+          = link_to 'here', ach_log_path(params[:club_report_id])
+
     / Main content
     %section.content
       / Default box
