@@ -7,6 +7,7 @@ class AchLogsController < ApplicationController
     @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
     @start_date = params[:start_date].blank? ? Date.today.last_week.to_s : params[:start_date]
     @end_date = params[:end_date].blank? ? Date.today.to_s : params[:end_date]
+    @type = params[:type].blank? ? 1 : params[:type]
     
     if current_user.collaborator?
       if params[:event_id].blank?
@@ -19,7 +20,7 @@ class AchLogsController < ApplicationController
     else
       @event_id = params[:event_id]
     end
-    @ach_logs= @event_id.blank? ? current_user.company.ach_logs.where(CreateDate: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("CreateDate DESC") : current_user.company.ach_logs.where(event_id: @event_id, CreateDate: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("CreateDate DESC")
+    @ach_logs= @event_id.blank? ? current_user.company.ach_logs.where(IsClubCSV: @type, CreateDate: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("CreateDate DESC") : current_user.company.ach_logs.where(IsClubCSV: @type, event_id: @event_id, CreateDate: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("CreateDate DESC")
   end
   
   def show
