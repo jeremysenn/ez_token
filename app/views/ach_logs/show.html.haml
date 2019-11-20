@@ -4,6 +4,7 @@
     %section.content-header
       = render 'shared/flash_messages'
       %h1
+        %i.fa.fa-exchange
         ACH Log
         %small= number_to_currency(@ach_log.Total) unless @ach_log.Total.blank?
     / Main content
