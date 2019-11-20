@@ -8,8 +8,13 @@
       - unless params[:club_report_id].blank?
         %br
         .alert.alert-dark{:role => "alert"}
-          View and download the report by going
-          = link_to 'here', ach_log_path(params[:club_report_id])
+          - unless params[:club_report_id].blank?
+            View and download the <b>club report</b> by going
+            = link_to 'here.', ach_log_path(params[:club_report_id])
+          - unless params[:details_report_id].blank?
+            %br
+            View and download the <b>details report</b> by going
+            = link_to 'here.', ach_log_path(params[:details_report_id])
 
     / Main content
     %section.content
