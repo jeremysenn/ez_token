@@ -15,7 +15,7 @@
           %h3.box-title 
             = "#{@ach_log.CreateDate.strftime('%-m/%-d/%y %l:%M %p')} Eastern"
           .box-tools.pull-right
-            
+            = ach_log_type_string(@ach_log.IsClubCSV.to_s) unless @ach_log.IsClubCSV.blank?
         .box-body
           %p.lead
             Event:

@@ -64,7 +64,7 @@
                   - @ach_logs.each do |ach_log|
                     %tr
                       %td= ach_log.CreateDate.strftime("%-m/%-d/%y")
-                      %td= ach_log.IsClubCSV
+                      %td= ach_log_type_string(ach_log.IsClubCSV.to_s) unless ach_log.IsClubCSV.blank?
                       %td= link_to ach_log.event.title, ach_log.event unless ach_log.event.blank?
                       %td= ach_log.NumItems
                       %td= number_to_currency(ach_log.Total) unless ach_log.Total.blank?
