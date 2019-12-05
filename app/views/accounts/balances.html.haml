@@ -79,7 +79,7 @@
                           = link_to "#{account.customer.last_name.blank? ? '' : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
                         - else
                           None
-                      %td= account.account_type.description
+                      %td= account.account_type.description unless account.account_typ.blank?
                       %td
                         - unless account.events.blank?
                           - account.events.each do |event|
