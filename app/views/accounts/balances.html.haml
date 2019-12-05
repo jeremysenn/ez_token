@@ -4,7 +4,7 @@
     %section.content-header
       = render 'shared/flash_messages'
       %h1
-        Accounts with Negative Balances
+        Accounts with Balances
       - unless params[:club_report_id].blank?
         %br
         .alert.alert-dark{:role => "alert"}
@@ -24,7 +24,7 @@
           %h3.box-title 
             = form_tag balances_accounts_path, :method => 'get', :class => "form-inline" do
               - unless @accounts.blank? or browser.device.mobile?
-                %a{href: balances_accounts_path(format: "csv", :event_id => @event_id, :type_id => @type_id), class: 'btn btn-sm btn-info'}
+                %a{href: balances_accounts_path(format: "csv", :event_id => @event_id, :type_id => @type_id, :sign => @sign), class: 'btn btn-sm btn-info'}
                   %i.fa.fa-download
                   CSV
                 &nbsp;
@@ -38,6 +38,8 @@
                 &nbsp;
                 = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control"
               &nbsp;
+              = select_tag :sign, options_for_select(["Negative", "Positive"], params[:sign]), class: "form-control"
+              &nbsp;
               = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
                 %i.fa.fa-search
           .box-tools.pull-left
@@ -45,9 +47,10 @@
             = "#{pluralize(number_with_delimiter(@total_accounts_results.count), 'account')} found"
           %strong.pull-right
             = "Total: #{number_to_currency(@balances_sum)}"
-            - if current_user.admin? and not @accounts.blank? and not @event_id.blank? and @type_id == '1' and not current_user.company.TxnActID.blank?
-              %br
-              = link_to "<i class='fa fa-calendar-check-o'></i> Bill Members".html_safe, bill_members_accounts_path(event_id: @event_id, club_account_id: current_user.company.TxnActID, run_transactions_boolean: 1, type_id: @type_id), class: 'btn bg-orange btn-sm', data: { confirm: "Are you sure you want to bill all #{@event.blank? ? '' : @event.title} members with a balance?", disable_with: "<i class='fa fa-spinner fa-spin'></i> Bill Members" }
+            -#
+              - if current_user.admin? and not @accounts.blank? and not @event_id.blank? and @type_id == '1' and not current_user.company.TxnActID.blank?
+                %br
+                = link_to "<i class='fa fa-calendar-check-o'></i> Bill Members".html_safe, bill_members_accounts_path(event_id: @event_id, club_account_id: current_user.company.TxnActID, run_transactions_boolean: 1, type_id: @type_id), class: 'btn bg-orange btn-sm', data: { confirm: "Are you sure you want to bill all #{@event.blank? ? '' : @event.title} members with a balance?", disable_with: "<i class='fa fa-spinner fa-spin'></i> Bill Members" }
 
         .box-body.no-padding
           - unless @accounts.blank?
