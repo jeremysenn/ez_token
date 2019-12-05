@@ -124,6 +124,12 @@ class Ability
         can :create, Company
       end
       
+      # ACH Logs
+      ############
+      can :manage, AchLog do |ach_log|
+        ach_log.company == user.company
+      end
+      
     elsif user.collaborator?
       
       # Customers

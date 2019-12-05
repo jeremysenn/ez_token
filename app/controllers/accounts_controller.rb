@@ -196,6 +196,68 @@ class AccountsController < ApplicationController
       }
     end
   end
+  
+  # GET /accounts/balances
+  # GET /accounts/balances.json
+  # GET /accounts/balances.csv
+  def balances
+    @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
+    @account_types = current_user.super? ? AccountType.all : current_user.company.account_types
+    @sign = params[:sign].blank? ? 'Negative' : params[:sign]
+    unless @account_types.blank?
+      @type_id = params[:type_id]
+    end
+    unless @events.blank?
+      @event_id = params[:event_id] #||= @events.first.id
+      @event = Event.find(@event_id) unless @event_id.blank?
+    end
+    account_records = current_user.super? ? (@sign == 'Negative' ? Account.where("Balance < ?", 0) : Account.where("Balance > ?", 0)) : (@sign == 'Negative' ? current_user.company.accounts.where("Balance < ?", 0) : current_user.company.accounts.where("Balance > ?", 0))
+    accounts = @type_id.blank? ? account_records : account_records.where(ActTypeID: @type_id)
+    @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
+#    @total_accounts_results = @total_accounts_results.joins(:customer).order("customer.NameL ASC")
+    @total_accounts_results = @total_accounts_results.order("ActTypeID ASC")
+    @accounts = @total_accounts_results.page(params[:page]).per(20)
+    @balances_sum = 0
+    @total_accounts_results.each do |a|
+      @balances_sum = @balances_sum + a.Balance
+    end
+    
+    respond_to do |format|
+      format.html {}
+      format.json {
+        render json: {results: @accounts}
+      }
+      format.csv { 
+        send_data @total_accounts_results.to_csv, filename: "accounts-with-balances-#{Time.now}.csv" 
+      }
+    end
+  end
+  
+  # GET /accounts/bill_members
+  def bill_members
+    respond_to do |format|
+      format.html {
+        events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
+        unless params[:event_id].blank? or params[:club_account_id].blank? or params[:run_transactions_boolean].blank?
+          event = events.find(params[:event_id])
+          if current_user.company.TxnActID and current_user.company.TxnActID.to_s == params[:club_account_id] and not event.blank?
+            bill_members_response = Account.bill_members(params[:event_id], params[:club_account_id], params[:run_transactions_boolean])
+            if bill_members_response
+              club_report_id = bill_members_response[:club_report_id]
+              details_report_id = bill_members_response[:details_report_id]
+              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id], club_report_id: club_report_id, details_report_id: details_report_id), notice: 'BillMembers successfully called.'
+            else
+              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers.'
+            end
+          else
+            redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers.'
+          end
+        else
+          redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers - missing parameters.'
+        end
+      }
+    end
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.

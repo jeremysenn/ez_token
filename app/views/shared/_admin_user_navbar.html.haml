@@ -118,6 +118,12 @@
             %a.dropdown-item{:href => fine_print_path}
               %i.fa.fa-handshake-o
               Contracts
+            %a.dropdown-item{:href => balances_accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'balances') ?  "active" : ""}
+              %i.fa.fa-dollar
+              Balances
+            %a.dropdown-item{:href => ach_logs_path, :class => (params[:controller] == 'ach_logs' and params[:action] == 'index') ?  "active" : ""}
+              %i.fa.fa-exchange
+              ACH Logs
           - unless current_user.company.twilio_number.blank?
             %a.dropdown-item{:href => sms_messages_path, :class => (params[:controller] == 'sms_messages') ?  "active" : ""}
               %i.fa.fa-commenting

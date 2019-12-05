@@ -89,6 +89,8 @@ Rails.application.routes.draw do
     end
     collection do
       post 'twilio_send_sms_message'
+      get 'balances'
+      get 'bill_members'
     end
   end
   
@@ -97,6 +99,8 @@ Rails.application.routes.draw do
   resources :groups
   
   resources :companies
+  
+  resources :ach_logs
   
   mount FinePrint::Engine => "/fine_print"
   

@@ -93,6 +93,10 @@ class Account < ActiveRecord::Base
     return "#{customer_user_name} (#{events.blank? ? 'No events' : events.map(&:title).join(', ')})"
   end
   
+  def events_list
+    return "#{events.blank? ? 'No events' : events.map(&:title).join(', ')}"
+  end
+  
   def transactions
 #    transactions = Transaction.where(from_acct_id: decrypted_account_number) + Transaction.where(to_acct_id: decrypted_account_number)
     transactions = Transaction.where(from_acct_id: id).or(Transaction.where(to_acct_id: id))
@@ -794,7 +798,7 @@ class Account < ActiveRecord::Base
   
   def self.to_csv
     require 'csv'
-    attributes = %w{first_name last_name balance}
+    attributes = %w{first_name last_name description events_list balance}
     
     CSV.generate(headers: true) do |csv|
       csv << attributes
@@ -814,6 +818,20 @@ class Account < ActiveRecord::Base
              3 * (d[1] + d[4] + d[7]) +
              9 * (d[2] + d[5])
             ) % 10
+  end
+  
+  def self.bill_members(event_id, club_account_id, run_transactions_boolean)
+    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+    response = client.call(:bill_members, message: { EventID: event_id, ClubActID: club_account_id, RunTransactions: run_transactions_boolean})
+    
+    Rails.logger.debug "Account.bill_members response body: #{response.body}"
+    
+    unless response.body[:bill_members_response].blank? or response.body[:bill_members_response][:return].blank?
+#      return response.body[:bill_members_response][:return]
+      return response.body[:bill_members_response]
+    else
+      return nil
+    end
   end
   
 end
