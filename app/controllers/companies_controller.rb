@@ -93,6 +93,7 @@ class CompaniesController < ApplicationController
 #    end
     
     def company_params
-      params.fetch(:company, {}).permit(:CompanyName, :TxnActID, :FeeActID, :can_quick_pay, :quick_pay_account_type_id, :transaction_account_minimum_balance)
+      params.fetch(:company, {}).permit(:CompanyName, :TxnActID, :FeeActID, 
+        :can_quick_pay, :quick_pay_account_type_id, :transaction_account_minimum_balance, :CashierActID)
     end
 end

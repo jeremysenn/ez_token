@@ -182,6 +182,14 @@ class Ability
         end
       end
       
+      if user.edit_accounts?
+        # ACH Logs
+        ############
+        can :manage, AchLog do |ach_log|
+          ach_log.company == user.company
+        end
+      end
+      
       # Users
       ############
       
