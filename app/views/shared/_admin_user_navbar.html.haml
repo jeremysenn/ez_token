@@ -118,6 +118,7 @@
             %a.dropdown-item{:href => fine_print_path}
               %i.fa.fa-handshake-o
               Contracts
+          - if current_user.can_edit_accounts?
             %a.dropdown-item{:href => balances_accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'balances') ?  "active" : ""}
               %i.fa.fa-dollar
               Balances

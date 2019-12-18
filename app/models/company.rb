@@ -73,6 +73,10 @@ class Company < ActiveRecord::Base
     accounts.where.not(CustomerID: nil).left_outer_joins(:events).where("events.expire_accounts = 0 OR events.expire_accounts IS NULL OR events.id IS NULL").joins(:customer).order("customer.NameF")
   end
   
+  def cashier_account
+    accounts.find_by(ActID: self.CashierActID)
+  end
+  
   def perform_one_sided_credit_transaction(amount)
     unless account.blank?
       transaction_id = account.ezcash_one_sided_credit_transaction_web_service_call(amount) 

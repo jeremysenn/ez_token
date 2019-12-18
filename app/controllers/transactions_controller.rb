@@ -305,7 +305,8 @@ class TransactionsController < ApplicationController
       end
     end
     unless @transaction.blank?
-      redirect_back fallback_location: root_path, notice: "Payment sent. Transaction ID #{@transaction.id}"
+#      redirect_back fallback_location: root_path, notice: "Payment sent. Transaction ID #{@transaction.id}"
+      redirect_to customer_path(@transaction.custID), notice: "Payment sent. Transaction ID #{@transaction.id}"
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
       redirect_back fallback_location: root_path, alert: "There was a problem creating the payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
