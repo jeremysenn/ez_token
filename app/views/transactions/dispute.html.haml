@@ -43,6 +43,10 @@
             %p.lead
               From:
               = @from_customer.user.blank? ? @from_customer.full_name : @from_customer.user.full_name
+          - unless @transaction.Note.blank?
+            %p.lead
+              Note:
+              = @transaction.Note
           -#
             %p.lead
               From Account:

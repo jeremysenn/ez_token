@@ -49,7 +49,10 @@
                       .box-body
                         %p.lead
                           %strong Phone:
-                          = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
+                          - unless @event.company.blank? or @event.company.twilio_number.blank?
+                            = @event.company.twilio_number.pretty_phone_number
+                          - else
+                            = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
                         %p.lead
                           %strong Join Code:
                           = @event.join_code

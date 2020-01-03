@@ -29,198 +29,207 @@
                 Original Transaction:
                 = link_to @original_transaction.id, @original_transaction
         .box-body
-          %p.lead
-            Company:
-            = @transaction.company.CompanyName unless @transaction.company.blank?
-          %p.lead
-            To:
-            - unless @to_customer.blank?
-              = link_to @to_customer.identity, customer_path(@to_customer, account_id: @transaction.to_acct_id) unless @transaction.to_account.blank?
-            - else
-              = @transaction.to_account.company.name unless @transaction.to_account.blank?
-          %p.lead
-            From:
-            - unless @from_customer.blank?
-              = link_to @from_customer.identity, customer_path(@from_customer, account_id: @transaction.from_acct_id) unless @transaction.from_account.blank?
-            - else
-              = @transaction.from_account.company.name unless @transaction.from_account.blank?
-          %p.lead
-            Event:
-            - unless @transaction.event.blank?
-              = link_to @transaction.event.title, @transaction.event
-            - else
-              N/A
-          -#
-            %p.lead
-              From Account:
-              - unless @from_customer.blank?
-                = link_to "#{@from_customer.full_name} (#{@transaction.from_acct_id})", @from_customer
-              - else
-                = @transaction.from_acct_id
-          %p.lead
-            Device ID:
-            - unless current_user.basic?
-              = link_to @transaction.dev_id, device_path(@transaction.dev_id) unless @transaction.dev_id.blank?
-            - else
-              = @transaction.dev_id
-          %p.lead
-            Tran ID:
-            = @transaction.id
-          %p.lead
-            Error Code:
-            = @transaction.error_code
-          %p.lead
-            Code:
-            = @transaction.error_code_long_description
-          %p.lead
-            Receipt Number:
-            - if not @to_customer.blank? and @to_customer.anonymous?
-              = "#{@transaction.receipt_nbr.blank? ? 'N/A' : @transaction.receipt_nbr}"
-          %p.lead
-            Amount Requested:
-            = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
-          %p.lead
-            Amount Authorized:
-            = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
-          - unless @transaction.fee_transfer?
-            %p.lead
-              Fee:
-              = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
-          - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
-            %p.lead
-              Total:
-              = number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
-          %p.lead
-            Note:
-            = @transaction.Note
-
-          - if current_user.administrator?
-            %p.lead
-              Tran Code:
-              = @transaction.tran_code
-            %p.lead
-              Sec Tran Code:
-              = @transaction.sec_tran_code
-            -#
+          %ul#myTab.nav.nav-tabs{:role => "tablist"}
+            %li.nav-item
+              %a#details-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#details", :role => "tab"} Details
+            %li.nav-item
+              %a#advanced-tab.nav-link{"aria-controls" => "advanced", "aria-selected" => "false", "data-toggle" => "tab", :href => "#advanced", :role => "tab"} Advanced
+          #myTabContent.tab-content
+            #details.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
               %p.lead
-                To wallet type:
-                = "#{@transaction.to_account_type.blank? ? 'N/A' : @transaction.to_account_type}"
+                Company:
+                = @transaction.company.CompanyName unless @transaction.company.blank?
               %p.lead
-                From wallet type:
-                = "#{@transaction.from_account_type.blank? ? 'N/A' : @transaction.from_account_type}"
-            - if @transaction.withdrawal? or @transaction.withdrawal_all?
-              .row
-                .col-sm-12.col-md-6
-                  .box.box-warning
-                    .box-header.with-border
-                      %h3.box-title Dispense Details
-                    .box-body
-                      = render partial: 'devices/dispensed_details', locals: {transaction: @transaction}
-                      -#
-                        .row
-                          .col-sm-6
-                            %p.lead
-                              Cassette 1:
-                              = @transaction.cassette_1_disp
-                              - unless @transaction.device.blank? or @transaction.device.bin_1_denomination.blank? or @transaction.cassette_1_disp.blank? or @transaction.cassette_1_disp.zero?
-                                = " x #{number_to_currency(@transaction.device.bin_1_denomination)}" 
-                                = " = #{number_to_currency(@transaction.cassette_1_disp * @transaction.device.bin_1_denomination)}"
-                            %p.lead
-                              Cassette 2:
-                              = @transaction.cassette_2_disp
-                              - unless @transaction.device.blank? or @transaction.device.bin_2_denomination.blank? or @transaction.cassette_2_disp.blank? or @transaction.cassette_2_disp.zero?
-                                = " x #{number_to_currency(@transaction.device.bin_2_denomination)}" 
-                                = " = #{number_to_currency(@transaction.cassette_2_disp * @transaction.device.bin_2_denomination)}"
-                            %p.lead
-                              Cassette 3:
-                              = @transaction.cassette_3_disp
-                              - unless @transaction.device.blank? or @transaction.device.bin_3_denomination.blank? or @transaction.cassette_3_disp.blank? or @transaction.cassette_3_disp.zero?
-                                = " x #{number_to_currency(@transaction.device.bin_3_denomination)}" 
-                                = " = #{number_to_currency(@transaction.cassette_3_disp * @transaction.device.bin_3_denomination)}"
-                          .col-sm-6
-                            %p.lead
-                              Cassette 4:
-                              = @transaction.cassette_4_disp
-                              - unless @transaction.device.blank? or @transaction.device.bin_1_denomination.blank? or @transaction.cassette_1_disp.blank? or @transaction.cassette_1_disp.zero?
-                                = " x #{number_to_currency(@transaction.device.bin_1_denomination)}" 
-                                = " = #{number_to_currency(@transaction.cassette_1_disp * @transaction.device.bin_1_denomination)}"
-                            %p.lead
-                              Cassette 5:
-                              = @transaction.cassette_5_disp
-                              - unless @transaction.device.blank? or @transaction.device.bin_5_denomination.blank? or @transaction.cassette_5_disp.blank? or @transaction.cassette_5_disp.zero?
-                                = " x #{number_to_currency(@transaction.device.bin_5_denomination)}" 
-                                = " = #{number_to_currency(@transaction.cassette_5_disp * @transaction.device.bin_5_denomination)}"
-                            %p.lead
-                              Cassette 6:
-                              = @transaction.cassette_6_disp
-                              - unless @transaction.device.blank? or @transaction.device.bin_6_denomination.blank? or @transaction.cassette_6_disp.blank? or @transaction.cassette_6_disp.zero?
-                                = " x #{number_to_currency(@transaction.device.bin_6_denomination)}" 
-                                = " = #{number_to_currency(@transaction.cassette_6_disp * @transaction.device.bin_6_denomination)}"
-          -#
-            %p.lead
-              To Account:
-              - unless @to_customer.blank?
-                = link_to "#{@to_customer.full_name} (#{@transaction.to_acct_id})", @to_customer
-              - else
-                = @transaction.to_acct_id
-            %p.lead
-              DateTime:
-              = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
-            %p.lead
-              Status:
-              = @transaction.status_long_description
-            
-            %p.lead
-              Description:
-              = @transaction.Description
-            %p.lead
-              Note:
-              = @transaction.Note
-          %p
-            - @transaction.images.each do |image|
-              .col-xs-12.col-sm-2.col-md-2
-                %a{href: "#image_popup_#{image.id}", "data-toggle" => "modal"}
-                  %img.img-fluid.img-thumbnail{:alt => image.id, :src => image.preview_data_uri}
-              %div{:id => "image_popup_#{image.id}", :class => "modal fade", :tabindex => "-1", :style => "display:none;"}
-                .modal-dialog.modal-lg
-                  .modal-content
-                    .modal-body
-                      %img.img-fluid{:alt => image.id, :src => image.jpeg_image_data_uri}
-          - unless @transaction.upload_file.blank? or @transaction.upload_file.url.blank?
-            = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
-        .box-footer
-          = link_to 'Back', :back, class: 'btn btn-default'
-          - if current_user.administrator? or current_user.collaborator?
-            -# unless @to_customer.blank? or @to_customer.balance.blank? or @to_customer.balance.zero?
-            - unless @to_customer.blank? or @transaction.to_account.balance.blank? or @transaction.to_account.balance.zero?
-              - print_amount = @transaction.to_account.withdrawal_all? ? @transaction.to_account.available_balance : @transaction.amt_auth
-              - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?) or current_user.super?
-                %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: print_amount), target: '_blank'}
-                  %i.fa.fa-print
-                  Print Barcode
-              - else
-                - if current_user.devices.count > 1
-                  .dropdown
-                    %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-                      %i.fa.fa-print
-                      %span.caret
-                    %ul.dropdown-menu
-                      - current_user.devices.each do |device|
-                        %li
-                          %a{href: barcode_customer_path(@to_customer.id, amount: print_amount, device_id: device.id)}
-                            = device.description
-                - elsif current_user.devices.count == 1
-                  %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: print_amount, device_id: current_user.devices.first.id)}
-                    %i.fa.fa-print
-                    Print Barcode
+                To:
+                - unless @to_customer.blank?
+                  = link_to @to_customer.identity, customer_path(@to_customer, account_id: @transaction.to_acct_id) unless @transaction.to_account.blank?
                 - else
-                  %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: print_amount)}
-                    %i.fa.fa-print
-                    Print Barcode
+                  = @transaction.to_account.company.name unless @transaction.to_account.blank?
+              %p.lead
+                From:
+                - unless @from_customer.blank?
+                  = link_to @from_customer.identity, customer_path(@from_customer, account_id: @transaction.from_acct_id) unless @transaction.from_account.blank?
+                - else
+                  = @transaction.from_account.company.name unless @transaction.from_account.blank?
+              - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
+                - unless @transaction.Note.blank?
+                  %p.lead
+                    Note:
+                    = @transaction.Note
+                %p.lead
+                  Total:
+                  = number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
+            #advanced.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+              %p.lead
+                Event:
+                - unless @transaction.event.blank?
+                  = link_to @transaction.event.title, @transaction.event
+                - else
+                  N/A
+              -#
+                %p.lead
+                  From Account:
+                  - unless @from_customer.blank?
+                    = link_to "#{@from_customer.full_name} (#{@transaction.from_acct_id})", @from_customer
+                  - else
+                    = @transaction.from_acct_id
+              %p.lead
+                Device ID:
+                - unless current_user.basic?
+                  = link_to @transaction.dev_id, device_path(@transaction.dev_id) unless @transaction.dev_id.blank?
+                - else
+                  = @transaction.dev_id
+              %p.lead
+                Tran ID:
+                = @transaction.id
+              %p.lead
+                Error Code:
+                = @transaction.error_code
+              %p.lead
+                Code:
+                = @transaction.error_code_long_description
+              %p.lead
+                Receipt Number:
+                - if not @to_customer.blank? and @to_customer.anonymous?
+                  = "#{@transaction.receipt_nbr.blank? ? 'N/A' : @transaction.receipt_nbr}"
+              %p.lead
+                Amount Requested:
+                = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
+              %p.lead
+                Amount Authorized:
+                = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
+              - unless @transaction.fee_transfer?
+                %p.lead
+                  Fee:
+                  = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
 
-          - if current_user.can_reverse_transactions? and @transaction.can_reverse?
-            - if @reversal_transaction.blank? and not @transaction.reversal?
-              .pull-right
-                %a{href: reverse_transaction_path(@transaction), class: 'btn btn-danger btn-sm', data: {confirm: 'Are you sure you want to reverse this transaction?', disable_with: "<i class='fa fa-spinner fa-spin'></i> Reverse"}}
-                  %i.fa.fa-warning
-                  Reverse
+              - if current_user.administrator?
+                %p.lead
+                  Tran Code:
+                  = @transaction.tran_code
+                %p.lead
+                  Sec Tran Code:
+                  = @transaction.sec_tran_code
+                -#
+                  %p.lead
+                    To wallet type:
+                    = "#{@transaction.to_account_type.blank? ? 'N/A' : @transaction.to_account_type}"
+                  %p.lead
+                    From wallet type:
+                    = "#{@transaction.from_account_type.blank? ? 'N/A' : @transaction.from_account_type}"
+                - if @transaction.withdrawal? or @transaction.withdrawal_all?
+                  .row
+                    .col-sm-12.col-md-6
+                      .box.box-warning
+                        .box-header.with-border
+                          %h3.box-title Dispense Details
+                        .box-body
+                          = render partial: 'devices/dispensed_details', locals: {transaction: @transaction}
+                          -#
+                            .row
+                              .col-sm-6
+                                %p.lead
+                                  Cassette 1:
+                                  = @transaction.cassette_1_disp
+                                  - unless @transaction.device.blank? or @transaction.device.bin_1_denomination.blank? or @transaction.cassette_1_disp.blank? or @transaction.cassette_1_disp.zero?
+                                    = " x #{number_to_currency(@transaction.device.bin_1_denomination)}" 
+                                    = " = #{number_to_currency(@transaction.cassette_1_disp * @transaction.device.bin_1_denomination)}"
+                                %p.lead
+                                  Cassette 2:
+                                  = @transaction.cassette_2_disp
+                                  - unless @transaction.device.blank? or @transaction.device.bin_2_denomination.blank? or @transaction.cassette_2_disp.blank? or @transaction.cassette_2_disp.zero?
+                                    = " x #{number_to_currency(@transaction.device.bin_2_denomination)}" 
+                                    = " = #{number_to_currency(@transaction.cassette_2_disp * @transaction.device.bin_2_denomination)}"
+                                %p.lead
+                                  Cassette 3:
+                                  = @transaction.cassette_3_disp
+                                  - unless @transaction.device.blank? or @transaction.device.bin_3_denomination.blank? or @transaction.cassette_3_disp.blank? or @transaction.cassette_3_disp.zero?
+                                    = " x #{number_to_currency(@transaction.device.bin_3_denomination)}" 
+                                    = " = #{number_to_currency(@transaction.cassette_3_disp * @transaction.device.bin_3_denomination)}"
+                              .col-sm-6
+                                %p.lead
+                                  Cassette 4:
+                                  = @transaction.cassette_4_disp
+                                  - unless @transaction.device.blank? or @transaction.device.bin_1_denomination.blank? or @transaction.cassette_1_disp.blank? or @transaction.cassette_1_disp.zero?
+                                    = " x #{number_to_currency(@transaction.device.bin_1_denomination)}" 
+                                    = " = #{number_to_currency(@transaction.cassette_1_disp * @transaction.device.bin_1_denomination)}"
+                                %p.lead
+                                  Cassette 5:
+                                  = @transaction.cassette_5_disp
+                                  - unless @transaction.device.blank? or @transaction.device.bin_5_denomination.blank? or @transaction.cassette_5_disp.blank? or @transaction.cassette_5_disp.zero?
+                                    = " x #{number_to_currency(@transaction.device.bin_5_denomination)}" 
+                                    = " = #{number_to_currency(@transaction.cassette_5_disp * @transaction.device.bin_5_denomination)}"
+                                %p.lead
+                                  Cassette 6:
+                                  = @transaction.cassette_6_disp
+                                  - unless @transaction.device.blank? or @transaction.device.bin_6_denomination.blank? or @transaction.cassette_6_disp.blank? or @transaction.cassette_6_disp.zero?
+                                    = " x #{number_to_currency(@transaction.device.bin_6_denomination)}" 
+                                    = " = #{number_to_currency(@transaction.cassette_6_disp * @transaction.device.bin_6_denomination)}"
+              -#
+                %p.lead
+                  To Account:
+                  - unless @to_customer.blank?
+                    = link_to "#{@to_customer.full_name} (#{@transaction.to_acct_id})", @to_customer
+                  - else
+                    = @transaction.to_acct_id
+                %p.lead
+                  DateTime:
+                  = @transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y %l:%M %p")
+                %p.lead
+                  Status:
+                  = @transaction.status_long_description
+
+                %p.lead
+                  Description:
+                  = @transaction.Description
+                %p.lead
+                  Note:
+                  = @transaction.Note
+              %p
+                - @transaction.images.each do |image|
+                  .col-xs-12.col-sm-2.col-md-2
+                    %a{href: "#image_popup_#{image.id}", "data-toggle" => "modal"}
+                      %img.img-fluid.img-thumbnail{:alt => image.id, :src => image.preview_data_uri}
+                  %div{:id => "image_popup_#{image.id}", :class => "modal fade", :tabindex => "-1", :style => "display:none;"}
+                    .modal-dialog.modal-lg
+                      .modal-content
+                        .modal-body
+                          %img.img-fluid{:alt => image.id, :src => image.jpeg_image_data_uri}
+              - unless @transaction.upload_file.blank? or @transaction.upload_file.url.blank?
+                = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
+            .box-footer
+              = link_to 'Back', :back, class: 'btn btn-default'
+              - if current_user.administrator? or current_user.collaborator?
+                -# unless @to_customer.blank? or @to_customer.balance.blank? or @to_customer.balance.zero?
+                - unless @to_customer.blank? or @transaction.to_account.balance.blank? or @transaction.to_account.balance.zero?
+                  - print_amount = @transaction.to_account.withdrawal_all? ? @transaction.to_account.available_balance : @transaction.amt_auth
+                  - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?) or current_user.super?
+                    %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: print_amount), target: '_blank'}
+                      %i.fa.fa-print
+                      Print Barcode
+                  - else
+                    - if current_user.devices.count > 1
+                      .dropdown
+                        %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+                          %i.fa.fa-print
+                          %span.caret
+                        %ul.dropdown-menu
+                          - current_user.devices.each do |device|
+                            %li
+                              %a{href: barcode_customer_path(@to_customer.id, amount: print_amount, device_id: device.id)}
+                                = device.description
+                    - elsif current_user.devices.count == 1
+                      %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: print_amount, device_id: current_user.devices.first.id)}
+                        %i.fa.fa-print
+                        Print Barcode
+                    - else
+                      %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: print_amount)}
+                        %i.fa.fa-print
+                        Print Barcode
+
+              - if current_user.can_reverse_transactions? and @transaction.can_reverse?
+                - if @reversal_transaction.blank? and not @transaction.reversal?
+                  .pull-right
+                    %a{href: reverse_transaction_path(@transaction), class: 'btn btn-danger btn-sm', data: {confirm: 'Are you sure you want to reverse this transaction?', disable_with: "<i class='fa fa-spinner fa-spin'></i> Reverse"}}
+                      %i.fa.fa-warning
+                      Reverse

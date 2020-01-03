@@ -89,6 +89,13 @@
                           .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: false) + ' ' + event_field.text }
 
                   - else
+                    = account_form.input :MinBalance, as: :decimal, required: true, label: "Minimum Balance" do
+                      .row
+                        .col-xs-12.col-sm-6
+                          .input-group
+                            .input-group-prepend
+                              %span.input-group-text $
+                            = account_form.input_field :MinBalance, :as => :string, value: account_form.object.MinBalance.blank? ? (account_form.object.account_type.blank? ? 0 : account_form.object.account_type.default_minimum_balance)  : account_form.object.MinBalance, class: "form-control"
                     = account_form.input "account[event_ids][]", label: 'Events' do
                       - unless current_user.company.events.accounts_do_not_expire.blank?
                         %br
