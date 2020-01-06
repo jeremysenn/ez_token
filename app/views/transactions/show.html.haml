@@ -226,7 +226,10 @@
                       %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: print_amount)}
                         %i.fa.fa-print
                         Print Barcode
-
+              - if @transaction.from_account_customer == current_user.customer
+                .pull-right
+                  %a{href: dispute_transaction_path(@transaction, phone: current_user.phone), class: 'btn btn-danger btn-sm'}
+                    Dispute
               - if current_user.can_reverse_transactions? and @transaction.can_reverse?
                 - if @reversal_transaction.blank? and not @transaction.reversal?
                   .pull-right
