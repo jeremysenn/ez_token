@@ -319,7 +319,7 @@ class TransactionsController < ApplicationController
     @from_customer_phone = params[:phone]
     @from_customer = @transaction.from_account_customer
     @send_notification = params[:send_notification]
-    unless @send_notification == true
+    unless @send_notification == 'true'
       unless @from_customer_phone.blank? or @from_customer_phone != @from_customer.phone
         @from_customer = @transaction.from_account_customer
         @to_customer = @transaction.to_account_customer
