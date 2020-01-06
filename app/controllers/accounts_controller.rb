@@ -247,7 +247,7 @@ class AccountsController < ApplicationController
               details_report_id = bill_members_response[:details_report_id]
               redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id], club_report_id: club_report_id, details_report_id: details_report_id), notice: 'BillMembers successfully called.'
             else
-              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers.'
+              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers - no response.'
             end
           else
             redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers.'
