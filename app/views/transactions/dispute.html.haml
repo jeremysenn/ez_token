@@ -136,7 +136,7 @@
               = hidden_field_tag :send_notification, true
               .form-group.col-sm-12.col-md-6
                 = text_area_tag :details, nil, :placeholder => "Details of dispute", class: "form-control input-lg", rows: 4, style: 'width:100%', autofocus: true
-              = link_to 'Cancel', root_path, class: "btn btn-success"
+              = link_to 'Cancel', root_path, class: "btn btn-default"
               = button_tag(:type => 'submit', :class => 'btn btn-danger', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit dispute"}) do
                 %i.fa.fa-send
                 Submit dispute
