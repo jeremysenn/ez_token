@@ -1,10 +1,10 @@
 .box.box-primary
-  - unless @customer.blank?
-    .box-header.with-border
-      %h3.box-title 
+  .box-header.with-border
+    %h3.box-title 
+      -#
         - if current_user.administrator?
-          = @customer.full_name.blank? ? @customer.company.name : @customer.full_name
-        = number_to_currency(@account.Balance)
+          = @customer.full_name.blank? ? @customer.company.name : @customer.full_name unless @customer.blank?
+      = number_to_currency(@account.Balance)
   .box-body
     = simple_form_for(@account) do |f|
       = f.error_notification
@@ -43,6 +43,9 @@
                       %span.input-group-text $
                     = f.input_field :Balance, as: :string, class: "form-control"
           =# f.input :AbleToDelete, as: :boolean, label: "Can delete"
+          %label.control-label Holders
+          = f.select :customer_ids, options_from_collection_for_select(current_user.company.customers, "id", "full_name", @account.customer_ids), {}, { multiple: true, style: 'width:100%;', :class => "form-control select2_customers"}
+          %br
           - unless @events.blank?
             = f.input :event_ids, label: 'Events' do
               - unless @events.accounts_do_not_expire.blank?
@@ -56,13 +59,21 @@
               .row
                 = f.collection_radio_buttons(:event_ids, @events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
                   .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: @account.events.first == event_field.object) + ' ' + event_field.text }
+          -#
+            - unless @customers.blank?
+              - @customers.each do |customer|
+                = f.input :customer_ids, label: 'Holders' do
+                  .row
+                    = f.collection_check_boxes(:customer_ids, @customers, :id, :full_name) do |customer_field|
+                      .col-xs-12.col-md-12= customer_field.label(class:"label-checkbox") { customer_field.check_box + ' ' + customer_field.text }
         %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
           -#
             - if @account.can_fund_by_cc?
               %li.nav-item
                 %a#add-funds-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#add_funds", :role => "tab"} 
                   Add Funds
-          - if @account.can_fund_by_ach? and @account.user and @account.user == current_user
+          -# if @account.can_fund_by_ach? and @account.user and @account.user == current_user
+          - if @account.can_fund_by_ach? and @account.users.include?(current_user)
             %li.nav-item
               %a#ach-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#ach", :role => "tab"} 
                 ACH
@@ -84,7 +95,8 @@
                 .row
                   .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry'
                   .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC'
-          - if @account.can_fund_by_ach? and @account.user and @account.user == current_user
+          -# if @account.can_fund_by_ach? and @account.user and @account.user == current_user
+          - if @account.can_fund_by_ach? and @account.users.include?(current_user)
             #ach.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel", class: @account.can_fund_by_cc? ? '' : 'active'}
               %br
               %strong ACH Details

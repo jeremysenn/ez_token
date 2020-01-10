@@ -4,9 +4,9 @@ class CustomerCard < ActiveRecord::Base
   self.primary_key = 'CardID'
   self.table_name= 'CustomerCards'
   
-  belongs_to :company, :foreign_key => "CompanyNumber"
-  belongs_to :customer, :foreign_key => "CustomerID"
-  belongs_to :account, :foreign_key => "ActID"
+#  belongs_to :company, :foreign_key => "CompanyNumber", optional: true
+  belongs_to :customer, :foreign_key => "CustomerID", optional: true
+  belongs_to :account, :foreign_key => "ActID", optional: true
   
   #############################
   #     Instance Methods      #

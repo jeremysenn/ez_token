@@ -10,7 +10,11 @@ class Customer < ActiveRecord::Base
   has_many :sms_messages
   
 #  has_one :account, :foreign_key => "CustomerID"
-  has_many :accounts, :foreign_key => "CustomerID", inverse_of: :customer, dependent: :destroy
+
+#  has_many :accounts, :foreign_key => "CustomerID", inverse_of: :customer, dependent: :destroy
+  has_many :customer_cards, :foreign_key => "CustomerID", autosave: false, dependent: :destroy
+  has_many :accounts, through: :customer_cards
+  
   has_many :transactions, :through => :account
   has_one :user
   has_many :sms_messages
@@ -323,7 +327,15 @@ class Customer < ActiveRecord::Base
   end
   
   def full_name
-    "#{self.NameF} #{self.NameL} #{self.NameS}"
+    unless self.NameF.blank? and self.NameL.blank? and self.NameS.blank?
+      "#{self.NameF} #{self.NameL} #{self.NameS}"
+    else
+      unless self.phone.blank?
+        self.phone
+      else
+        "Anonymous - #{id}"
+      end
+    end
   end
   
   def full_name_by_last_name

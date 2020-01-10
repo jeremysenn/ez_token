@@ -16,7 +16,8 @@
                   - accounts.each do |account|
                     .col-xs-6
                       = check_box_tag "account_ids[]", account.id, true, {id: "account_#{account.id}", class: "form_control"}
-                      = account.customer_user_name
+                      =# account.customer_user_name
+                      = account.customers.map{ |customer| customer.full_name}.join(", ").html_safe
             .col-xs-12.col-sm-8
               .form-group
                 = text_area_tag :message_body, @message_body, :placeholder => "Message", class: "form-control input-lg", rows: 8, style: 'width:100%', autofocus: true

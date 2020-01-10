@@ -104,8 +104,8 @@
                     .form-group.form-inline
                       %label To:
                       &nbsp;
-                      = select_tag :customer_id, options_for_select([]), class: "form-control input-lg", prompt: 'Select Account', style: 'width: 33%;', required: true
                       =# select_tag :customer_id, options_from_collection_for_select(current_user.company.accounts, "CustomerID", "customer_user_name"), class: "form-control input-lg", prompt: 'Select Account', style: 'width: 33%;', required: true
+                      = select_tag :customer_id, options_for_select([]), class: "form-control input-lg", prompt: 'Select Account', style: 'width: 33%;', required: true
 
             -#
               #messages_box.box.box-primary{style: 'height: 75vh; overflow: scroll;'}

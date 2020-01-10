@@ -19,7 +19,7 @@ class CompaniesController < ApplicationController
     end
     respond_to do |format|
       format.html {
-        @payment_transactions =  Kaminari.paginate_array(@all_payment_transactions).page(params[:page]).per(10) #unless @all_payment_transactions.blank?
+        @payment_transactions =  Kaminari.paginate_array(@all_payment_transactions).page(params[:page]).per(10) unless @all_payment_transactions.blank?
       }
       format.csv { 
         send_data Transaction.export_to_csv(@all_payment_transactions), filename: "Company_#{@company.id}_payment_transactions-#{@start_date}-#{@end_date}.csv" 

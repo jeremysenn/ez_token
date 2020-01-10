@@ -19,12 +19,13 @@
           %p.lead
             %strong ID:
             = @account.id
-          %p.lead
-            %strong User Account:
-            - unless @account.user.blank?
-              = link_to "#{@account.user.full_name} (#{@account.user.role})", customer_path(@account.customer.id, account_id: @account.id)
-            - else
-              N/A
+          -#
+            %p.lead
+              %strong User Account:
+              - unless @account.user.blank?
+                = link_to "#{@account.user.full_name} (#{@account.user.role})", customer_path(@account.customer.id, account_id: @account.id)
+              - else
+                N/A
           %p.lead
             %strong Active:
             = @account.active? ? 'Yes' : 'No'
@@ -50,6 +51,15 @@
             %p.lead
               %strong Available Balance:
               = number_to_currency(@account.available_balance)
+          %p.lead
+            %strong Holders:
+            - unless @customers.blank?
+              %br
+              - @customers.each do |customer|
+                = link_to customer.full_name, customer
+                %br
+            - else
+              None
           - if @account.can_fund_by_ach?
             %h5
               %strong ACH

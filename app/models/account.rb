@@ -5,7 +5,13 @@ class Account < ActiveRecord::Base
   establish_connection :ez_cash
   
   has_many :bill_payments
-  belongs_to :customer, :foreign_key => "CustomerID", optional: true
+  
+  
+#  belongs_to :customer, :foreign_key => "CustomerID", optional: true
+  has_many :customer_cards, :foreign_key => "ActID", autosave: false, dependent: :destroy
+  has_many :customers, through: :customer_cards
+  
+  
 #  has_many :transactions, :foreign_key => :from_acct_id
   belongs_to :company, :foreign_key => "CompanyNumber"
   belongs_to :account_type, :foreign_key => "ActTypeID", optional: true
@@ -35,7 +41,7 @@ class Account < ActiveRecord::Base
   
   validate :maintain_balance_not_less_than_minimum_maintain_balance, on: :update
   validate :credit_card_fields_filled
-  validate :customer_does_not_have_multiple_account_wallets_for_same_event
+#  validate :customer_does_not_have_multiple_account_wallets_for_same_event
   validate :routing_number_checksum, if: :will_save_change_to_RoutingNbr?
 
   before_save :encrypt_bank_account_number, if: :will_save_change_to_BankActNbr?
@@ -455,6 +461,14 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def users
+    user_records = []
+    customers.each do |c|
+      user_records << c.user
+    end
+    return user_records
+  end
+  
   def caddy?
     unless customer.blank?
       customer.caddy?
@@ -705,19 +719,19 @@ class Account < ActiveRecord::Base
     self.BankActNbr
   end
   
-  def customer_does_not_have_multiple_account_wallets_for_same_event
-    if customer.present?
-      unless self.new_record?
-        if customer.events.count > customer.events.uniq.count
-          errors.add(:error, 'Cannot have more than one wallet per event.')
-        end
-      else
-        if (customer.events + self.events).count > (customer.events + self.events).uniq.count
-          errors.add(:error, 'Cannot have more than one wallet per event.')
-        end
-      end
-    end
-  end
+#  def customer_does_not_have_multiple_account_wallets_for_same_event
+#    if customer.present?
+#      unless self.new_record?
+#        if customer.events.count > customer.events.uniq.count
+#          errors.add(:error, 'Cannot have more than one wallet per event.')
+#        end
+#      else
+#        if (customer.events + self.events).count > (customer.events + self.events).uniq.count
+#          errors.add(:error, 'Cannot have more than one wallet per event.')
+#        end
+#      end
+#    end
+#  end
   
   def contract
     account_type.contract

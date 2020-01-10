@@ -17,10 +17,10 @@ class CustomersController < ApplicationController
       @query_string = "%#{params[:q]}%"
       if customers_sort_column == "accounts.Balance"
 #        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
-        @all_customers = current_user.company.customers.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.where("CONCAT(NameF, ' ', NameL) like ? OR PhoneMobile like ?", @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
       else
 #        @all_customers = current_user.company.customers_by_user_role(current_user).where(GroupID: @group_id).where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).order("#{customers_sort_column} #{customers_sort_direction}")
-        @all_customers = current_user.company.customers.where("NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
+        @all_customers = current_user.company.customers.where("CONCAT(NameF, ' ', NameL) like ? OR PhoneMobile like ?", @query_string, @query_string).joins(:accounts).order("#{customers_sort_column} #{customers_sort_direction}")
       end
     else
       if customers_sort_column == "accounts.Balance"
@@ -70,6 +70,15 @@ class CustomersController < ApplicationController
       format.csv { 
         send_data @all_customers.to_csv, filename: "payees_#{Time.now}.csv" 
         }
+      format.json {
+        unless @all_customers.blank?
+          @customers = @all_customers.collect{ |customer| {id: customer.id, text: customer.full_name} }.uniq
+        else
+          @customers = nil
+        end
+        Rails.logger.info "results: {#{@customers}}"
+        render json: {results: @customers}
+      }
     end
   end
   
@@ -384,7 +393,7 @@ class CustomersController < ApplicationController
       params.require(:customer).permit(:ParentCustID, :CompanyNumber, :Active, :GroupID, :NameF, :NameL, :NameS, :PhoneMobile, :Email, 
         :LangID, :Registration_Source, :Registration_Source_ext, :create_payee_user_flag, :create_basic_user_flag, :create_caddy_user_flag, :avatar, :avatar_cache, :SSN, :DOB,
         accounts_attributes:[:CompanyNumber, :Balance, :MinBalance, :Active, :CustomerID, :ActNbr, :ActTypeID, :BankActNbr, :RoutingNbr, 
-          :AddGroupID, :AbleToDelete, :_destroy,:id, :event_ids, event_ids: []])
+          :AddGroupID, :AbleToDelete, :_destroy,:id, :event_ids, event_ids: [], customer_ids: [] ])
     end
     
     ### Secure the customeres sort direction ###

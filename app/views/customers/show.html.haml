@@ -65,25 +65,27 @@
               %a.btn.btn-box-tool{href: edit_customer_path(@customer), :type => "button"}
                 %i.fa.fa-edit.fa-lg
           .box-body.box-profile
-            .text-center
-              %h5.text-muted
-                - if not @account.active?
-                  %strong.text-danger 
-                    %i.fa.fa-warning
-                    Inactive
+            - unless @account.blank?
+              .text-center
+                %h5.text-muted
+                  - if not @account.active?
+                    %strong.text-danger 
+                      %i.fa.fa-warning
+                      Inactive
+                    %br
+                  %i.fa.fa-google-wallet
+                  = @account.account_type.description
                   %br
-                %i.fa.fa-google-wallet
-                = @account.account_type.description
-                %br
-                - unless @account.MinBalance.blank? or @account.MinBalance.zero?
-                  %span.btn.btn-info{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "left"}
+                  - unless @account.MinBalance.blank? or @account.MinBalance.zero?
+                    %span.btn.btn-info{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "left"}
+                      = number_to_currency(@account.Balance)
+                  - else
                     = number_to_currency(@account.Balance)
-                - else
-                  = number_to_currency(@account.Balance)
-                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.user and @account.user == current_user)
-                  %a.btn.btn-default{href: edit_account_path(@account)}
-                    %i.fa.fa-credit-card
-                    Fund
+                  -# if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.user and @account.user == current_user)
+                  - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.users.include?(current_user))
+                    %a.btn.btn-default{href: edit_account_path(@account)}
+                      %i.fa.fa-credit-card
+                      Fund
               -#
                 .text-center
                   = "#{@account.blank? ? '' : @account.company.name}"
@@ -377,16 +379,26 @@
                             -#
                               %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
                             %td
-                              - unless payment_transaction.to_account_customer.blank? 
-                                = payment_transaction.to_account_customer.full_name.blank? ? payment_transaction.to_account_customer.phone : payment_transaction.to_account_customer.full_name
+                              -# unless payment_transaction.to_account_customer.blank? 
+                              - unless payment_transaction.to_account_customers.blank? 
+                                = payment_transaction.to_account_customers.map{ |customer| customer.full_name}.join(", ").html_safe
+                                -#
+                                  - payment_transaction.to_account_customers.each do |to_account_customer|
+                                    = to_account_customer.full_name
+                                =# payment_transaction.to_account_customer.full_name.blank? ? payment_transaction.to_account_customer.phone : payment_transaction.to_account_customer.full_name
                               - else
                                 = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
                             %td
                               - if payment_transaction.cash_deposit? or payment_transaction.ach_deposit?
                                 = payment_transaction.Description
                               - else
-                                - unless payment_transaction.from_account_customer.blank?
-                                  = payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
+                                -# unless payment_transaction.from_account_customer.blank?
+                                - unless payment_transaction.from_account_customers.blank?
+                                  = payment_transaction.from_account_customers.map{ |customer| customer.full_name}.join(", ").html_safe
+                                  -#
+                                    - payment_transaction.from_account_customers.each do |from_account_customer|
+                                      = from_account_customer.full_name.blank? ? from_account_customer.phone : from_account_customer.full_name
+                                  =# payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
                                 - else
                                   = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
                             %td= number_to_currency(payment_transaction.amt_auth)

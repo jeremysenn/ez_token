@@ -26,7 +26,8 @@ jQuery ->
       minimumInputLength: 3
       dropdownParent: $('#new_customer_message_form')
       ajax:
-        url: '/accounts'
+        #url: '/accounts'
+        url: '/customers'
         dataType: 'json'
         delay: 250
 

@@ -26,7 +26,10 @@
               Transaction Account
             %p.text-muted
               ID: 
-              = @company.TxnActID.blank? ? 'None' : @company.TxnActID
+              - unless @company.TxnActID.blank?
+                = link_to @company.TxnActID, account_path(@company.TxnActID)
+              - else 
+                None
               - unless @company.TxnActID.blank?
                 %br
                 Balance:
@@ -40,7 +43,10 @@
               Fee Account
             %p.text-muted
               ID:
-              = @company.FeeActID.blank? ? 'None' : @company.FeeActID
+              - unless @company.FeeActID.blank?
+                = link_to @company.FeeActID, account_path(@company.FeeActID)
+              - else
+                None
               - unless @company.FeeActID.blank?
                 %br
                 Balance:
@@ -51,7 +57,10 @@
               Cashier Account
             %p.text-muted
               ID:
-              = @company.CashierActID.blank? ? 'None' : @company.CashierActID
+              - unless @company.CashierActID.blank?
+                = link_to @company.CashierActID, account_path(@company.CashierActID)
+              - else
+                None
               - unless @company.CashierActID.blank?
                 %br
                 Balance:
@@ -140,5 +149,5 @@
               .col-sm-12
                 %h5.lead None
           .box-footer
-            .pull-right= paginate @payment_transactions
+            .pull-right= paginate @payment_transactions unless @payment_transactions.blank?
            

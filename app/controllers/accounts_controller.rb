@@ -21,12 +21,12 @@ class AccountsController < ApplicationController
       @query_string = "%#{params[:q]}%"
 #      @accounts = current_user.company.accounts.where(ActID: @query_string)
       @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
-      @total_accounts_results = @total_accounts_results.joins(:customer).where("customer.NameF like ? OR customer.NameL like ? OR CONCAT(customer.NameF, ' ', customer.NameL) like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string, @query_string).order("customer.NameL ASC")
+      @total_accounts_results = @total_accounts_results.joins(:customers).where("CONCAT(customer.NameF, ' ', customer.NameL) like ? OR customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string, @query_string).order("customer.NameL ASC")
       @accounts = @total_accounts_results.page(params[:page]).per(20)
     else
 #      @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
-      @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
-      @total_accounts_results = @total_accounts_results.joins(:customer).order("customer.NameL ASC")
+      @total_accounts_results = @event_id.blank? ? accounts.distinct : accounts.joins(:events).where(events: {id: @event_id}).distinct
+      @total_accounts_results = @total_accounts_results.joins(:customers)#.order("customer.NameL ASC")
       @accounts = @total_accounts_results.page(params[:page]).per(20)
     end
     respond_to do |format|
@@ -49,7 +49,8 @@ class AccountsController < ApplicationController
   # GET /accounts/1
   # GET /accounts/1.json
   def show
-    @customer = @account.customer
+#    @customer = @account.customer
+    @customers = @account.customers
   end
 
   # GET /accounts/new
@@ -59,7 +60,8 @@ class AccountsController < ApplicationController
 
   # GET /accounts/1/edit
   def edit
-    @customer = @account.customer
+#    @customer = @account.customer
+    @customers = @account.customers
     @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
   end
 
@@ -86,7 +88,7 @@ class AccountsController < ApplicationController
       @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
       if @account.update(account_params)
 #        format.html { redirect_to @account, notice: 'Wallet was successfully updated.' }
-        format.html { redirect_to @account.customer, notice: 'Wallet was successfully updated.' }
+        format.html { redirect_to @account, notice: 'Wallet was successfully updated.' }
         format.json { render :show, status: :ok, location: @account }
       else
         format.html { render :edit }
@@ -272,6 +274,6 @@ class AccountsController < ApplicationController
     
     def account_params
       params.require(:account).permit(:Balance, :Active, :MinBalance, :ActTypeID, :AbleToDelete, :MaintainBal, :BankActNbr, :BankActNbr_confirmation, :RoutingNbr, 
-        :cc_charge_amount, :cc_number, :cc_expiration, :cc_cvc, :event_ids, event_ids: [])
+        :cc_charge_amount, :cc_number, :cc_expiration, :cc_cvc, :event_ids, event_ids: [], customer_ids: [])
     end
 end

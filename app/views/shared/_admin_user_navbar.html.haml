@@ -110,7 +110,7 @@
           - if current_user.can_view_wallet_types?
             %a.dropdown-item{:href => account_types_path, :class => (params[:controller] == 'account_types') ?  "active" : ""} 
               %i.fa.fa-google-wallet
-              Wallets
+              Wallet Types
           - if current_user.can_view_atms? and not current_user.devices.blank?
             %a.dropdown-item{:href => devices_path, :class => (params[:controller] == 'devices') ?  "active" : ""}
               %i.fa.fa-money
