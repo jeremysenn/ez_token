@@ -1,5 +1,5 @@
-- to_customer = transaction.to_account_customer
-- from_customer = transaction.from_account_customer
+- to_customers = transaction.to_account_customers
+- from_customers = transaction.from_account_customers
 %tr{class: transaction.reversal? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
   %th{:scope => "row"}= link_to transaction.id, transaction
   %td
@@ -7,13 +7,15 @@
     = transaction.date_time.strftime("%-m/%-d/%y")
   - if @device.blank?
     %td
-      - unless to_customer.blank?
-        = link_to to_customer.identity, customer_path(to_customer, account_id: transaction.to_acct_id) unless transaction.to_account.blank?
+      - unless to_customers.blank?
+        =# link_to to_customer.identity, customer_path(to_customer, account_id: transaction.to_acct_id) unless transaction.to_account.blank?
+        = to_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: transaction.to_acct_id))}.join(", ").html_safe
       - else
         = transaction.to_account.company.name unless transaction.to_account.blank?
   %td
-    - unless from_customer.blank?
-      = link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
+    - unless from_customers.blank?
+      =# link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
+      = from_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: transaction.from_acct_id))}.join(", ").html_safe
     - else
       = transaction.from_account.company.name unless transaction.from_account.blank?
   %td= transaction.event.blank? ? 'N/A' : transaction.event.title
@@ -31,10 +33,12 @@
     - else
       = "#{transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_auth)}"
   %td
-    - unless to_customer.blank? or transaction.to_account.balance.blank? or transaction.to_account.balance.zero?
+    - unless to_customers.blank? or transaction.to_account.balance.blank? or transaction.to_account.balance.zero?
       - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?) or current_user.super?
-        %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, transaction_id: transaction.id)}
-          %i.fa.fa-print
+        - to_customers.each do |to_customer|
+          %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, transaction_id: transaction.id)}
+            %i.fa.fa-print
+            = to_customer.identity
       - else
         - if current_user.devices.count > 1
           .dropdown
@@ -44,14 +48,20 @@
             %ul.dropdown-menu
               - current_user.devices.each do |device|
                 %li
-                  %a{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: device.id, transaction_id: transaction.id)}
-                    = device.description
+                  - to_customers.each do |to_customer|
+                    %a{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: device.id, transaction_id: transaction.id)}
+                      = device.description
+                      = to_customer.identity
         - elsif current_user.devices.count == 1
-          %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: current_user.devices.first.id, transaction_id: transaction.id)}
-            %i.fa.fa-print
+          - to_customers.each do |to_customer|
+            %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, device_id: current_user.devices.first.id, transaction_id: transaction.id)}
+              %i.fa.fa-print
+              = to_customer.identity
         - else
-          %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, transaction_id: transaction.id)}
-            %i.fa.fa-print
+          - to_customers.each do |to_customer|
+            %a.btn.btn-default{href: barcode_customer_path(to_customer.id, amount: transaction.amt_auth, transaction_id: transaction.id)}
+              %i.fa.fa-print
+              = to_customer.identity
 
 :javascript
   $(function() {
