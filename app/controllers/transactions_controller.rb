@@ -93,8 +93,10 @@ class TransactionsController < ApplicationController
   def show
     @reversal_transaction = @transaction.reversal_transaction
     @original_transaction = @transaction.original_transaction
-    @from_customer = @transaction.from_account_customer
-    @to_customer = @transaction.to_account_customer
+#    @from_customer = @transaction.from_account_customer
+#    @to_customer = @transaction.to_account_customer
+    @from_customers = @transaction.from_account_customers
+    @to_customers = @transaction.to_account_customers
 #    @from_account_type = @transaction.from_account_type
 #    @to_account_type = @transaction.to_account_type
   end
@@ -216,12 +218,14 @@ class TransactionsController < ApplicationController
       from_account_id = params[:from_account_id]
     end
     customer_barcode_id = params[:customer_barcode_id]
+    from_customer_id = params[:from_customer_id]
+    to_customer_id = params[:to_customer_id]
     if params[:file]
       @file_upload = params[:file].path
     end
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
       unless event_id.blank?
-        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note)
+        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id)
       else
         response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note)
       end
@@ -289,9 +293,11 @@ class TransactionsController < ApplicationController
     note = params[:note]
     to_account_id = params[:send_payment_to_account_id]
     from_account_id = params[:from_account_id]
+    from_customer_id = params[:from_customer_id]
+    to_customer_id = params[:to_customer_id]
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
 #      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
-      response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount, note)
+      response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id)
       unless response.blank?
         response_code = response[:return]
         unless response_code.to_i > 0

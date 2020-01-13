@@ -41,16 +41,22 @@
                 = @transaction.company.CompanyName unless @transaction.company.blank?
               %p.lead
                 To:
-                - unless @to_customer.blank?
-                  = link_to @to_customer.identity, customer_path(@to_customer, account_id: @transaction.to_acct_id) unless @transaction.to_account.blank?
-                - else
-                  = @transaction.to_account.company.name unless @transaction.to_account.blank?
+                - unless @to_customers.blank?
+                  = @to_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: @transaction.to_acct_id))}.join(", ").html_safe
+                -#
+                  - unless @to_customer.blank?
+                    = link_to @to_customer.identity, customer_path(@to_customer, account_id: @transaction.to_acct_id) unless @transaction.to_account.blank?
+                  - else
+                    = @transaction.to_account.company.name unless @transaction.to_account.blank?
               %p.lead
                 From:
-                - unless @from_customer.blank?
-                  = link_to @from_customer.identity, customer_path(@from_customer, account_id: @transaction.from_acct_id) unless @transaction.from_account.blank?
-                - else
-                  = @transaction.from_account.company.name unless @transaction.from_account.blank?
+                - unless @from_customers.blank?
+                  = @from_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: @transaction.from_acct_id))}.join(", ").html_safe
+                -#
+                  - unless @from_customer.blank?
+                    = link_to @from_customer.identity, customer_path(@from_customer, account_id: @transaction.from_acct_id) unless @transaction.from_account.blank?
+                  - else
+                    = @transaction.from_account.company.name unless @transaction.from_account.blank?
               - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
                 - unless @transaction.Note.blank?
                   %p.lead
@@ -82,6 +88,18 @@
               %p.lead
                 Tran ID:
                 = @transaction.id
+              %p.lead
+                From Cust ID:
+                = link_to @transaction.FromCustID, customer_path(@transaction.FromCustID) unless @transaction.FromCustID.blank?
+              %p.lead
+                To Cust ID:
+                = link_to @transaction.ToCustID, customer_path(@transaction.ToCustID) unless @transaction.ToCustID.blank?
+              %p.lead
+                From Acct ID:
+                = link_to @transaction.from_acct_id, account_path(@transaction.from_acct_id) unless @transaction.from_acct_id.blank?
+              %p.lead
+                To Acct ID:
+                = link_to @transaction.to_acct_id, account_path(@transaction.to_acct_id) unless @transaction.to_acct_id.blank?
               %p.lead
                 Error Code:
                 = @transaction.error_code
@@ -226,7 +244,8 @@
                       %a.btn.btn-default{href: barcode_customer_path(@to_customer.id, amount: print_amount)}
                         %i.fa.fa-print
                         Print Barcode
-              - if @transaction.from_account_customer == current_user.customer
+              -# if @transaction.from_account_customer == current_user.customer
+              - if @transaction.from_account_customers.include?(current_user.customer)
                 .pull-right
                   %a{href: dispute_transaction_path(@transaction, phone: current_user.phone), class: 'btn btn-danger btn-sm'}
                     Dispute

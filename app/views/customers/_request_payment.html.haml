@@ -12,6 +12,7 @@
       = hidden_field_tag :barcode_number
       = hidden_field_tag :company_id, @account.CompanyNumber
       = hidden_field_tag :customer_barcode_id
+      = hidden_field_tag :to_customer_id, @customer.id
       = hidden_field_tag :event_id, @event.id
       = hidden_field_tag :scanned_from_account_id
     #request_payment_button_group.btn-group{style: 'display:none;'}
@@ -44,7 +45,8 @@
             =# select_tag :from_account_id, options_from_collection_for_select(@account.buddies, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
             =# select_tag :from_account_id, options_from_collection_for_select(@event.member_accounts, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
             .form-group.form-group-lg
-              = select_tag :from_account_id, options_from_collection_for_select(@event.accounts.can_be_pulled_by_search, "id", "customer_user_name_and_registration_source"), class: "form-control input-lg", style: 'width:100%;', prompt: 'Search/Select', required: true
+              =# select_tag :from_account_id, options_from_collection_for_select(@event.accounts.can_be_pulled_by_search, "id", "customer_user_name_and_registration_source"), class: "form-control input-lg", style: 'width:100%;', prompt: 'Search/Select', required: true
+              = select_tag :from_account_id, options_from_collection_for_select(@event.accounts.can_be_pulled_by_search, "id", "customer_user_names_and_registration_sources"), class: "form-control input-lg", style: 'width:100%;', prompt: 'Search/Select', required: true
             .form-group
               = text_area_tag :note, nil, :placeholder => "Note", class: "form-control input-lg", style: "width: 100%;"
             = image_tag('', id: 'file_image', class: 'img-responsive transaction-img')
