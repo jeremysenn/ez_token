@@ -101,6 +101,7 @@ class AccountsController < ApplicationController
     amount = params[:amount].to_f.abs unless params[:amount].blank?
     note = params[:note]
     receipt_number = params[:receipt_number]
+    to_customer_id = params[:to_customer_id]
     if params[:pay_and_text]
       response = @account.one_time_payment(amount, note, receipt_number)
     else
@@ -115,11 +116,15 @@ class AccountsController < ApplicationController
     Rails.logger.debug "*********************************One time payment transaction ID: #{transaction_id}"
     unless transaction_id.blank?
 #      redirect_back fallback_location: @account.customer, notice: 'One time payment submitted.'
-      redirect_to @account.customer, notice: 'One time payment submitted.'
+#      redirect_to @account.customer, notice: 'One time payment submitted.'
+      flash[:notice] = "One time payment submitted."
+      redirect_to customer_path(to_customer_id, account_id: @account.id)
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
 #      redirect_back fallback_location: root_path, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
-      redirect_to @account.customer, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+#      redirect_to @account.customer, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+      flash[:alert] = "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+      redirect_to customer_path(to_customer_id, account_id: @account.id)
     end
   end
 
