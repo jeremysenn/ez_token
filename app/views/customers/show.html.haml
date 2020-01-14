@@ -393,17 +393,14 @@
                                 = payment_transaction.Description
                               - else
                                 -# unless payment_transaction.from_account_customer.blank?
-                                - unless payment_transaction.from_customer_id.blank?
-                                  = payment_transaction.from_customer.full_name
+                                - unless payment_transaction.from_account_customers.blank?
+                                  = payment_transaction.from_account_customers_list
+                                  -#
+                                    - payment_transaction.from_account_customers.each do |from_account_customer|
+                                      = from_account_customer.full_name.blank? ? from_account_customer.phone : from_account_customer.full_name
+                                  =# payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
                                 - else
-                                  - unless payment_transaction.from_account_customers.blank?
-                                    = payment_transaction.from_account_customers_list
-                                    -#
-                                      - payment_transaction.from_account_customers.each do |from_account_customer|
-                                        = from_account_customer.full_name.blank? ? from_account_customer.phone : from_account_customer.full_name
-                                    =# payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
-                                  - else
-                                    = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
+                                  = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
                             %td= number_to_currency(payment_transaction.amt_auth)
                             -#
                               %td
