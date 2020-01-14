@@ -185,13 +185,15 @@ class AccountsController < ApplicationController
   def send_barcode_link_sms_message
     respond_to do |format|
       format.html {
+        customer_id = params[:customer_id]
 #        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
         unless @account.blank? or @account.customers.blank?
           barcode_number = @account.withdraw_barcode(params[:withdrawal_amount].blank? ? 0 : params[:withdrawal_amount])
           @account.send_barcode_link_sms_message(barcode_number)
-          redirect_to @account.customer, notice: 'Text message sent.'
+#          redirect_to @account.customer, notice: 'Text message sent.'
+          redirect_to customer_path(customer_id, account_id: @account.id), notice: 'Text message sent.'
         else
-          redirect_back fallback_location: @customer, alert: 'There was a problem sending the barcode link.'
+          redirect_back fallback_location: customer_path(customer_id, account_id: @account.id), alert: 'There was a problem sending the barcode link.'
         end
       }
       format.json{

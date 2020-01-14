@@ -178,7 +178,7 @@
               - if @account.available_balance > 0 and @account.withdrawal_all? and not @customer.phone.blank?
                 -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
                 -# %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
-                %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
+                %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0}
                   %h5
                     %i.fa.fa-money
                     %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
@@ -519,12 +519,14 @@
     money_icon.hide();
     spinner_icon.show();
     account_id = $(this).data("account-id");
+    customer_id = $(this).data("customer-id");
     amount = $(this).data("amount");
     $.ajax({
       url: "/accounts/" + account_id + "/send_barcode_link_sms_message",
       dataType: 'json',
       data: {
         withdrawal_amount: amount
+        customer_id: customer_id
       },
       success: function(data) {
         alert("Text message code sent.");
