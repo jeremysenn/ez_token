@@ -302,7 +302,7 @@ class Ability
       # Accounts
       ############
       can :manage, Account do |account|
-        account.customer == user.customer
+        account.customers.include? user.customer
       end
       
       # Customers
