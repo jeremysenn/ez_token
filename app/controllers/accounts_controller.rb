@@ -167,7 +167,8 @@ class AccountsController < ApplicationController
         end
       }
       format.json{
-        if @account.customer and @account.customer.user and @account.customer.user == current_user 
+#        if @account.customer and @account.customer.user and @account.customer.user == current_user 
+        if @account.customers and @account.users.include?(current_user)
           render json: {"barcode_string" => @image}
         else
           render json: { error: ["Error: Problem generating QR Code."] }, status: :unprocessable_entity
