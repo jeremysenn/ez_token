@@ -601,8 +601,13 @@ class Account < ActiveRecord::Base
     Rails.logger.debug "************** Account one_time_payment response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
-        unless customer.blank? or customer.phone.blank?
-          customer.send_barcode_sms_message_with_info("You've just been paid #{ActiveSupport::NumberHelper.number_to_currency(amount)} by #{company.name}! Get your cash from the PaymentATM. More information at www.tranact.com")
+#        unless customer.blank? or customer.phone.blank?
+        unless customers.blank?
+          customers.each do |customer|
+            unless customer.phone.blank?
+              customer.send_barcode_sms_message_with_info("You've just been paid #{ActiveSupport::NumberHelper.number_to_currency(amount)} by #{company.name}! Get your cash from the PaymentATM. More information at www.tranact.com")
+            end
+          end
         end
         return response.body[:ez_cash_txn_response]
       else
