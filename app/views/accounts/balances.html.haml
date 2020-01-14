@@ -58,8 +58,7 @@
                 %thead
                   %tr
                     %th ID
-                    %th First
-                    %th Last
+                    %th Holders
                     %th Type
                     %th Event
                     %th Balance
@@ -69,13 +68,9 @@
                     %tr{class: account.active? ? '' : 'table-danger'}
                       %td= account.id
                       %td
-                        - unless account.customer.blank? 
-                          = link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
-                        - else
-                          None
-                      %td
-                        - unless account.customer.blank? 
-                          = link_to "#{account.customer.last_name.blank? ? '' : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
+                        - unless account.customers.blank? 
+                          =# link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
+                          = account.customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id:  account.id))}.join(", ").html_safe
                         - else
                           None
                       %td

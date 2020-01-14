@@ -7,6 +7,7 @@
       .modal-body
         = form_tag quick_pay_transactions_path, id: 'quick_pay_form', method: 'post', multipart: true, class: 'form-horizontal' do |f|
           =# hidden_field_tag :device_id, @device.id
+          = hidden_field_tag :from_customer_id, current_user.customer_id
           .input-group.mb-3
             .input-group-prepend
               %span.input-group-text $

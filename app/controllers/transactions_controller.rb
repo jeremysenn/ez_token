@@ -178,6 +178,8 @@ class TransactionsController < ApplicationController
     @note = params[:note]
     @event_id = params[:event_id]
     @device_id = params[:device_id]
+    @from_customer_id = params[:from_customer_id]
+    @to_customer_id = params[:to_customer_id]
 #    @device_id = params[:device_id]
     if params[:file]
       @file_upload = params[:file].path
@@ -185,7 +187,7 @@ class TransactionsController < ApplicationController
     if current_user.company.allowed_to_quick_pay?
       @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
       @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
-      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id)
+      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id, @from_customer_id, @to_customer_id)
       response_code = response[:return]
     end
     unless response_code.to_i > 0
