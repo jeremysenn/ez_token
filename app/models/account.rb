@@ -95,6 +95,14 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def customer_user_names
+    unless customers.blank?
+      customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
+    else
+      company.name
+    end
+  end
+  
   def customer_user_role
     unless customer.user.blank?
       customer.user.role

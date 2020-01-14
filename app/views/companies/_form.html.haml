@@ -41,7 +41,7 @@
               =# select_tag :workout_program_id, options_from_collection_for_select(current_user.workout_programs.order(:name), "id", "name_and_client", @workout.workout_program_id), prompt: "Choose Program", style: 'width:100%;', :class => "form-control select2_clients", required: true
               .form-group
                 Cashier Account:
-                = select_tag "company[CashierActID]", options_from_collection_for_select(@company.accounts.active, "id", "customer_user_name", current_user.company.CashierActID), class: "form-control select2_accounts", style: 'width:100%', prompt: '-- Search --'
+                = select_tag "company[CashierActID]", options_from_collection_for_select(@company.accounts.active, "id", "customer_user_names", current_user.company.CashierActID), class: "form-control select2_accounts", style: 'width:100%', prompt: '-- Search --'
                 
         - unless @company.TxnActID.blank?
           .row
