@@ -325,12 +325,15 @@ class TransactionsController < ApplicationController
   # GET /transactions/1/dispute.json
   def dispute
     @from_customer_phone = params[:phone]
-    @from_customer = @transaction.from_account_customer
+#    @from_customer = @transaction.from_account_customer
+    @from_customers = @transaction.from_account_customers
     @send_notification = params[:send_notification]
     unless @send_notification == 'true'
-      unless @from_customer_phone.blank? or @from_customer_phone != @from_customer.phone
-        @from_customer = @transaction.from_account_customer
-        @to_customer = @transaction.to_account_customer
+#      unless @from_customer_phone.blank? or @from_customer_phone != @from_customer.phone
+      unless @from_customer_phone.blank?
+#        @from_customer = @transaction.from_account_customer
+#        @to_customer = @transaction.to_account_customer
+        @to_customers = @transaction.to_account_customers
       else
         flash[:alert] = "You are not allowed to access that page."
         redirect_to root_path

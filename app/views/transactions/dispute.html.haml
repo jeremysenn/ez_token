@@ -35,14 +35,18 @@
           %p.lead
             Company:
             = @transaction.company.CompanyName unless @transaction.company.blank?
-          - unless @to_customer.blank?
+          -# unless @to_customer.blank?
+          - unless @to_customers.blank?
             %p.lead
               To:
-              = @to_customer.user.blank? ? @to_customer.full_name : @to_customer.user.full_name
-          - unless @from_customer.blank?
+              =# @to_customer.user.blank? ? @to_customer.full_name : @to_customer.user.full_name
+              = @transaction.to_account_customers_list
+          -# unless @from_customer.blank?
+          - unless @from_customers.blank?
             %p.lead
               From:
-              = @from_customer.user.blank? ? @from_customer.full_name : @from_customer.user.full_name
+              =# @from_customer.user.blank? ? @from_customer.full_name : @from_customer.user.full_name
+              = @transaction.from_account_customers_list
           - unless @transaction.Note.blank?
             %p.lead
               Note:
@@ -70,8 +74,8 @@
           - unless @transaction.receipt_nbr.blank?
             %p.lead
               Receipt Number:
-              - if not @to_customer.blank? and @to_customer.anonymous?
-                = @transaction.receipt_nbr
+              -# if not @to_customer.blank? and @to_customer.anonymous?
+              = @transaction.receipt_nbr
           -#
             %p.lead
               Amount Requested:
