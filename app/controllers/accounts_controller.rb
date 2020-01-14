@@ -166,7 +166,7 @@ class AccountsController < ApplicationController
     end
     respond_to do |format|
       format.html {
-        unless @account.customer and @account.customer.user and @account.customer.user == current_user 
+        unless @account.customers and @account.users.include?(current_user)
           flash[:alert] = "You are not authorized to view this page."
           redirect_to root_path
         end
