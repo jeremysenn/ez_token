@@ -179,7 +179,8 @@ class AccountsController < ApplicationController
   def send_barcode_link_sms_message
     respond_to do |format|
       format.html {
-        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+#        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+        unless @account.blank? or @account.customers.blank?
           barcode_number = @account.withdraw_barcode(params[:withdrawal_amount].blank? ? 0 : params[:withdrawal_amount])
           @account.send_barcode_link_sms_message(barcode_number)
           redirect_to @account.customer, notice: 'Text message sent.'
@@ -188,7 +189,8 @@ class AccountsController < ApplicationController
         end
       }
       format.json{
-        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+#        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+        unless @account.blank? or @account.customers.blank?
           barcode_number = @account.withdraw_barcode(params[:withdrawal_amount].blank? ? 0 : params[:withdrawal_amount])
           @account.send_barcode_link_sms_message(barcode_number)
           render json: {"barcode_number" => barcode_number}, status: :ok

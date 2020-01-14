@@ -751,11 +751,16 @@ class Account < ActiveRecord::Base
   end
   
   def send_barcode_link_sms_message(barcode_number)
-    unless customer.blank? or customer.phone.blank?
-      payment_link = "#{SystemSetting.qrcode_html_source_value}#{barcode_number}"
-      message = "Get your cash from the ATM by clicking this link: #{payment_link}"
-      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_sms, message: { Phone: customer.phone, Msg: "#{message}"})
+#    unless customer.blank? or customer.phone.blank?
+    unless customers.blank?
+      customers.each do |customer|
+        unless customer.phone.blank?
+          payment_link = "#{SystemSetting.qrcode_html_source_value}#{barcode_number}"
+          message = "Get your cash from the ATM by clicking this link: #{payment_link}"
+          client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+          client.call(:send_sms, message: { Phone: customer.phone, Msg: "#{message}"})
+        end
+      end
     end
   end 
   
