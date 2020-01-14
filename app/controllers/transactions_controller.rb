@@ -178,8 +178,8 @@ class TransactionsController < ApplicationController
     @note = params[:note]
     @event_id = params[:event_id]
     @device_id = params[:device_id]
-    @from_customer_id = params[:from_customer_id]
-    @to_customer_id = params[:to_customer_id]
+    @from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
+    @to_customer_id = params[:to_customer_id] unless params[:from_customer_id].blank?
 #    @device_id = params[:device_id]
     if params[:file]
       @file_upload = params[:file].path
@@ -220,8 +220,8 @@ class TransactionsController < ApplicationController
       from_account_id = params[:from_account_id]
     end
     customer_barcode_id = params[:customer_barcode_id]
-    from_customer_id = params[:from_customer_id]
-    to_customer_id = params[:to_customer_id]
+    from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
+    to_customer_id = params[:to_customer_id] unless params[:to_customer_id].blank?
     if params[:file]
       @file_upload = params[:file].path
     end
@@ -295,8 +295,8 @@ class TransactionsController < ApplicationController
     note = params[:note]
     to_account_id = params[:send_payment_to_account_id]
     from_account_id = params[:from_account_id]
-    from_customer_id = params[:from_customer_id]
-    to_customer_id = params[:to_customer_id]
+    from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
+    to_customer_id = params[:to_customer_id] unless params[:to_customer_id].blank?
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
 #      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
       response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id)
