@@ -187,7 +187,7 @@ class TransactionsController < ApplicationController
     if current_user.company.allowed_to_quick_pay?
       @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
       @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
-      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id, @from_customer_id, @to_customer_id)
+      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id, @from_customer_id, @to_customer_id, current_user.id)
       response_code = response[:return]
     end
     unless response_code.to_i > 0
@@ -227,9 +227,9 @@ class TransactionsController < ApplicationController
     end
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
       unless event_id.blank?
-        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id)
+        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, current_user.id)
       else
-        response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note)
+        response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, current_user.id)
       end
       unless response.blank?
         response_code = response[:return]
@@ -299,7 +299,7 @@ class TransactionsController < ApplicationController
     to_customer_id = params[:to_customer_id] unless params[:to_customer_id].blank?
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
 #      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
-      response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id)
+      response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, current_user.id)
       unless response.blank?
         response_code = response[:return]
         unless response_code.to_i > 0
