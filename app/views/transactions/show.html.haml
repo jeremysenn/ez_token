@@ -93,6 +93,12 @@
                 Tran ID:
                 = @transaction.id
               %p.lead
+                Tran Code:
+                = @transaction.tran_code
+              %p.lead
+                Secondary Tran Code:
+                = @transaction.sec_tran_code
+              %p.lead
                 From Cust ID:
                 = link_to @transaction.FromCustID, customer_path(@transaction.FromCustID) unless @transaction.FromCustID.blank?
               %p.lead
