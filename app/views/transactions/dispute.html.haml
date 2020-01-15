@@ -9,7 +9,11 @@
           = link_to @transaction.Description, @to_customer
         - else
           = @transaction.Description
-        %small= number_to_currency(@transaction.amt_auth)
+        - unless @transaction.amt_auth.blank?
+          - if @transaction.ChpFee.blank?
+            %small= number_to_currency(@transaction.amt_auth)
+          - else
+            %small= number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
     / Main content
     %section.content
       / Default box
@@ -80,15 +84,18 @@
             %p.lead
               Amount Requested:
               = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
-            %p.lead
-              Amount Authorized:
-              = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
-            %p.lead
-              Fee:
-              = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
-          - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
-            %p.lead
-              Total:
+          %p.lead
+            Amount Authorized:
+            = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
+          %p.lead
+            Fee:
+            = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
+          -# unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
+          %p.lead
+            Total:
+            - if @transaction.ChpFee.blank?
+              = number_to_currency(@transaction.amt_auth)
+            - else
               = number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
 
           -#
