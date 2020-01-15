@@ -9,11 +9,11 @@
           = link_to @transaction.Description, @to_customer
         - else
           = @transaction.Description
-        - if @transaction.ChpFee.blank?
-          - unless @transaction.amt_auth.blank?
+        - unless @transaction.amt_auth.blank?
+          - if @transaction.ChpFee.blank?
             %small= number_to_currency(@transaction.amt_auth)
-        - else
-          %small= number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
+          - else
+            %small= number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
     / Main content
     %section.content
       / Default box
