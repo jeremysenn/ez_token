@@ -435,10 +435,11 @@ class Transaction < ActiveRecord::Base
     from_account_customers.each do |from_customer|
       from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
       unless from_customer_phone.blank?
+        total = self.amt_auth + self.ChpFee
         unless to_customer.blank?
-          message = "#{to_customer.full_name} debited #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
+          message = "#{to_customer.full_name} debited #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
         else
-          message = "#{to_account_customers_list} debited #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
+          message = "#{to_account_customers_list} debited #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
         end
         client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
         client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
