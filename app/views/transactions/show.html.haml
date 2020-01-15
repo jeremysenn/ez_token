@@ -9,7 +9,7 @@
           = link_to @transaction.Description, @to_customer
         - else
           = @transaction.Description
-        %small= number_to_currency(@transaction.amt_auth)
+        %small= number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
     / Main content
     %section.content
       / Default box
