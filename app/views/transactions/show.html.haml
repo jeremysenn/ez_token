@@ -10,7 +10,8 @@
         - else
           = @transaction.Description
         - if @transaction.ChpFee.blank?
-          %small= number_to_currency(@transaction.amt_auth)
+          - unless @transaction.amt_auth.blank?
+            %small= number_to_currency(@transaction.amt_auth)
         - else
           %small= number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
     / Main content
