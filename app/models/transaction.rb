@@ -440,11 +440,10 @@ class Transaction < ActiveRecord::Base
         else
           total = self.amt_auth + self.ChpFee
         end
-        unless to_customer.blank?
-          message = "You paid #{to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
-        else
-          message = "You paid #{to_account_customers_list} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
-        end
+#        unless to_customer.blank?
+#          message = "You paid #{to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
+#        end
+        message = "You paid #{to_account_customers_list} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
         client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
         client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
         Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
