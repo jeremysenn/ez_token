@@ -90,7 +90,7 @@ class Transaction < ActiveRecord::Base
         return "Withdrawal"
       elsif (tran_code.strip == "WDL" and sec_tran_code.strip == "REVT")
         return "Reverse Withdrawal"
-      elsif (tran_code.strip == "ALL" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "WDL" or tran_code.strip == "ALL") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "ALL"))
         return "Withdrawal All"
       elsif (tran_code.strip == "CARD" and sec_tran_code.strip == "TFR")
         return "Card Transfer"
