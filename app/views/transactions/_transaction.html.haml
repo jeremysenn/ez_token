@@ -5,6 +5,12 @@
   %td
     =# transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
     = transaction.date_time.strftime("%-m/%-d/%y")
+  %td
+    - unless from_customers.blank?
+      =# link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
+      = from_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: transaction.from_acct_id))}.join(", ").html_safe
+    - else
+      = transaction.from_account.company.name unless transaction.from_account.blank?
   - if @device.blank?
     %td
       - unless to_customers.blank?
@@ -12,19 +18,15 @@
         = to_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: transaction.to_acct_id))}.join(", ").html_safe
       - else
         = transaction.to_account.company.name unless transaction.to_account.blank?
-  %td
-    - unless from_customers.blank?
-      =# link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
-      = from_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: transaction.from_acct_id))}.join(", ").html_safe
-    - else
-      = transaction.from_account.company.name unless transaction.from_account.blank?
+  %td= transaction.type
   %td= transaction.event.blank? ? 'N/A' : transaction.event.title
   %td
     -#
       %a{"data-content" => "#{transaction.status_long_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{transaction.error_code_long_description}"} 
     = transaction.error_code_description
-  - unless @transactions_fee_total.blank? or @transactions_fee_total.zero?
-    %td= "#{transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(transaction.ChpFee)}" 
+  -#
+    - unless @transactions_fee_total.blank? or @transactions_fee_total.zero?
+      %td= "#{transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(transaction.ChpFee)}" 
   %td= "#{transaction.amt_req.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_req)}"
   %td
     - if (transaction.withdrawal? or transaction.withdrawal_all?) and not (transaction.amt_auth.blank? or transaction.amt_auth < 1)

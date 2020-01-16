@@ -13,7 +13,7 @@ class Transaction < ActiveRecord::Base
   has_one :payment, :foreign_key => "TranID"
   belongs_to :event, optional: true
   
-  scope :withdrawals, -> { where(tran_code: ["WDL", "ALL"], sec_tran_code: ["TFR", "", "ALL"]) }
+  scope :withdrawals, -> { where(tran_code: ["WDL", "ALL"], sec_tran_code: ["TFR", "", "ALL", "CASH"]) }
   scope :transfers, -> { where(tran_code: ["CARD"], sec_tran_code: ["TFR"]) }
   scope :reversals, -> { where(tran_code: ["CRED"], sec_tran_code: ["TFR"]) }
   scope :one_sided_credits, -> { where(tran_code: ["DEP"], sec_tran_code: ["REFD"]) }
@@ -86,14 +86,14 @@ class Transaction < ActiveRecord::Base
         return "ACH Deposit"
       elsif (tran_code.strip == "MON" and sec_tran_code.strip == "ORD")
         return "Money Order"
-      elsif (tran_code.strip == "WDL" and (sec_tran_code.blank? or sec_tran_code.strip == "TFR"))
+      elsif ((tran_code.strip == "WDL" or tran_code.strip == "ALL") and (sec_tran_code.blank? or sec_tran_code.strip == "TFR" or sec_tran_code.strip == "CASH"))
         return "Withdrawal"
       elsif (tran_code.strip == "WDL" and sec_tran_code.strip == "REVT")
         return "Reverse Withdrawal"
       elsif ((tran_code.strip == "WDL" or tran_code.strip == "ALL") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "ALL"))
         return "Withdrawal All"
-      elsif (tran_code.strip == "CARD" and sec_tran_code.strip == "TFR")
-        return "Card Transfer"
+      elsif ((tran_code.strip == "CARD" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "CARD"))
+        return "Transfer"
       elsif (tran_code.strip == "BILL" and sec_tran_code.strip == "PAY")
         return "Bill Pay"
       elsif (tran_code.strip == "POS" and sec_tran_code.strip == "TFR")
@@ -104,7 +104,7 @@ class Transaction < ActiveRecord::Base
         return "Fund Transfer"
       elsif (tran_code.strip == "CRED" and sec_tran_code.strip == "TFR")
         return "Account Credit"
-      elsif (tran_code.strip == "FEE" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "FEE" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "FEE"))
         return "Fee"
       elsif (tran_code.strip == "FEEC" and sec_tran_code.strip == "TFR")
         return "Fee Credit"
