@@ -68,7 +68,7 @@
                   - @accounts.each do |account|
                     %tr
                       %td= account.id
-                      %td= account.customer_user_name
+                      %td= account.customers_list
                       %td= number_to_currency(account.balance)
                       %td
                         = link_to 'Show', account, class: 'btn btn-default btn-sm'

@@ -803,6 +803,10 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def customers_list
+    customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
+  end
+  
   #############################
   #     Class Methods         #
   #############################

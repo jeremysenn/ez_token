@@ -143,7 +143,12 @@ class AccountsController < ApplicationController
     unless params[:account_ids].blank?
       params[:account_ids].each do |account_id|
         account = Account.where(ActID: account_id).first
-        account.customer.twilio_send_sms_message(@message_body, current_user.id) unless account.blank? or account.customer.blank?
+        unless account.blank?
+          account.customers.each do |customer|
+  #          account.customer.twilio_send_sms_message(@message_body, current_user.id) unless account.blank? or account.customer.blank?
+            customer.twilio_send_sms_message(@message_body, current_user.id)
+          end
+        end
       end
       redirect_back fallback_location: accounts_path, notice: 'Text message sent.'
     else
