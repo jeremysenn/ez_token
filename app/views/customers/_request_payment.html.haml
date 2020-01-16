@@ -12,7 +12,7 @@
       = hidden_field_tag :barcode_number
       = hidden_field_tag :company_id, @account.CompanyNumber
       = hidden_field_tag :customer_barcode_id
-      = hidden_field_tag :to_customer_id, current_user.customer_id
+      = hidden_field_tag :to_customer_id, @customer.id
       = hidden_field_tag :event_id, @event.id
       = hidden_field_tag :scanned_from_account_id
     #request_payment_button_group.btn-group{style: 'display:none;'}
