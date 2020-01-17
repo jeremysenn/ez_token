@@ -95,64 +95,74 @@
                 = @company.twilio_number.sid
               
       .col-md-9
-        .box.box-primary
-          .box-header.with-border
-            %h3.box-title 
-              Transfers
-              - unless @payment_transactions.blank?
-                %a{href: company_path(id: @company.id, format: "csv", :start_date => @start_date, :end_date => @end_date), class: 'btn btn-sm btn-info'}
-                  %i.fa.fa-download
-                  Download CSV
-                %br
-                %small.text-muted
-                  = "#{pluralize(number_with_delimiter(@all_payment_transactions.count), 'record')} found"
-            .box-tools
-              = form_tag company_path(id: @company.id), :method => 'get', :class => "form-inline" do
-                = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                To
-                = text_field_tag :end_date, nil, :placeholder => "End Date", value: "#{@end_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @end_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                &nbsp;
-                = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-                  %i.fa.fa-search
-          .box-body.no-padding
-            - unless @payment_transactions.blank?
-              .table-responsive
-                %table.table.table-striped.table-condensed
-                  %thead
-                    %tr
-                      %th= '#'
-                      %th Date
-                      %th To
-                      %th From
-                      %th Fee
-                      %th Amount
-                  %tbody
-                    - @payment_transactions.each do |payment_transaction|
-                      -#
-                        - to_customer = payment_transaction.to_account_customer
-                        - from_customer = payment_transaction.from_account_customer
-                      - to_customers = payment_transaction.to_account_customers
-                      - from_customers = payment_transaction.from_account_customers
-                      %tr{class: payment_transaction.reversed? ? 'table-danger' : payment_transaction.error? ? 'table-warning' : ''}
-                        %td= link_to payment_transaction.id, payment_transaction
-                        %td= payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
-                        %td
-                          - unless to_customers.blank?
-                            = to_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: payment_transaction.to_acct_id))}.join(", ").html_safe
-                            =# link_to to_customer.identity, customer_path(to_customer, account_id: payment_transaction.to_acct_id) unless payment_transaction.to_account.blank?
-                          - else
-                            = payment_transaction.to_account.company.name unless payment_transaction.to_account.blank?
-                        %td
-                          - unless from_customers.blank?
-                            = from_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: payment_transaction.from_acct_id))}.join(", ").html_safe
-                            =# link_to from_customer.identity, customer_path(from_customer, account_id: payment_transaction.from_acct_id) unless payment_transaction.from_account.blank?
-                          - else
-                            = payment_transaction.from_account.company.name unless payment_transaction.from_account.blank?
-                        %td= "#{payment_transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(payment_transaction.ChpFee)}" 
-                        %td= "#{payment_transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(payment_transaction.amt_auth)}"
-            - else
-              .col-sm-12
-                %h5.lead None
-          .box-footer
-            .pull-right= paginate @payment_transactions unless @payment_transactions.blank?
-           
+        %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+          %li.nav-item
+            %a#transfers-tab.nav-link.active{"aria-controls" => "transfers", "aria-selected" => "true", "data-toggle" => "tab", :href => "#transfers", :role => "tab"} 
+              = "Transfers"
+          %li.nav-item
+            %a#cash-tab.nav-link{"aria-controls" => "cash", "aria-selected" => "true", "data-toggle" => "tab", :href => "#cash", :role => "tab"} 
+              = "Cash Position"
+        #myTabContent.tab-content
+          #transfers.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+            .box.box-primary
+              .box-header.with-border
+                %h3.box-title 
+                  -# Transfers
+                  - unless @payment_transactions.blank?
+                    %a{href: company_path(id: @company.id, format: "csv", :start_date => @start_date, :end_date => @end_date), class: 'btn btn-sm btn-info'}
+                      %i.fa.fa-download
+                      CSV
+                    %br
+                    %small.text-muted
+                      = "#{pluralize(number_with_delimiter(@all_payment_transactions.count), 'record')} found"
+                .box-tools
+                  = form_tag company_path(id: @company.id), :method => 'get', :class => "form-inline" do
+                    = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                    To
+                    = text_field_tag :end_date, nil, :placeholder => "End Date", value: "#{@end_date.blank? ? (@transaction_id_or_receipt_number.blank? ? Date.today : '') : @end_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                    &nbsp;
+                    = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                      %i.fa.fa-search
+              .box-body.no-padding
+                - unless @payment_transactions.blank?
+                  .table-responsive
+                    %table.table.table-striped.table-condensed
+                      %thead
+                        %tr
+                          %th= '#'
+                          %th Date
+                          %th To
+                          %th From
+                          %th Fee
+                          %th Amount
+                      %tbody
+                        - @payment_transactions.each do |payment_transaction|
+                          -#
+                            - to_customer = payment_transaction.to_account_customer
+                            - from_customer = payment_transaction.from_account_customer
+                          - to_customers = payment_transaction.to_account_customers
+                          - from_customers = payment_transaction.from_account_customers
+                          %tr{class: payment_transaction.reversed? ? 'table-danger' : payment_transaction.error? ? 'table-warning' : ''}
+                            %td= link_to payment_transaction.id, payment_transaction
+                            %td= payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
+                            %td
+                              - unless to_customers.blank?
+                                = to_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: payment_transaction.to_acct_id))}.join(", ").html_safe
+                                =# link_to to_customer.identity, customer_path(to_customer, account_id: payment_transaction.to_acct_id) unless payment_transaction.to_account.blank?
+                              - else
+                                = payment_transaction.to_account.company.name unless payment_transaction.to_account.blank?
+                            %td
+                              - unless from_customers.blank?
+                                = from_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: payment_transaction.from_acct_id))}.join(", ").html_safe
+                                =# link_to from_customer.identity, customer_path(from_customer, account_id: payment_transaction.from_acct_id) unless payment_transaction.from_account.blank?
+                              - else
+                                = payment_transaction.from_account.company.name unless payment_transaction.from_account.blank?
+                            %td= "#{payment_transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(payment_transaction.ChpFee)}" 
+                            %td= "#{payment_transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(payment_transaction.amt_auth)}"
+                - else
+                  .col-sm-12
+                    %h5.lead None
+              .box-footer
+                .pull-right= paginate @payment_transactions unless @payment_transactions.blank?
+          #cash.tab-pane.fade{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+            = render partial: 'cash_position'

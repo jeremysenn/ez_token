@@ -220,6 +220,7 @@ class AccountsController < ApplicationController
   def balances
     @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
     @account_types = current_user.super? ? AccountType.all : current_user.company.account_types
+    @company = current_user.company
     @sign = params[:sign].blank? ? 'Negative' : params[:sign]
     unless @account_types.blank?
       @type_id = params[:type_id]

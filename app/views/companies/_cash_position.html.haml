@@ -1,0 +1,35 @@
+.box.box-success
+  .box-header.with-border
+    %h3.box-title 
+      - unless @account_types.blank?
+        %a{href: cash_position_company_path(id: @company.id, format: "csv"), class: 'btn btn-sm btn-info'}
+          %i.fa.fa-download
+          CSV
+    %small.text-muted
+      = "#{pluralize(number_with_delimiter(@account_types.count), 'wallet types')} found"
+    %strong.pull-right
+      = "Total: #{number_to_currency(@company.accounts_balance_total)}"
+  .box-body.no-padding
+    - unless @account_types.blank?
+      .table-responsive
+        %table.table.table-striped.table-condensed
+          %thead
+            %tr
+              %th Name
+              %th Amount
+          %tbody
+            - @account_types.each do |account_type|
+              %tr
+                %td= account_type.description
+                %td= number_to_currency(account_type.accounts_cash_total)
+            - unless @company.TxnActID.blank?
+              %tr
+                %td Company Account
+                %td= number_to_currency(@company.transaction_account.balance)
+            - unless @company.FeeActID.blank?
+              %tr
+                %td Fee Account
+                %td= number_to_currency(@company.fee_account.balance)
+    - else
+      .col-sm-12
+        %h5.lead None
