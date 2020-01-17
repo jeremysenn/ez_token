@@ -72,7 +72,7 @@
                         -#
                           - account.customers.each do |customer|
                             = link_to "#{customer.full_name.blank? ? customer.phone : customer.full_name}", customer_path(customer.id, account_id: account.id)
-                    %td= account.account_type.description unless account.account_type.blank?
+                    %td= account.account_type.blank? ? 'N/A' : account.account_type.description
                     -#
                       %td
                         - unless account.events.blank?
