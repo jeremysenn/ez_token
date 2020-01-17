@@ -434,16 +434,11 @@ class Transaction < ActiveRecord::Base
   def send_text_message_receipt
     from_account_customers.each do |from_customer|
       from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
-      unless from_customer_phone.blank?
-        if self.ChpFee.blank?
-          total = self.amt_auth
-        else
-          total = self.amt_auth + self.ChpFee
-        end
+      unless from_customer_phone.blank? or self.amt_auth.blank?
 #        unless to_customer.blank?
 #          message = "You paid #{to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
 #        end
-        message = "You paid #{to_account_customers_list} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: http://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
+        message = "You paid #{to_account_customers_list} #{ActiveSupport::NumberHelper.number_to_currency(self.amt_auth)}. Click here to review: http://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
         client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
         client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
         Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
