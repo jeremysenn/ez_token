@@ -561,47 +561,47 @@ class Account < ActiveRecord::Base
   end
   
   def can_fund_by_ach?
-    account_type.can_fund_by_ach?
+    account_type.can_fund_by_ach? unless account_type.blank?
   end
   
   def can_fund_by_cc?
-    account_type.can_fund_by_cc?
+    account_type.can_fund_by_cc? unless account_type.blank?
   end
   
   def can_fund_by_cash?
-    account_type.can_fund_by_cash?
+    account_type.can_fund_by_cash? unless account_type.blank?
   end
   
   def can_withdraw?
-    account_type.can_withdraw?
+    account_type.can_withdraw? unless account_type.blank?
   end
   
   def withdrawal_all?
-    account_type.withdrawal_all?
+    account_type.withdrawal_all? unless account_type.blank?
   end
   
   def can_pull?
-    account_type.can_pull?
+    account_type.can_pull? unless account_type.blank?
   end
   
   def can_request_payment_by_search?
-    account_type.can_request_payment_by_search?
+    account_type.can_request_payment_by_search? unless account_type.blank?
   end
   
   def can_request_payment_by_scan?
-    account_type.can_request_payment_by_scan?
+    account_type.can_request_payment_by_scan? unless account_type.blank?
   end
   
   def can_send_payment?
-    account_type.can_send_payment?
+    account_type.can_send_payment? unless account_type.blank?
   end
   
   def can_be_pulled_by_scan?
-    account_type.can_be_pulled_by_scan?
+    account_type.can_be_pulled_by_scan? unless account_type.blank?
   end
   
   def can_be_pushed_by_scan?
-    account_type.can_be_pushed_by_scan?
+    account_type.can_be_pushed_by_scan? unless account_type.blank?
   end
   
   def one_time_payment(amount, note, receipt_number)
