@@ -756,7 +756,7 @@ class Account < ActiveRecord::Base
 #  end
   
   def contract
-    account_type.contract
+    account_type.contract unless account_type.blank?
   end
   
   def send_barcode_link_sms_message(barcode_number)
