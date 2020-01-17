@@ -140,6 +140,7 @@ class AccountsController < ApplicationController
   
   def twilio_send_sms_message
     @message_body = params[:message_body]
+    @customer_id = params[:customer_id]
     unless params[:account_ids].blank?
       params[:account_ids].each do |account_id|
         account = Account.where(ActID: account_id).first
@@ -150,9 +151,15 @@ class AccountsController < ApplicationController
           end
         end
       end
-      redirect_back fallback_location: accounts_path, notice: 'Text message sent.'
+      flash[:notice] = 'Text message sent.'
+      unless @customer_id.blank?
+        redirect_to customer_path(@customer_id)
+      else
+        redirect_to accounts_path
+      end
     else
-      redirect_back fallback_location: accounts_path, alert: 'You must select at least one account to text message.'
+      flash[:alert] = 'You must select at least one account to text message.'
+      redirect_to accounts_path
     end
   end
   
