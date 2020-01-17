@@ -155,8 +155,7 @@ class AccountsController < ApplicationController
       unless @customer_id.blank?
         redirect_to customer_path(@customer_id)
       else
-#        redirect_to accounts_path
-        redirect_back fallback_location: accounts_path
+        redirect_to accounts_path
       end
     else
       flash[:alert] = 'You must select at least one account to text message.'
