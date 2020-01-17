@@ -113,7 +113,7 @@ class CustomersController < ApplicationController
       @sms_messages = @customer.sms_messages.order("created_at DESC").page(params[:messages]).per(10)
   #    @events = @customer.events
 #      @events = @account.events
-      @contract = Contract.find_by(id: @account.account_type.contract_id)
+      @contract = Contract.find_by(id: @account.account_type.contract_id) unless @account.account_type.blank?
       @user = @customer.user
       unless @user.blank? or @contract.blank?
         @signature = Signature.where(contract_id: @contract.id, user_id: @customer.user.id).last
