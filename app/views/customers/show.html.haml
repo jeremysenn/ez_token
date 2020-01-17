@@ -74,7 +74,7 @@
                       Inactive
                     %br
                   %i.fa.fa-google-wallet
-                  = @account.account_type.description
+                  = @account.account_type.blank? ? 'Wallet' : account.account_type.description
                   %br
                   - unless @account.MinBalance.blank? or @account.MinBalance.zero?
                     %span.btn.btn-info{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "left"}
