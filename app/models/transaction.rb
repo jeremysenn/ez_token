@@ -14,7 +14,7 @@ class Transaction < ActiveRecord::Base
   belongs_to :event, optional: true
   
   scope :withdrawals, -> { where(tran_code: ["WDL", "ALL"], sec_tran_code: ["TFR", "", "ALL", "CASH"]) }
-  scope :transfers, -> { where(tran_code: ["CARD"], sec_tran_code: ["TFR"]) }
+  scope :transfers, -> { where(tran_code: ["CARD", "TFR"], sec_tran_code: ["TFR", "CARD"]) }
   scope :reversals, -> { where(tran_code: ["CRED", "TFR"], sec_tran_code: ["TFR", "CRED"]) }
   scope :one_sided_credits, -> { where(tran_code: ["DEP"], sec_tran_code: ["REFD"]) }
   scope :fees, -> { where(tran_code: ["FEE"], sec_tran_code: ["TFR"]) }
