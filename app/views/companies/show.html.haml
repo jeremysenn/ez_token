@@ -131,8 +131,8 @@
                         %tr
                           %th= '#'
                           %th Date
-                          %th To
                           %th From
+                          %th To
                           %th Fee
                           %th Amount
                       %tbody
@@ -146,17 +146,18 @@
                             %td= link_to payment_transaction.id, payment_transaction
                             %td= payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
                             %td
-                              - unless to_customers.blank?
-                                = to_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: payment_transaction.to_acct_id))}.join(", ").html_safe
-                                =# link_to to_customer.identity, customer_path(to_customer, account_id: payment_transaction.to_acct_id) unless payment_transaction.to_account.blank?
-                              - else
-                                = payment_transaction.to_account.company.name unless payment_transaction.to_account.blank?
-                            %td
                               - unless from_customers.blank?
                                 = from_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: payment_transaction.from_acct_id))}.join(", ").html_safe
                                 =# link_to from_customer.identity, customer_path(from_customer, account_id: payment_transaction.from_acct_id) unless payment_transaction.from_account.blank?
                               - else
                                 = payment_transaction.from_account.company.name unless payment_transaction.from_account.blank?
+                            %td
+                              - unless to_customers.blank?
+                                = to_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: payment_transaction.to_acct_id))}.join(", ").html_safe
+                                =# link_to to_customer.identity, customer_path(to_customer, account_id: payment_transaction.to_acct_id) unless payment_transaction.to_account.blank?
+                              - else
+                                = payment_transaction.to_account.company.name unless payment_transaction.to_account.blank?
+                            
                             %td= "#{payment_transaction.ChpFee.blank? ? number_to_currency(0) : number_to_currency(payment_transaction.ChpFee)}" 
                             %td= "#{payment_transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(payment_transaction.amt_auth)}"
                 - else
