@@ -129,8 +129,7 @@
                     #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
                       .panel-body
                         = render 'send_payment'
-              -# if current_user.basic? and @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
-              - if @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
+              - if (current_user.basic? or (current_user.admin? and @customer.user.blank?)) and @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
                 - unless @account.withdrawal_all?
                   %p
                     .panel.panel-default
@@ -172,7 +171,7 @@
                       = render 'withdrawal'
                 
             - if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
-              %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
+              %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment", style: 'margin-top: 5px;'}
                 %h5
                   %i.fa.fa-dollar
                   One Time Payment
