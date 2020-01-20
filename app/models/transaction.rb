@@ -102,7 +102,7 @@ class Transaction < ActiveRecord::Base
         return "Wire Transfer"
       elsif (tran_code.strip == "FUND" and sec_tran_code.strip == "TFR")
         return "Fund Transfer"
-      elsif (tran_code.strip == "CRED" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "CRED" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "CRED"))
         return "Account Credit"
       elsif ((tran_code.strip == "FEE" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "FEE"))
         return "Fee"
