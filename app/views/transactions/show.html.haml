@@ -14,6 +14,8 @@
             %small= number_to_currency(@transaction.amt_auth)
           - else
             %small= number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
+        - else
+          %small= number_to_currency(0)
     / Main content
     %section.content
       / Default box
@@ -122,10 +124,10 @@
                   = "#{@transaction.receipt_nbr.blank? ? 'N/A' : @transaction.receipt_nbr}"
               %p.lead
                 Amount Requested:
-                = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
+                = "#{@transaction.amt_req.blank? ? number_to_currency(0) : number_to_currency(@transaction.amt_req)}"
               %p.lead
                 Amount Authorized:
-                = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
+                = "#{@transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(@transaction.amt_auth)}"
               - unless @transaction.fee_transfer?
                 %p.lead
                   Fee:
