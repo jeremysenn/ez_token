@@ -108,6 +108,8 @@ class Transaction < ActiveRecord::Base
         return "Fee"
       elsif ((tran_code.strip == "FEEC" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "FEEC"))
         return "Fee Credit"
+      elsif (tran_code.strip == "TFR" and sec_tran_code.strip == "PMT")
+        return "Balancing"
       else
         return "Unknown"
       end
