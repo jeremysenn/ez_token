@@ -18,8 +18,8 @@ class Transaction < ActiveRecord::Base
   scope :reversals, -> { where(tran_code: ["CRED"], sec_tran_code: ["TFR"]) }
   scope :one_sided_credits, -> { where(tran_code: ["DEP"], sec_tran_code: ["REFD"]) }
   scope :fees, -> { where(tran_code: ["FEE"], sec_tran_code: ["TFR"]) }
-  scope :fee_reversals, -> { where(tran_code: ["FEEC"], sec_tran_code: ["TFR"]) }
-  scope :fees_and_fee_reversals, -> { where(tran_code: ["FEE","FEEC"], sec_tran_code: ["TFR"]) }
+  scope :fee_reversals, -> { where(tran_code: ["TFR" "FEEC"], sec_tran_code: ["TFR", "FEEC"]) }
+  scope :fees_and_fee_reversals, -> { where(tran_code: ["TFR","FEE","FEEC"], sec_tran_code: ["TFR","FEE","FEEC"]) }
   scope :checks, -> { where(tran_code: ["CHK"], sec_tran_code: ["TFR"]) }
   scope :not_fees, -> { where.not(tran_code: ["FEE"]) }
   scope :not_fees_and_not_withdrawals, -> { where.not(tran_code: ["FEE", "WDL", "ALL"]) }
@@ -106,7 +106,7 @@ class Transaction < ActiveRecord::Base
         return "Account Credit"
       elsif ((tran_code.strip == "FEE" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "FEE"))
         return "Fee"
-      elsif (tran_code.strip == "FEEC" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "FEEC" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "FEEC"))
         return "Fee Credit"
       else
         return "Unknown"
