@@ -5,8 +5,6 @@
         %a{href: cash_position_company_path(id: @company.id, format: "csv"), class: 'btn btn-sm btn-info'}
           %i.fa.fa-download
           CSV
-    %small.text-muted
-      = "#{pluralize(number_with_delimiter(@account_types.count), 'wallet types')} found"
     %strong.pull-right
       = "Total: #{number_to_currency(@company.accounts_balance_total)}"
   .box-body.no-padding

@@ -325,6 +325,10 @@ class User < ApplicationRecord
     admin? or collaborator? or super?
   end
   
+  def can_balance?
+    admin?
+  end
+  
   def format_phone_before_create
     self.phone = "#{phone.gsub(/([-() ])/, '')}" if phone
   end

@@ -36,7 +36,7 @@
       - if current_user.can_view_accounts?
         %li.nav-item.bordered
           .text-center
-            %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts') ?  "text-light-blue" : ""}
+            %a.nav-link{:href => accounts_path, :class => (params[:controller] == 'accounts' and not params[:action] == 'balances') ?  "text-light-blue" : ""}
               %i.fa.fa-male.fa-lg
               %br
               Accounts
@@ -80,6 +80,13 @@
               %i.fa.fa-bolt.fa-lg
               %br
               Transactions
+      - if current_user.can_edit_accounts?
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => balances_accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'balances') ?  "text-light-blue" : ""}
+              %i.fa.fa-dollar
+              %br
+              Balances
       
     %form.form-inline.my-2.my-lg-0
       .my-2.my-sm-0.dropdown
@@ -119,10 +126,11 @@
             %a.dropdown-item{:href => fine_print_path}
               %i.fa.fa-handshake-o
               Contracts
-          - if current_user.can_edit_accounts?
-            %a.dropdown-item{:href => balances_accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'balances') ?  "active" : ""}
-              %i.fa.fa-dollar
-              Balances
+          -#
+            - if current_user.can_edit_accounts?
+              %a.dropdown-item{:href => balances_accounts_path, :class => (params[:controller] == 'accounts' and params[:action] == 'balances') ?  "active" : ""}
+                %i.fa.fa-dollar
+                Balances
             %a.dropdown-item{:href => ach_logs_path, :class => (params[:controller] == 'ach_logs' and params[:action] == 'index') ?  "active" : ""}
               %i.fa.fa-exchange
               ACH Logs

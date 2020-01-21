@@ -98,7 +98,7 @@ class AccountType < ActiveRecord::Base
   def accounts_cash_total
     sum = 0
     accounts.each do |account|
-      sum = sum + account.balance unless account.balance.blank?
+      sum = sum + account.balance unless account.balance.blank? or account == account.company.transaction_account
     end
     return sum
   end
