@@ -13,7 +13,7 @@ class Transaction < ActiveRecord::Base
   has_one :payment, :foreign_key => "TranID"
   belongs_to :event, optional: true
   
-  scope :withdrawals, -> { where(tran_code: ["WDL", "ALL"], sec_tran_code: ["TFR", "", "ALL", "CASH"]) }
+  scope :withdrawals, -> { where(tran_code: ["WDL", "WDL ", "ALL" "All "], sec_tran_code: ["TFR", "", "ALL", "All ", "CASH", "CASH "]) }
   scope :transfers, -> { where(tran_code: ["CARD", "TFR"], sec_tran_code: ["TFR", "CARD"]) }
   scope :reversals, -> { where(tran_code: ["CRED", "TFR"], sec_tran_code: ["TFR", "CRED"]) }
   scope :one_sided_credits, -> { where(tran_code: ["DEP"], sec_tran_code: ["REFD"]) }
