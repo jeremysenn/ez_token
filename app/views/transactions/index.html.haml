@@ -2,30 +2,33 @@
   .container-fluid
     / Content Header (Page header)
     %section.content-header
-      = render 'shared/flash_messages'
-      %h1
-        %i.fa.fa-bolt
-        EZcash Transactions
-        .pull-right
-          = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: 'form-inline' do |f|
-            .input-group
-              = hidden_field_tag :type, 'Transfer'
-              = search_field_tag :transaction_id, params[:transaction_id], :placeholder => "Transfer ID or Reference #", class: "form-control", autofocus: true, style: "width: 200px;"
-              .input-group-append
-                %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                  %i.fa.fa-search
-        -#
-          - unless @transactions.blank?
-            .pull-right
-              %a{href: transactions_path(format: "csv", :type => @type, 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date), class: 'btn bg-orange'}
-                %i.fa.fa-download
-                Download CSV
+      .row
+        = render 'shared/flash_messages'
+        .col-xs-12.col-md-7
+          %h3
+            %i.fa.fa-bolt
+            Transactions
+        .col-xs-12.col-md-5
+          .pull-right
+            = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: 'form-inline' do |f|
+              .input-group
+                = hidden_field_tag :type, 'Transfer'
+                = search_field_tag :transaction_id, params[:transaction_id], :placeholder => "Transfer ID or Reference #", class: "form-control", autofocus: true, style: "width: 200px;"
+                .input-group-append
+                  %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+                    %i.fa.fa-search
+            -#
+              - unless @transactions.blank?
+                .pull-right
+                  %a{href: transactions_path(format: "csv", :type => @type, 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date), class: 'btn bg-orange'}
+                    %i.fa.fa-download
+                    Download CSV
 
     / Main content
     %section.content
       / Default box
       .row
-        .col-md-3
+        .col-xs-12.col-md-3
           / Profile Image
           .box.box-primary
             .box-body.box-profile
@@ -57,7 +60,7 @@
                         Fee Reversals
                       .pull-right.text-danger= "(#{number_to_currency(@transaction_fee_reversal_total)})"
               
-        .col-md-9
+        .col-xs-12.col-md-9
           .box.box-primary
             .box-header.with-border
               %h3.box-title 
