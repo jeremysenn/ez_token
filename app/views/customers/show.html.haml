@@ -108,16 +108,16 @@
 
             #accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist"}
               - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.can_pull?
-                %p
-                  .panel.panel-default
-                    #headingOne.panel-heading{:role => "tab"}
-                      %h4.panel-title
-                        %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or (@event.accounts.can_be_pulled_by_search.blank? and @event.accounts.can_be_pulled_by_scan.blank?)) ? 'disabled' : ''}"}
-                          %i.fa.fa-long-arrow-right
-                          Request Payment
-                    #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
-                      .panel-body
-                        = render 'request_payment'
+                -# %p
+                .panel.panel-default
+                  #headingOne.panel-heading{:role => "tab"}
+                    %h4.panel-title
+                      %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or (@event.accounts.can_be_pulled_by_search.blank? and @event.accounts.can_be_pulled_by_scan.blank?)) ? 'disabled' : ''}"}
+                        %i.fa.fa-long-arrow-right
+                        Request Payment
+                  #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
+                    .panel-body
+                      = render 'request_payment'
               - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.available_balance > 0 and @account.can_send_payment?
                 %p
                   .panel.panel-default
