@@ -71,6 +71,18 @@
                 %p.lead
                   Total:
                   = number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
+              %p
+                - @transaction.images.each do |image|
+                  .col-xs-12.col-sm-2.col-md-2
+                    %a{href: "#image_popup_#{image.id}", "data-toggle" => "modal"}
+                      %img.img-fluid.img-thumbnail{:alt => image.id, :src => image.preview_data_uri}
+                  %div{:id => "image_popup_#{image.id}", :class => "modal fade", :tabindex => "-1", :style => "display:none;"}
+                    .modal-dialog.modal-lg
+                      .modal-content
+                        .modal-body
+                          %img.img-fluid{:alt => image.id, :src => image.jpeg_image_data_uri}
+              - unless @transaction.upload_file.blank? or @transaction.upload_file.url.blank?
+                = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
             #advanced.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
               %p.lead
                 Event:
@@ -215,18 +227,19 @@
                 %p.lead
                   Note:
                   = @transaction.Note
-              %p
-                - @transaction.images.each do |image|
-                  .col-xs-12.col-sm-2.col-md-2
-                    %a{href: "#image_popup_#{image.id}", "data-toggle" => "modal"}
-                      %img.img-fluid.img-thumbnail{:alt => image.id, :src => image.preview_data_uri}
-                  %div{:id => "image_popup_#{image.id}", :class => "modal fade", :tabindex => "-1", :style => "display:none;"}
-                    .modal-dialog.modal-lg
-                      .modal-content
-                        .modal-body
-                          %img.img-fluid{:alt => image.id, :src => image.jpeg_image_data_uri}
-              - unless @transaction.upload_file.blank? or @transaction.upload_file.url.blank?
-                = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
+              -#
+                %p
+                  - @transaction.images.each do |image|
+                    .col-xs-12.col-sm-2.col-md-2
+                      %a{href: "#image_popup_#{image.id}", "data-toggle" => "modal"}
+                        %img.img-fluid.img-thumbnail{:alt => image.id, :src => image.preview_data_uri}
+                    %div{:id => "image_popup_#{image.id}", :class => "modal fade", :tabindex => "-1", :style => "display:none;"}
+                      .modal-dialog.modal-lg
+                        .modal-content
+                          .modal-body
+                            %img.img-fluid{:alt => image.id, :src => image.jpeg_image_data_uri}
+                - unless @transaction.upload_file.blank? or @transaction.upload_file.url.blank?
+                  = image_tag(asset_path(@transaction.upload_file.url), class: 'center image img-responsive col-xs-12 col-sm-6')
             .box-footer
               = link_to 'Back', :back, class: 'btn btn-default'
               - if current_user.administrator? or current_user.collaborator?
