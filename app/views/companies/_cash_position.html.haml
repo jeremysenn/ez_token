@@ -5,8 +5,9 @@
         %a{href: cash_position_company_path(id: @company.id, format: "csv"), class: 'btn btn-sm btn-info'}
           %i.fa.fa-download
           CSV
-    %strong.pull-right
-      = "Total: #{number_to_currency(@company.accounts_balance_total)}"
+    -#
+      %strong.pull-right
+        = "Total: #{number_to_currency(@company.accounts_balance_total)}"
   .box-body.no-padding
     - unless @account_types.blank?
       .table-responsive
@@ -28,6 +29,11 @@
               %tr
                 %td Fee Account
                 %td= number_to_currency(@company.fee_account.balance)
+          %tfoot
+            %tr
+              %td
+              %td= "Total: #{number_to_currency(@company.accounts_balance_total)}"
+            
     - else
       .col-sm-12
         %h5.lead None
