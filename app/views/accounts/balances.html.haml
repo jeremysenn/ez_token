@@ -58,8 +58,8 @@
                   = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
                     %i.fa.fa-search
               .box-tools.pull-left
-              %small.text-muted
-                = "#{pluralize(number_with_delimiter(@total_accounts_results.count), 'account')} found"
+                %small.text-muted
+                  = "#{pluralize(number_with_delimiter(@total_accounts_results.count), 'account')} found"
               %strong.pull-right
                 =# "Total: #{number_to_currency(@balances_sum)}"
                 -# if current_user.can_edit_accounts? and not @accounts.blank? and not @event_id.blank? and @type_id == '1' and not current_user.company.cashier_account.blank?
