@@ -18,8 +18,18 @@
               %th Amount
           %tbody
             - @account_types.each do |account_type|
+              - cash_total = account_type.accounts_cash_total
               %tr
-                %td= account_type.description
+                %td
+                  - unless cash_total.zero?
+                    %a{"aria-controls" => "collapseAccounts", "aria-expanded" => "false", "data-toggle" => "collapse", :href => "#accounts"}
+                      = account_type.description
+                    #collapseAccounts.collapse
+                      .well
+                        - account_type.accounts.with_balance.each do |account|
+                          = account.customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id:  account.id))}.join(", ").html_safe
+                  - else
+                    = account_type.description
                 %td= number_to_currency(account_type.accounts_cash_total)
             - unless @company.TxnActID.blank?
               %tr
