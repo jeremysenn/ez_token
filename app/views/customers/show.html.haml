@@ -122,7 +122,7 @@
                 %p
                   .panel.panel-default
                     #headingTwo.panel-heading{:role => "tab"}
-                      %h4.panel-title
+                      .panel-title
                         %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseTwo", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseTwo", :role => "button", class: "#{@account.events.blank? ? 'disabled' : ''}"}
                           %i.fa.fa-long-arrow-left
                           Send Payment
@@ -135,7 +135,7 @@
                   %p
                     .panel.panel-default
                       #headingThree.panel-heading{:role => "tab"}
-                        %h4.panel-title
+                        .panel-title
                           %a.btn.btn-lg.btn-default.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
                             %i.fa.fa-money
                             Withdraw
