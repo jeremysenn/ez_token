@@ -15,6 +15,9 @@
               %i.fa.fa-spinner.fa-spin.fa-3x.fa-fw
             %img{id: "company_#{@account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
       .modal-footer
+        %a.btn.btn-default{href: barcode_customer_path(@customer.id)}
+          %i.fa.fa-print
+          Print
         = link_to "Done", nil, :onclick => "javascript:window.location.reload()", class: 'btn btn-default', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Done"}
 
 -#

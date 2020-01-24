@@ -129,7 +129,8 @@
                     #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
                       .panel-body
                         = render 'send_payment'
-              - if (current_user.basic? or (current_user.admin? and @customer.user.blank?)) and @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
+              -# if (current_user.basic? or (current_user.admin? and @customer.user.blank?)) and @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
+              - if @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
                 - unless @account.withdrawal_all?
                   %p
                     .panel.panel-default
@@ -170,19 +171,20 @@
                     .box-body
                       = render 'withdrawal'
                 
-            - if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
+            -# if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
+            - if @account and @account.active? and (current_user.administrator? or current_user.collaborator?)
               %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment", style: 'margin-top: 5px;'}
                 %h5
                   %i.fa.fa-dollar
-                  One Time Payment
-              - if @account.available_balance > 0 and @account.withdrawal_all? and not @customer.phone.blank?
+                  Payment
+              - if @account.available_balance > 0 and @account.withdrawal_all?
                 -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
                 -# %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
                 %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0}
                   %h5
-                    %i.fa.fa-money
+                    %i.fa.fa-qrcode
                     %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                    Send Payment Code
+                    Send Code
               - unless @customer.phone.blank?
                 %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
                   %h5
@@ -365,8 +367,8 @@
                           %th Date
                           -#
                             %th Description
-                          %th To
                           %th From
+                          %th To
                           %th Amount
                           -#
                             %th
@@ -378,16 +380,6 @@
                               = link_to payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), payment_transaction
                             -#
                               %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
-                            %td
-                              -# unless payment_transaction.to_account_customer.blank? 
-                              - unless payment_transaction.to_account_customers.blank? 
-                                = payment_transaction.to_account_customers_list
-                                -#
-                                  - payment_transaction.to_account_customers.each do |to_account_customer|
-                                    = to_account_customer.full_name
-                                =# payment_transaction.to_account_customer.full_name.blank? ? payment_transaction.to_account_customer.phone : payment_transaction.to_account_customer.full_name
-                              - else
-                                = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
                             %td
                               - if payment_transaction.cash_deposit? or payment_transaction.ach_deposit?
                                 = payment_transaction.Description
@@ -401,6 +393,16 @@
                                   =# payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
                                 - else
                                   = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
+                            %td
+                              -# unless payment_transaction.to_account_customer.blank? 
+                              - unless payment_transaction.to_account_customers.blank? 
+                                = payment_transaction.to_account_customers_list
+                                -#
+                                  - payment_transaction.to_account_customers.each do |to_account_customer|
+                                    = to_account_customer.full_name
+                                =# payment_transaction.to_account_customer.full_name.blank? ? payment_transaction.to_account_customer.phone : payment_transaction.to_account_customer.full_name
+                              - else
+                                = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
                             %td= number_to_currency(payment_transaction.amt_auth)
                             -#
                               %td
