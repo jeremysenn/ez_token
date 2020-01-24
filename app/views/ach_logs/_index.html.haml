@@ -4,7 +4,7 @@
     - unless browser.device.mobile?
       .box-tools
         = form_tag "#{current_page?(balances_accounts_path) ? balances_accounts_path : ach_logs_path}", :method => 'get', :class => "form-inline" do
-          = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: current_user.collaborator? ? nil : 'All events', class: "form-control"
+          = select_tag :account_log_event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: current_user.collaborator? ? nil : 'All events', class: "form-control"
           &nbsp;
           = select_tag :type, options_for_select([['Billed Directly', '0'],['Club Report', '1'],['Details Report', '2']], @type), class: "form-control"
           &nbsp;
@@ -16,7 +16,7 @@
             %i.fa.fa-search
     - else
       = form_tag "#{current_page?(balances_accounts_path) ? balances_accounts_path : ach_logs_path}", :method => 'get', :class => "form-horizontal" do
-        .form-group= select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
+        .form-group= select_tag :account_log_event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
         .form-group
           = select_tag :type, options_for_select([['Billed Directly', '0'],['Club Report', '1'],['Details Report', '2']], @type), class: "form-control"
         .form-group
