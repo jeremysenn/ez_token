@@ -32,7 +32,8 @@
           %tfoot
             %tr
               %td
-              %td= "Total: #{number_to_currency(@company.accounts_balance_total)}"
+              %td
+                %strong= "Total: #{number_to_currency(@company.accounts_balance_total)}"
             
     - else
       .col-sm-12
