@@ -15,6 +15,26 @@
               %i.fa.fa-spinner.fa-spin.fa-3x.fa-fw
             %img{id: "company_#{@account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
       .modal-footer
+        - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?)
+          %a.btn.btn-default{href: barcode_customer_path(@customer.id)}
+            %i.fa.fa-print
+            Print
+        - else
+          - if current_user.devices.count > 1
+            .dropdown
+              %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+                %i.fa.fa-print
+                Print
+                %span.caret
+              %ul.dropdown-menu
+                - current_user.devices.each do |device|
+                  %li
+                    %a{href: barcode_customer_path(@customer.id, device_id: device.id)}
+                      = device.description
+          - elsif current_user.devices.count == 1
+            %a.btn.btn-default{href: barcode_customer_path(@customer.id, device_id: current_user.devices.first.id)}
+              %i.fa.fa-print
+              Print
         %a.btn.btn-default{href: barcode_customer_path(@customer.id)}
           %i.fa.fa-print
           Print
