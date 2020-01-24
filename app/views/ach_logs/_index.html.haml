@@ -3,7 +3,7 @@
   .box-header.with-border
     - unless browser.device.mobile?
       .box-tools
-        = form_tag ach_logs_path, :method => 'get', :class => "form-inline" do
+        = form_tag current_page? balances_accounts_path ? balances_accounts_path : ach_logs_path, :method => 'get', :class => "form-inline" do
           = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: current_user.collaborator? ? nil : 'All events', class: "form-control"
           &nbsp;
           = select_tag :type, options_for_select([['Billed Directly', '0'],['Club Report', '1'],['Details Report', '2']], @type), class: "form-control"
@@ -15,8 +15,10 @@
           = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
             %i.fa.fa-search
     - else
-      = form_tag transactions_path, :method => 'get', :class => "form-horizontal" do
+      = form_tag current_page? balances_accounts_path ? balances_accounts_path : ach_logs_pathh, :method => 'get', :class => "form-horizontal" do
         .form-group= select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
+        .form-group
+          = select_tag :type, options_for_select([['Billed Directly', '0'],['Club Report', '1'],['Details Report', '2']], @type), class: "form-control"
         .form-group
           %label.control-label Start Date
           = text_field_tag :start_date, nil, :placeholder => "Start Date", value: @start_date, class: "form-control ", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
@@ -27,14 +29,6 @@
           = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
             %i.fa.fa-search
             Search
-      - unless browser.device.mobile?
-        .box-tools
-          = form_tag events_path, id: 'events_search_form', method: 'get', class: 'form-inline' do |f|
-            .input-group
-              = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control input-lg", autofocus: true
-              .input-group-append
-                %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-                  %i.fa.fa-search
     %small.text-muted
       = "#{pluralize(number_with_delimiter(@ach_logs.count), 'ACH Log')} found"
 
