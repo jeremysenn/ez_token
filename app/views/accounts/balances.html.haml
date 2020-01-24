@@ -26,6 +26,9 @@
         %li.nav-item
           %a#balances-tab.nav-link{"aria-controls" => "balances", "aria-selected" => "true", "data-toggle" => "tab", :href => "#balances", :role => "tab"} 
             = "Accounts with Balances"
+        %li.nav-item
+          %a#logs-tab.nav-link{"aria-controls" => "logs", "aria-selected" => "true", "data-toggle" => "tab", :href => "#logs", :role => "tab"} 
+            = "ACH Logs"
       #myTabContent.tab-content
         #cash.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
           = render partial: 'companies/cash_position'
@@ -111,6 +114,8 @@
 
             .box-footer
               .pull-right= paginate @accounts
+        #logs.tab-pane.fade{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+          = render partial: 'ach_logs/index'
 
 :javascript
   $('[data-toggle="tooltip"]').tooltip({html: true});
