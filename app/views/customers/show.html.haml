@@ -22,7 +22,7 @@
             -# %a.btn{href: customer_path(event_id: event.id, account_id: @account.id), class: "#{@event.id == event.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-calendar'></i> #{event.title.html_safe}"}}
             %a.btn{href: customer_path(event_id: event.id), class: "#{@event.id == event.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-calendar'></i> #{event.title.html_safe}"}}
               %i.fa.fa-calendar
-              = event.title.html_safe
+              = event.title.truncate(15).html_safe
       - else
         (no events)
 
