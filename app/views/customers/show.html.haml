@@ -116,42 +116,42 @@
                         %i.fa.fa-long-arrow-right
                         Request Payment
                   #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
-                    .panel-body
+                    .card.card-body
                       = render 'request_payment'
-              - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.available_balance > 0 and @account.can_send_payment?
+            - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.available_balance > 0 and @account.can_send_payment?
+              %p
+                .panel.panel-default
+                  #headingTwo.panel-heading{:role => "tab"}
+                    %h4.panel-title
+                      %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseTwo", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseTwo", :role => "button", class: "#{@account.events.blank? ? 'disabled' : ''}"}
+                        %i.fa.fa-long-arrow-left
+                        Send Payment
+                  #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
+                    .card.card-body
+                      = render 'send_payment'
+            -# if (current_user.basic? or (current_user.admin? and @customer.user.blank?)) and @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
+            - if @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
+              - unless @account.withdrawal_all?
                 %p
                   .panel.panel-default
-                    #headingTwo.panel-heading{:role => "tab"}
-                      .panel-title
-                        %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseTwo", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseTwo", :role => "button", class: "#{@account.events.blank? ? 'disabled' : ''}"}
-                          %i.fa.fa-long-arrow-left
-                          Send Payment
-                    #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
+                    #headingThree.panel-heading{:role => "tab"}
+                      %h4.panel-title
+                        %a.btn.btn-lg.btn-default.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
+                          %i.fa.fa-money
+                          Withdraw
+                    #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
                       .panel-body
-                        = render 'send_payment'
-              -# if (current_user.basic? or (current_user.admin? and @customer.user.blank?)) and @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
-              - if @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
-                - unless @account.withdrawal_all?
-                  %p
-                    .panel.panel-default
-                      #headingThree.panel-heading{:role => "tab"}
-                        .panel-title
-                          %a.btn.btn-lg.btn-default.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
-                            %i.fa.fa-money
-                            Withdraw
-                      #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
-                        .panel-body
-                          = render 'withdrawal'
-                - else
-                  / Withdraw all
-                  = render 'withdrawal_all'
-                  -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
-                  -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_link_sms_message_account_path(@account.id)}
-                  -#
-                    %a.btn.btn-default.btn-lg.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
-                      %i.fa.fa-money
-                      %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                      Withdraw
+                        = render 'withdrawal'
+              - else
+                / Withdraw all
+                = render 'withdrawal_all'
+                -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
+                -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_link_sms_message_account_path(@account.id)}
+                -#
+                  %a.btn.btn-default.btn-lg.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
+                    %i.fa.fa-money
+                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                    Withdraw
               -#
                 - if @account and @account.balance > 0 and not current_user.administrator?
                   .box.box-success.collapsed-box.box-solid
@@ -173,7 +173,7 @@
                 
             -# if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
             - if @account and @account.active? and (current_user.administrator? or current_user.collaborator?)
-              %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment", style: 'margin-top: 5px;'}
+              %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment", style: 'margin-top: 7px;'}
                 %h5
                   %i.fa.fa-dollar
                   Payment
