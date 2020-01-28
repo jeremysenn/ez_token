@@ -124,6 +124,11 @@
               %p.lead
                 To Acct ID:
                 = link_to @transaction.to_acct_id, account_path(@transaction.to_acct_id) unless @transaction.to_acct_id.blank?
+              - unless @user.blank?
+                %p.lead
+                  User:
+                  = @user.full_name
+                
               %p.lead
                 Error Code:
                 = @transaction.error_code

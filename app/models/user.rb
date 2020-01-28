@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_many :accounts, through: :customer
   has_many :events, through: :customer
   has_many :signatures
+  has_many :transactions
   
   serialize :device_ids, Array
   serialize :admin_event_ids, Array

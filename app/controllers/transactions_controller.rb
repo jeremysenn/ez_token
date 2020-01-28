@@ -99,6 +99,7 @@ class TransactionsController < ApplicationController
     @to_customers = @transaction.to_account_customers
 #    @from_account_type = @transaction.from_account_type
 #    @to_account_type = @transaction.to_account_type
+    @user = @transaction.user
   end
 
   # GET /transactions/new
