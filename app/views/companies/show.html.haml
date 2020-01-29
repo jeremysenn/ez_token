@@ -144,7 +144,12 @@
                           - to_customers = payment_transaction.to_account_customers
                           - from_customers = payment_transaction.from_account_customers
                           %tr{class: payment_transaction.reversed? ? 'table-danger' : payment_transaction.error? ? 'table-warning' : ''}
-                            %td= link_to payment_transaction.id, payment_transaction
+                            %td
+                              - if payment_transaction.reversed?
+                                %i.fa.fa-reply.text-danger{"data-toggle" => "tooltip", :title => "Reversed", "data-placement" => "right"}
+                              - if payment_transaction.error?
+                                %i.fa.fa-warning.text-danger{"data-toggle" => "tooltip", :title => "Error: #{payment_transaction.error_code_long_description}", "data-placement" => "right"}
+                              = link_to payment_transaction.id, payment_transaction
                             %td= payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
                             %td
                               - unless from_customers.blank?
@@ -168,3 +173,6 @@
                 .pull-right= paginate @payment_transactions unless @payment_transactions.blank?
           #cash.tab-pane.fade{"aria-labelledby" => "home-tab", :role => "tabpanel"}
             = render partial: 'cash_position'
+
+:javascript
+  $('[data-toggle="tooltip"]').tooltip({html: true});
