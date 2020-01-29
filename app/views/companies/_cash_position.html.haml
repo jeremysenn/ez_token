@@ -35,12 +35,14 @@
                     = account_type.description
                 %td= number_to_currency(account_type.accounts_cash_total)
             - unless @company.TxnActID.blank?
-              %tr
-                %td Company Account
+              %tr.table-info
+                %td 
+                  %strong Company Account
                 %td= number_to_currency(@company.transaction_account.balance)
             - unless @company.FeeActID.blank?
-              %tr
-                %td Fee Account
+              %tr.table-info
+                %td 
+                  %strong Fee Account
                 %td= number_to_currency(@company.fee_account.balance)
           %tfoot
             %tr

@@ -27,8 +27,14 @@ class TransactionsController < ApplicationController
       @event_id = params[:event_id]
     end
     @company_id = params[:company_id]
+    @account_id = params[:account_id]
+    @account = Account.where(ActID: params[:account_id], CompanyNumber: current_user.company_id).first
     if current_user.administrator? or current_user.collaborator? or current_user.super?
-      transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+      if params[:account_id].blank? or @account.blank?
+        transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+      else
+        transaction_records = @account.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+      end
       transaction_records = transaction_records.where(DevCompanyNbr: @company_id ) unless @company_id.blank?
       @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
       transactions = @event_id.blank? ? transaction_records : transaction_records.where(event_id: @event_id)
@@ -83,7 +89,7 @@ class TransactionsController < ApplicationController
       }
       format.csv { 
         @transactions = @all_transactions
-        send_data @transactions.to_csv, filename: "#{@type}_transactions-#{@start_date}-#{@end_date}.csv" 
+        send_data @transactions.to_csv, filename: "#{@account.blank? ? '' : @account.id}#{@type}-#{@start_date}-#{@end_date}.csv" 
         }
     end
   end

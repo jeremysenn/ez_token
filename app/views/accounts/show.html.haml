@@ -5,6 +5,8 @@
       = render 'shared/flash_messages'
       %h3
         %i.fa.fa-google-wallet
+        = "Transaction Account" if @account == current_user.company.transaction_account
+        = "Fee Account" if @account == current_user.company.fee_account
         Wallet
     / Main content
     %section.content
@@ -19,6 +21,8 @@
           %p.lead
             %strong ID:
             = @account.id
+          - if current_user.admin? or current_user.collaborator?
+            %p.lead= link_to 'Transactions', transactions_path(account_id: @account.id)
           -#
             %p.lead
               %strong User Account:
