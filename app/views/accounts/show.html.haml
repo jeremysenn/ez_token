@@ -33,18 +33,19 @@
           %p.lead
             %strong Active:
             = @account.active? ? 'Yes' : 'No'
-          %p.lead
-            %strong Events:
-            - unless @account.events.blank?
-              %br
-              - @account.events.each do |event|
-                - if current_user.administrator?
-                  = link_to event.title, event
-                - else
-                  = event.title
+          - unless @account == current_user.company.transaction_account or @account == current_user.company.fee_account
+            %p.lead
+              %strong Events:
+              - unless @account.events.blank?
                 %br
-            - else
-              None
+                - @account.events.each do |event|
+                  - if current_user.administrator?
+                    = link_to event.title, event
+                  - else
+                    = event.title
+                  %br
+              - else
+                None
           %p.lead
             %strong Balance:
             = number_to_currency(@account.balance)
