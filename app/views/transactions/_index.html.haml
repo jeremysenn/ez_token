@@ -38,7 +38,7 @@
           - from_customers = transaction.from_account_customers
           %tr{class: transaction.reversal? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
             %th{:scope => "row"}
-              - if transaction.reversed?
+              - if transaction.reversal?
                 %i.fa.fa-reply.text-danger{"data-toggle" => "tooltip", :title => "Reversed", "data-placement" => "right"}
               - if transaction.error?
                 %i.fa.fa-warning.text-danger{"data-toggle" => "tooltip", :title => "Error: #{transaction.error_code_long_description}", "data-placement" => "right"}

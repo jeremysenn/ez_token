@@ -145,7 +145,7 @@
                           - from_customers = payment_transaction.from_account_customers
                           %tr{class: payment_transaction.reversed? ? 'table-danger' : payment_transaction.error? ? 'table-warning' : ''}
                             %td
-                              - if payment_transaction.reversed?
+                              - if payment_transaction.reversal?
                                 %i.fa.fa-reply.text-danger{"data-toggle" => "tooltip", :title => "Reversed", "data-placement" => "right"}
                               - if payment_transaction.error?
                                 %i.fa.fa-warning.text-danger{"data-toggle" => "tooltip", :title => "Error: #{payment_transaction.error_code_long_description}", "data-placement" => "right"}
