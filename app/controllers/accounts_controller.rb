@@ -103,9 +103,9 @@ class AccountsController < ApplicationController
     receipt_number = params[:receipt_number]
     to_customer_id = params[:to_customer_id]
     if params[:pay_and_text]
-      response = @account.one_time_payment(amount, note, receipt_number)
+      response = @account.one_time_payment(amount, note, receipt_number, current_user.id)
     else
-      response = @account.one_time_payment_with_no_text_message(amount, note, receipt_number)
+      response = @account.one_time_payment_with_no_text_message(amount, note, receipt_number, current_user.id)
     end
     response_code = response[:return]
     unless response_code.to_i > 0

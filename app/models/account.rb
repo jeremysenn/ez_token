@@ -605,9 +605,9 @@ class Account < ActiveRecord::Base
     account_type.can_be_pushed_by_scan? unless account_type.blank?
   end
   
-  def one_time_payment(amount, note, receipt_number)
+  def one_time_payment(amount, note, receipt_number, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number})
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, UserID: user_id})
     Rails.logger.debug "************** Account one_time_payment response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
@@ -628,9 +628,9 @@ class Account < ActiveRecord::Base
     end
   end
   
-  def one_time_payment_with_no_text_message(amount, note, receipt_number)
+  def one_time_payment_with_no_text_message(amount, note, receipt_number, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, dev_id: nil})
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, dev_id: nil, UserID: user_id})
     Rails.logger.debug "************** Account one_time_payment_with_no_text_message response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0

@@ -496,7 +496,7 @@ class Transaction < ActiveRecord::Base
   
   def self.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note, FromCustID: from_customer_id, ToCustID: to_customer_id, User_ID: user_id})
+    response = client.call(:ez_cash_txn, message: { FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note, FromCustID: from_customer_id, ToCustID: to_customer_id, UserID: user_id})
     Rails.logger.debug "ezcash_payment_transaction_web_service_call user ID: #{user_id}"
     Rails.logger.debug "ezcash_payment_transaction_web_service_call esponse body: #{response.body}"
     unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
@@ -509,7 +509,7 @@ class Transaction < ActiveRecord::Base
   
   def self.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { EventID: event_id, FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note, FromCustID: from_customer_id, ToCustID: to_customer_id, User_ID: user_id})
+    response = client.call(:ez_cash_txn, message: { EventID: event_id, FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note, FromCustID: from_customer_id, ToCustID: to_customer_id, UserID: user_id})
     Rails.logger.debug "ezcash_event_payment_transaction_web_service_call user ID: #{user_id}"
     Rails.logger.debug "ezcash_event_payment_transaction_web_service_call response body: #{response.body}"
     unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
