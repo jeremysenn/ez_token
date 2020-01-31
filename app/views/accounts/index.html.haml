@@ -40,8 +40,10 @@
               %thead
                 %tr
                   %th ID
-                  %th First
-                  %th Last
+                  -#
+                    %th First
+                    %th Last
+                  %th Holders
                   %th Type
                   -#
                     %th Events
@@ -51,17 +53,26 @@
                 - @accounts.each do |account|
                   %tr{class: account.active? ? '' : 'table-danger'}
                     %td= account.id
+                    -#
+                      %td
+                        - unless account.customer.blank? 
+                          =# link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
+                          = "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}"
+                        - else
+                          None
+                      %td
+                        - unless account.customer.blank? 
+                          =# link_to "#{account.customer.last_name.blank? ? '' : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
+                          = "#{account.customer.last_name.blank? ? '' : account.customer.last_name}"
+                        - else
+                          None
                     %td
-                      - unless account.customer.blank? 
-                        = link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
-                      - else
-                        None
-                    %td
-                      - unless account.customer.blank? 
-                        = link_to "#{account.customer.last_name.blank? ? '' : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
-                      - else
-                        None
-                    %td= account.account_type.description
+                      - unless account.customers.blank? 
+                        = account.customers.map{ |customer| link_to(customer.full_name,customer_path(customer))}.join(", ").html_safe
+                        -#
+                          - account.customers.each do |customer|
+                            = link_to "#{customer.full_name.blank? ? customer.phone : customer.full_name}", customer_path(customer.id, account_id: account.id)
+                    %td= account.account_type.blank? ? 'N/A' : account.account_type.description
                     -#
                       %td
                         - unless account.events.blank?
@@ -76,8 +87,14 @@
                       - else
                         = number_to_currency(account.Balance)
                     %td
-                      = link_to "Show", account, class: 'btn btn-default btn-sm'
-                      = link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
+                      =# link_to "Show", account, class: 'btn btn-default btn-sm'
+                      =# link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
+                      -#
+                        - unless account.customer.blank?
+                          = link_to "Show", account.customer, class: 'btn btn-default btn-sm'
+                      %a{href: edit_account_path(account), class: 'btn btn-primary btn-sm'}
+                        %i.fa.fa-gear
+                        Advanced
                       -#
                         - unless account.customer.blank? or account.can_delete?
                           = link_to 'Delete', account, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure?' }

@@ -5,6 +5,8 @@
       = render 'shared/flash_messages'
       %h3
         %i.fa.fa-google-wallet
+        = "Transaction Account" if @account == current_user.company.transaction_account
+        = "Fee Account" if @account == current_user.company.fee_account
         Wallet
     / Main content
     %section.content
@@ -19,27 +21,31 @@
           %p.lead
             %strong ID:
             = @account.id
-          %p.lead
-            %strong User Account:
-            - unless @account.user.blank?
-              = link_to "#{@account.user.full_name} (#{@account.user.role})", customer_path(@account.customer.id, account_id: @account.id)
-            - else
-              N/A
+          - if current_user.admin? or current_user.collaborator?
+            %p.lead= link_to 'Transactions', transactions_path(account_id: @account.id)
+          -#
+            %p.lead
+              %strong User Account:
+              - unless @account.user.blank?
+                = link_to "#{@account.user.full_name} (#{@account.user.role})", customer_path(@account.customer.id, account_id: @account.id)
+              - else
+                N/A
           %p.lead
             %strong Active:
             = @account.active? ? 'Yes' : 'No'
-          %p.lead
-            %strong Events:
-            - unless @account.events.blank?
-              %br
-              - @account.events.each do |event|
-                - if current_user.administrator?
-                  = link_to event.title, event
-                - else
-                  = event.title
+          - unless @account == current_user.company.transaction_account or @account == current_user.company.fee_account
+            %p.lead
+              %strong Events:
+              - unless @account.events.blank?
                 %br
-            - else
-              None
+                - @account.events.each do |event|
+                  - if current_user.administrator?
+                    = link_to event.title, event
+                  - else
+                    = event.title
+                  %br
+              - else
+                None
           %p.lead
             %strong Balance:
             = number_to_currency(@account.balance)
@@ -50,6 +56,15 @@
             %p.lead
               %strong Available Balance:
               = number_to_currency(@account.available_balance)
+          %p.lead
+            %strong Holders:
+            - unless @customers.blank?
+              %br
+              - @customers.each do |customer|
+                = link_to customer.full_name, customer
+                %br
+            - else
+              None
           - if @account.can_fund_by_ach?
             %h5
               %strong ACH

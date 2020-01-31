@@ -7,6 +7,7 @@
       .modal-body
         =# form_tag one_time_payment_customer_path(@customer), id: 'one_time_payment_form', method: 'get', class: 'form-horizontal' do |f|
         = form_tag one_time_payment_account_path(@account), id: 'one_time_payment_form', method: 'get', class: 'form-horizontal' do |f|
+          = hidden_field_tag :to_customer_id, @customer.id
           .input-group.mb-3
             .input-group-prepend
               %span.input-group-text $

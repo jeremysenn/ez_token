@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :registerable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable, :timeoutable
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable
   
 #  ROLES = %w[admin caddy_admin event_admin basic caddy member consumer payee vendor].freeze
   ROLES = %w[admin basic collaborator super].freeze
@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_many :accounts, through: :customer
   has_many :events, through: :customer
   has_many :signatures
+  has_many :transactions
   
   serialize :device_ids, Array
   serialize :admin_event_ids, Array
@@ -323,6 +324,10 @@ class User < ApplicationRecord
   
   def can_reverse_transactions?
     admin? or collaborator? or super?
+  end
+  
+  def can_balance?
+    admin?
   end
   
   def format_phone_before_create

@@ -10,7 +10,11 @@ class Customer < ActiveRecord::Base
   has_many :sms_messages
   
 #  has_one :account, :foreign_key => "CustomerID"
-  has_many :accounts, :foreign_key => "CustomerID", inverse_of: :customer, dependent: :destroy
+
+#  has_many :accounts, :foreign_key => "CustomerID", inverse_of: :customer, dependent: :destroy
+  has_many :customer_cards, :foreign_key => "CustomerID", autosave: false, dependent: :destroy
+  has_many :accounts, through: :customer_cards
+  
   has_many :transactions, :through => :account
   has_one :user
   has_many :sms_messages
@@ -323,7 +327,15 @@ class Customer < ActiveRecord::Base
   end
   
   def full_name
-    "#{self.NameF} #{self.NameL} #{self.NameS}"
+    unless self.NameF.blank? and self.NameL.blank? and self.NameS.blank?
+      "#{self.NameF} #{self.NameL} #{self.NameS}"
+    else
+      unless self.phone.blank?
+        self.phone
+      else
+        "Anonymous - #{id}"
+      end
+    end
   end
   
   def full_name_by_last_name
@@ -580,9 +592,9 @@ class Customer < ActiveRecord::Base
     end
   end
   
-  def one_time_payment(amount, note, receipt_number, event_id, device_id)
+  def one_time_payment(amount, note, receipt_number, event_id, device_id, from_customer_id, to_customer_id, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: account.id, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, event_id: event_id, dev_id: device_id})
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: accounts.first.id, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, event_id: event_id, dev_id: device_id, FromCustID: from_customer_id, ToCustID: to_customer_id, user_id: user_id})
     Rails.logger.debug "************** Customer one_time_payment response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
@@ -598,9 +610,9 @@ class Customer < ActiveRecord::Base
     end
   end
   
-  def one_time_payment_with_no_text_message(amount, note, receipt_number, event_id, device_id)
+  def one_time_payment_with_no_text_message(amount, note, receipt_number, event_id, device_id, from_customer_id, to_customer_id, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: accounts.first.id, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, event_id: event_id, dev_id: device_id})
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: accounts.first.id, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, event_id: event_id, dev_id: device_id, FromCustID: from_customer_id, ToCustID: to_customer_id, user_id: user_id})
     Rails.logger.debug "************** Customer one_time_payment_with_no_text_message response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0

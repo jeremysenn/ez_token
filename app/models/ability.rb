@@ -35,7 +35,7 @@ class Ability
       ############
       can :manage, Customer do |customer|
 #        user.company == customer.company
-        customer.accounts.exists?(CompanyNumber: user.company.id) or user.super?
+        customer.accounts.blank? or customer.accounts.exists?(CompanyNumber: user.company.id) or user.super?
       end
       can :create, Customer
       
@@ -302,7 +302,7 @@ class Ability
       # Accounts
       ############
       can :manage, Account do |account|
-        account.customer == user.customer
+        account.customers.include? user.customer
       end
       
       # Customers

@@ -95,6 +95,14 @@ class AccountType < ActiveRecord::Base
     end
   end
   
+  def accounts_cash_total
+    sum = 0
+    accounts.with_balance.each do |account|
+      sum = sum + account.balance unless account == account.company.transaction_account
+    end
+    return sum
+  end
+  
   #############################
   #     Class Methods      #
   #############################

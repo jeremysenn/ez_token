@@ -4,13 +4,14 @@
       .input-group-prepend
         %span.input-group-text $
       =# number_field_tag :send_payment_amount, nil, :placeholder => "Amount", class: "form-control input-lg",  required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
-      = text_field_tag :send_payment_amount, nil, :placeholder => "Amount", class: "form-control input-lg",  required: true, autofocus: true, :pattern => "[0-9]*"
+      = text_field_tag :send_payment_amount, nil, :placeholder => "Amount", class: "form-control input-lg",  required: true, :pattern => "[0-9]*"
       .input-group-append
         %span.input-group-text .00
     %p{id: 'consumer_details'}
       = hidden_field_tag :send_payment_barcode_number
       = hidden_field_tag :company_id, @account.CompanyNumber
       = hidden_field_tag :customer_barcode_id
+      = hidden_field_tag :from_customer_id, current_user.customer_id
       = hidden_field_tag :from_account_id, @account.id
       = hidden_field_tag :account_balance, @account.available_balance
     #send_payment_button_group.btn-group{style: 'display:none;'}
@@ -41,7 +42,8 @@
             =# select_tag :send_payment_to_account_id, options_from_collection_for_select(@account.buddies, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
             =# select_tag :send_payment_to_account_id, options_from_collection_for_select(@account.buddies, "id", "customer_user_name"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
             .form-group.form-group-lg
-              = select_tag :send_payment_to_account_id, options_from_collection_for_select(@event.accounts.active.where.not(CustomerID: @account.CustomerID), "id", "customer_user_name_and_registration_source"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
+              =# select_tag :send_payment_to_account_id, options_from_collection_for_select(@event.accounts.active.where.not(CustomerID: @account.CustomerID), "id", "customer_user_name_and_registration_source"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
+              = select_tag :send_payment_to_account_id, options_from_collection_for_select(@event.accounts.active.where.not(CustomerID: @account.CustomerID), "id", "customer_user_names_and_registration_sources"), class: "form-control input-lg", style: 'width:100%', prompt: 'Search/Select'
             .form-group
               = text_area_tag :note, nil, :placeholder => "Note", class: "form-control input-lg", style: "width: 100%;"
           .modal-footer

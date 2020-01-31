@@ -15,10 +15,10 @@ class AchLogsController < ApplicationController
           @event_id = current_user.admin_events.first.id
         end
       else
-        @event_id = params[:event_id]
+        @event_id = params[:account_log_event_id]
       end
     else
-      @event_id = params[:event_id]
+      @event_id = params[:account_log_event_id]
     end
     @ach_logs= @event_id.blank? ? current_user.company.ach_logs.where(IsClubCSV: @type, CreateDate: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("CreateDate DESC") : current_user.company.ach_logs.where(IsClubCSV: @type, event_id: @event_id, CreateDate: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("CreateDate DESC")
   end

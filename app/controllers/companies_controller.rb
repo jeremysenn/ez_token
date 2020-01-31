@@ -1,5 +1,5 @@
 class CompaniesController < ApplicationController
-  before_action :set_company, only: [:show, :edit, :update, :destroy]
+  before_action :set_company, only: [:show, :edit, :update, :destroy, :cash_position]
   load_and_authorize_resource
 
   # GET /companies
@@ -12,6 +12,7 @@ class CompaniesController < ApplicationController
   # GET /companies/1.json
   def show
     @transaction_account = @company.transaction_account
+    @account_types = @company.account_types
     unless @transaction_account.blank?
       @start_date = params[:start_date] ||= Date.today.last_week.to_s
       @end_date = params[:end_date] ||= Date.today.to_s
@@ -19,7 +20,7 @@ class CompaniesController < ApplicationController
     end
     respond_to do |format|
       format.html {
-        @payment_transactions =  Kaminari.paginate_array(@all_payment_transactions).page(params[:page]).per(10) #unless @all_payment_transactions.blank?
+        @payment_transactions =  Kaminari.paginate_array(@all_payment_transactions).page(params[:page]).per(10) unless @all_payment_transactions.blank?
       }
       format.csv { 
         send_data Transaction.export_to_csv(@all_payment_transactions), filename: "Company_#{@company.id}_payment_transactions-#{@start_date}-#{@end_date}.csv" 
@@ -80,6 +81,17 @@ class CompaniesController < ApplicationController
       format.json { head :no_content }
     end
   end
+  
+  # GET /companies/1/cash_position.csv
+  def cash_position
+    @account_types = @company.account_types
+    respond_to do |format|
+      format.csv { 
+        send_data @company.cash_position_export_to_csv, filename: "Company_#{@company.id}_cash_position-#{Time.now}.csv" 
+        }
+    end
+  end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.

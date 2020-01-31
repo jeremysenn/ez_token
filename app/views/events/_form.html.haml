@@ -50,6 +50,14 @@
             .box-body{style: "#{@event.join_code.blank? ? 'display:none' : 'display:block'}"}
               .row
                 .col-xs-12.col-sm-6
+                  %p
+                    %strong Phone:
+                    - unless @event.company.blank? or @event.company.twilio_number.blank?
+                      = @event.company.twilio_number.pretty_phone_number
+                    - else
+                      = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
+              .row
+                .col-xs-12.col-sm-6
                   .form-group
                     %label{:for => "join_code"} Join Code
                     = f.text_field :join_code, class: "form-control"

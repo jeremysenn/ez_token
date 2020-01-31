@@ -9,7 +9,11 @@
           = link_to @transaction.Description, @to_customer
         - else
           = @transaction.Description
-        %small= number_to_currency(@transaction.amt_auth)
+        - unless @transaction.amt_auth.blank?
+          - if @transaction.ChpFee.blank?
+            %small= number_to_currency(@transaction.amt_auth)
+          - else
+            %small= number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
     / Main content
     %section.content
       / Default box
@@ -35,14 +39,22 @@
           %p.lead
             Company:
             = @transaction.company.CompanyName unless @transaction.company.blank?
-          - unless @to_customer.blank?
+          -# unless @to_customer.blank?
+          - unless @to_customers.blank?
             %p.lead
               To:
-              = @to_customer.user.blank? ? @to_customer.full_name : @to_customer.user.full_name
-          - unless @from_customer.blank?
+              =# @to_customer.user.blank? ? @to_customer.full_name : @to_customer.user.full_name
+              = @transaction.to_account_customers_list
+          -# unless @from_customer.blank?
+          - unless @from_customers.blank?
             %p.lead
               From:
-              = @from_customer.user.blank? ? @from_customer.full_name : @from_customer.user.full_name
+              =# @from_customer.user.blank? ? @from_customer.full_name : @from_customer.user.full_name
+              = @transaction.from_account_customers_list
+          - unless @transaction.Note.blank?
+            %p.lead
+              Note:
+              = @transaction.Note
           -#
             %p.lead
               From Account:
@@ -66,21 +78,24 @@
           - unless @transaction.receipt_nbr.blank?
             %p.lead
               Receipt Number:
-              - if not @to_customer.blank? and @to_customer.anonymous?
-                = @transaction.receipt_nbr
+              -# if not @to_customer.blank? and @to_customer.anonymous?
+              = @transaction.receipt_nbr
           -#
             %p.lead
               Amount Requested:
               = "#{@transaction.amt_req.blank? ? 'N/A' : number_to_currency(@transaction.amt_req)}"
-            %p.lead
-              Amount Authorized:
-              = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
-            %p.lead
-              Fee:
-              = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
-          - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
-            %p.lead
-              Total:
+          %p.lead
+            Amount Authorized:
+            = "#{@transaction.amt_auth.blank? ? 'N/A' : number_to_currency(@transaction.amt_auth)}"
+          %p.lead
+            Fee:
+            = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
+          -# unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
+          %p.lead
+            Total:
+            - if @transaction.ChpFee.blank?
+              = number_to_currency(@transaction.amt_auth)
+            - else
               = number_to_currency(@transaction.amt_auth + @transaction.ChpFee)
 
           -#
@@ -132,7 +147,7 @@
               = hidden_field_tag :send_notification, true
               .form-group.col-sm-12.col-md-6
                 = text_area_tag :details, nil, :placeholder => "Details of dispute", class: "form-control input-lg", rows: 4, style: 'width:100%', autofocus: true
-              = link_to 'Cancel', root_path, class: "btn btn-success"
+              = link_to 'Cancel', root_path, class: "btn btn-default"
               = button_tag(:type => 'submit', :class => 'btn btn-danger', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Submit dispute"}) do
                 %i.fa.fa-send
                 Submit dispute

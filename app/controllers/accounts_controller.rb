@@ -21,12 +21,12 @@ class AccountsController < ApplicationController
       @query_string = "%#{params[:q]}%"
 #      @accounts = current_user.company.accounts.where(ActID: @query_string)
       @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
-      @total_accounts_results = @total_accounts_results.joins(:customer).where("customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string).order("customer.NameL ASC")
+      @total_accounts_results = @total_accounts_results.joins(:customers).where("CONCAT(customer.NameF, ' ', customer.NameL) like ? OR customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string, @query_string).order("customer.NameL ASC")
       @accounts = @total_accounts_results.page(params[:page]).per(20)
     else
 #      @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
-      @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
-      @total_accounts_results = @total_accounts_results.joins(:customer).order("customer.NameL ASC")
+      @total_accounts_results = @event_id.blank? ? accounts.distinct : accounts.joins(:events).where(events: {id: @event_id}).distinct
+      @total_accounts_results = @total_accounts_results.joins(:customers)#.order("customer.NameL ASC")
       @accounts = @total_accounts_results.page(params[:page]).per(20)
     end
     respond_to do |format|
@@ -49,7 +49,8 @@ class AccountsController < ApplicationController
   # GET /accounts/1
   # GET /accounts/1.json
   def show
-    @customer = @account.customer
+#    @customer = @account.customer
+    @customers = @account.customers
   end
 
   # GET /accounts/new
@@ -59,7 +60,8 @@ class AccountsController < ApplicationController
 
   # GET /accounts/1/edit
   def edit
-    @customer = @account.customer
+#    @customer = @account.customer
+    @customers = @account.customers
     @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
   end
 
@@ -86,7 +88,7 @@ class AccountsController < ApplicationController
       @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
       if @account.update(account_params)
 #        format.html { redirect_to @account, notice: 'Wallet was successfully updated.' }
-        format.html { redirect_to @account.customer, notice: 'Wallet was successfully updated.' }
+        format.html { redirect_to @account, notice: 'Wallet was successfully updated.' }
         format.json { render :show, status: :ok, location: @account }
       else
         format.html { render :edit }
@@ -99,10 +101,11 @@ class AccountsController < ApplicationController
     amount = params[:amount].to_f.abs unless params[:amount].blank?
     note = params[:note]
     receipt_number = params[:receipt_number]
+    to_customer_id = params[:to_customer_id]
     if params[:pay_and_text]
-      response = @account.one_time_payment(amount, note, receipt_number)
+      response = @account.one_time_payment(amount, note, receipt_number, current_user.id)
     else
-      response = @account.one_time_payment_with_no_text_message(amount, note, receipt_number)
+      response = @account.one_time_payment_with_no_text_message(amount, note, receipt_number, current_user.id)
     end
     response_code = response[:return]
     unless response_code.to_i > 0
@@ -113,11 +116,15 @@ class AccountsController < ApplicationController
     Rails.logger.debug "*********************************One time payment transaction ID: #{transaction_id}"
     unless transaction_id.blank?
 #      redirect_back fallback_location: @account.customer, notice: 'One time payment submitted.'
-      redirect_to @account.customer, notice: 'One time payment submitted.'
+#      redirect_to @account.customer, notice: 'One time payment submitted.'
+      flash[:notice] = "One time payment submitted."
+      redirect_to customer_path(to_customer_id, account_id: @account.id)
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
 #      redirect_back fallback_location: root_path, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
-      redirect_to @account.customer, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+#      redirect_to @account.customer, alert: "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+      flash[:alert] = "There was a problem creating the one time payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+      redirect_to customer_path(to_customer_id, account_id: @account.id)
     end
   end
 
@@ -133,14 +140,26 @@ class AccountsController < ApplicationController
   
   def twilio_send_sms_message
     @message_body = params[:message_body]
+    @customer_id = params[:customer_id]
     unless params[:account_ids].blank?
       params[:account_ids].each do |account_id|
         account = Account.where(ActID: account_id).first
-        account.customer.twilio_send_sms_message(@message_body, current_user.id) unless account.blank? or account.customer.blank?
+        unless account.blank?
+          account.customers.each do |customer|
+  #          account.customer.twilio_send_sms_message(@message_body, current_user.id) unless account.blank? or account.customer.blank?
+            customer.twilio_send_sms_message(@message_body, current_user.id)
+          end
+        end
       end
-      redirect_back fallback_location: accounts_path, notice: 'Text message sent.'
+      flash[:notice] = 'Text message sent.'
+      unless @customer_id.blank?
+        redirect_to customer_path(@customer_id)
+      else
+        redirect_to accounts_path
+      end
     else
-      redirect_back fallback_location: accounts_path, alert: 'You must select at least one account to text message.'
+      flash[:alert] = 'You must select at least one account to text message.'
+      redirect_to accounts_path
     end
   end
   
@@ -159,13 +178,15 @@ class AccountsController < ApplicationController
     end
     respond_to do |format|
       format.html {
-        unless @account.customer and @account.customer.user and @account.customer.user == current_user 
+        unless @account.customers and @account.users.include?(current_user)
           flash[:alert] = "You are not authorized to view this page."
           redirect_to root_path
         end
       }
       format.json{
-        if @account.customer and @account.customer.user and @account.customer.user == current_user 
+#        if @account.customer and @account.customer.user and @account.customer.user == current_user 
+#        if @account.customers and @account.users.include?(current_user)
+        if @account.customers and (current_user.admin? or current_user.collaborator? or @account.users.include?(current_user))
           render json: {"barcode_string" => @image}
         else
           render json: { error: ["Error: Problem generating QR Code."] }, status: :unprocessable_entity
@@ -177,16 +198,20 @@ class AccountsController < ApplicationController
   def send_barcode_link_sms_message
     respond_to do |format|
       format.html {
-        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+        customer_id = params[:customer_id]
+#        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+        unless @account.blank? or @account.customers.blank?
           barcode_number = @account.withdraw_barcode(params[:withdrawal_amount].blank? ? 0 : params[:withdrawal_amount])
           @account.send_barcode_link_sms_message(barcode_number)
-          redirect_to @account.customer, notice: 'Text message sent.'
+#          redirect_to @account.customer, notice: 'Text message sent.'
+          redirect_to customer_path(customer_id, account_id: @account.id), notice: 'Text message sent.'
         else
-          redirect_back fallback_location: @customer, alert: 'There was a problem sending the barcode link.'
+          redirect_back fallback_location: customer_path(customer_id, account_id: @account.id), alert: 'There was a problem sending the barcode link.'
         end
       }
       format.json{
-        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+#        unless @account.blank? or @account.customer.blank? or @account.customer.phone.blank?
+        unless @account.blank? or @account.customers.blank?
           barcode_number = @account.withdraw_barcode(params[:withdrawal_amount].blank? ? 0 : params[:withdrawal_amount])
           @account.send_barcode_link_sms_message(barcode_number)
           render json: {"barcode_number" => barcode_number}, status: :ok
@@ -203,6 +228,7 @@ class AccountsController < ApplicationController
   def balances
     @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
     @account_types = current_user.super? ? AccountType.all : current_user.company.account_types
+    @company = current_user.company
     @sign = params[:sign].blank? ? 'Negative' : params[:sign]
     unless @account_types.blank?
       @type_id = params[:type_id]
@@ -221,6 +247,26 @@ class AccountsController < ApplicationController
     @total_accounts_results.each do |a|
       @balances_sum = @balances_sum + a.Balance
     end
+    
+    ### Start ACH Logs Stuff ###
+    @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
+    @start_date = params[:start_date].blank? ? Date.today.last_week.to_s : params[:start_date]
+    @end_date = params[:end_date].blank? ? Date.today.to_s : params[:end_date]
+    @type = params[:type].blank? ? 1 : params[:type]
+    
+    if current_user.collaborator?
+      if params[:event_id].blank?
+        unless current_user.admin_events.empty?
+          @event_id = current_user.admin_events.first.id
+        end
+      else
+        @event_id = params[:event_id]
+      end
+    else
+      @event_id = params[:event_id]
+    end
+    @ach_logs= @event_id.blank? ? current_user.company.ach_logs.where(IsClubCSV: @type, CreateDate: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("CreateDate DESC") : current_user.company.ach_logs.where(IsClubCSV: @type, event_id: @event_id, CreateDate: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("CreateDate DESC")
+    ### End ACH Logs Stuff ###
     
     respond_to do |format|
       format.html {}
@@ -247,7 +293,7 @@ class AccountsController < ApplicationController
               details_report_id = bill_members_response[:details_report_id]
               redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id], club_report_id: club_report_id, details_report_id: details_report_id), notice: 'BillMembers successfully called.'
             else
-              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers.'
+              redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers - no response.'
             end
           else
             redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers.'
@@ -272,6 +318,6 @@ class AccountsController < ApplicationController
     
     def account_params
       params.require(:account).permit(:Balance, :Active, :MinBalance, :ActTypeID, :AbleToDelete, :MaintainBal, :BankActNbr, :BankActNbr_confirmation, :RoutingNbr, 
-        :cc_charge_amount, :cc_number, :cc_expiration, :cc_cvc, :event_ids, event_ids: [])
+        :cc_charge_amount, :cc_number, :cc_expiration, :cc_cvc, :event_ids, event_ids: [], customer_ids: [])
     end
 end

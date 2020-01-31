@@ -203,6 +203,31 @@ class Company < ActiveRecord::Base
     end
   end
   
+  def accounts_balance_total
+    sum = 0
+    account_types.each do |account_type|
+      sum = account_type.accounts_cash_total + sum
+    end
+    sum = transaction_account.balance + sum unless transaction_account.blank?
+    sum = fee_account.balance + sum unless fee_account.blank?
+    return sum
+  end
+  
+  def cash_position_export_to_csv
+    require 'csv'
+    attributes = %w{description accounts_cash_total}
+    
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+
+      account_types.each do |account_type|
+        csv << attributes.map{ |attr| account_type.send(attr) }
+      end
+      csv << ['Company Account', self.transaction_account.balance] unless self.transaction_account.blank?
+      csv << ['Fee Account', self.fee_account.balance] unless self.fee_account.blank?
+    end
+  end
+  
   #############################
   #     Class Methods         #
   #############################

@@ -5,7 +5,13 @@ class Account < ActiveRecord::Base
   establish_connection :ez_cash
   
   has_many :bill_payments
-  belongs_to :customer, :foreign_key => "CustomerID", optional: true
+  
+  
+#  belongs_to :customer, :foreign_key => "CustomerID", optional: true
+  has_many :customer_cards, :foreign_key => "ActID", autosave: false, dependent: :destroy
+  has_many :customers, through: :customer_cards
+  
+  
 #  has_many :transactions, :foreign_key => :from_acct_id
   belongs_to :company, :foreign_key => "CompanyNumber"
   belongs_to :account_type, :foreign_key => "ActTypeID", optional: true
@@ -26,6 +32,7 @@ class Account < ActiveRecord::Base
   scope :can_be_pulled_by_scan, -> { where(Active: true).joins(:account_type).where('AccountTypes.CanBePulledByScan = ?', 1) }
   scope :active, -> { where(Active: 1) }
   scope :customer, -> { where.not(CustomerID: nil) }
+  scope :with_balance, -> { where.not(Balance: [0,nil]) }
   
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
@@ -35,7 +42,7 @@ class Account < ActiveRecord::Base
   
   validate :maintain_balance_not_less_than_minimum_maintain_balance, on: :update
   validate :credit_card_fields_filled
-  validate :customer_does_not_have_multiple_account_wallets_for_same_event
+#  validate :customer_does_not_have_multiple_account_wallets_for_same_event
   validate :routing_number_checksum, if: :will_save_change_to_RoutingNbr?
 
   before_save :encrypt_bank_account_number, if: :will_save_change_to_BankActNbr?
@@ -69,6 +76,14 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def customer_user_names_and_registration_sources
+    unless customers.blank?
+      customers.map{|customer| "#{customer.Registration_Source} #{customer.full_name}"}.join(", ").html_safe
+    else
+      company.name
+    end
+  end
+  
   def customer_user_name
     unless customer.blank?
       unless customer.user.blank?
@@ -76,6 +91,14 @@ class Account < ActiveRecord::Base
       else
         customer.full_name
       end
+    else
+      company.name
+    end
+  end
+  
+  def customer_user_names
+    unless customers.blank?
+      customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
     else
       company.name
     end
@@ -170,7 +193,8 @@ class Account < ActiveRecord::Base
   
   def successful_wire_transactions
 #    transactions = Transaction.where(from_acct_id: decrypted_account_number, tran_code: 'CARD', sec_tran_code: 'TFR') + Transaction.where(to_acct_id: decrypted_account_number, tran_code: 'CARD', sec_tran_code: 'TFR')
-    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '], error_code: 0) + Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '], error_code: 0)
+#    transactions = Transaction.where(from_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '], error_code: 0) + Transaction.where(to_acct_id: id, tran_code: 'CARD', sec_tran_code: ['TFR', 'TFR '], error_code: 0)
+    transactions = Transaction.where(from_acct_id: id, tran_code: ['CARD', 'TFR', 'TFR '], sec_tran_code: ['CARD', 'TFR', 'TFR '], error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['CARD', 'TFR', 'TFR '], sec_tran_code: ['CARD', 'TFR', 'TFR '], error_code: 0)
     return transactions
   end
   
@@ -455,6 +479,14 @@ class Account < ActiveRecord::Base
     end
   end
   
+  def users
+    user_records = []
+    customers.each do |c|
+      user_records << c.user
+    end
+    return user_records
+  end
+  
   def caddy?
     unless customer.blank?
       customer.caddy?
@@ -530,57 +562,62 @@ class Account < ActiveRecord::Base
   end
   
   def can_fund_by_ach?
-    account_type.can_fund_by_ach?
+    account_type.can_fund_by_ach? unless account_type.blank?
   end
   
   def can_fund_by_cc?
-    account_type.can_fund_by_cc?
+    account_type.can_fund_by_cc? unless account_type.blank?
   end
   
   def can_fund_by_cash?
-    account_type.can_fund_by_cash?
+    account_type.can_fund_by_cash? unless account_type.blank?
   end
   
   def can_withdraw?
-    account_type.can_withdraw?
+    account_type.can_withdraw? unless account_type.blank?
   end
   
   def withdrawal_all?
-    account_type.withdrawal_all?
+    account_type.withdrawal_all? unless account_type.blank?
   end
   
   def can_pull?
-    account_type.can_pull?
+    account_type.can_pull? unless account_type.blank?
   end
   
   def can_request_payment_by_search?
-    account_type.can_request_payment_by_search?
+    account_type.can_request_payment_by_search? unless account_type.blank?
   end
   
   def can_request_payment_by_scan?
-    account_type.can_request_payment_by_scan?
+    account_type.can_request_payment_by_scan? unless account_type.blank?
   end
   
   def can_send_payment?
-    account_type.can_send_payment?
+    account_type.can_send_payment? unless account_type.blank?
   end
   
   def can_be_pulled_by_scan?
-    account_type.can_be_pulled_by_scan?
+    account_type.can_be_pulled_by_scan? unless account_type.blank?
   end
   
   def can_be_pushed_by_scan?
-    account_type.can_be_pushed_by_scan?
+    account_type.can_be_pushed_by_scan? unless account_type.blank?
   end
   
-  def one_time_payment(amount, note, receipt_number)
+  def one_time_payment(amount, note, receipt_number, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number})
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, UserID: user_id})
     Rails.logger.debug "************** Account one_time_payment response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
-        unless customer.blank? or customer.phone.blank?
-          customer.send_barcode_sms_message_with_info("You've just been paid #{ActiveSupport::NumberHelper.number_to_currency(amount)} by #{company.name}! Get your cash from the PaymentATM. More information at www.tranact.com")
+#        unless customer.blank? or customer.phone.blank?
+        unless customers.blank?
+          customers.each do |customer|
+            unless customer.phone.blank?
+              customer.send_barcode_sms_message_with_info("You've just been paid #{ActiveSupport::NumberHelper.number_to_currency(amount)} by #{company.name}! Get your cash from the PaymentATM. More information at www.tranact.com")
+            end
+          end
         end
         return response.body[:ez_cash_txn_response]
       else
@@ -591,9 +628,9 @@ class Account < ActiveRecord::Base
     end
   end
   
-  def one_time_payment_with_no_text_message(amount, note, receipt_number)
+  def one_time_payment_with_no_text_message(amount, note, receipt_number, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, dev_id: nil})
+    response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, dev_id: nil, UserID: user_id})
     Rails.logger.debug "************** Account one_time_payment_with_no_text_message response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
@@ -705,30 +742,35 @@ class Account < ActiveRecord::Base
     self.BankActNbr
   end
   
-  def customer_does_not_have_multiple_account_wallets_for_same_event
-    if customer.present?
-      unless self.new_record?
-        if customer.events.count > customer.events.uniq.count
-          errors.add(:error, 'Cannot have more than one wallet per event.')
-        end
-      else
-        if (customer.events + self.events).count > (customer.events + self.events).uniq.count
-          errors.add(:error, 'Cannot have more than one wallet per event.')
-        end
-      end
-    end
-  end
+#  def customer_does_not_have_multiple_account_wallets_for_same_event
+#    if customer.present?
+#      unless self.new_record?
+#        if customer.events.count > customer.events.uniq.count
+#          errors.add(:error, 'Cannot have more than one wallet per event.')
+#        end
+#      else
+#        if (customer.events + self.events).count > (customer.events + self.events).uniq.count
+#          errors.add(:error, 'Cannot have more than one wallet per event.')
+#        end
+#      end
+#    end
+#  end
   
   def contract
-    account_type.contract
+    account_type.contract unless account_type.blank?
   end
   
   def send_barcode_link_sms_message(barcode_number)
-    unless customer.blank? or customer.phone.blank?
-      payment_link = "#{SystemSetting.qrcode_html_source_value}#{barcode_number}"
-      message = "Get your cash from the ATM by clicking this link: #{payment_link}"
-      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_sms, message: { Phone: customer.phone, Msg: "#{message}"})
+#    unless customer.blank? or customer.phone.blank?
+    unless customers.blank?
+      customers.each do |customer|
+        unless customer.phone.blank?
+          payment_link = "#{SystemSetting.qrcode_html_source_value}#{barcode_number}"
+          message = "Get your cash from the ATM by clicking this link: #{payment_link}"
+          client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+          client.call(:send_sms, message: { Phone: customer.phone, Msg: "#{message}"})
+        end
+      end
     end
   end 
   
@@ -760,6 +802,10 @@ class Account < ActiveRecord::Base
         puts e.message
       end
     end
+  end
+  
+  def customers_list
+    customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
   end
   
   #############################

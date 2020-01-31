@@ -98,7 +98,11 @@ Rails.application.routes.draw do
   
   resources :groups
   
-  resources :companies
+  resources :companies do 
+    member do
+      get 'cash_position'
+    end
+  end
   
   resources :ach_logs
   

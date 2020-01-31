@@ -22,7 +22,7 @@
             -# %a.btn{href: customer_path(event_id: event.id, account_id: @account.id), class: "#{@event.id == event.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-calendar'></i> #{event.title.html_safe}"}}
             %a.btn{href: customer_path(event_id: event.id), class: "#{@event.id == event.id ? 'bg-orange' : 'btn-default'}", data: {disable_with: "<i class='fa fa-calendar'></i> #{event.title.html_safe}"}}
               %i.fa.fa-calendar
-              = event.title.html_safe
+              = event.title.truncate(15).html_safe
       - else
         (no events)
 
@@ -65,25 +65,27 @@
               %a.btn.btn-box-tool{href: edit_customer_path(@customer), :type => "button"}
                 %i.fa.fa-edit.fa-lg
           .box-body.box-profile
-            .text-center
-              %h5.text-muted
-                - if not @account.active?
-                  %strong.text-danger 
-                    %i.fa.fa-warning
-                    Inactive
+            - unless @account.blank?
+              .text-center
+                %h5.text-muted
+                  - if not @account.active?
+                    %strong.text-danger 
+                      %i.fa.fa-warning
+                      Inactive
+                    %br
+                  %i.fa.fa-google-wallet
+                  = @account.account_type.blank? ? 'Wallet' : @account.account_type.description
                   %br
-                %i.fa.fa-google-wallet
-                = @account.account_type.description
-                %br
-                - unless @account.MinBalance.blank? or @account.MinBalance.zero?
-                  %span.btn.btn-info{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "left"}
+                  - unless @account.MinBalance.blank? or @account.MinBalance.zero?
+                    %span.btn.btn-info{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "left"}
+                      = number_to_currency(@account.Balance)
+                  - else
                     = number_to_currency(@account.Balance)
-                - else
-                  = number_to_currency(@account.Balance)
-                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.user and @account.user == current_user)
-                  %a.btn.btn-default{href: edit_account_path(@account)}
-                    %i.fa.fa-credit-card
-                    Fund
+                  -# if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.user and @account.user == current_user)
+                  - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.users.include?(current_user))
+                    %a.btn.btn-default{href: edit_account_path(@account)}
+                      %i.fa.fa-credit-card
+                      Fund
               -#
                 .text-center
                   = "#{@account.blank? ? '' : @account.company.name}"
@@ -106,49 +108,50 @@
 
             #accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist"}
               - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.can_pull?
+                -# %p
+                .panel.panel-default
+                  #headingOne.panel-heading{:role => "tab"}
+                    %h4.panel-title
+                      %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or (@event.accounts.can_be_pulled_by_search.blank? and @event.accounts.can_be_pulled_by_scan.blank?)) ? 'disabled' : ''}"}
+                        %i.fa.fa-long-arrow-right
+                        Request Payment
+                  #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
+                    .card.card-body
+                      = render 'request_payment'
+            - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.available_balance > 0 and @account.can_send_payment?
+              %p
+                .panel.panel-default
+                  #headingTwo.panel-heading{:role => "tab"}
+                    %h4.panel-title
+                      %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseTwo", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseTwo", :role => "button", class: "#{@account.events.blank? ? 'disabled' : ''}"}
+                        %i.fa.fa-long-arrow-left
+                        Send Payment
+                  #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
+                    .card.card-body
+                      = render 'send_payment'
+            -# if (current_user.basic? or (current_user.admin? and @customer.user.blank?)) and @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
+            - if @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
+              - unless @account.withdrawal_all?
                 %p
                   .panel.panel-default
-                    #headingOne.panel-heading{:role => "tab"}
+                    #headingThree.panel-heading{:role => "tab"}
                       %h4.panel-title
-                        %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or (@event.accounts.can_be_pulled_by_search.blank? and @event.accounts.can_be_pulled_by_scan.blank?)) ? 'disabled' : ''}"}
-                          %i.fa.fa-long-arrow-right
-                          Request Payment
-                    #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
+                        %a.btn.btn-lg.btn-default.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
+                          %i.fa.fa-money
+                          Withdraw
+                    #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
                       .panel-body
-                        = render 'request_payment'
-              - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.available_balance > 0 and @account.can_send_payment?
-                %p
-                  .panel.panel-default
-                    #headingTwo.panel-heading{:role => "tab"}
-                      %h4.panel-title
-                        %a.btn.btn-lg.btn-success.btn-block.collapsed{"aria-controls" => "collapseTwo", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseTwo", :role => "button", class: "#{@account.events.blank? ? 'disabled' : ''}"}
-                          %i.fa.fa-long-arrow-left
-                          Send Payment
-                    #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
-                      .panel-body
-                        = render 'send_payment'
-              - if current_user.basic? and @account and @account.active? and @account.available_balance > 0 and (@account.can_withdraw? or @account.withdrawal_all?)
-                - unless @account.withdrawal_all?
-                  %p
-                    .panel.panel-default
-                      #headingThree.panel-heading{:role => "tab"}
-                        %h4.panel-title
-                          %a.btn.btn-lg.btn-default.btn-block.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
-                            %i.fa.fa-money
-                            Withdraw
-                      #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
-                        .panel-body
-                          = render 'withdrawal'
-                - else
-                  / Withdraw all
-                  = render 'withdrawal_all'
-                  -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
-                  -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_link_sms_message_account_path(@account.id)}
-                  -#
-                    %a.btn.btn-default.btn-lg.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
-                      %i.fa.fa-money
-                      %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                      Withdraw
+                        = render 'withdrawal'
+              - else
+                / Withdraw all
+                = render 'withdrawal_all'
+                -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Withdraw"}}
+                -# %a.btn.btn-default.btn-lg.btn-block{href: send_barcode_link_sms_message_account_path(@account.id)}
+                -#
+                  %a.btn.btn-default.btn-lg.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
+                    %i.fa.fa-money
+                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                    Withdraw
               -#
                 - if @account and @account.balance > 0 and not current_user.administrator?
                   .box.box-success.collapsed-box.box-solid
@@ -168,19 +171,20 @@
                     .box-body
                       = render 'withdrawal'
                 
-            - if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
-              %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
+            -# if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
+            - if @account and @account.active? and (current_user.administrator? or current_user.collaborator?)
+              %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment", style: 'margin-top: 7px;'}
                 %h5
                   %i.fa.fa-dollar
-                  One Time Payment
-              - if @account.available_balance > 0 and @account.withdrawal_all? and not @customer.phone.blank?
+                  Payment
+              - if @account.available_balance > 0 and @account.withdrawal_all?
                 -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
                 -# %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
-                %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-amount" => 0}
+                %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0}
                   %h5
-                    %i.fa.fa-money
+                    %i.fa.fa-qrcode
                     %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                    Send Payment Code
+                    Send Code
               - unless @customer.phone.blank?
                 %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
                   %h5
@@ -363,8 +367,8 @@
                           %th Date
                           -#
                             %th Description
-                          %th To
                           %th From
+                          %th To
                           %th Amount
                           -#
                             %th
@@ -377,18 +381,28 @@
                             -#
                               %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
                             %td
-                              - unless payment_transaction.to_account_customer.blank? 
-                                = payment_transaction.to_account_customer.full_name.blank? ? payment_transaction.to_account_customer.phone : payment_transaction.to_account_customer.full_name
-                              - else
-                                = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
-                            %td
                               - if payment_transaction.cash_deposit? or payment_transaction.ach_deposit?
                                 = payment_transaction.Description
                               - else
-                                - unless payment_transaction.from_account_customer.blank?
-                                  = payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
+                                -# unless payment_transaction.from_account_customer.blank?
+                                - unless payment_transaction.from_account_customers.blank?
+                                  = payment_transaction.from_account_customers_list
+                                  -#
+                                    - payment_transaction.from_account_customers.each do |from_account_customer|
+                                      = from_account_customer.full_name.blank? ? from_account_customer.phone : from_account_customer.full_name
+                                  =# payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
                                 - else
                                   = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
+                            %td
+                              -# unless payment_transaction.to_account_customer.blank? 
+                              - unless payment_transaction.to_account_customers.blank? 
+                                = payment_transaction.to_account_customers_list
+                                -#
+                                  - payment_transaction.to_account_customers.each do |to_account_customer|
+                                    = to_account_customer.full_name
+                                =# payment_transaction.to_account_customer.full_name.blank? ? payment_transaction.to_account_customer.phone : payment_transaction.to_account_customer.full_name
+                              - else
+                                = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
                             %td= number_to_currency(payment_transaction.amt_auth)
                             -#
                               %td
@@ -507,12 +521,14 @@
     money_icon.hide();
     spinner_icon.show();
     account_id = $(this).data("account-id");
+    customer_id = $(this).data("customer-id");
     amount = $(this).data("amount");
     $.ajax({
       url: "/accounts/" + account_id + "/send_barcode_link_sms_message",
       dataType: 'json',
       data: {
-        withdrawal_amount: amount
+        withdrawal_amount: amount,
+        customer_id: customer_id
       },
       success: function(data) {
         alert("Text message code sent.");

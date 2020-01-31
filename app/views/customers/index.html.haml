@@ -5,7 +5,7 @@
       = render 'shared/flash_messages'
       %h3
         %i.fa.fa-male
-        Accounts
+        Account Holders
         %small= link_to 'New', new_customer_path(group_id: @group_id), class: 'btn bg-orange'
         - unless @customers.blank? or @type == "Anonymous"
           .pull-right
@@ -24,7 +24,7 @@
               - unless @customers.blank?
                 %a{href: customers_path(format: "csv", q: params[:q], type: @type), class: 'btn btn-info btn-sm'}
                   %i.fa.fa-download
-                  Download CSV
+                  CSV
             - else
               = form_tag customers_path, id: 'customers_search_form', method: 'get', class: 'form-inline' do |f|
                 =# select_tag :type, options_for_select(["Regular", "Anonymous"], @type), class: "form-control"

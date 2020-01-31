@@ -77,8 +77,9 @@
                     Status
                   .pull-right
                     - dev_status = @device.dev_statuses.order("date_time DESC").first
-                    %a.btn.btn-sm.bg-green{"data-content" => "#{dev_status.status_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0"} 
-                      = dev_status.status
+                    - unless dev_status.blank?
+                      %a.btn.btn-sm.bg-green{"data-content" => "#{dev_status.status_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0"} 
+                        = dev_status.status
                 %li.list-group-item
                   %b 
                     Remaining

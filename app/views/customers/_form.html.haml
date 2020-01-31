@@ -64,12 +64,14 @@
                     = number_to_currency(account_form.object.Balance)
                   .box-tools.pull-right
                     -# if account_form.object.can_delete?
-                    = account_form.remove_nested_fields_link "<i class='fa fa-trash'></i> Delete".html_safe, data: { confirm: 'Are you sure you want to delete?' }
+                    = account_form.remove_nested_fields_link "<i class='fa fa-window-close'></i> Remove".html_safe, data: { confirm: 'Are you sure you want to Remove?' }
                 .box-body
                   = account_form.input :ActTypeID, collection: current_user.company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, include_blank: false, label: "Type"
                   = account_form.input :Active, :as => :boolean
                   - if account_form.object.new_record?
-                    = account_form.input :CustomerID, :as => :hidden, :input_html => { :value => @customer.id }
+                    =# account_form.input :CustomerID, :as => :hidden, :input_html => { :value => @customer.id }
+                    - unless @customer.new_record?
+                      = account_form.select :customer_ids, options_from_collection_for_select(current_user.company.customers, "id", "full_name", @customer.id), {}, { multiple: true, style: 'width:100%;', :class => "form-control select2_customers"}
                     = account_form.input :CompanyNumber, :as => :hidden, :input_html => { :value => current_user.company.id }
                     = account_form.input :Balance, :as => :hidden, :input_html => { :value => 0 }
                     = account_form.input :MinBalance, :as => :hidden, :input_html => { :value => 0}
@@ -89,6 +91,17 @@
                           .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: false) + ' ' + event_field.text }
 
                   - else
+                    = account_form.input :MinBalance, as: :decimal, required: true, label: "Minimum Balance" do
+                      .row
+                        .col-xs-12.col-sm-6
+                          .input-group
+                            .input-group-prepend
+                              %span.input-group-text $
+                            = account_form.input_field :MinBalance, :as => :string, value: account_form.object.MinBalance.blank? ? (account_form.object.account_type.blank? ? 0 : account_form.object.account_type.default_minimum_balance)  : account_form.object.MinBalance, class: "form-control"
+                      %br
+                      %label.control-label Holders
+                      = account_form.select :customer_ids, options_from_collection_for_select(current_user.company.customers, "id", "full_name", account_form.object.customer_ids), {}, { multiple: true, style: 'width:100%;', :class => "form-control select2_customers"}
+                      %br
                     = account_form.input "account[event_ids][]", label: 'Events' do
                       - unless current_user.company.events.accounts_do_not_expire.blank?
                         %br

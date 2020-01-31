@@ -6,20 +6,21 @@ class Transaction < ActiveRecord::Base
   
   mount_uploader :upload_file, FileUploader
   
-  belongs_to :device, :foreign_key => :dev_id
+  belongs_to :device, :foreign_key => :dev_id, optional: true
   belongs_to :account, :foreign_key => :from_acct_id # Assume from account is the main account
   has_one :transfer, :foreign_key => :ez_cash_tran_id
   belongs_to :company, :foreign_key => "DevCompanyNbr"
   has_one :payment, :foreign_key => "TranID"
-  belongs_to :event
+  belongs_to :event, optional: true
+  belongs_to :user, optional: true
   
-  scope :withdrawals, -> { where(tran_code: ["WDL", "ALL"], sec_tran_code: ["TFR", ""]) }
-  scope :transfers, -> { where(tran_code: ["CARD"], sec_tran_code: ["TFR"]) }
-  scope :reversals, -> { where(tran_code: ["CRED"], sec_tran_code: ["TFR"]) }
+  scope :withdrawals, -> { where(tran_code: ["WDL", "WDL ", "ALL", "All "], sec_tran_code: ["TFR", "", "ALL", "All ", "CASH", "CASH "]) }
+  scope :transfers, -> { where(tran_code: ["CARD", "TFR"], sec_tran_code: ["TFR", "CARD"]) }
+  scope :reversals, -> { where(tran_code: ["CRED", "TFR"], sec_tran_code: ["TFR", "CRED"]) }
   scope :one_sided_credits, -> { where(tran_code: ["DEP"], sec_tran_code: ["REFD"]) }
   scope :fees, -> { where(tran_code: ["FEE"], sec_tran_code: ["TFR"]) }
-  scope :fee_reversals, -> { where(tran_code: ["FEEC"], sec_tran_code: ["TFR"]) }
-  scope :fees_and_fee_reversals, -> { where(tran_code: ["FEE","FEEC"], sec_tran_code: ["TFR"]) }
+  scope :fee_reversals, -> { where(tran_code: ["TFR" "FEEC"], sec_tran_code: ["TFR", "FEEC"]) }
+  scope :fees_and_fee_reversals, -> { where(tran_code: ["TFR","FEE","FEEC"], sec_tran_code: ["TFR","FEE","FEEC"]) }
   scope :checks, -> { where(tran_code: ["CHK"], sec_tran_code: ["TFR"]) }
   scope :not_fees, -> { where.not(tran_code: ["FEE"]) }
   scope :not_fees_and_not_withdrawals, -> { where.not(tran_code: ["FEE", "WDL", "ALL"]) }
@@ -86,14 +87,14 @@ class Transaction < ActiveRecord::Base
         return "ACH Deposit"
       elsif (tran_code.strip == "MON" and sec_tran_code.strip == "ORD")
         return "Money Order"
-      elsif (tran_code.strip == "WDL" and (sec_tran_code.blank? or sec_tran_code.strip == "TFR"))
+      elsif ((tran_code.strip == "WDL" or tran_code.strip == "ALL") and (sec_tran_code.blank? or sec_tran_code.strip == "TFR" or sec_tran_code.strip == "CASH"))
         return "Withdrawal"
       elsif (tran_code.strip == "WDL" and sec_tran_code.strip == "REVT")
         return "Reverse Withdrawal"
-      elsif (tran_code.strip == "ALL" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "WDL" or tran_code.strip == "ALL") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "ALL"))
         return "Withdrawal All"
-      elsif (tran_code.strip == "CARD" and sec_tran_code.strip == "TFR")
-        return "Card Transfer"
+      elsif ((tran_code.strip == "CARD" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "CARD"))
+        return "Transfer"
       elsif (tran_code.strip == "BILL" and sec_tran_code.strip == "PAY")
         return "Bill Pay"
       elsif (tran_code.strip == "POS" and sec_tran_code.strip == "TFR")
@@ -102,12 +103,14 @@ class Transaction < ActiveRecord::Base
         return "Wire Transfer"
       elsif (tran_code.strip == "FUND" and sec_tran_code.strip == "TFR")
         return "Fund Transfer"
-      elsif (tran_code.strip == "CRED" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "CRED" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "CRED"))
         return "Account Credit"
-      elsif (tran_code.strip == "FEE" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "FEE" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "FEE"))
         return "Fee"
-      elsif (tran_code.strip == "FEEC" and sec_tran_code.strip == "TFR")
+      elsif ((tran_code.strip == "FEEC" or tran_code.strip == "TFR") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "FEEC"))
         return "Fee Credit"
+      elsif (tran_code.strip == "TFR" and sec_tran_code.strip == "PMT")
+        return "Balancing"
       else
         return "Unknown"
       end
@@ -357,6 +360,26 @@ class Transaction < ActiveRecord::Base
     end
   end
   
+  def to_account_customers
+    unless to_account.blank?
+      to_account.customers
+    end
+  end
+  
+  def to_account_customers_list
+    to_account_customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
+  end
+  
+  def from_account_customers
+    unless from_account.blank?
+      from_account.customers
+    end
+  end
+  
+  def from_account_customers_list
+    from_account_customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
+  end
+  
   def reverse
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { TranID: tranID })
@@ -397,17 +420,32 @@ class Transaction < ActiveRecord::Base
     reversal_transaction.present?
   end
   
+#  def send_text_message_receipt
+#    from_customer = from_account.customer
+##    to_customer = to_account.customer
+#    from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
+#    unless from_customer_phone.blank?
+##      SendSmsWorker.perform_async(cell_phone_number, id, self.CustomerID, self.ClubCompanyNbr, message_body)
+##      message = "You have transfered #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)} to #{to_customer.company.name}. Your balance is #{ActiveSupport::NumberHelper.number_to_currency(from_account.Balance)}"
+#      message = "#{to_account.customer_name} debited #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
+#      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#      client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
+#      Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
+#    end
+#  end
+  
   def send_text_message_receipt
-    from_customer = from_account.customer
-#    to_customer = to_account.customer
-    from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
-    unless from_customer_phone.blank?
-#      SendSmsWorker.perform_async(cell_phone_number, id, self.CustomerID, self.ClubCompanyNbr, message_body)
-#      message = "You have transfered #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)} to #{to_customer.company.name}. Your balance is #{ActiveSupport::NumberHelper.number_to_currency(from_account.Balance)}"
-      message = "#{to_account.customer_name} debited #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
-      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
-      Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
+    from_account_customers.each do |from_customer|
+      from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
+      unless from_customer_phone.blank? or self.amt_auth.blank?
+#        unless to_customer.blank?
+#          message = "You paid #{to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
+#        end
+        message = "You paid #{to_account_customers_list} #{ActiveSupport::NumberHelper.number_to_currency(self.amt_auth)}. Click here to review: http://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
+        client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+        client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
+        Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
+      end
     end
   end
   
@@ -436,13 +474,30 @@ class Transaction < ActiveRecord::Base
     end
   end
   
+  def to_customer_id
+    self.ToCustID
+  end
+  
+  def to_customer
+    Customer.find(self.ToCustID)
+  end
+  
+  def from_customer_id
+    self.FromCustID
+  end
+  
+  def from_customer
+    Customer.find(self.FromCustID)
+  end
+  
   #############################
   #     Class Methods         #
   #############################
   
-  def self.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note)
+  def self.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note})
+    response = client.call(:ez_cash_txn, message: { FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note, FromCustID: from_customer_id, ToCustID: to_customer_id, UserID: user_id})
+    Rails.logger.debug "ezcash_payment_transaction_web_service_call user ID: #{user_id}"
     Rails.logger.debug "ezcash_payment_transaction_web_service_call esponse body: #{response.body}"
     unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
 #      return response.body[:ez_cash_txn_response][:return]
@@ -452,9 +507,10 @@ class Transaction < ActiveRecord::Base
     end
   end
   
-  def self.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note)
+  def self.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:ez_cash_txn, message: { EventID: event_id, FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note})
+    response = client.call(:ez_cash_txn, message: { EventID: event_id, FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note, FromCustID: from_customer_id, ToCustID: to_customer_id, UserID: user_id})
+    Rails.logger.debug "ezcash_event_payment_transaction_web_service_call user ID: #{user_id}"
     Rails.logger.debug "ezcash_event_payment_transaction_web_service_call response body: #{response.body}"
     unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
 #      return response.body[:ez_cash_txn_response][:return]

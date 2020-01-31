@@ -4,16 +4,31 @@
 
 jQuery ->
   $(document).on 'turbolinks:load', ->
+
+    ### Start select2 ###
+    $( ".select2_customers" ).select2 theme: "bootstrap"
+
+    # Apply select2 to dynamically added customers multiselect
+    $(document).on "fields_added.nested_form_fields", (event, param) ->
+      $( ".select2_customers" ).select2 theme: "bootstrap"
+
+    # Make sure select2 isn't applied multiple times by turbolinks
+    $(document).on 'turbolinks:before-cache', ->
+      if $('.select2_customers').length
+        $('.select2_customers').select2 'destroy'
+      return
+    ### End select2 ###
+    
     $('a[data-toggle="tab"]').on 'show.bs.tab', (e) ->
       #save the latest tab
       localStorage.setItem 'lastTab', $(e.target).attr('href')
-      return
+
     #go to the latest tab, if it exists:
     lastTab = localStorage.getItem('lastTab')
     if lastTab
       $('a[href="' + lastTab + '"]').click()
       return
-
+    
     #$('input[name=file]').change ->
     #  alert $(this).val()
     #  return
@@ -27,7 +42,7 @@ jQuery ->
     #$('#upload-btn').click ->
     #  $('#customer_avatar').click()
     ### End Avatar Upload ###
-
+    
     ### Start Consumer QR Code Payment Scanner ###
     load_consumer_qr_code_payment_scanner = ->
       codeReader = new (ZXing.BrowserQRCodeReader)
@@ -68,7 +83,7 @@ jQuery ->
         #console.log 'Started continuous decode from camera with id ' + firstDeviceId
         console.log 'Started continuous decode from camera'
         return
-
+    
     $('#qr_code_payment_details').on 'click', '#open_qr_code_payment_scanner_button', (e) ->
       $('#scan_spinner').show()
       $('#open_consumer_qr_code_payment_scanner_button').hide()
@@ -82,8 +97,6 @@ jQuery ->
       else
         alert "Amount must be greater than $0"
         return false
-
-    
 
     $('#send_payment_details').on 'click', '#open_send_payment_buddy_search_button', (e) ->
       amount = parseFloat($('#send_payment_amount').val())
@@ -127,6 +140,4 @@ jQuery ->
           alert error
           console.log error
           return
-      return
-
     

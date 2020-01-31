@@ -27,8 +27,14 @@ class TransactionsController < ApplicationController
       @event_id = params[:event_id]
     end
     @company_id = params[:company_id]
+    @account_id = params[:account_id]
+    @account = Account.where(ActID: params[:account_id], CompanyNumber: current_user.company_id).first
     if current_user.administrator? or current_user.collaborator? or current_user.super?
-      transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+      if params[:account_id].blank? or @account.blank?
+        transaction_records = current_user.super? ? Transaction.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+      else
+        transaction_records = @account.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+      end
       transaction_records = transaction_records.where(DevCompanyNbr: @company_id ) unless @company_id.blank?
       @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
       transactions = @event_id.blank? ? transaction_records : transaction_records.where(event_id: @event_id)
@@ -83,7 +89,7 @@ class TransactionsController < ApplicationController
       }
       format.csv { 
         @transactions = @all_transactions
-        send_data @transactions.to_csv, filename: "#{@type}_transactions-#{@start_date}-#{@end_date}.csv" 
+        send_data @transactions.to_csv, filename: "#{@account.blank? ? '' : @account.id}#{@type}-#{@start_date}-#{@end_date}.csv" 
         }
     end
   end
@@ -93,10 +99,13 @@ class TransactionsController < ApplicationController
   def show
     @reversal_transaction = @transaction.reversal_transaction
     @original_transaction = @transaction.original_transaction
-    @from_customer = @transaction.from_account_customer
-    @to_customer = @transaction.to_account_customer
+#    @from_customer = @transaction.from_account_customer
+#    @to_customer = @transaction.to_account_customer
+    @from_customers = @transaction.from_account_customers
+    @to_customers = @transaction.to_account_customers
 #    @from_account_type = @transaction.from_account_type
 #    @to_account_type = @transaction.to_account_type
+    @user = @transaction.user
   end
 
   # GET /transactions/new
@@ -176,14 +185,17 @@ class TransactionsController < ApplicationController
     @note = params[:note]
     @event_id = params[:event_id]
     @device_id = params[:device_id]
+    @from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
+    @to_customer_id = params[:to_customer_id] unless params[:from_customer_id].blank?
 #    @device_id = params[:device_id]
     if params[:file]
       @file_upload = params[:file].path
     end
     if current_user.company.allowed_to_quick_pay?
       @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
-      @account = Account.create(CustomerID: @customer.id, CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
-      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id)
+      @account = Account.create(CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
+      @customer.accounts << @account
+      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id, @from_customer_id, @to_customer_id, current_user.id)
       response_code = response[:return]
     end
     unless response_code.to_i > 0
@@ -216,14 +228,16 @@ class TransactionsController < ApplicationController
       from_account_id = params[:from_account_id]
     end
     customer_barcode_id = params[:customer_barcode_id]
+    from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
+    to_customer_id = params[:to_customer_id] unless params[:to_customer_id].blank?
     if params[:file]
       @file_upload = params[:file].path
     end
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
       unless event_id.blank?
-        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note)
+        response = Transaction.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, current_user.id)
       else
-        response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note)
+        response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, current_user.id)
       end
       unless response.blank?
         response_code = response[:return]
@@ -249,13 +263,13 @@ class TransactionsController < ApplicationController
       @transaction.send_text_message_receipt
 #      redirect_back fallback_location: root_path, notice: "Transaction was successful. Transaction ID #{@transaction.id}"
       flash[:notice] = "Transaction was successful. Transaction ID #{@transaction.id}"
-      redirect_to customer_path(@transaction.to_account.customer, account_id: to_account_id)
+#      redirect_to customer_path(@transaction.to_account.customer, account_id: to_account_id)
+      redirect_to customer_path(to_customer_id, account_id: to_account_id), notice: "Transaction was successful. Transaction ID #{@transaction.id}"
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
 #      redirect_back fallback_location: root_path, alert: "There was a problem creating the transaction. Error code: #{error_description.blank? ? error_code : error_description.long_desc}. Amount: #{amount}, To: #{to_account_id}, From: #{from_account_id}"
       flash[:alert] = "There was a problem creating the transaction. Error code: #{error_description.blank? ? error_code : error_description.long_desc}. Amount: #{amount}, To: #{to_account_id}, From: #{from_account_id}"
-      redirect_back fallback_location: root_path
-#      redirect_to customer_path(@transaction.to_account.customer, account_id: to_account_id)
+      redirect_to customer_path(to_customer_id, account_id: to_account_id)
     end
   end
   
@@ -289,9 +303,11 @@ class TransactionsController < ApplicationController
     note = params[:note]
     to_account_id = params[:send_payment_to_account_id]
     from_account_id = params[:from_account_id]
+    from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
+    to_customer_id = params[:to_customer_id] unless params[:to_customer_id].blank?
     unless amount.blank? or to_account_id.blank? or from_account_id.blank?
 #      response = Transaction.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount)
-      response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount, note)
+      response = Transaction.ezcash_event_payment_transaction_web_service_call(params[:event_id], from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, current_user.id)
       unless response.blank?
         response_code = response[:return]
         unless response_code.to_i > 0
@@ -317,14 +333,19 @@ class TransactionsController < ApplicationController
   # GET /transactions/1/dispute.json
   def dispute
     @from_customer_phone = params[:phone]
-    @from_customer = @transaction.from_account_customer
-    unless @from_customer_phone.blank? or @from_customer_phone != @from_customer.phone
-      @from_customer = @transaction.from_account_customer
-      @to_customer = @transaction.to_account_customer
-      @send_notification = params[:send_notification]
-    else
-      flash[:alert] = "You are not allowed to access that page."
-      redirect_to root_path
+#    @from_customer = @transaction.from_account_customer
+    @from_customers = @transaction.from_account_customers
+    @send_notification = params[:send_notification]
+    unless @send_notification == 'true'
+#      unless @from_customer_phone.blank? or @from_customer_phone != @from_customer.phone
+      unless @from_customer_phone.blank?
+#        @from_customer = @transaction.from_account_customer
+#        @to_customer = @transaction.to_account_customer
+        @to_customers = @transaction.to_account_customers
+      else
+        flash[:alert] = "You are not allowed to access that page."
+        redirect_to root_path
+      end
     end
   end
   

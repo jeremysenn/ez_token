@@ -3,106 +3,129 @@
     / Content Header (Page header)
     %section.content-header
       = render 'shared/flash_messages'
-      %h1
-        Accounts with Balances
-      - unless params[:club_report_id].blank?
-        %br
-        .alert.alert-dark{:role => "alert"}
-          - unless params[:club_report_id].blank?
-            View and download the <b>club report</b> by going
-            = link_to 'here.', ach_log_path(params[:club_report_id])
-          - unless params[:details_report_id].blank?
-            %br
-            View and download the <b>details report</b> by going
-            = link_to 'here.', ach_log_path(params[:details_report_id])
+      -#
+        %h1
+          Accounts with Balances
+        - unless params[:club_report_id].blank?
+          %br
+          .alert.alert-dark{:role => "alert"}
+            - unless params[:club_report_id].blank?
+              View and download the <b>club report</b> by going
+              = link_to 'here.', ach_log_path(params[:club_report_id])
+            - unless params[:details_report_id].blank?
+              %br
+              View and download the <b>details report</b> by going
+              = link_to 'here.', ach_log_path(params[:details_report_id])
 
     / Main content
     %section.content
-      / Default box
-      .box.box-primary
-        .box-header.with-border
-          %h3.box-title 
-            = form_tag balances_accounts_path, :method => 'get', :class => "form-inline" do
-              - unless @accounts.blank? or browser.device.mobile?
-                %a{href: balances_accounts_path(format: "csv", :event_id => @event_id, :type_id => @type_id, :sign => @sign), class: 'btn btn-sm btn-info'}
-                  %i.fa.fa-download
-                  CSV
-                &nbsp;
-              -#
-                = select_tag :active, options_for_select([["Active",1], ["Inactive",0]], params[:active]), prompt: 'Active & Inactive', class: "form-control"
-                &nbsp;
-              = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
-              &nbsp;
-              = select_tag :type_id, options_from_collection_for_select(@account_types, "id", "description", @type_id), prompt: 'All types', class: "form-control"
-              -#
-                &nbsp;
-                = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control"
-              &nbsp;
-              = select_tag :sign, options_for_select(["Negative", "Positive"], params[:sign]), class: "form-control"
-              &nbsp;
-              = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-                %i.fa.fa-search
-          .box-tools.pull-left
-          %small.text-muted
-            = "#{pluralize(number_with_delimiter(@total_accounts_results.count), 'account')} found"
-          %strong.pull-right
-            = "Total: #{number_to_currency(@balances_sum)}"
-            - if current_user.can_edit_accounts? and not @accounts.blank? and not @event_id.blank? and @type_id == '1' and not current_user.company.cashier_account.blank?
-              %br
-              = link_to "<i class='fa fa-calendar-check-o'></i> Bill Members".html_safe, bill_members_accounts_path(event_id: @event_id, club_account_id: current_user.company.CashierActID, run_transactions_boolean: 1, type_id: @type_id), class: 'btn bg-orange btn-sm', data: { confirm: "Are you sure you want to bill all #{@event.blank? ? '' : @event.title} members with a balance?", disable_with: "<i class='fa fa-spinner fa-spin'></i> Bill Members" }
+      %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+        %li.nav-item
+          %a#cash-tab.nav-link.active{"aria-controls" => "cash", "aria-selected" => "true", "data-toggle" => "tab", :href => "#cash", :role => "tab"} 
+            = "Cash Position"
+        %li.nav-item
+          %a#balances-tab.nav-link{"aria-controls" => "balances", "aria-selected" => "true", "data-toggle" => "tab", :href => "#balances", :role => "tab"} 
+            = "Accounts with Balances"
+        %li.nav-item
+          %a#logs-tab.nav-link{"aria-controls" => "logs", "aria-selected" => "true", "data-toggle" => "tab", :href => "#logs", :role => "tab"} 
+            = "ACH Logs"
+      #myTabContent.tab-content
+        #cash.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+          = render partial: 'companies/cash_position'
+        #balances.tab-pane.fade{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+          / Default box
+          .box.box-primary
+            .box-header.with-border
+              %h3.box-title 
+                = form_tag balances_accounts_path, :method => 'get', :class => "form-inline" do
+                  - unless @accounts.blank? or browser.device.mobile?
+                    %a{href: balances_accounts_path(format: "csv", :event_id => @event_id, :type_id => @type_id, :sign => @sign), class: 'btn btn-sm btn-info'}
+                      %i.fa.fa-download
+                      CSV
+                    &nbsp;
+                  -#
+                    = select_tag :active, options_for_select([["Active",1], ["Inactive",0]], params[:active]), prompt: 'Active & Inactive', class: "form-control"
+                    &nbsp;
+                  = select_tag :event_id, options_from_collection_for_select(@events, "id", "title", @event_id), prompt: 'All events', class: "form-control"
+                  &nbsp;
+                  = select_tag :type_id, options_from_collection_for_select(@account_types, "id", "description", @type_id), prompt: 'All types', class: "form-control"
+                  -#
+                    &nbsp;
+                    = search_field_tag :q, params[:q], :placeholder => "Search", class: "form-control"
+                  &nbsp;
+                  = select_tag :sign, options_for_select(["Negative", "Positive"], params[:sign]), class: "form-control"
+                  &nbsp;
+                  = button_tag(:type => 'submit', :class => 'btn btn-primary', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                    %i.fa.fa-search
+              
+              %strong.pull-right
+                =# "Total: #{number_to_currency(@balances_sum)}"
+                -# if current_user.can_edit_accounts? and not @accounts.blank? and not @event_id.blank? and @type_id == '1' and not current_user.company.cashier_account.blank?
+                - if current_user.can_edit_accounts? and not @accounts.blank? and not @event_id.blank? and @type_id == '1'
+                  %br
+                  = link_to "<i class='fa fa-calendar-check-o'></i> Bill Members".html_safe, bill_members_accounts_path(event_id: @event_id, club_account_id: current_user.company.TxnActID, run_transactions_boolean: 1, type_id: @type_id), class: 'btn bg-orange btn-sm', data: { confirm: "Are you sure you want to bill all #{@event.blank? ? '' : @event.title} members with a balance?", disable_with: "<i class='fa fa-spinner fa-spin'></i> Bill Members" }
+              .box-tools.pull-left
+                %small.text-muted
+                  = "#{pluralize(number_with_delimiter(@total_accounts_results.count), 'account')} found"
 
-        .box-body.no-padding
-          - unless @accounts.blank?
-            .table-responsive
-              %table.table.table-striped.table-condensed
-                %thead
-                  %tr
-                    %th ID
-                    %th First
-                    %th Last
-                    %th Type
-                    %th Event
-                    %th Balance
-                    %th
-                %tbody
-                  - @accounts.each do |account|
-                    %tr{class: account.active? ? '' : 'table-danger'}
-                      %td= account.id
-                      %td
-                        - unless account.customer.blank? 
-                          = link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
-                        - else
-                          None
-                      %td
-                        - unless account.customer.blank? 
-                          = link_to "#{account.customer.last_name.blank? ? '' : account.customer.last_name}", customer_path(account.customer.id, account_id: account.id)
-                        - else
-                          None
-                      %td
-                        - unless account.account_type.blank?
-                          = account.account_type.description 
-                        - else
-                          None
-                      %td
-                        - unless account.events.blank?
-                          - account.events.each do |event|
-                            = link_to "#{event.title}#{event != account.events.last ? ', ' : ''}", event
-                        - else
-                          None
-                      %td
-                        - unless account.MinBalance.blank? or account.MinBalance.zero?
-                          %span.btn.btn-info.btn-sm{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
-                            = number_to_currency(account.Balance)
-                        - else
-                          = number_to_currency(account.Balance)
-                      %td
-                        = link_to "Show", account, class: 'btn btn-default btn-sm'
-                        =# link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
-          - else
-            %h3.text-center None found
-                    
-        .box-footer
-          .pull-right= paginate @accounts
+            .box-body.no-padding
+              - unless @accounts.blank?
+                .table-responsive
+                  %table.table.table-striped.table-condensed
+                    %thead
+                      %tr
+                        %th ID
+                        %th Holders
+                        %th Type
+                        %th Event
+                        %th Balance
+                        %th
+                    %tbody
+                      - @accounts.each do |account|
+                        %tr{class: account.active? ? '' : 'table-danger'}
+                          %td= account.id
+                          %td
+                            - unless account.customers.blank? 
+                              =# link_to "#{account.customer.first_name.blank? ? account.customer.phone : account.customer.first_name}", customer_path(account.customer.id, account_id: account.id)
+                              = account.customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id:  account.id))}.join(", ").html_safe
+                            - else
+                              None
+                          %td
+                            - unless account.account_type.blank?
+                              = account.account_type.description 
+                            - else
+                              None
+                          %td
+                            - unless account.events.blank?
+                              - account.events.each do |event|
+                                = link_to "#{event.title}#{event != account.events.last ? ', ' : ''}", event
+                            - else
+                              None
+                          %td
+                            - unless account.MinBalance.blank? or account.MinBalance.zero?
+                              %span.btn.btn-info.btn-sm{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
+                                = number_to_currency(account.Balance)
+                            - else
+                              = number_to_currency(account.Balance)
+                          %td
+                            = link_to "Show", account, class: 'btn btn-default btn-sm'
+                            =# link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
+                    %tfoot
+                      %tr
+                        %td
+                        %td
+                        %td
+                        %td
+                        %td
+                          %strong= "Total: #{number_to_currency(@balances_sum)}"
+                        %td
+              - else
+                %h3.text-center None found
+
+            .box-footer
+              .pull-right= paginate @accounts
+        #logs.tab-pane.fade{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+          = render partial: 'ach_logs/index'
 
 :javascript
   $('[data-toggle="tooltip"]').tooltip({html: true});
