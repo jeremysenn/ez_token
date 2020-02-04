@@ -12,7 +12,8 @@ class Customer < ActiveRecord::Base
 #  has_one :account, :foreign_key => "CustomerID"
 
 #  has_many :accounts, :foreign_key => "CustomerID", inverse_of: :customer, dependent: :destroy
-  has_many :customer_cards, :foreign_key => "CustomerID", autosave: false, dependent: :destroy
+#  has_many :customer_cards, :foreign_key => "CustomerID", autosave: false, dependent: :destroy
+  has_many :customer_cards, :foreign_key => "CustomerID", autosave: true, dependent: :destroy
   has_many :accounts, through: :customer_cards
   
   has_many :transactions, :through => :account

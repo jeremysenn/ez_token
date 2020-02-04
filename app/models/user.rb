@@ -213,12 +213,16 @@ class User < ApplicationRecord
       unless events.include?(event)
         existing_company_account = accounts.find_by(ActTypeID: event.join_by_sms_wallet_type.id, CompanyNumber: event.company_id)
         if existing_company_account.blank? 
-          new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id, Active: event.join_active_status? ? 1 : 0)
+#          new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id, Active: event.join_active_status? ? 1 : 0)
+          new_account = Account.create(CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id, Active: event.join_active_status? ? 1 : 0)
+          customer.accounts << new_account
           event.accounts << new_account
           return new_account
         else
           if event.expire_accounts?
-            new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id, Active: event.join_active_status? ? 1 : 0)
+#            new_account = Account.create(CustomerID: customer.id, CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id, Active: event.join_active_status? ? 1 : 0)
+            new_account = Account.create(CompanyNumber: event.company_id, Balance: 0, MinBalance: 0, ActTypeID: event.join_by_sms_wallet_type.id, Active: event.join_active_status? ? 1 : 0)
+            customer.accounts << new_account
             event.accounts << new_account
             return new_account
           else
