@@ -842,7 +842,7 @@ class Customer < ActiveRecord::Base
   
   def update_portal_user_record
     unless user.blank?
-      user.update_attributes(phone: PhoneMobile, first_name: NameF, last_name: NameL, email: Email)
+      user.update_attributes(phone: self.PhoneMobile, first_name: self.NameF, last_name: self.NameL, email: self.Email)
     end
   end
   
