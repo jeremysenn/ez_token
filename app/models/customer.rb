@@ -59,7 +59,7 @@ class Customer < ActiveRecord::Base
   after_update :create_payee_user, if: :need_to_create_payee_user?
   after_update :create_basic_user, if: :need_to_create_basic_user?
 #  after_update_commit :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
-  after_update_commit :update_portal_user_record, :if => Proc.new {|customer| customer.PhoneMobile_changed? || customer.NameF_changed? ||  customer.NameL_changed? || customer.Email_changed?}, unless: Proc.new { |customer| customer.user.blank?}
+  after_update_commit :update_portal_user_record, :if => Proc.new {|customer| customer.phone_changed? || customer.first_name_changed? ||  customer.last_name_changed? || customer.email_changed?}, unless: Proc.new { |customer| customer.user.blank?}
   before_save :encrypt_ssn, if: :SSN_changed?
       
   #############################
@@ -452,6 +452,18 @@ class Customer < ActiveRecord::Base
     self.PhoneMobile
   end
   
+  def first_name
+    self.NameF
+  end
+  
+  def last_name
+    self.NameL
+  end
+  
+  def email
+    self.Email
+  end
+  
   def twilio_formated_phone_number
     "+1#{phone.gsub(/([-() ])/, '')}" if phone
   end
@@ -810,6 +822,18 @@ class Customer < ActiveRecord::Base
   
   def phone_changed?
     saved_change_to_PhoneMobile?
+  end
+  
+  def first_name_changed?
+    saved_change_to_NameF?
+  end
+  
+  def last_name_changed?
+    saved_change_to_NameL?
+  end
+  
+  def email_changed?
+    saved_change_to_Email?
   end
   
   def update_portal_user_phone
