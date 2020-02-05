@@ -58,7 +58,8 @@ class Customer < ActiveRecord::Base
   before_create :generate_barcode_access_string
   after_update :create_payee_user, if: :need_to_create_payee_user?
   after_update :create_basic_user, if: :need_to_create_basic_user?
-  after_update_commit :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
+#  after_update_commit :update_portal_user_phone, if: :phone_changed?, unless: Proc.new { |customer| customer.user.blank?}
+  after_update_commit :update_portal_user_record, :if => Proc.new {|customer| customer.PhoneMobile_changed? || customer.NameF_changed? ||  customer.NameL_changed? || customer.Email_changed?}, unless: Proc.new { |customer| customer.user.blank?}
   before_save :encrypt_ssn, if: :SSN_changed?
       
   #############################
@@ -813,6 +814,12 @@ class Customer < ActiveRecord::Base
   
   def update_portal_user_phone
     user.update_attribute(:phone, phone)
+  end
+  
+  def update_portal_user_record
+    unless user.blank?
+      user.update_attributes(phone: PhoneMobile, first_name: NameF, last_name: NameL, email: Email)
+    end
   end
   
   def accounts_with_events
