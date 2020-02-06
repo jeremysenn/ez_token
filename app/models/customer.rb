@@ -17,7 +17,7 @@ class Customer < ActiveRecord::Base
   has_many :accounts, through: :customer_cards
   
   has_many :transactions, :through => :account
-  has_one :user
+  has_one :user, dependent: :destroy
   has_many :sms_messages
   has_many :payments, :foreign_key => "CustomerID"
   has_many :customer_barcodes, :foreign_key => "CustomerID"

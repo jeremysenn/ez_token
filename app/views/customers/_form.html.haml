@@ -131,6 +131,9 @@
         = link_to 'Cancel', :back, class: 'btn btn-default'
         %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
           Save
+        - if current_user.admin?
+          .pull-right
+            = link_to "<i class='fa fa-warning'></i> Delete".html_safe, customer_path(@customer), :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete? This cannot be undone.' }
 
 :javascript
   $('[data-toggle="tooltip"]').tooltip()
