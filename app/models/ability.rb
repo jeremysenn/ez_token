@@ -262,6 +262,13 @@ class Ability
         can :index, AccountType
       end
       
+      # Companies
+      ############
+      can :manage, Company do |company|
+        company == user.company
+      end
+      cannot :index, Company
+      
     elsif user.basic?
       
       # SmsMessages
