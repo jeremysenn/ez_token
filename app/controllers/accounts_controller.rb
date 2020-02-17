@@ -232,6 +232,7 @@ class AccountsController < ApplicationController
     @sign = params[:sign].blank? ? 'Negative' : params[:sign]
     unless @account_types.blank?
       @type_id = params[:type_id]
+      @account_type = AccountType.find(params[:type_id])
     end
     unless @events.blank?
       @event_id = params[:event_id] #||= @events.first.id

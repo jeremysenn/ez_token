@@ -33,6 +33,7 @@ class User < ApplicationRecord
   
   validates :phone, uniqueness: true, presence: true 
   validates :email, uniqueness: {allow_blank: true}
+#  validates :email, uniqueness: true, presence: true 
 
     
   #############################

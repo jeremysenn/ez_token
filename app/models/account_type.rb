@@ -87,6 +87,10 @@ class AccountType < ActiveRecord::Base
     self.AccountTypeID == 7
   end
   
+  def clear_balances_and_bill_externally?
+    self.clear_balances_bill_externally == 1
+  end
+  
   def default_minimum_balance
     unless self.DefaultMinBal.blank?
       self.DefaultMinBal

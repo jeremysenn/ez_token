@@ -83,17 +83,20 @@
               Created
             %p.text-muted
               = @company.CreateDate.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%Y')
-            - unless @company.twilio_number.blank?
-              %hr
-              %strong 
-                %i.fa.fa-mobile-phone
-                Twilio Phone
-              %p.text-muted
+            
+            %hr
+            %strong 
+              %i.fa.fa-mobile-phone
+              Twilio Phone
+            %p.text-muted
+              - unless @company.twilio_number.blank?
                 %strong Number
                 = @company.twilio_number.pretty_phone_number
                 %br
                 %strong SID
                 = @company.twilio_number.sid
+              - else
+                None
               
       .col-md-9
         %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}

@@ -1,10 +1,54 @@
-%nav.navbar.navbar-expand-lg.navbar-light.bg-light
+-# %nav.navbar.navbar-expand-lg.navbar-light.bg-light
+%nav.navbar.navbar-expand-lg.navbar-light.bg-light.fixed-top
   %a.navbar-brand{:href => '/'} 
     = image_tag(image_path("ezcash_logo_50.png"))
   %button.navbar-toggler{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
     %span.navbar-toggler-icon
   #navbarSupportedContent.collapse.navbar-collapse
     %ul.navbar-nav.mr-auto
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => '/'}
+            %i.fa.fa-dashboard.fa-lg
+            %br
+            Home
+      %li.nav-item.bordered.dropdown
+        .text-center
+          %a.nav-link{:href => 'companies'}
+            %i.fa.fa-building.fa-lg
+            %br
+            Companies
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => '/events'}
+            %i.fa.fa-calendar.fa-lg
+            %br
+            Events
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => '/accounts'}
+            %i.fa.fa-male.fa-lg
+            %br
+            Accounts
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => '/account_types'}
+            %i.fa.fa-google-wallet.fa-lg
+            %br
+            Wallet Types
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => '/transactions'}
+            %i.fa.fa-bolt.fa-lg
+            %br
+            Transactions
+      - if current_user.can_view_users?
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => '/users_admin'}
+              %i.fa.fa-users
+              %br
+              Users
       %li.nav-item.bordered
         .text-center
           %a.nav-link{:href => '/fine_print', :class => (controller.controller_name == 'contracts' or controller.controller_name == 'signatures') ? "text-light-blue" : ""}

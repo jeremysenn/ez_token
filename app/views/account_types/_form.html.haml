@@ -8,7 +8,7 @@
           = "#{attr} #{msg}" if @account_type.errors[attr].first == msg
       .form-inputs
         .row
-          .col-xs-12.col-sm-9
+          .col-xs-12.col-sm-6
             = f.input :AccountTypeDesc, as: :string, label: 'Description', required: true
         - unless current_user.super?
           = f.input :CompanyNumber, as: :hidden, :input_html => { :value => "#{@account_type.new_record? ? current_user.company.id : @account_type.CompanyNumber}" }
@@ -20,7 +20,7 @@
           .col-xs-12.col-sm-6
             = f.input :MinMaintainBal, as: :decimal, required: false, label: "Minimum Maintained Balance" do
               .row
-                .col-xs-12.col-sm-8
+                .col-xs-12.col-sm-4
                   .input-group
                     .input-group-prepend
                       %span.input-group-text $
@@ -28,28 +28,45 @@
           .col-xs-12.col-sm-6
             = f.input :DefaultMinBal, as: :decimal, required: false, label: "Default Minimum Balance" do
               .row
-                .col-xs-12.col-sm-8
+                .col-xs-12.col-sm-4
                   .input-group
                     .input-group-prepend
                       %span.input-group-text $
                     = f.input_field :DefaultMinBal, as: :decimal, value: @account_type.DefaultMinBal.blank? ? 0 : @account_type.DefaultMinBal, class: "form-control"
         .row
           .col-xs-12.col-sm-6
-            = f.input :CanFundByACH, as: :boolean, label: 'Fund by ACH'
-            = f.input :CanFundByCC, as: :boolean, label: 'Fund by CC'
-            = f.input :CanFundByCash, as: :boolean, label: 'Fund by Cash'
-            = f.input :CanWithdraw, as: :boolean, label: 'Can Withdraw'
-            = f.input :WithdrawAll, as: :boolean, label: 'Withdrawal All'
-            = f.input :CanPull, as: :boolean, label: 'Pull Payments'
-            = f.input :date_of_birth_required, as: :boolean, label: 'Require DOB'
+            .box
+              .box-body
+                = f.input :CanFundByACH, as: :boolean, label: 'Fund by ACH'
+                = f.input :CanFundByCC, as: :boolean, label: 'Fund by CC'
+                = f.input :CanFundByCash, as: :boolean, label: 'Fund by Cash'
+            
           .col-xs-12.col-sm-6
-            = f.input :CanRequestPmtBySearch, as: :boolean, label: 'Request Payments by Search'
-            = f.input :CanRequestPmtByScan, as: :boolean, label: 'Request Payments by Scan'
-            = f.input :CanSendPmt, as: :boolean, label: 'Send Payments'
-            = f.input :CanBePulledBySearch, as: :boolean, label: 'Can be Pulled by Search'
-            = f.input :CanBePulledByScan, as: :boolean, label: 'Can be Pulled by Scan'
-            = f.input :CanBePushedByScan, as: :boolean, label: 'Can be Pushed by Scan'
-            = f.input :social_security_number_required, as: :boolean, label: 'Require SSN'
+            .box
+              .box-body
+                = f.input :CanPull, as: :boolean, label: 'Pull Payments', input_html: {onclick: "if($(this).is(':not(:checked)')){ $('#account_type_CanRequestPmtBySearch').prop('checked', false); $('#account_type_CanRequestPmtByScan').prop('checked', false);}"}
+                = f.input :CanRequestPmtBySearch, as: :boolean, label: 'Pull Payments by Search', input_html: {onclick: "if($(this).is(':checked')){ $('#account_type_CanPull').prop('checked', true); }"}
+                = f.input :CanRequestPmtByScan, as: :boolean, label: 'Pull Payments by Scan', input_html: {onclick: "if($(this).is(':checked')){ $('#account_type_CanPull').prop('checked', true); }"}
+        .row
+          .col-xs-12.col-sm-6
+            .box
+              .box-body
+                = f.input :CanWithdraw, as: :boolean, label: 'Can Withdraw', input_html: {onclick: "if($(this).is(':not(:checked)')){ $('#account_type_WithdrawAll').prop('checked', false); }"}
+                = f.input :WithdrawAll, as: :boolean, label: 'Withdrawal All', input_html: {onclick: "if($(this).is(':checked')){ $('#account_type_CanWithdraw').prop('checked', true); }"}
+          .col-xs-12.col-sm-6
+            .box
+              .box-body
+                = f.input :CanBePulledBySearch, as: :boolean, label: 'Can be Pulled by Search'
+                = f.input :CanBePulledByScan, as: :boolean, label: 'Can be Pulled by Scan'
+                = f.input :CanBePushedByScan, as: :boolean, label: 'Can be Pushed by Scan'
+                = f.input :CanSendPmt, as: :boolean, label: 'Send Payments'
+        .row
+          .col-xs-12.col-sm-6
+            .box
+              .box-body
+                = f.input :social_security_number_required, as: :boolean, label: 'Require SSN'
+                = f.input :date_of_birth_required, as: :boolean, label: 'Require DOB'
+                = f.input :clear_balances_bill_externally, as: :boolean, label: 'Clear Balances & Bill Externally'
         - unless current_user.super?
           - unless current_user.company.contracts.blank?
             .row
