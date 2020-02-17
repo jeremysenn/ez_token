@@ -87,12 +87,13 @@
               %i.fa.fa-dollar
               %br
               Balances
-      %li.nav-item.bordered
-        .text-center
-          %a.nav-link{:href => sms_messages_path, :class => (params[:controller] == 'sms_messages') ?  "text-light-blue" : ""}
-            %i.fa.fa-commenting
-            %br
-            Messages
+      - unless current_user.company.twilio_number.blank?
+        %li.nav-item.bordered
+          .text-center
+            %a.nav-link{:href => sms_messages_path, :class => (params[:controller] == 'sms_messages') ?  "text-light-blue" : ""}
+              %i.fa.fa-commenting
+              %br
+              Messages
       
     %form.form-inline.my-2.my-lg-0
       .my-2.my-sm-0.dropdown
