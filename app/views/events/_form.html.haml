@@ -34,7 +34,7 @@
           .form-group
             %label{:for => "start_date"} End
             = f.text_field :end_date, value: @end_date ||= (Date.today + 1.week).to_s, style: 'width: 100%;', 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, 'data-date-orientation' => 'bottom', readonly: true
-      - unless @event.company.blank? or @event.company.twilio_number.blank?
+      - unless current_user.company.twilio_number.blank?
         .row
           .col-xs-12.col-sm-6
             -#
@@ -58,10 +58,12 @@
                   .col-xs-12.col-sm-6
                     %p
                       %strong Phone:
-                      - unless @event.company.blank? or @event.company.twilio_number.blank?
-                        = @event.company.twilio_number.pretty_phone_number
-                      - else
-                        = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
+                      -#
+                        - unless @event.company.blank? or @event.company.twilio_number.blank?
+                          = @event.company.twilio_number.pretty_phone_number
+                        - else
+                          = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
+                      = current_user.company.twilio_number.pretty_phone_number
                 .row
                   .col-xs-12.col-sm-6
                     .form-group
