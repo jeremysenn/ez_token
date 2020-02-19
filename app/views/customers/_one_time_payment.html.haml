@@ -41,7 +41,8 @@
   });
 
   $('#one_time_payment_pay_and_print_button').click(function() {
-    var payment_amount = $('#amount' ).val();
+    var payment_amount = $('#amount').val();
+    alert(payment_amount);
     if (payment_amount > 0) {
       $('#one_time_payment_pay_and_text_button').hide();
       var url = "#{barcode_customer_url(@customer.id)}";
@@ -53,7 +54,7 @@
   });
 
   $('#one_time_payment_pay_and_text_button').click(function() {
-    var payment_amount = $('#amount' ).val();
+    var payment_amount = $('#amount').val();
     if (payment_amount > 0) {
       $('#one_time_payment_pay_and_print_button').hide();
       }
