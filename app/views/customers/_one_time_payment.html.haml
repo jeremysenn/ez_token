@@ -12,7 +12,7 @@
             .input-group-prepend
               %span.input-group-text $
             =# number_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, step: '1', autofocus: true, :inputmode => "numeric", :min => "0", :pattern => "[0-9]*"
-            = text_field_tag :amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, autofocus: true, :pattern => "[0-9]*"
+            = text_field_tag :payment_amount, nil, :placeholder => "Amount", class: "form-control input-lg", required: true, autofocus: true, :pattern => "[0-9]*"
             .input-group-append
               %span.input-group-text .00
           .form-group
@@ -41,8 +41,7 @@
   });
 
   $('#one_time_payment_pay_and_print_button').click(function() {
-    var payment_amount = $('#amount').val();
-    alert(payment_amount);
+    var payment_amount = $('#payment_amount').val();
     if (payment_amount > 0) {
       $('#one_time_payment_pay_and_text_button').hide();
       var url = "#{barcode_customer_url(@customer.id)}";
@@ -54,7 +53,7 @@
   });
 
   $('#one_time_payment_pay_and_text_button').click(function() {
-    var payment_amount = $('#amount').val();
+    var payment_amount = $('#payment_amount').val();
     if (payment_amount > 0) {
       $('#one_time_payment_pay_and_print_button').hide();
       }
