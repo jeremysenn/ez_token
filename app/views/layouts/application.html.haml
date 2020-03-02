@@ -42,7 +42,7 @@
           - elsif current_user.super?
             = render 'shared/super_user_navbar'
         - else
-          - if current_user.administrator?
+          - if current_user.administrator? or current_user.super?
             = render 'shared/admin_user_fine_print_navbar' 
       = yield
       - unless ((params[:controller] == "customers" and (params[:action] == "barcode" or params[:action] == "qr_code")) or (params[:controller] == "transactions" and params[:action] == "quick_pay"))

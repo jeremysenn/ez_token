@@ -43,10 +43,16 @@
             %i.fa.fa-bolt.fa-lg
             %br
             Transactions
+      %li.nav-item.bordered
+        .text-center
+          %a.nav-link{:href => users_admin_index_path, :class => (params[:controller] == 'users') ?  "text-light-blue" : ""}
+            %i.fa.fa-users
+            %br
+            Users
     %div{:class => "alert alert-danger"}
       .text-center 
         %i.fa.fa-warning
-        Super User Console
+        Super Console
     %form.form-inline.my-2.my-lg-0
       .my-2.my-sm-0.dropdown
         %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
@@ -63,10 +69,11 @@
             %i.fa.fa-edit
             Edit profile
           .dropdown-divider
-          - if current_user.can_view_users?
-            %a.dropdown-item{:href => users_admin_index_path, :class => (params[:controller] == 'users') ?  "active" : ""} 
-              %i.fa.fa-users
-              Users
+          -#
+            - if current_user.can_view_users?
+              %a.dropdown-item{:href => users_admin_index_path, :class => (params[:controller] == 'users') ?  "active" : ""} 
+                %i.fa.fa-users
+                Users
           - if current_user.can_view_atms?
             %a.dropdown-item{:href => devices_path, :class => (params[:controller] == 'devices') ?  "active" : ""}
               %i.fa.fa-money

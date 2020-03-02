@@ -58,10 +58,12 @@ class Ability
       
       # SmsMessages
       ############
-      can :manage, SmsMessage do |sms_message|
-        user.company == sms_message.company or user == sms_message.user or user.super?
+      unless user.company.twilio_number.blank?
+        can :manage, SmsMessage do |sms_message|
+          user.company == sms_message.company or user == sms_message.user or user.super?
+        end
+        can :create, SmsMessage
       end
-      can :create, SmsMessage
       
       # Transactions
       ############
@@ -171,8 +173,10 @@ class Ability
       
       # SmsMessages
       ############
-      can :manage, SmsMessage
-      can :create, SmsMessage
+      unless user.company.twilio_number.blank?
+        can :manage, SmsMessage
+        can :create, SmsMessage
+      end
       
       if user.view_atms?
         # Transactions
@@ -262,18 +266,27 @@ class Ability
         can :index, AccountType
       end
       
+      # Companies
+      ############
+      can :manage, Company do |company|
+        company == user.company
+      end
+      cannot :index, Company
+      
     elsif user.basic?
       
       # SmsMessages
       ############
-      can :manage, SmsMessage do |sms_message|
-        unless user.customer.blank?
-          user.customer == sms_message
-        else
-          user == sms_message.user
+      unless user.company.twilio_number.blank?
+        can :manage, SmsMessage do |sms_message|
+          unless user.customer.blank?
+            user.customer == sms_message
+          else
+            user == sms_message.user
+          end
         end
+        can :create, :sms_messages
       end
-      can :create, :sms_messages
       
       # Transactions
       ############

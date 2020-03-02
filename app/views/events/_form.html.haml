@@ -29,56 +29,64 @@
         .col-xs-12.col-sm-6
           .form-group
             %label{:for => "start_date"} Start
-            = f.text_field :start_date, value: @start_date ||= Date.today.to_s, style: 'width: 100%;', 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+            = f.text_field :start_date, value: @start_date ||= Date.today.to_s, style: 'width: 100%;', 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, 'data-date-orientation' => 'bottom', readonly: true
         .col-xs-12.col-sm-6
           .form-group
             %label{:for => "start_date"} End
-            = f.text_field :end_date, value: @end_date ||= (Date.today + 1.week).to_s, style: 'width: 100%;', 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-      .row
-        .col-xs-12.col-sm-6
-          #join_by_text_box.box.box-default{class: "#{@event.join_code.blank? ? 'collapsed-box' : ''}"}
-            .box-header.with-border
-              .box-title 
-                %i.fa.fa-commenting
-                Join by SMS
-              .box-tools.pull-right
-                %button.btn.btn-box-tool{id: "join_by_sms_box_tool_collapse", "data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
-                  - if @event.join_code.blank?
-                    %i.fa.fa-plus
-                  - else
+            = f.text_field :end_date, value: @end_date ||= (Date.today + 1.week).to_s, style: 'width: 100%;', 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, 'data-date-orientation' => 'bottom', readonly: true
+      - unless current_user.company.twilio_number.blank?
+        .row
+          .col-xs-12.col-sm-6
+            -#
+              #join_by_text_box.box.box-default{class: "#{@event.join_code.blank? ? 'collapsed-box' : ''}"}
+            #join_by_text_box.box.box-default
+              .box-header.with-border
+                .box-title
+                  %i.fa.fa-commenting
+                  Join by SMS
+                .box-tools.pull-right
+                  %button.btn.btn-box-tool{id: "join_by_sms_box_tool_collapse", "data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                    -#
+                      - if @event.join_code.blank?
+                        %i.fa.fa-plus
+                      - else
+                        %i.fa.fa-minus
                     %i.fa.fa-minus
-            .box-body{style: "#{@event.join_code.blank? ? 'display:none' : 'display:block'}"}
-              .row
-                .col-xs-12.col-sm-6
-                  %p
-                    %strong Phone:
-                    - unless @event.company.blank? or @event.company.twilio_number.blank?
-                      = @event.company.twilio_number.pretty_phone_number
-                    - else
-                      = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
-              .row
-                .col-xs-12.col-sm-6
-                  .form-group
-                    %label{:for => "join_code"} Join Code
-                    = f.text_field :join_code, class: "form-control"
-                .col-xs-12.col-sm-6
-                  .form-group
-                    %label{:for => "join_response"} Join Response
-                    = f.text_area :join_response, rows: 5, style: 'width: 100%;'
-              .row    
-                .col-xs-12.col-sm-6
-                  %label{:for => "account_type_id"} Join by SMS Wallet Type
-                  = f.select :account_type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @event.account_type_id), {prompt: "Select Wallet Type"}, {:class => "form-control"}
-                .col-xs-12.col-sm-6
-                  %label{:for => "join_active_status"} Join by SMS Account Active Status
-                  .radio
-                    %label
-                      = f.radio_button :join_active_status, true, :checked => (@event.new_record? or @event.join_active_status?)
-                      Active
-                  .radio
-                    %label
-                      = f.radio_button :join_active_status, false, :checked => (!@event.new_record? and !@event.join_active_status?)
-                      Inactive
+              -# .box-body{style: "#{@event.join_code.blank? ? 'display:none' : 'display:block'}"}
+              .box-body
+                .row
+                  .col-xs-12.col-sm-6
+                    %p
+                      %strong Phone:
+                      -#
+                        - unless @event.company.blank? or @event.company.twilio_number.blank?
+                          = @event.company.twilio_number.pretty_phone_number
+                        - else
+                          = number_to_phone(ENV["FROM_PHONE_NUMBER"].gsub(/\+1/, ''))
+                      = current_user.company.twilio_number.pretty_phone_number
+                .row
+                  .col-xs-12.col-sm-6
+                    .form-group
+                      %label{:for => "join_code"} Join Code
+                      = f.text_field :join_code, class: "form-control"
+                  .col-xs-12.col-sm-6
+                    .form-group
+                      %label{:for => "join_response"} Join Response
+                      = f.text_area :join_response, rows: 5, style: 'width: 100%;'
+                .row    
+                  .col-xs-12.col-sm-6
+                    %label{:for => "account_type_id"} Join by SMS Wallet Type
+                    = f.select :account_type_id, options_from_collection_for_select(current_user.company.account_types, "id", "description", @event.account_type_id), {prompt: "Select Wallet Type"}, {:class => "form-control"}
+                  .col-xs-12.col-sm-6
+                    %label{:for => "join_active_status"} Join by SMS Account Active Status
+                    .radio
+                      %label
+                        = f.radio_button :join_active_status, true, :checked => (@event.new_record? or @event.join_active_status?)
+                        Active
+                    .radio
+                      %label
+                        = f.radio_button :join_active_status, false, :checked => (!@event.new_record? and !@event.join_active_status?)
+                        Inactive
 
       = link_to 'Cancel', :back, class: "btn btn-default"
       %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 

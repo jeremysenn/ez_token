@@ -2,6 +2,7 @@
   .container
     / Content Header (Page header)
     %section.content-header
+      = render 'shared/flash_messages'
       %h3
         %i.fa.fa-user
         = "#{@user.full_name}"
@@ -19,11 +20,15 @@
               %i.fa.fa-chevron-right
             %br
           Email:
-          = @user.email
+          = @user.email.blank? ? 'None' : @user.email
           %br
           Phone:
           = @user.phone
           %br
+          - unless @user.temporary_password.blank?
+            Temporary Password:
+            = @user.temporary_password
+            %br
           - if @user.confirmed?
             Sign In Count:
             = @user.sign_in_count
@@ -41,6 +46,11 @@
             = @user.last_sign_in_ip
           - else
             .text-danger Waiting for user to confirm account
+            - if current_user.super?
+              %p
+                %a.btn.btn-primary{:href => confirm_users_admin_path(@user), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Manually Confirm User"}}
+                  %i.fa.fa-thumbs-up
+                  Manually Confirm User
       
       - unless @devices.blank?
         .box.box-primary

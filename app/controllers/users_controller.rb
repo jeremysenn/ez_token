@@ -117,7 +117,13 @@ class UsersController < ApplicationController
   def confirm
     @user.confirmed_at = Time.now
     if @user.save
-      redirect_back fallback_location: root_path, notice: 'Web user successfully confirmed.'
+#      redirect_back fallback_location: root_path, notice: 'Web user successfully confirmed.'
+      flash[:notice] = 'Web user successfully confirmed.'
+      if @user.basic? and not @user.customer.blank?
+        redirect_to customer_path(@user.customer)
+      else
+        redirect_to users_admin_path(@user)
+      end
     else
       redirect_back fallback_location: root_path, notice: 'There was a problem trying to confirm the web user.'
     end

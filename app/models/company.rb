@@ -195,7 +195,7 @@ class Company < ActiveRecord::Base
   
   def create_default_contract_and_account_type
     if contracts.blank?
-      company_default_contract = Contract.create(company_id: self.CompanyNumber, title: "#{self.CompanyName} Default Contract", name: "#{self.CompanyName} Default Contract".parameterize(separator: "_"), content: "#{self.CompanyName} default contract verbiage.")
+      company_default_contract = Contract.create(company_id: self.CompanyNumber, title: "#{self.CompanyName} Default Contract", name: "#{self.CompanyName} Default Contract".parameterize(separator: "_"), content: "Welcome to #{self.CompanyName}.")
       company_default_contract.publish
     end
     if account_types.blank?

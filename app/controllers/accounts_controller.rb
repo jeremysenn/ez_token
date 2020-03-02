@@ -98,7 +98,7 @@ class AccountsController < ApplicationController
   end
   
   def one_time_payment
-    amount = params[:amount].to_f.abs unless params[:amount].blank?
+    amount = params[:payment_amount].to_f.abs unless params[:payment_amount].blank?
     note = params[:note]
     receipt_number = params[:receipt_number]
     to_customer_id = params[:to_customer_id]
@@ -232,6 +232,7 @@ class AccountsController < ApplicationController
     @sign = params[:sign].blank? ? 'Negative' : params[:sign]
     unless @account_types.blank?
       @type_id = params[:type_id]
+      @account_type = AccountType.find(params[:type_id]) unless params[:type_id].blank?
     end
     unless @events.blank?
       @event_id = params[:event_id] #||= @events.first.id
