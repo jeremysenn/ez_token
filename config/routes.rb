@@ -79,7 +79,11 @@ Rails.application.routes.draw do
   post 'twilio/sms' => 'twilio#sms'
   post 'twilio/voice' => 'twilio#voice'
   
-  resources :events
+  resources :events do 
+    member do
+      get 'customer_accounts'
+    end
+  end
   
   resources :accounts do
     member do

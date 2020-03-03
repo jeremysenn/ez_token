@@ -225,10 +225,17 @@ class TransactionsController < ApplicationController
     unless params[:scanned_from_account_id].blank?
       from_account_id = params[:scanned_from_account_id]
     else
-      from_account_id = params[:from_account_id]
+      if params[:from_customer_account].blank?
+        from_account_id = params[:from_account_id] unless params[:from_account_id].blank?
+        from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
+      else
+        from_account_id = params[:from_customer_account].split(':').last
+        from_customer_name = params[:from_customer_account].split(':').first.strip
+        customer = Customer.where("CONCAT(NameF, ' ', NameL) like ?", from_customer_name).first
+        from_customer_id = customer.id unless customer.blank?
+      end
     end
     customer_barcode_id = params[:customer_barcode_id]
-    from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
     to_customer_id = params[:to_customer_id] unless params[:to_customer_id].blank?
     if params[:file]
       @file_upload = params[:file].path

@@ -172,7 +172,7 @@
                       = render 'withdrawal'
                 
             -# if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
-            - if @account and @account.active? and (current_user.administrator? or current_user.collaborator?)
+            - if @account and @account.active? and (current_user.administrator? or (current_user.collaborator? and current_user.can_pay_from_corporate?))
               %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment", style: 'margin-top: 7px;'}
                 %h5
                   %i.fa.fa-dollar
@@ -185,12 +185,12 @@
                     %i.fa.fa-qrcode
                     %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
                     Send Code
-              - unless @customer.phone.blank?
-                %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
-                  %h5
-                    %i.fa.fa-comment
-                    Send Message
               = render 'one_time_payment'
+            - unless @customer.phone.blank?
+              %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message", style: 'margin-top: 10px;'}
+                %h5
+                  %i.fa.fa-comment
+                  Send Message
               = render 'sms_message'
 
           / /.box-body
@@ -386,7 +386,11 @@
                               - else
                                 -# unless payment_transaction.from_account_customer.blank?
                                 - unless payment_transaction.from_account_customers.blank?
-                                  = payment_transaction.from_account_customers_list
+                                  - from_customer = payment_transaction.from_customer
+                                  - unless from_customer.blank?  
+                                    = payment_transaction.from_customer.full_name
+                                  - else
+                                    = payment_transaction.from_account_customers_list
                                   -#
                                     - payment_transaction.from_account_customers.each do |from_account_customer|
                                       = from_account_customer.full_name.blank? ? from_account_customer.phone : from_account_customer.full_name
@@ -396,7 +400,11 @@
                             %td
                               -# unless payment_transaction.to_account_customer.blank? 
                               - unless payment_transaction.to_account_customers.blank? 
-                                = payment_transaction.to_account_customers_list
+                                - to_customer = payment_transaction.to_customer
+                                - unless to_customer.blank?
+                                  = payment_transaction.to_customer.full_name
+                                - else
+                                  = payment_transaction.to_account_customers_list
                                 -#
                                   - payment_transaction.to_account_customers.each do |to_account_customer|
                                     = to_account_customer.full_name

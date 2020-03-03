@@ -45,7 +45,8 @@
                 = f.input :view_users, as: :boolean, label: 'View users'
                 = f.input :edit_users, as: :boolean, label: 'Edit users'
                 = f.input :view_atms, as: :boolean, label: 'View ATMs'
-                = f.input :can_quick_pay, as: :boolean, label: 'Can quick pay'
+                = f.input :can_quick_pay, as: :boolean, label: 'Pay from Corporate Account (anonymous holders)'
+                = f.input :can_pay_from_corporate, as: :boolean, label: 'Pay from Corporate Account (wallet holders)'
 
           #user_devices.form-group{style: "#{@user.collaborator? ? 'display: block;' : 'display: none;'}"}
             - unless current_user.company.devices.blank?

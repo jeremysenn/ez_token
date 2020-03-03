@@ -335,6 +335,10 @@ class User < ApplicationRecord
     admin?
   end
   
+  def can_pay_from_corporate_account?
+    admin? or can_pay_from_corporate?
+  end
+  
   def format_phone_before_create
     self.phone = "#{phone.gsub(/([-() ])/, '')}" if phone
   end

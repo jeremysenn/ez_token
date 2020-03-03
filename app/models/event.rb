@@ -77,6 +77,18 @@ class Event < ActiveRecord::Base
     end
   end
   
+  def customer_accounts
+    accounts = []
+    customers.each do |customer|
+      customer.accounts.each do |account|
+        if account.can_be_pulled_by_search?
+          accounts << [customer.full_name, account.id]
+        end
+      end
+    end
+    return accounts
+  end
+  
   #############################
   #     Class Methods         #
   #############################

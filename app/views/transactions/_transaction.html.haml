@@ -12,15 +12,21 @@
     = transaction.date_time.strftime("%-m/%-d/%y")
   %td
     - unless from_customers.blank?
-      =# link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
-      = from_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: transaction.from_acct_id))}.join(", ").html_safe
+      - from_customer = transaction.from_customer
+      - unless from_customer.blank?
+        = link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
+      - else
+        = from_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: transaction.from_acct_id))}.join(", ").html_safe
     - else
       = transaction.from_account.company.name unless transaction.from_account.blank?
   - if @device.blank?
     %td
       - unless to_customers.blank?
-        =# link_to to_customer.identity, customer_path(to_customer, account_id: transaction.to_acct_id) unless transaction.to_account.blank?
-        = to_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: transaction.to_acct_id))}.join(", ").html_safe
+        - to_customer = transaction.to_customer
+        - unless to_customer.blank?
+          = link_to to_customer.identity, customer_path(to_customer, account_id: transaction.to_acct_id) unless transaction.to_account.blank?
+        - else
+          = to_customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: transaction.to_acct_id))}.join(", ").html_safe
       - else
         = transaction.to_account.company.name unless transaction.to_account.blank?
   %td= transaction.type

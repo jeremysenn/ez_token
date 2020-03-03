@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_event, only: [:show, :edit, :update, :destroy]
+  before_action :set_event, only: [:show, :edit, :update, :destroy, :customer_accounts]
   load_and_authorize_resource
 
   # GET /events
@@ -70,6 +70,27 @@ class EventsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to events_url, notice: 'Event was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+  
+  def customer_accounts
+    respond_to do |format|
+      format.json {
+        @query_string = "%#{params[:q]}%"
+        customers = @event.customers.where("CONCAT(customer.NameF, ' ', customer.NameL) like ? OR customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string, @query_string).order("NameL ASC")
+        @total_accounts_results = []
+        customers.each do |customer|
+          customer.accounts.each do |account|
+            if account.can_be_pulled_by_search?
+#              @total_accounts_results << [account.id, customer.full_name]
+              @total_accounts_results << "#{customer.full_name}:#{account.id}"
+            end
+          end
+        end
+        @accounts = @total_accounts_results.collect{ |account| {id: account, text: account} }
+        Rails.logger.info "event customer_accounts results: {#{@accounts}}"
+        render json: {results: @accounts}
+      }
     end
   end
 
