@@ -44,7 +44,7 @@
           .col-xs-12.col-sm-6
             .box
               .box-body
-                = f.input :CanPull, as: :boolean, label: 'Pull Payments', input_html: {onclick: "if($(this).is(':not(:checked)')){ $('#account_type_CanRequestPmtBySearch').prop('checked', false); $('#account_type_CanRequestPmtByScan').prop('checked', false);}"}
+                =# f.input :CanPull, as: :boolean, label: 'Pull Payments', input_html: {onclick: "if($(this).is(':not(:checked)')){ $('#account_type_CanRequestPmtBySearch').prop('checked', false); $('#account_type_CanRequestPmtByScan').prop('checked', false);}"}
                 = f.input :CanRequestPmtBySearch, as: :boolean, label: 'Pull Payments by Search', input_html: {onclick: "if($(this).is(':checked')){ $('#account_type_CanPull').prop('checked', true); }"}
                 = f.input :CanRequestPmtByScan, as: :boolean, label: 'Pull Payments by Scan', input_html: {onclick: "if($(this).is(':checked')){ $('#account_type_CanPull').prop('checked', true); }"}
         .row

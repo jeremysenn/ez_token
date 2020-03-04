@@ -88,7 +88,13 @@ class AccountsController < ApplicationController
       @events = current_user.super? ? Event.all : current_user.collaborator? ? current_user.admin_events : current_user.company.events
       if @account.update(account_params)
 #        format.html { redirect_to @account, notice: 'Wallet was successfully updated.' }
-        format.html { redirect_to @account, notice: 'Wallet was successfully updated.' }
+        format.html { 
+          if @account.users.include?(current_user) and not current_user.customer.blank?
+            redirect_to customer_path(current_user.customer), notice: 'Wallet was successfully updated.'
+          else
+            redirect_to @account, notice: 'Wallet was successfully updated.'
+          end
+          }
         format.json { render :show, status: :ok, location: @account }
       else
         format.html { render :edit }

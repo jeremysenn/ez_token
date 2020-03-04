@@ -582,7 +582,8 @@ class Account < ActiveRecord::Base
   end
   
   def can_pull?
-    account_type.can_pull? unless account_type.blank?
+#    account_type.can_pull? unless account_type.blank?
+    can_request_payment_by_search? or can_request_payment_by_scan?
   end
   
   def can_request_payment_by_search?
