@@ -81,7 +81,7 @@ class EventsController < ApplicationController
         @total_accounts_results = []
         customers.each do |customer|
           customer.accounts.each do |account|
-            if account.can_be_pulled_by_search?
+            if account.active? and account.can_be_pulled_by_search?
 #              @total_accounts_results << [account.id, customer.full_name]
               @total_accounts_results << "#{customer.full_name}:#{account.id}"
             end
