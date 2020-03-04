@@ -1,7 +1,7 @@
 class EventsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_event, only: [:show, :edit, :update, :destroy, :customer_accounts]
-  load_and_authorize_resource
+  load_and_authorize_resource :except => [:customer_accounts]
 
   # GET /events
   # GET /events.json
