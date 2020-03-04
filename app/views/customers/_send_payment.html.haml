@@ -88,7 +88,9 @@
 
   // Make sure select2 isn't applied multiple times by turbolinks
   $(document).on('turbolinks:before-cache', function() {
-    $('#send_payment_to_account_id').select2('destroy');
+    if ($('#send_payment_to_account_id').length) {
+      $('#send_payment_to_account_id').select2('destroy');
+    }
   });
 
   $(document).on('turbolinks:load', function() {

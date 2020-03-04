@@ -138,10 +138,14 @@
   
   // Make sure select2 isn't applied multiple times by turbolinks
   $(document).on('turbolinks:before-cache', function() {
-    $('select#from_account_id').select2('destroy');
+    if ($('select#from_account_id').length) {
+      $('select#from_account_id').select2('destroy');
+    }
   });
   $(document).on('turbolinks:before-cache', function() {
-    $('select#from_customer_account').select2('destroy');
+    if ($('select#from_customer_account').length) {
+      $('select#from_customer_account').select2('destroy');
+    }
   });
 
   /*
