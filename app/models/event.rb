@@ -20,7 +20,7 @@ class Event < ActiveRecord::Base
   validates :join_code, exclusion: { in: %w( stop start help),
     message: "%{value} is reserved." }
 #  validates :join_response, presence: true
-  validate :no_duplicate_customers
+#  validate :no_duplicate_customers
   validate :account_type_required_if_join_code
 
   accepts_nested_attributes_for :accounts #, allow_destroy: true
