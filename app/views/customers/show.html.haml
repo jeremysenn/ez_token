@@ -17,9 +17,8 @@
       - if @account and @account.active? and (current_user.administrator? or (current_user.collaborator? and current_user.can_pay_from_corporate?))
         .pull-right
           %a.btn.btn-success{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
-            %h5
-              %i.fa.fa-dollar
-              Direct Pay
+            %i.fa.fa-dollar
+            Direct Pay
         = render 'one_time_payment'
     
     %p
@@ -188,12 +187,6 @@
                   %i.fa.fa-qrcode
                   %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
                   Send Code
-            - unless @customer.phone.blank?
-              %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message", style: 'margin-top: 10px;'}
-                %h5
-                  %i.fa.fa-comment
-                  Send Message
-              = render 'sms_message'
 
           / /.box-body
         / /.box
@@ -249,11 +242,18 @@
             %p.text-muted
               = @customer.user.blank? ? @customer.email : @customer.user.email
             %hr/
+            - unless @customer.phone.blank?
+              .pull-right
+                %a.btn.btn-default.btn-xs{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
+                  %i.fa.fa-comment
+                  Message
+              = render 'sms_message'
             %strong
               %i.fa.fa-mobile.margin-r-5
               Phone
             %p.text-muted
               = @customer.user.blank? ? @customer.phone : @customer.user.phone
+              
             - unless @customer.DOB.blank?
               %strong
                 %i.fa.fa-calendar.margin-r-5
