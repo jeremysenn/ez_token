@@ -610,6 +610,10 @@ class Account < ActiveRecord::Base
     account_type.can_be_pulled_by_search? unless account_type.blank?
   end
   
+  def hide_pull_payment_from_holder?
+    account_type.hide_pull_payment_from_holder? unless account_type.blank?
+  end
+  
   def one_time_payment(amount, note, receipt_number, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, ReceiptNbr: receipt_number, UserID: user_id})

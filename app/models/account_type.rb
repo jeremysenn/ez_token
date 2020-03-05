@@ -79,6 +79,10 @@ class AccountType < ActiveRecord::Base
     self.CanBePushedByScan == 1
   end
   
+  def hide_pull_payment_from_holder?
+    self.hide_pull_payment_from_holder == 1
+  end
+  
   def heavy_metal_debit?
     self.AccountTypeID == 6
   end

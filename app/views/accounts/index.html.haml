@@ -50,7 +50,7 @@
                   %th Balance
                   %th
               %tbody
-                - @accounts.each do |account|
+                - @accounts.uniq.each do |account|
                   %tr{class: account.active? ? '' : 'table-danger'}
                     %td= account.id
                     -#

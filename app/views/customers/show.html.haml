@@ -14,6 +14,13 @@
       = @customer.identity
       %a{href: edit_customer_path(@customer)}
         %i.fa.fa-pencil
+      - if @account and @account.active? and (current_user.administrator? or (current_user.collaborator? and current_user.can_pay_from_corporate?))
+        .pull-right
+          %a.btn.btn-default{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
+            %h5
+              %i.fa.fa-dollar
+              Direct Pay
+        = render 'one_time_payment'
     
     %p
       - unless @events.blank?
@@ -25,7 +32,7 @@
               = event.title.truncate(15).html_safe
       - else
         (no events)
-
+  
     -# 
       - unless @accounts.blank? or @accounts.count == 1
         .btn-group
@@ -106,18 +113,19 @@
               =# render 'barcode'
               =# render 'consumer_qr_code_payment'
 
-            #accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist"}
-              - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.can_pull?
-                -# %p
-                .panel.panel-default
-                  #headingOne.panel-heading{:role => "tab"}
-                    %h4.panel-title
-                      %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or (@event.accounts.can_be_pulled_by_search.blank? and @event.accounts.can_be_pulled_by_scan.blank?)) ? 'disabled' : ''}"}
-                        %i.fa.fa-long-arrow-right
-                        Request Payment
-                  #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
-                    .card.card-body
-                      = render 'request_payment'
+            - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.can_pull?
+              - if current_user.collaborator? or not @account.hide_pull_payment_from_holder?
+                #accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist"}
+                  -# %p
+                  .panel.panel-default
+                    #headingOne.panel-heading{:role => "tab"}
+                      %h4.panel-title
+                        %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or (@event.accounts.can_be_pulled_by_search.blank? and @event.accounts.can_be_pulled_by_scan.blank?)) ? 'disabled' : ''}"}
+                          %i.fa.fa-long-arrow-right
+                          Pull Payment
+                    #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
+                      .card.card-body
+                        = render 'request_payment'
             - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.available_balance > 0 and @account.can_send_payment?
               %p
                 .panel.panel-default
@@ -172,20 +180,14 @@
                       = render 'withdrawal'
                 
             -# if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
-            - if @account and @account.active? and (current_user.administrator? or (current_user.collaborator? and current_user.can_pay_from_corporate?))
-              %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment", style: 'margin-top: 7px;'}
+            - if @account.available_balance > 0 and @account.withdrawal_all?
+              -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+              -# %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+              %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0, style: 'margin-top: 10px;'}
                 %h5
-                  %i.fa.fa-dollar
-                  Payment
-              - if @account.available_balance > 0 and @account.withdrawal_all?
-                -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
-                -# %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
-                %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0}
-                  %h5
-                    %i.fa.fa-qrcode
-                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                    Send Code
-              = render 'one_time_payment'
+                  %i.fa.fa-qrcode
+                  %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                  Send Code
             - unless @customer.phone.blank?
               %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message", style: 'margin-top: 10px;'}
                 %h5
