@@ -16,7 +16,7 @@
         %i.fa.fa-pencil
       - if @account and @account.active? and (current_user.administrator? or (current_user.collaborator? and current_user.can_pay_from_corporate?))
         .pull-right
-          %a.btn.btn-default{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
+          %a.btn.btn-success{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
             %h5
               %i.fa.fa-dollar
               Direct Pay
