@@ -267,6 +267,14 @@
                 = "****#{@customer.last_4_decrypted_ssn}"
             - if current_user.can_edit_accounts?
               %hr/
+              - if @customer.user.blank? and not @customer.phone.blank?
+                .pull-right
+                  = form_for(@customer) do |f|
+                    =# f.hidden_field :create_payee_user_flag, :value => true
+                    = f.hidden_field :create_basic_user_flag, :value => true
+                    %button.btn.btn-default{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Invite"}}
+                      %i.fa.fa-comment
+                      Invite
               %strong
                 %i.fa.fa-user.margin-r-5
                 User Web Portal
@@ -304,13 +312,6 @@
 
                 - else
                   Portal user has not been created
-                  - unless @customer.phone.blank?
-                    = form_for(@customer) do |f|
-                      =# f.hidden_field :create_payee_user_flag, :value => true
-                      = f.hidden_field :create_basic_user_flag, :value => true
-                      %button.btn.btn-default{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Invite"}}
-                        %i.fa.fa-comment
-                        Send Invite
               %hr/
               %strong
                 %i.fa.fa-file-text-o.margin-r-5
