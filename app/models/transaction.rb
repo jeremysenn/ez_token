@@ -435,29 +435,38 @@ class Transaction < ActiveRecord::Base
 #  end
   
   def send_text_message_receipt
-    from_account_customers.each do |from_customer|
-      from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
-      unless from_customer_phone.blank? or self.amt_auth.blank?
-#        unless to_customer.blank?
-#          message = "You paid #{to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
-#        end
-        message = "You paid #{to_account_customers_list} #{ActiveSupport::NumberHelper.number_to_currency(self.amt_auth)}. Click here to review: http://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
-        client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-        client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
-        Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
-      end
+#    from_account_customers.each do |from_customer|
+#      from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
+#      unless from_customer_phone.blank? or self.amt_auth.blank?
+##        unless to_customer.blank?
+##          message = "You paid #{to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
+##        end
+#        message = "You paid #{to_customer.blank? ? to_account_customers_list : to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(self.amt_auth)}. Click here to review: http://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}. Text 'STOP' to stop."
+#        client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#        client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
+#        Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
+#      end
+#    end
+    unless from_customer.blank? or from_customer.phone.blank? or self.amt_auth.blank?
+      message = "You paid #{to_customer.blank? ? to_account_customers_list : to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(self.amt_auth)}. Click here to review: http://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer.phone}. Text 'STOP' to stop."
+      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+      client.call(:send_sms, message: { Phone: from_customer.phone, Msg: "#{message}"})
+      Rails.logger.debug "Text message sent to #{from_customer.phone}: #{message}"
     end
   end
   
   def send_text_message_payment_notification
-    to_customer = to_account.customer
+#    to_customer = to_account.customer
 #    from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
-    to_customer_phone = to_customer.user.blank? ? to_customer.phone : to_customer.user.phone
-    unless to_customer_phone.blank?
-      message = "#{from_account.customer_name} sent you #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}."
-      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_sms, message: { Phone: to_customer_phone, Msg: "#{message}"})
-      Rails.logger.debug "Text message sent to #{to_customer_phone}: #{message}"
+    to_account_customers.each do |to_customer|
+      to_customer_phone = to_customer.user.blank? ? to_customer.phone : to_customer.user.phone
+      unless to_customer_phone.blank? or from_customer.blank?
+#        message = "#{from_account.customer_name} sent you #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}."
+        message = "#{from_customer.full_name} sent you #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}."
+        client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+        client.call(:send_sms, message: { Phone: to_customer_phone, Msg: "#{message}"})
+        Rails.logger.debug "Text message sent to #{to_customer_phone}: #{message}"
+      end
     end
   end
   

@@ -179,14 +179,15 @@
                       = render 'withdrawal'
                 
             -# if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
-            - if @account.available_balance > 0 and @account.withdrawal_all?
-              -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
-              -# %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
-              %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0, style: 'margin-top: 10px;'}
-                %h5
-                  %i.fa.fa-qrcode
-                  %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
-                  Send Code
+            -#
+              - if @account.available_balance > 0 and @account.withdrawal_all?
+                -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+                -# %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
+                %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0, style: 'margin-top: 10px;'}
+                  %h5
+                    %i.fa.fa-qrcode
+                    %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+                    Send Code
 
           / /.box-body
         / /.box
@@ -530,6 +531,8 @@
     spinner_icon = $(this).find( ".fa-spinner" );
     money_icon = $(this).find( ".fa-money" );
     money_icon.hide();
+    comment_icon = $(this).find( ".fa-comment" );
+    comment_icon.hide();
     spinner_icon.show();
     account_id = $(this).data("account-id");
     customer_id = $(this).data("customer-id");
@@ -544,6 +547,7 @@
       success: function(data) {
         alert("Text message code sent.");
         money_icon.show();
+        comment_icon.show();
         spinner_icon.hide();
       },
       error: function(xhr) {
@@ -552,6 +556,7 @@
         alert(error);
         console.log(error);
         money_icon.show();
+        comment_icon.show();
         spinner_icon.hide();
       }
     });

@@ -176,7 +176,7 @@
       minimumInputLength: 3,
       dropdownParent: $("#request_payment_buddy_search_modal"),
       ajax: {
-        url: "/events/#{@event.id}/customer_accounts",
+        url: "/events/#{@event.id}/customer_accounts_for_pull",
         dataType: 'json',
         delay: 250
       }
