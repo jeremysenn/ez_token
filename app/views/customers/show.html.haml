@@ -388,8 +388,7 @@
                               - if payment_transaction.cash_deposit? or payment_transaction.ach_deposit?
                                 = payment_transaction.Description
                               - else
-                                -# unless payment_transaction.from_account_customer.blank?
-                                - unless payment_transaction.from_account_customers.blank? or (payment_transaction.from_customer.present? and payment_transaction.from_customer.anonymous?)
+                                - unless payment_transaction.from_account_customers.blank?
                                   - from_customer = payment_transaction.from_customer
                                   - unless from_customer.blank?  
                                     = payment_transaction.from_customer.full_name
@@ -402,7 +401,6 @@
                                 - else
                                   = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
                             %td
-                              -# unless payment_transaction.to_account_customer.blank? 
                               - unless payment_transaction.to_account_customers.blank? 
                                 - to_customer = payment_transaction.to_customer
                                 - unless to_customer.blank?
