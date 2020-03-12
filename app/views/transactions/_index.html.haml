@@ -50,7 +50,7 @@
               - if transaction.cash_deposit? or transaction.ach_deposit?
                 = transaction.Description
               - else
-                - unless from_customers.blank?
+                - unless from_customers.blank? or (transaction.from_customer.present? and transaction.from_customer.anonymous?)
                   - from_customer = transaction.from_customer
                   - unless from_customer.blank?
                     = link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?

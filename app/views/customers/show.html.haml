@@ -389,7 +389,7 @@
                                 = payment_transaction.Description
                               - else
                                 -# unless payment_transaction.from_account_customer.blank?
-                                - unless payment_transaction.from_account_customers.blank?
+                                - unless payment_transaction.from_account_customers.blank? or (payment_transaction.from_customer.present? and payment_transaction.from_customer.anonymous?)
                                   - from_customer = payment_transaction.from_customer
                                   - unless from_customer.blank?  
                                     = payment_transaction.from_customer.full_name

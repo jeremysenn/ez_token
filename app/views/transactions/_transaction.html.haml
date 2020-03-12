@@ -11,7 +11,7 @@
     =# transaction.date_time.in_time_zone(current_user.time_zone).strftime("%-m/%-d/%y")
     = transaction.date_time.strftime("%-m/%-d/%y")
   %td
-    - unless from_customers.blank?
+    - unless from_customers.blank? or (transaction.from_customer.present? and transaction.from_customer.anonymous?)
       - from_customer = transaction.from_customer
       - unless from_customer.blank?
         = link_to from_customer.identity, customer_path(from_customer, account_id: transaction.from_acct_id) unless transaction.from_account.blank?
