@@ -225,10 +225,17 @@ class TransactionsController < ApplicationController
     unless params[:scanned_from_account_id].blank?
       from_account_id = params[:scanned_from_account_id]
     else
-      from_account_id = params[:from_account_id]
+      if params[:from_customer_account].blank?
+        from_account_id = params[:from_account_id] unless params[:from_account_id].blank?
+        from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
+      else
+        from_account_id = params[:from_customer_account].split(':').last
+        from_customer_name = params[:from_customer_account].split(':').first.strip
+        customer = Customer.where("CONCAT(NameF, ' ', NameL) like ?", from_customer_name).first
+        from_customer_id = customer.id unless customer.blank?
+      end
     end
     customer_barcode_id = params[:customer_barcode_id]
-    from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
     to_customer_id = params[:to_customer_id] unless params[:to_customer_id].blank?
     if params[:file]
       @file_upload = params[:file].path
@@ -322,7 +329,7 @@ class TransactionsController < ApplicationController
     end
     unless @transaction.blank?
 #      redirect_back fallback_location: root_path, notice: "Payment sent. Transaction ID #{@transaction.id}"
-      redirect_to customer_path(@transaction.custID), notice: "Payment sent. Transaction ID #{@transaction.id}"
+      redirect_to customer_path(@transaction.FromCustID), notice: "Payment sent. Transaction ID #{@transaction.id}"
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
       redirect_back fallback_location: root_path, alert: "There was a problem creating the payment. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"

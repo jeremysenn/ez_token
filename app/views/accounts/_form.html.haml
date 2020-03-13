@@ -60,6 +60,62 @@
                 .row
                   = f.collection_radio_buttons(:event_ids, @events.accounts_expire, :id, :title, :include_hidden => false) do |event_field|
                     .col-xs-12.col-md-12= event_field.label(class:"label-radiobutton") { event_field.radio_button(checked: @account.events.first == event_field.object) + ' ' + event_field.text }
+        - if @account.can_fund_by_ach? and @account.users.include?(current_user)
+          %strong ACH Details
+          %p
+            I hereby authorize Caddyvend to debit my bank account the outstanding balance owed. I acknowledge that the origination of the 
+            ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
+            operating rules in effect from time to time.
+          = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
+            .row
+              .col-xs-12.col-sm-6
+                .input-group
+                  .input-group-prepend
+                    %span.input-group-text $
+                  = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
+          .row
+            - unless @account.new_record? # or @account.RoutingNbr.blank?
+              .col-xs-12.col-md-12
+                =# f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :password, label: 'Routing Number'
+                %label.control-label Routing Number:
+                - unless @account.RoutingNbr.blank?
+                  = @account.decrypted_bank_routing_number.blank? ? @account.RoutingNbr : @account.decrypted_bank_routing_number
+                - else
+                  None
+            - else
+              .col-xs-12.col-md-12= f.input :RoutingNbr, as: :string, label: 'Routing Number', :placeholder=> "Bank Routing Number"
+          .row
+            - unless @account.new_record? # or @account.BankActNbr.blank?
+              .col-xs-12.col-md-12
+                =# f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
+                %label.control-label Account Number:
+                - unless @account.BankActNbr.blank?
+                  = "************#{@account.last_4_decrypted_bank_account_number.blank? ? (@account.BankActNbr.blank? ? '' : @account.BankActNbr.last(4)) : @account.last_4_decrypted_bank_account_number}"
+                - else
+                  None
+            - else
+              .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number', :placeholder=> "Bank Account Number"
+          - unless @account.new_record? #or (@account.RoutingNbr.blank? and @account.BankActNbr.blank?)
+            %a{href: '#', "data-toggle" => "modal", "data-target" => "#change_account_or_routing_number"}
+              %i.fa.fa-edit
+              Change bank information
+            #change_account_or_routing_number.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "exampleModalLabel", :role => "dialog", :tabindex => "-1"}
+              .modal-dialog.modal-sm{:role => "document"}
+                .modal-content
+                  .modal-body
+                    = f.input :RoutingNbr, :input_html => { :value => "#{@account.decrypted_bank_routing_number.blank? ? @account.RoutingNbr : @account.decrypted_bank_routing_number}", :pattern => "[0-9]*" }, :placeholder=> "Bank Routing Number", as: :string, label: 'Routing Number'
+                    -#
+                      - if @account.BankActNbr.blank?
+                        = f.input :BankActNbr, as: :string, :placeholder=> "Bank Account Number", label: 'Account Number'
+                        = f.input :BankActNbr_confirmation, :placeholder=> "Confirm Account Number", label: 'Account Number confirmation'
+                      - else
+                        = f.input :BankActNbr, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}" }, :placeholder=> "Bank Account Number", as: :string, label: 'Account Number'
+                        = f.input :BankActNbr_confirmation, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}" }, :placeholder=> "Confirm Account Number", as: :string, label: 'Account Number confirmation'
+                    = f.input :BankActNbr, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}", :pattern => "[0-9]*" }, :placeholder=> "Bank Account Number", as: :string, label: 'Account Number'
+                    = f.input :BankActNbr_confirmation, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}", :pattern => "[0-9]*" }, :placeholder=> "Confirm Account Number", as: :string, label: 'Account Number confirmation'
+                  .modal-footer
+                    %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                    %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} Save
           -#
             - unless @customers.blank?
               - @customers.each do |customer|
@@ -67,89 +123,90 @@
                   .row
                     = f.collection_check_boxes(:customer_ids, @customers, :id, :full_name) do |customer_field|
                       .col-xs-12.col-md-12= customer_field.label(class:"label-checkbox") { customer_field.check_box + ' ' + customer_field.text }
-        %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-          -#
-            - if @account.can_fund_by_cc?
+        -#
+          %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+            -#
+              - if @account.can_fund_by_cc?
+                %li.nav-item
+                  %a#add-funds-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#add_funds", :role => "tab"} 
+                    Add Funds
+            -# if @account.can_fund_by_ach? and @account.user and @account.user == current_user
+            - if @account.can_fund_by_ach? and @account.users.include?(current_user)
               %li.nav-item
-                %a#add-funds-tab.nav-link.active{"aria-controls" => "details", "aria-selected" => "true", "data-toggle" => "tab", :href => "#add_funds", :role => "tab"} 
-                  Add Funds
-          -# if @account.can_fund_by_ach? and @account.user and @account.user == current_user
-          - if @account.can_fund_by_ach? and @account.users.include?(current_user)
-            %li.nav-item
-              %a#ach-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#ach", :role => "tab"} 
-                ACH
-        #myTabContent.tab-content
-          -#
-            - if @account.can_fund_by_cc?
-              #add_funds.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                %br
-                %strong Add Funds by Credit/Debit Card
-                = f.input :cc_charge_amount, as: :decimal, label: "Amount" do
+                %a#ach-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#ach", :role => "tab"} 
+                  ACH
+          #myTabContent.tab-content
+            -#
+              - if @account.can_fund_by_cc?
+                #add_funds.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                  %br
+                  %strong Add Funds by Credit/Debit Card
+                  = f.input :cc_charge_amount, as: :decimal, label: "Amount" do
+                    .row
+                      .col-xs-12.col-sm-4
+                        .input-group
+                          .input-group-prepend
+                            %span.input-group-text $
+                          = f.input_field :cc_charge_amount, as: :string, class: "form-control"
                   .row
-                    .col-xs-12.col-sm-4
+                    .col-xs-12.col-md-12= f.input :cc_number, as: :string, label: 'Card Number'
+                  .row
+                    .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry'
+                    .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC'
+            -# if @account.can_fund_by_ach? and @account.user and @account.user == current_user
+            - if @account.can_fund_by_ach? and @account.users.include?(current_user)
+              #ach.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel", class: @account.can_fund_by_cc? ? '' : 'active'}
+                %br
+                %strong ACH Details
+                %p
+                  I hereby authorize Caddyvend to debit my bank account the outstanding balance owed. I acknowledge that the origination of the 
+                  ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
+                  operating rules in effect from time to time.
+                = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
+                  .row
+                    .col-xs-12.col-sm-6
                       .input-group
                         .input-group-prepend
                           %span.input-group-text $
-                        = f.input_field :cc_charge_amount, as: :string, class: "form-control"
+                        = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
                 .row
-                  .col-xs-12.col-md-12= f.input :cc_number, as: :string, label: 'Card Number'
+                  - unless @account.new_record? # or @account.RoutingNbr.blank?
+                    .col-xs-12.col-md-12
+                      =# f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :password, label: 'Routing Number'
+                      %label.control-label Routing Number:
+                      = @account.decrypted_bank_routing_number.blank? ? @account.RoutingNbr : @account.decrypted_bank_routing_number
+                  - else
+                    .col-xs-12.col-md-12= f.input :RoutingNbr, as: :string, label: 'Routing Number', :placeholder=> "Bank Routing Number"
                 .row
-                  .col-xs-12.col-md-6= f.input :cc_expiration, as: :string, label: 'Expiry'
-                  .col-xs-12.col-md-6= f.input :cc_cvc, as: :string, label: 'CVC'
-          -# if @account.can_fund_by_ach? and @account.user and @account.user == current_user
-          - if @account.can_fund_by_ach? and @account.users.include?(current_user)
-            #ach.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel", class: @account.can_fund_by_cc? ? '' : 'active'}
-              %br
-              %strong ACH Details
-              %p
-                I hereby authorize Caddyvend to debit my bank account the outstanding balance owed. I acknowledge that the origination of the 
-                ACH transactions to my account must comply with the provisions of state and U.S. Law. DOR and I agree to abide by all applicable ACH
-                operating rules in effect from time to time.
-              = f.input :MaintainBal, as: :decimal, required: true, label: "Maintained Balance" do
-                .row
-                  .col-xs-12.col-sm-6
-                    .input-group
-                      .input-group-prepend
-                        %span.input-group-text $
-                      = f.input_field :MaintainBal, :input_html => { :value => "#{@account.new_record? ? @account.minimum_maintain_balance : @account.MaintainBal}" }, as: :string, class: "form-control"
-              .row
-                - unless @account.new_record? # or @account.RoutingNbr.blank?
-                  .col-xs-12.col-md-12
-                    =# f.input :RoutingNbr, :input_html => { :value => "#{@account.bank_routing_number.blank? ? '' : @account.decrypted_bank_routing_number}" },  as: :password, label: 'Routing Number'
-                    %label.control-label Routing Number:
-                    = @account.decrypted_bank_routing_number.blank? ? @account.RoutingNbr : @account.decrypted_bank_routing_number
-                - else
-                  .col-xs-12.col-md-12= f.input :RoutingNbr, as: :string, label: 'Routing Number', :placeholder=> "Bank Routing Number"
-              .row
-                - unless @account.new_record? # or @account.BankActNbr.blank?
-                  .col-xs-12.col-md-12
-                    =# f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
-                    %label.control-label Account Number:
-                    = "************#{@account.last_4_decrypted_bank_account_number.blank? ? (@account.BankActNbr.blank? ? '' : @account.BankActNbr.last(4)) : @account.last_4_decrypted_bank_account_number}"
-                - else
-                  .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number', :placeholder=> "Bank Account Number"
-              - unless @account.new_record? or (@account.RoutingNbr.blank? and @account.BankActNbr.blank?)
-                %a{href: '#', "data-toggle" => "modal", "data-target" => "#change_account_or_routing_number"}
-                  %i.fa.fa-edit
-                  Change bank information
-                #change_account_or_routing_number.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "exampleModalLabel", :role => "dialog", :tabindex => "-1"}
-                  .modal-dialog.modal-sm{:role => "document"}
-                    .modal-content
-                      .modal-body
-                        = f.input :RoutingNbr, :input_html => { :value => "#{@account.decrypted_bank_routing_number.blank? ? @account.RoutingNbr : @account.decrypted_bank_routing_number}", :pattern => "[0-9]*" }, :placeholder=> "Bank Routing Number", as: :string, label: 'Routing Number'
-                        -#
-                          - if @account.BankActNbr.blank?
-                            = f.input :BankActNbr, as: :string, :placeholder=> "Bank Account Number", label: 'Account Number'
-                            = f.input :BankActNbr_confirmation, :placeholder=> "Confirm Account Number", label: 'Account Number confirmation'
-                          - else
-                            = f.input :BankActNbr, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}" }, :placeholder=> "Bank Account Number", as: :string, label: 'Account Number'
-                            = f.input :BankActNbr_confirmation, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}" }, :placeholder=> "Confirm Account Number", as: :string, label: 'Account Number confirmation'
-                        = f.input :BankActNbr, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}", :pattern => "[0-9]*" }, :placeholder=> "Bank Account Number", as: :string, label: 'Account Number'
-                        = f.input :BankActNbr_confirmation, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}", :pattern => "[0-9]*" }, :placeholder=> "Confirm Account Number", as: :string, label: 'Account Number confirmation'
-                      .modal-footer
-                        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
-                        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} Save
-          
+                  - unless @account.new_record? # or @account.BankActNbr.blank?
+                    .col-xs-12.col-md-12
+                      =# f.input :BankActNbr, :input_html => { :value => "#{@account.bank_account_number.blank? ? '' : @account.decrypted_bank_account_number}" }, as: :password, label: 'Account Number'
+                      %label.control-label Account Number:
+                      = "************#{@account.last_4_decrypted_bank_account_number.blank? ? (@account.BankActNbr.blank? ? '' : @account.BankActNbr.last(4)) : @account.last_4_decrypted_bank_account_number}"
+                  - else
+                    .col-xs-12.col-md-12= f.input :BankActNbr, as: :string, label: 'Account Number', :placeholder=> "Bank Account Number"
+                - unless @account.new_record? or (@account.RoutingNbr.blank? and @account.BankActNbr.blank?)
+                  %a{href: '#', "data-toggle" => "modal", "data-target" => "#change_account_or_routing_number"}
+                    %i.fa.fa-edit
+                    Change bank information
+                  #change_account_or_routing_number.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "exampleModalLabel", :role => "dialog", :tabindex => "-1"}
+                    .modal-dialog.modal-sm{:role => "document"}
+                      .modal-content
+                        .modal-body
+                          = f.input :RoutingNbr, :input_html => { :value => "#{@account.decrypted_bank_routing_number.blank? ? @account.RoutingNbr : @account.decrypted_bank_routing_number}", :pattern => "[0-9]*" }, :placeholder=> "Bank Routing Number", as: :string, label: 'Routing Number'
+                          -#
+                            - if @account.BankActNbr.blank?
+                              = f.input :BankActNbr, as: :string, :placeholder=> "Bank Account Number", label: 'Account Number'
+                              = f.input :BankActNbr_confirmation, :placeholder=> "Confirm Account Number", label: 'Account Number confirmation'
+                            - else
+                              = f.input :BankActNbr, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}" }, :placeholder=> "Bank Account Number", as: :string, label: 'Account Number'
+                              = f.input :BankActNbr_confirmation, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}" }, :placeholder=> "Confirm Account Number", as: :string, label: 'Account Number confirmation'
+                          = f.input :BankActNbr, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}", :pattern => "[0-9]*" }, :placeholder=> "Bank Account Number", as: :string, label: 'Account Number'
+                          = f.input :BankActNbr_confirmation, :input_html => { :value => "#{@account.decrypted_bank_account_number.blank? ? @account.BankActNbr : @account.decrypted_bank_account_number}", :pattern => "[0-9]*" }, :placeholder=> "Confirm Account Number", as: :string, label: 'Account Number confirmation'
+                        .modal-footer
+                          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} Save
+
       .form-actions
         %br
         = link_to 'Cancel', :back, class: "btn btn-default"

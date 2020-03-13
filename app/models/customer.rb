@@ -330,7 +330,7 @@ class Customer < ActiveRecord::Base
   
   def full_name
     unless self.NameF.blank? and self.NameL.blank? and self.NameS.blank?
-      "#{self.NameF} #{self.NameL} #{self.NameS}"
+      "#{self.NameF} #{self.NameL}"
     else
       unless self.phone.blank?
         self.phone

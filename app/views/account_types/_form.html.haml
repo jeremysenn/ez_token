@@ -20,7 +20,7 @@
           .col-xs-12.col-sm-6
             = f.input :MinMaintainBal, as: :decimal, required: false, label: "Minimum Maintained Balance" do
               .row
-                .col-xs-12
+                .col-xs-12.col-sm-8
                   .input-group
                     .input-group-prepend
                       %span.input-group-text $
@@ -28,7 +28,7 @@
           .col-xs-12.col-sm-6
             = f.input :DefaultMinBal, as: :decimal, required: false, label: "Default Minimum Balance" do
               .row
-                .col-xs-12
+                .col-xs-12.col-sm-8
                   .input-group
                     .input-group-prepend
                       %span.input-group-text $
@@ -44,9 +44,12 @@
           .col-xs-12.col-sm-6
             .box
               .box-body
-                = f.input :CanPull, as: :boolean, label: 'Pull Payments', input_html: {onclick: "if($(this).is(':not(:checked)')){ $('#account_type_CanRequestPmtBySearch').prop('checked', false); $('#account_type_CanRequestPmtByScan').prop('checked', false);}"}
-                = f.input :CanRequestPmtBySearch, as: :boolean, label: 'Pull Payments by Search', input_html: {onclick: "if($(this).is(':checked')){ $('#account_type_CanPull').prop('checked', true); }"}
-                = f.input :CanRequestPmtByScan, as: :boolean, label: 'Pull Payments by Scan', input_html: {onclick: "if($(this).is(':checked')){ $('#account_type_CanPull').prop('checked', true); }"}
+                =# f.input :CanPull, as: :boolean, label: 'Pull Payments', input_html: {onclick: "if($(this).is(':not(:checked)')){ $('#account_type_CanRequestPmtBySearch').prop('checked', false); $('#account_type_CanRequestPmtByScan').prop('checked', false);}"}
+                =# f.input :CanRequestPmtBySearch, as: :boolean, label: 'Pull Payments by Search', input_html: {onclick: "if($(this).is(':checked')){ $('#account_type_CanPull').prop('checked', true); }"}
+                =# f.input :CanRequestPmtByScan, as: :boolean, label: 'Pull Payments by Scan', input_html: {onclick: "if($(this).is(':checked')){ $('#account_type_CanPull').prop('checked', true); }"}
+                = f.input :CanRequestPmtBySearch, as: :boolean, label: 'Pull Payments by Search'
+                = f.input :CanRequestPmtByScan, as: :boolean, label: 'Pull Payments by Scan'
+                = f.input :hide_pull_payment_from_holder, as: :boolean, label: 'Hide Pull Payment from Holder'
         .row
           .col-xs-12.col-sm-6
             .box

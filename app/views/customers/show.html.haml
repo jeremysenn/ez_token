@@ -14,6 +14,12 @@
       = @customer.identity
       %a{href: edit_customer_path(@customer)}
         %i.fa.fa-pencil
+      - if @account and @account.active? and (current_user.administrator? or (current_user.collaborator? and current_user.can_pay_from_corporate?))
+        .pull-right
+          %a.btn.btn-success{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment"}
+            %i.fa.fa-dollar
+            Direct Pay
+        = render 'one_time_payment'
     
     %p
       - unless @events.blank?
@@ -25,7 +31,7 @@
               = event.title.truncate(15).html_safe
       - else
         (no events)
-
+  
     -# 
       - unless @accounts.blank? or @accounts.count == 1
         .btn-group
@@ -106,18 +112,19 @@
               =# render 'barcode'
               =# render 'consumer_qr_code_payment'
 
-            #accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist"}
-              - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.can_pull?
-                -# %p
-                .panel.panel-default
-                  #headingOne.panel-heading{:role => "tab"}
-                    %h4.panel-title
-                      %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or (@event.accounts.can_be_pulled_by_search.blank? and @event.accounts.can_be_pulled_by_scan.blank?)) ? 'disabled' : ''}"}
-                        %i.fa.fa-long-arrow-right
-                        Request Payment
-                  #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
-                    .card.card-body
-                      = render 'request_payment'
+            - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.can_pull?
+              - if current_user.collaborator? or not @account.hide_pull_payment_from_holder?
+                #accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist"}
+                  -# %p
+                  .panel.panel-default
+                    #headingOne.panel-heading{:role => "tab"}
+                      %h4.panel-title
+                        %a.btn.btn-lg.btn-success.btn-block{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne", :role => "button", class: "#{(@account.events.blank? or (@event.accounts.can_be_pulled_by_search.blank? and @event.accounts.can_be_pulled_by_scan.blank?)) ? 'disabled' : ''}"}
+                          %i.fa.fa-long-arrow-right
+                          Pull Payment
+                    #collapseOne.panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
+                      .card.card-body
+                        = render 'request_payment'
             - if not (current_user.administrator? or current_user.super?) and @account and @account.active? and @event and @account.available_balance > 0 and @account.can_send_payment?
               %p
                 .panel.panel-default
@@ -172,26 +179,15 @@
                       = render 'withdrawal'
                 
             -# if @account and @account.active? and current_user.administrator? and not @customer.anonymous?
-            - if @account and @account.active? and (current_user.administrator? or current_user.collaborator?)
-              %a.btn.btn-success.btn-block{href: '#', "data-toggle" => "modal", "data-target" => "#one_time_payment", style: 'margin-top: 7px;'}
-                %h5
-                  %i.fa.fa-dollar
-                  Payment
+            -#
               - if @account.available_balance > 0 and @account.withdrawal_all?
                 -# %a.btn.btn-default.btn-block{href: send_barcode_sms_message_customer_path(@customer, account_id: @account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
                 -# %a.btn.btn-default.btn-block{href: send_barcode_link_sms_message_account_path(@account.id), data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Payment Code"}}
-                %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0}
+                %a.btn.btn-default.btn-block{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0, style: 'margin-top: 10px;'}
                   %h5
                     %i.fa.fa-qrcode
                     %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
                     Send Code
-              - unless @customer.phone.blank?
-                %a.btn.btn-default.btn-block{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
-                  %h5
-                    %i.fa.fa-comment
-                    Send Message
-              = render 'one_time_payment'
-              = render 'sms_message'
 
           / /.box-body
         / /.box
@@ -247,11 +243,18 @@
             %p.text-muted
               = @customer.user.blank? ? @customer.email : @customer.user.email
             %hr/
+            - unless @customer.phone.blank?
+              .pull-right
+                %a.btn.btn-default.btn-xs{:href => "#", "data-toggle" => "modal", "data-target" => "#sms_message"}
+                  %i.fa.fa-comment
+                  Message
+              = render 'sms_message'
             %strong
               %i.fa.fa-mobile.margin-r-5
               Phone
             %p.text-muted
               = @customer.user.blank? ? @customer.phone : @customer.user.phone
+              
             - unless @customer.DOB.blank?
               %strong
                 %i.fa.fa-calendar.margin-r-5
@@ -265,6 +268,14 @@
                 = "****#{@customer.last_4_decrypted_ssn}"
             - if current_user.can_edit_accounts?
               %hr/
+              - if @customer.user.blank? and not @customer.phone.blank?
+                .pull-right
+                  = form_for(@customer) do |f|
+                    =# f.hidden_field :create_payee_user_flag, :value => true
+                    = f.hidden_field :create_basic_user_flag, :value => true
+                    %button.btn.btn-default{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Invite"}}
+                      %i.fa.fa-comment
+                      Invite
               %strong
                 %i.fa.fa-user.margin-r-5
                 User Web Portal
@@ -302,13 +313,6 @@
 
                 - else
                   Portal user has not been created
-                  - unless @customer.phone.blank?
-                    = form_for(@customer) do |f|
-                      =# f.hidden_field :create_payee_user_flag, :value => true
-                      = f.hidden_field :create_basic_user_flag, :value => true
-                      %button.btn.btn-default{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Send Invite"}}
-                        %i.fa.fa-comment
-                        Send Invite
               %hr/
               %strong
                 %i.fa.fa-file-text-o.margin-r-5
@@ -384,9 +388,12 @@
                               - if payment_transaction.cash_deposit? or payment_transaction.ach_deposit?
                                 = payment_transaction.Description
                               - else
-                                -# unless payment_transaction.from_account_customer.blank?
                                 - unless payment_transaction.from_account_customers.blank?
-                                  = payment_transaction.from_account_customers_list
+                                  - from_customer = payment_transaction.from_customer
+                                  - unless from_customer.blank?  
+                                    = payment_transaction.from_customer.full_name
+                                  - else
+                                    = payment_transaction.from_account_customers_list
                                   -#
                                     - payment_transaction.from_account_customers.each do |from_account_customer|
                                       = from_account_customer.full_name.blank? ? from_account_customer.phone : from_account_customer.full_name
@@ -394,9 +401,12 @@
                                 - else
                                   = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
                             %td
-                              -# unless payment_transaction.to_account_customer.blank? 
                               - unless payment_transaction.to_account_customers.blank? 
-                                = payment_transaction.to_account_customers_list
+                                - to_customer = payment_transaction.to_customer
+                                - unless to_customer.blank?
+                                  = payment_transaction.to_customer.full_name
+                                - else
+                                  = payment_transaction.to_account_customers_list
                                 -#
                                   - payment_transaction.to_account_customers.each do |to_account_customer|
                                     = to_account_customer.full_name
@@ -519,6 +529,8 @@
     spinner_icon = $(this).find( ".fa-spinner" );
     money_icon = $(this).find( ".fa-money" );
     money_icon.hide();
+    comment_icon = $(this).find( ".fa-comment" );
+    comment_icon.hide();
     spinner_icon.show();
     account_id = $(this).data("account-id");
     customer_id = $(this).data("customer-id");
@@ -533,6 +545,7 @@
       success: function(data) {
         alert("Text message code sent.");
         money_icon.show();
+        comment_icon.show();
         spinner_icon.hide();
       },
       error: function(xhr) {
@@ -541,6 +554,7 @@
         alert(error);
         console.log(error);
         money_icon.show();
+        comment_icon.show();
         spinner_icon.hide();
       }
     });

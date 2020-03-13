@@ -435,29 +435,38 @@ class Transaction < ActiveRecord::Base
 #  end
   
   def send_text_message_receipt
-    from_account_customers.each do |from_customer|
-      from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
-      unless from_customer_phone.blank? or self.amt_auth.blank?
-#        unless to_customer.blank?
-#          message = "You paid #{to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
-#        end
-        message = "You paid #{to_account_customers_list} #{ActiveSupport::NumberHelper.number_to_currency(self.amt_auth)}. Click here to review: http://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
-        client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-        client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
-        Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
-      end
+#    from_account_customers.each do |from_customer|
+#      from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
+#      unless from_customer_phone.blank? or self.amt_auth.blank?
+##        unless to_customer.blank?
+##          message = "You paid #{to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(total)}. Click here to review: https://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}"
+##        end
+#        message = "You paid #{to_customer.blank? ? to_account_customers_list : to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(self.amt_auth)}. Click here to review: http://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer_phone}. Text 'STOP' to stop."
+#        client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#        client.call(:send_sms, message: { Phone: from_customer_phone, Msg: "#{message}"})
+#        Rails.logger.debug "Text message sent to #{from_customer_phone}: #{message}"
+#      end
+#    end
+    unless from_customer.blank? or from_customer.phone.blank? or self.amt_auth.blank?
+      message = "You paid #{to_customer.blank? ? to_account_customers_list : to_customer.full_name} #{ActiveSupport::NumberHelper.number_to_currency(self.amt_auth)}. Click here to review: http://#{ENV['APPLICATION_HOST']}/transactions/#{self.tranID}/dispute?phone=#{from_customer.phone}. Text 'STOP' to stop."
+      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+      client.call(:send_sms, message: { Phone: from_customer.phone, Msg: "#{message}"})
+      Rails.logger.debug "Text message sent to #{from_customer.phone}: #{message}"
     end
   end
   
   def send_text_message_payment_notification
-    to_customer = to_account.customer
+#    to_customer = to_account.customer
 #    from_customer_phone = from_customer.user.blank? ? from_customer.phone : from_customer.user.phone
-    to_customer_phone = to_customer.user.blank? ? to_customer.phone : to_customer.user.phone
-    unless to_customer_phone.blank?
-      message = "#{from_account.customer_name} sent you #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}."
-      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_sms, message: { Phone: to_customer_phone, Msg: "#{message}"})
-      Rails.logger.debug "Text message sent to #{to_customer_phone}: #{message}"
+    to_account_customers.each do |to_customer|
+      to_customer_phone = to_customer.user.blank? ? to_customer.phone : to_customer.user.phone
+      unless to_customer_phone.blank? or from_customer.blank?
+#        message = "#{from_account.customer_name} sent you #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}."
+        message = "#{from_customer.full_name} sent you #{ActiveSupport::NumberHelper.number_to_currency(amt_auth)}."
+        client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+        client.call(:send_sms, message: { Phone: to_customer_phone, Msg: "#{message}"})
+        Rails.logger.debug "Text message sent to #{to_customer_phone}: #{message}"
+      end
     end
   end
   
@@ -479,7 +488,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def to_customer
-    Customer.find(self.ToCustID)
+    Customer.find(self.ToCustID) unless self.ToCustID.blank? or self.ToCustID.zero?
   end
   
   def from_customer_id
@@ -487,7 +496,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def from_customer
-    Customer.find(self.FromCustID)
+    Customer.find(self.FromCustID) unless self.FromCustID.blank? or self.FromCustID.zero?
   end
   
   #############################
@@ -497,8 +506,8 @@ class Transaction < ActiveRecord::Base
   def self.ezcash_payment_transaction_web_service_call(from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note, FromCustID: from_customer_id, ToCustID: to_customer_id, UserID: user_id})
-    Rails.logger.debug "ezcash_payment_transaction_web_service_call user ID: #{user_id}"
-    Rails.logger.debug "ezcash_payment_transaction_web_service_call esponse body: #{response.body}"
+    Rails.logger.debug "ezcash_payment_transaction_web_service_call user ID: #{user_id}, from_customer_id: #{from_customer_id}"
+    Rails.logger.debug "ezcash_payment_transaction_web_service_call response body: #{response.body}"
     unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
 #      return response.body[:ez_cash_txn_response][:return]
       return response.body[:ez_cash_txn_response]
@@ -510,7 +519,7 @@ class Transaction < ActiveRecord::Base
   def self.ezcash_event_payment_transaction_web_service_call(event_id, from_account_id, to_account_id, amount, note, from_customer_id, to_customer_id, user_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { EventID: event_id, FromActID: from_account_id, ToActID: to_account_id, Amount: amount, Note: note, FromCustID: from_customer_id, ToCustID: to_customer_id, UserID: user_id})
-    Rails.logger.debug "ezcash_event_payment_transaction_web_service_call user ID: #{user_id}"
+    Rails.logger.debug "ezcash_event_payment_transaction_web_service_call user ID: #{user_id}, from_customer_id: #{from_customer_id}"
     Rails.logger.debug "ezcash_event_payment_transaction_web_service_call response body: #{response.body}"
     unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].blank?
 #      return response.body[:ez_cash_txn_response][:return]

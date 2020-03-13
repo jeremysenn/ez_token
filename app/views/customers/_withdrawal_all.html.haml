@@ -14,6 +14,11 @@
               %i.fa.fa-spinner.fa-spin.fa-3x.fa-fw
             %img{id: "company_#{@account.CompanyNumber}_barcode_contents", :src => "", class: 'img-fluid'}
       .modal-footer
+        - if current_user.admin? or current_user.collaborator?
+          %a.btn.btn-default{href: nil, class: 'send_qrcode_button', "data-account-id" => @account.id, "data-customer-id" => @customer.id, "data-amount" => 0}
+            %i.fa.fa-comment
+            %i.fa.fa-spinner.fa-spin{style: 'display:none;'}
+            Text
         - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?)
           %a.btn.btn-default{href: barcode_customer_path(@customer.id)}
             %i.fa.fa-print
