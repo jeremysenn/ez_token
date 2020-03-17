@@ -114,13 +114,13 @@
                 = @transaction.sec_tran_code
               %p.lead
                 From Cust ID:
-                - unless @transaction.FromCustID.zero? or (@transaction.from_customer.present? and @transaction.from_customer.anonymous?)
+                - unless @transaction.FromCustID.blank? or @transaction.FromCustID.zero? or (@transaction.from_customer.present? and @transaction.from_customer.anonymous?)
                   = link_to @transaction.FromCustID, customer_path(@transaction.FromCustID) unless @transaction.FromCustID.blank?
                 - else
                   N/A
               %p.lead
                 To Cust ID:
-                - unless @transaction.ToCustID.zero? or (@transaction.to_customer.present? and @transaction.to_customer.anonymous?)
+                - unless @transaction.ToCustID.blank? or @transaction.ToCustID.zero? or (@transaction.to_customer.present? and @transaction.to_customer.anonymous?)
                   = link_to @transaction.ToCustID, customer_path(@transaction.ToCustID) unless @transaction.ToCustID.blank?
                 - else
                   N/A
