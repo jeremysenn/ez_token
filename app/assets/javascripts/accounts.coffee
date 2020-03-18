@@ -16,3 +16,14 @@ $(document).on 'turbolinks:load', ->
   $('.account_event_ids input[type="checkbox"]').click ->
     $('input[type="radio"]').attr("checked", false);
     return
+
+  ### Endless Page ###
+  loading_accounts = false
+  $('a.load-more-accounts').on 'inview', (e, visible) ->
+    return if loading_accounts or not visible
+    loading_accounts = true
+    $('#spinner').show()
+    $('a.load-more-accounts').hide()
+
+    $.getScript $(this).attr('href'), ->
+      loading_accounts = false

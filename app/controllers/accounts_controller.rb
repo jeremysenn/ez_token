@@ -18,6 +18,7 @@ class AccountsController < ApplicationController
     account_records = current_user.super? ? Account.all : current_user.company.accounts
     accounts = @type_id.blank? ? account_records.where(Active: @active) : account_records.where(ActTypeID: @type_id, Active: @active)
     unless params[:q].blank?
+      @q = params[:q]
       @query_string = "%#{params[:q]}%"
 #      @accounts = current_user.company.accounts.where(ActID: @query_string)
       @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
@@ -31,6 +32,7 @@ class AccountsController < ApplicationController
     end
     respond_to do |format|
       format.html {}
+      format.js {} # for endless page
       format.json {
 #        @customers = Kaminari.paginate_array(results).page(params[:page]).per(10)
 #        render json: @customers.map{|c| c['Id']}
