@@ -155,11 +155,10 @@ class CustomersController < ApplicationController
             redirect_to @customer, notice: "Customer account was successfully created." 
           else
             ref = request.referrer
-            flash[:notice] = "Family member successfully created."
             unless ref.blank? 
-              redirect_to ref
+              redirect_to ref, notice: "Family member successfully created."
             else
-              redirect_to root_path
+              redirect_to root_path, notice: "Family member successfully created."
             end
 #            redirect_back fallback_location: root_path, notice: "Family member successfully created."
           end
