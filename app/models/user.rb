@@ -116,9 +116,12 @@ class User < ApplicationRecord
       else
         message = "Confirm your ezToken account by clicking the link below. #{confirmation_link}"
       end
-      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_sms, message: { Phone: phone, Msg: "#{message}"})
 #      SmsMessage.create(to: phone, company_id: company_id, body: "#{message}")
+      
+#      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#      client.call(:send_sms, message: { Phone: phone, Msg: "#{message}"})
+
+      send_text_message(message)
     end
   end
   
@@ -126,8 +129,12 @@ class User < ApplicationRecord
     unless phone.blank?
       confirmation_link = "#{Rails.application.routes.default_url_options[:host]}/users/confirmation?confirmation_token=#{confirmation_token}"
       message = "Confirm the change to your account by clicking the link below.  #{confirmation_link}"
-      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_sms, message: { Phone: phone, Msg: "#{message}"})
+      
+#      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#      client.call(:send_sms, message: { Phone: phone, Msg: "#{message}"})
+      
+      send_text_message(message)
+      
       self.confirmed_at = nil
       self.save
     end
@@ -138,8 +145,12 @@ class User < ApplicationRecord
       token = self.set_reset_password_token
       reset_password_link = "#{Rails.application.routes.default_url_options[:host]}/users/password/edit?reset_password_token=#{token}"
       message = "Someone has requested a link to change your password. You can do this through the link below. Your password won't change until you access the link below and create a new one. #{reset_password_link}"
-      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-      client.call(:send_sms, message: { Phone: phone, Msg: "#{message}"})
+      
+#      client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#      client.call(:send_sms, message: { Phone: phone, Msg: "#{message}"})
+      
+      send_text_message(message)
+      
     end
   end
   
@@ -248,10 +259,11 @@ class User < ApplicationRecord
       account_sid = ENV["TWILIO_ACCOUNT_SID"]
       auth_token = ENV["TWILIO_AUTH_TOKEN"]
       client = Twilio::REST::Client.new account_sid, auth_token
+      from = company.twilio_number.blank? ? ENV["FROM_PHONE_NUMBER"] : company.twilio_number.phone_number
 
       begin
         client.messages.create(
-          :from => ENV["FROM_PHONE_NUMBER"],
+          :from => from,
           :to => twilio_formated_phone_number,
           :body => body #,
 #          :media_url => "https://www.gstatic.com/webp/gallery/1.sm.jpg"
