@@ -92,6 +92,12 @@
                     %a.btn.btn-default{href: edit_account_path(@account)}
                       %i.fa.fa-credit-card
                       Fund
+                - if current_user.can_edit_accounts?
+                  .pull-right
+                    %a.btn.btn-primary.btn-sm{href: '#', "data-toggle" => "modal", "data-target" => "#add_family_member_modal"}
+                      %i.fa.fa-plus
+                      Family
+              = render 'quick_create_form_modal' if current_user.can_edit_accounts?
               -#
                 .text-center
                   = "#{@account.blank? ? '' : @account.company.name}"

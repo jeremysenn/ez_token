@@ -88,6 +88,7 @@ class CustomersController < ApplicationController
 #    fine_print_require(["caddy_agreement"])
     @accounts = current_user.administrator? ? @customer.accounts.where(CompanyNumber: current_user.company_id) : @customer.accounts
     @events = current_user.administrator? ? @customer.events.where(company_id: current_user.company_id) : @customer.events
+    
     if params[:event_id].blank?
       @event = @events.first
     else
@@ -147,10 +148,22 @@ class CustomersController < ApplicationController
   # POST /customers.json
   def create
     @customer = Customer.new(customer_params)
-
     respond_to do |format|
       if @customer.save
-        format.html { redirect_to @customer, notice: "Customer account was successfully created." }
+        format.html { 
+          if customer_params[:account_ids].blank?
+            redirect_to @customer, notice: "Customer account was successfully created." 
+          else
+            ref = request.referrer
+            flash[notice] = "Family member successfully created."
+            unless ref.blank? 
+              redirect_to ref
+            else
+              redirect_to root_path
+            end
+#            redirect_back fallback_location: root_path, notice: "Family member successfully created."
+          end
+          }
         format.json { render :show, status: :created, location: @customer }
       else
         format.html { render :new }
@@ -394,7 +407,7 @@ class CustomersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def customer_params
       params.require(:customer).permit(:ParentCustID, :CompanyNumber, :Active, :GroupID, :NameF, :NameL, :NameS, :PhoneMobile, :Email, 
-        :LangID, :Registration_Source, :Registration_Source_ext, :create_payee_user_flag, :create_basic_user_flag, :create_caddy_user_flag, :avatar, :avatar_cache, :SSN, :DOB,
+        :LangID, :Registration_Source, :Registration_Source_ext, :create_payee_user_flag, :create_basic_user_flag, :create_caddy_user_flag, :avatar, :avatar_cache, :SSN, :DOB, account_ids: [],
         accounts_attributes:[:CompanyNumber, :Balance, :MinBalance, :Active, :CustomerID, :ActNbr, :ActTypeID, :BankActNbr, :RoutingNbr, 
           :AddGroupID, :AbleToDelete, :_destroy,:id, :event_ids, event_ids: [], customer_ids: [] ])
     end
