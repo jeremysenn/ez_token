@@ -22,7 +22,7 @@ class AccountsController < ApplicationController
       @query_string = "%#{params[:q]}%"
 #      @accounts = current_user.company.accounts.where(ActID: @query_string)
       @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
-      @total_accounts_results = @total_accounts_results.joins(:customers).where("CONCAT(customer.NameF, ' ', customer.NameL) like ? OR customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string, @query_string).order("customer.NameL ASC")
+      @total_accounts_results = @total_accounts_results.joins(:customers).where("CONCAT(customer.NameF, ' ', customer.NameL) like ? OR customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ? OR customer.Registration_Source like ?", @query_string, @query_string, @query_string, @query_string, @query_strin).order("customer.NameL ASC")
       @accounts = @total_accounts_results.page(params[:page]).per(20)
     else
 #      @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
