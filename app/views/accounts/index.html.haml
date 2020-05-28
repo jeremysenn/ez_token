@@ -49,7 +49,7 @@
                     %th Events
                   %th Balance
                   %th
-              %tbody
+              %tbody{id: 'accounts_list'}
                 - @accounts.uniq.each do |account|
                   %tr{class: account.active? ? '' : 'table-danger'}
                     %td= account.id
@@ -105,7 +105,13 @@
                             Cannot delete
                     
         .box-footer
-          .pull-right= paginate @accounts
+          -# .pull-right= paginate @accounts
+          %div{id: 'endless_page'}
+            %br
+            %p.text-center{id: "spinner", style: 'display:none;'}
+              %i.fa.fa-spinner.fa-spin.fa-2x.fa-fw
+              %span.sr-only Loading...
+            %p.text-center= link_to "Load More...", accounts_path(:page => @accounts.next_page, active: @active, event_id: @event_id, type_id: @type_id, q: @q), :class => 'load-more-accounts btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#spinner').show();" if @accounts.next_page
 
 :javascript
   $('[data-toggle="tooltip"]').tooltip({html: true});

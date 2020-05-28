@@ -1,0 +1,10 @@
+$('#accounts_list').append('<%= j render partial: 'accounts/account', collection: @accounts %>');
+$('#spinner').hide();
+
+<% if @accounts.next_page %>
+  $('a.load-more-accounts').show();
+  $('a.load-more-accounts').attr('href', '<%= accounts_path :page => @accounts.next_page, active: @active, event_id: @event_id, type_id: @type_id, q: @q %>');
+<% else %>
+  $(window).off('scroll');
+  $('a.load-more-accounts').remove();
+<% end %>

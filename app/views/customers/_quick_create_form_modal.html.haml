@@ -1,0 +1,27 @@
+.modal.fade{id: "add_family_member_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-sm{:role => "document", style: 'z-index: 1000;'}
+    .modal-content
+      .modal-header
+        %strong
+          Create New
+        = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
+      .modal-body
+        = simple_form_for(Customer.new) do |f|
+          = f.input :CompanyNumber, :as => :hidden, :input_html => { :value => 7 }
+          = f.input :LangID, :as => :hidden, :input_html => { :value => 1 }
+          = f.input :NameF, label: 'First Name', required: true
+          = f.input :NameL, label: 'Last Name', required: true
+          = f.input :PhoneMobile, label: 'Phone', required: true
+          = f.input :Email, label: 'Email', required: true
+          = f.input :GroupID, :as => :hidden, :input_html => {:value => 5}
+          = f.input :Registration_Source, label: 'Source'
+          = f.input :Active, as: :boolean, inline_label: 'Active'
+          = hidden_field_tag "customer[account_ids][]", @account.id
+
+          .modal-footer
+            %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+            %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+              Save
+        
+:javascript
+  $('#customer_PhoneMobile').mask("9999999999");

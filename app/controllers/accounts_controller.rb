@@ -18,10 +18,11 @@ class AccountsController < ApplicationController
     account_records = current_user.super? ? Account.all : current_user.company.accounts
     accounts = @type_id.blank? ? account_records.where(Active: @active) : account_records.where(ActTypeID: @type_id, Active: @active)
     unless params[:q].blank?
+      @q = params[:q]
       @query_string = "%#{params[:q]}%"
 #      @accounts = current_user.company.accounts.where(ActID: @query_string)
       @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
-      @total_accounts_results = @total_accounts_results.joins(:customers).where("CONCAT(customer.NameF, ' ', customer.NameL) like ? OR customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ?", @query_string, @query_string, @query_string, @query_string).order("customer.NameL ASC")
+      @total_accounts_results = @total_accounts_results.joins(:customers).where("CONCAT(customer.NameF, ' ', customer.NameL) like ? OR customer.NameF like ? OR customer.NameL like ? OR customer.PhoneMobile like ? OR customer.Registration_Source like ?", @query_string, @query_string, @query_string, @query_string, @query_string).order("customer.NameL ASC")
       @accounts = @total_accounts_results.page(params[:page]).per(20)
     else
 #      @accounts = current_user.company.accounts.where(ActTypeID: @type_id).joins(:events).where(events: {id: @event_id})
@@ -31,6 +32,7 @@ class AccountsController < ApplicationController
     end
     respond_to do |format|
       format.html {}
+      format.js {} # for endless page
       format.json {
 #        @customers = Kaminari.paginate_array(results).page(params[:page]).per(10)
 #        render json: @customers.map{|c| c['Id']}

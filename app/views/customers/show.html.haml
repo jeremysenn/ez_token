@@ -66,32 +66,46 @@
       .col-md-3
         / Profile Image
         .box.box-primary
+          .box-header.with-border
+            -# %h5.text-muted
+            %h3.box-title
+              - if not @account.active?
+                %strong.text-danger 
+                  %i.fa.fa-warning
+                  Inactive
+                %br
+              %i.fa.fa-google-wallet
+              = @account.account_type.blank? ? 'Wallet' : "#{@account.account_type.description} Wallet"
           .box-tools.pull-right
             -#
               %a.btn.btn-box-tool{href: edit_customer_path(@customer), :type => "button"}
                 %i.fa.fa-edit.fa-lg
           .box-body.box-profile
             - unless @account.blank?
-              .text-center
-                %h5.text-muted
-                  - if not @account.active?
-                    %strong.text-danger 
-                      %i.fa.fa-warning
-                      Inactive
-                    %br
-                  %i.fa.fa-google-wallet
-                  = @account.account_type.blank? ? 'Wallet' : @account.account_type.description
-                  %br
-                  - unless @account.MinBalance.blank? or @account.MinBalance.zero?
-                    %span.btn.btn-info{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "left"}
-                      = number_to_currency(@account.Balance)
-                  - else
+              -# .text-center
+              %strong Balance
+              %p.text-muted
+                - unless @account.MinBalance.blank? or @account.MinBalance.zero?
+                  %span.btn.btn-info{"data-toggle" => "tooltip", :title => "#{number_to_currency(@account.balance)} (balance)<br>#{number_to_currency(@account.minimum_balance)} (#{@account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(@account.available_balance)} (available)</strong>".html_safe, "data-placement" => "left"}
                     = number_to_currency(@account.Balance)
-                  -# if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.user and @account.user == current_user)
-                  - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.users.include?(current_user))
-                    %a.btn.btn-default{href: edit_account_path(@account)}
-                      %i.fa.fa-credit-card
-                      Fund
+                - else
+                  = number_to_currency(@account.Balance)
+                -# if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.user and @account.user == current_user)
+                - if (@account and (@account.can_fund_by_cc? or @account.can_fund_by_ach?) and @account.users.include?(current_user))
+                  %a.btn.btn-default{href: edit_account_path(@account)}
+                    %i.fa.fa-credit-card
+                    Fund
+              %hr/
+              %strong Holders
+              - if current_user.can_edit_accounts?
+                %span.pull-right
+                  %a.btn.btn-primary.btn-sm{href: '#', "data-toggle" => "modal", "data-target" => "#add_family_member_modal"}
+                    %i.fa.fa-plus
+                    New
+                = render 'quick_create_form_modal' if current_user.can_edit_accounts?
+              %p.text-muted
+                = @account.customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id: @account.id))}.join(", ").html_safe
+              
               -#
                 .text-center
                   = "#{@account.blank? ? '' : @account.company.name}"
@@ -196,7 +210,7 @@
         .box.box-primary
           .box-header.with-border
             %h3.box-title 
-              Info
+              Account Info
             -#
               .box-tools.pull-right
                 %button.btn.btn-box-tool{"data-widget" => "collapse", :type => "button"}

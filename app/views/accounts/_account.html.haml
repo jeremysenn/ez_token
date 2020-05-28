@@ -1,0 +1,16 @@
+%tr{class: account.active? ? '' : 'table-danger'}
+  %td= account.id
+  %td
+    - unless account.customers.blank? 
+      = account.customers.map{ |customer| link_to(customer.full_name,customer_path(customer))}.join(", ").html_safe
+  %td= account.account_type.blank? ? 'N/A' : account.account_type.description
+  %td
+    - unless account.MinBalance.blank? or account.MinBalance.zero?
+      %span.btn.btn-info.btn-sm{"data-toggle" => "tooltip", :title => "#{number_to_currency(account.balance)} (balance)<br>#{number_to_currency(account.minimum_balance)} (#{account.credit_balance? ? 'credit' : 'minimum'})<br><strong>#{number_to_currency(account.available_balance)} (available)</strong>".html_safe, "data-placement" => "right"}
+        = number_to_currency(account.Balance)
+    - else
+      = number_to_currency(account.Balance)
+  %td
+    %a{href: edit_account_path(account), class: 'btn btn-primary btn-sm'}
+      %i.fa.fa-gear
+      Advanced
