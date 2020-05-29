@@ -65,6 +65,7 @@ class Account < ActiveRecord::Base
 #  end
 
   def customer_user_name_and_registration_source
+    customer = customers.first
     unless customer.blank?
       unless customer.Registration_Source.blank?
         "#{customer.Registration_Source} #{customer.full_name}"
@@ -85,6 +86,7 @@ class Account < ActiveRecord::Base
   end
   
   def customer_user_name
+    customer = customers.first
     unless customer.blank?
       unless customer.user.blank?
         customer.user.full_name
@@ -97,6 +99,7 @@ class Account < ActiveRecord::Base
   end
   
   def customer_user_names
+    customer = customers.first
     unless customers.blank?
       customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
     else
@@ -105,6 +108,7 @@ class Account < ActiveRecord::Base
   end
   
   def customer_user_role
+    customer = customers.first
     unless customer.user.blank?
       customer.user.role
     else
@@ -384,14 +388,17 @@ class Account < ActiveRecord::Base
   end
   
   def customer_name
+    customer = customers.first
     "#{customer.NameF} #{customer.NameL}" unless customer.blank?
   end
   
   def first_name
+    customer = customers.first
     customer.NameF unless customer.blank?
   end
   
   def last_name
+    customer = customers.first
     customer.NameL unless customer.blank?
   end
   
@@ -474,6 +481,7 @@ class Account < ActiveRecord::Base
   end
   
   def user
+    customer = customers.first
     unless customer.blank?
       customer.user
     end
