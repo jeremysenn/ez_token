@@ -99,6 +99,7 @@ class Account < ActiveRecord::Base
   end
   
   def customer_user_names
+    customer = customers.first
     unless customers.blank?
       customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
     else
@@ -388,17 +389,17 @@ class Account < ActiveRecord::Base
   end
   
   def customer_name
-    customer= customers.first
+    customer = customers.first
     "#{customer.NameF} #{customer.NameL}" unless customer.blank?
   end
   
   def first_name
-    customer= customers.first
+    customer = customers.first
     customer.NameF unless customer.blank?
   end
   
   def last_name
-    customer= customers.first
+    customer = customers.first
     customer.NameL unless customer.blank?
   end
   
