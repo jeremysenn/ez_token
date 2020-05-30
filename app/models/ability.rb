@@ -58,7 +58,7 @@ class Ability
       
       # SmsMessages
       ############
-      unless user.company.twilio_number.blank?
+      unless user.company.blank? or user.company.twilio_number.blank?
         can :manage, SmsMessage do |sms_message|
           user.company == sms_message.company or user == sms_message.user or user.super?
         end
@@ -173,7 +173,7 @@ class Ability
       
       # SmsMessages
       ############
-      unless user.company.twilio_number.blank?
+      unless user.company.blank? or user.company.twilio_number.blank?
         can :manage, SmsMessage
         can :create, SmsMessage
       end
@@ -277,7 +277,7 @@ class Ability
       
       # SmsMessages
       ############
-      unless user.company.twilio_number.blank?
+      unless user.company.blank? or user.company.twilio_number.blank?
         can :manage, SmsMessage do |sms_message|
           unless user.customer.blank?
             user.customer == sms_message
