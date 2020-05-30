@@ -62,8 +62,8 @@ class Ability
         can :manage, SmsMessage do |sms_message|
           user.company == sms_message.company or user == sms_message.user or user.super?
         end
-        can :create, SmsMessage
       end
+      can :create, SmsMessage
       
       # Transactions
       ############
@@ -285,8 +285,8 @@ class Ability
             user == sms_message.user
           end
         end
-        can :create, :sms_messages
       end
+      can :create, :sms_messages
       
       # Transactions
       ############
