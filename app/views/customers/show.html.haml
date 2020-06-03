@@ -376,7 +376,8 @@
                     = "Products" unless browser.device.mobile?
             #myTabContent.tab-content
               #payments.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                - unless @payment_transactions.blank?
+                -# unless @payment_transactions.blank?
+                - unless @payment_and_fee_transactions.blank?
                   .table-responsive
                     -# %table.table.table-striped{class: "#{browser.device.mobile? ? 'table-sm' : ''}"}
                     %table.table.table-striped
@@ -387,52 +388,57 @@
                             %th Description
                           %th From
                           %th To
+                          %th Type
                           %th Amount
                           -#
                             %th
                       %tbody
-                        - @payment_transactions.each do |payment_transaction|
-                          %tr{class: payment_transaction.reversed? ? 'table-danger' : ''}
+                        -# @payment_transactions.each do |payment_transaction|
+                        - @payment_and_fee_transactions.each do |transaction|
+                          %tr{class: transaction.reversed? ? 'table-danger' : ''}
                             %td
                               =# payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
-                              = link_to payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), payment_transaction
+                              = link_to transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), transaction
                             -#
                               %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
                             %td
-                              - if payment_transaction.cash_deposit? or payment_transaction.ach_deposit?
-                                = payment_transaction.Description
+                              - if transaction.cash_deposit? or transaction.ach_deposit?
+                                = transaction.Description
                               - else
-                                - unless payment_transaction.from_account_customers.blank?
-                                  - from_customer = payment_transaction.from_customer
+                                - unless transaction.from_account_customers.blank?
+                                  - from_customer = transaction.from_customer
                                   - unless from_customer.blank?  
-                                    = payment_transaction.from_customer.full_name
+                                    = transaction.from_customer.full_name
                                   - else
-                                    = payment_transaction.from_account_customers_list
+                                    = transaction.from_account_customers_list
                                   -#
                                     - payment_transaction.from_account_customers.each do |from_account_customer|
                                       = from_account_customer.full_name.blank? ? from_account_customer.phone : from_account_customer.full_name
                                   =# payment_transaction.from_account_customer.full_name.blank? ? payment_transaction.from_account_customer.phone : payment_transaction.from_account_customer.full_name
                                 - else
-                                  = payment_transaction.from_account.company.CompanyName unless payment_transaction.from_account.blank? or payment_transaction.from_account.company.blank?
+                                  = transaction.from_account.company.CompanyName unless transaction.from_account.blank? or transaction.from_account.company.blank?
                             %td
-                              - unless payment_transaction.to_account_customers.blank? 
-                                - to_customer = payment_transaction.to_customer
+                              - unless transaction.to_account_customers.blank? 
+                                - to_customer = transaction.to_customer
                                 - unless to_customer.blank?
-                                  = payment_transaction.to_customer.full_name
+                                  = transaction.to_customer.full_name
                                 - else
-                                  = payment_transaction.to_account_customers_list
+                                  = transaction.to_account_customers_list
                                 -#
                                   - payment_transaction.to_account_customers.each do |to_account_customer|
                                     = to_account_customer.full_name
                                 =# payment_transaction.to_account_customer.full_name.blank? ? payment_transaction.to_account_customer.phone : payment_transaction.to_account_customer.full_name
                               - else
-                                = payment_transaction.to_account.company.CompanyName unless payment_transaction.to_account.blank? or payment_transaction.to_account.company.blank?
-                            %td= number_to_currency(payment_transaction.amt_auth)
+                                = transaction.to_account.company.CompanyName unless transaction.to_account.blank? ortransaction.to_account.company.blank?
+                            %td
+                              = transaction.type
+                            %td= number_to_currency(transaction.amt_auth)
                             -#
                               %td
                                 %a{href: "#additional_payment_modal", "data-target" => "#additional_payment_modal", "data-toggle" => "modal"}
                                   Additional Payment
-                  - @payment_transactions.each do |payment_transaction|
+                  -# @payment_transactions.each do |payment_transaction|
+                  - @payment_and_fee_transactions.each do |transaction|
                     .modal.fade{id: "additional_payment_modal", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
                       .modal-dialog.modal-sm{:role => "document"}
                         .modal-content
@@ -441,7 +447,7 @@
                             = link_to "×", '#', :class => "close", "data-dismiss" => "modal"
                           .modal-body
                             = form_tag send_payment_transactions_path, method: 'post', class: 'form-horizontal' do |f|
-                              = hidden_field_tag :id, payment_transaction.id
+                              = hidden_field_tag :id, transaction.id
                               .input-group.mb-3
                                 .input-group-prepend
                                   %span.input-group-text $
@@ -455,7 +461,9 @@
                                   Submit
                           %script
                             $('.modal').on('shown.bs.modal', function() {$(this).find('[autofocus]').first().focus();});
-                  .pull-right= paginate @payment_transactions, param_name: 'payments'
+                  .pull-right
+                    =# paginate @payment_transactions, param_name: 'payments'
+                    = paginate @payment_and_fee_transactions, param_name: 'payments'
                 - else
                   .jumbotron
                     %h3.text-center None
