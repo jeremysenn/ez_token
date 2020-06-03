@@ -429,7 +429,7 @@
                                     = to_account_customer.full_name
                                 =# payment_transaction.to_account_customer.full_name.blank? ? payment_transaction.to_account_customer.phone : payment_transaction.to_account_customer.full_name
                               - else
-                                = transaction.to_account.company.CompanyName unless transaction.to_account.blank? ortransaction.to_account.company.blank?
+                                = transaction.to_account.company.CompanyName unless transaction.to_account.blank? or transaction.to_account.company.blank?
                             %td
                               = transaction.type
                             %td= number_to_currency(transaction.amt_auth)
