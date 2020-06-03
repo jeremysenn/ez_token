@@ -248,7 +248,7 @@ class Account < ActiveRecord::Base
   end
   
   def fee_transactions
-    transactions = Transaction.where(from_acct_id: id, tran_code: ['FEE'], sec_tran_code: 'TFR', error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['FEE'], sec_tran_code: 'TFR', error_code: 0)
+    transactions = Transaction.where(from_acct_id: id, tran_code: ['FEE', 'FEE '], sec_tran_code: ['TFR', 'TFR '], error_code: 0) + Transaction.where(to_acct_id: id, tran_code: ['FEE', 'FEE '], sec_tran_code: ['TFR', 'TFR '], error_code: 0)
     return transactions
   end
   
