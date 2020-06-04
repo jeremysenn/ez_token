@@ -26,7 +26,7 @@
                       = account_type.description
                     .collapse{id: "collapseAccountType#{account_type.id}"}
                       .card.card-body
-                        - account_type.accounts.with_balance.each do |account|
+                        - account_type.accounts.where.not(Balance: [0,nil]).each do |account|
                           - unless (account == current_user.company.transaction_account or account == current_user.company.fee_account)
                             %p
                               = account.customers.map{ |customer| link_to(customer.identity,customer_path(customer, account_id:  account.id))}.join(", ").html_safe
