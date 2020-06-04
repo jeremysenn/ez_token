@@ -77,7 +77,7 @@ class EventsController < ApplicationController
     respond_to do |format|
       format.json {
         @query_string = "%#{params[:q]}%"
-        customers = @event.customers.where("CONCAT(NameF, ' ', NameL) like ? OR NameF like ? OR NameL like ? OR PhoneMobile like ?", @query_string, @query_string, @query_string, @query_string).order("NameL ASC")
+        customers = @event.customers.where("CONCAT(NameF, ' ', NameL) like ? OR NameF like ? OR NameL like ? OR PhoneMobile like ? OR Registration_Source like ?", @query_string, @query_string, @query_string, @query_string, @query_string).order("NameL ASC")
         @total_accounts_results = []
         customers.each do |customer|
           customer.accounts.each do |account|

@@ -411,6 +411,11 @@ class Account < ActiveRecord::Base
     customer.NameL unless customer.blank?
   end
   
+  def source
+    customer = customers.first
+    customer.Registration_Source unless customer.blank?
+  end
+  
   def encrypt_account_number
     unless self.ActNbr.blank?
       encrypted = Decrypt.encryption(self.ActNbr) # Encrypt the account_number
@@ -877,7 +882,7 @@ class Account < ActiveRecord::Base
   
   def self.to_csv
     require 'csv'
-    attributes = %w{first_name last_name description events_list balance}
+    attributes = %w{first_name last_name source description events_list balance}
     
     CSV.generate(headers: true) do |csv|
       csv << attributes
