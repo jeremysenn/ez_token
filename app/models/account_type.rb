@@ -95,6 +95,10 @@ class AccountType < ActiveRecord::Base
     self.clear_balances_bill_externally == 1
   end
   
+  def corporate_account?
+    self.CorpAcctFlag == true or self.CorpAcctFlag == '1'
+  end
+  
   def default_minimum_balance
     unless self.DefaultMinBal.blank?
       self.DefaultMinBal

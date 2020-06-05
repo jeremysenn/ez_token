@@ -15,6 +15,12 @@
             %strong Description:
             = @account_type.description
           %p.lead
+            %strong Bill Code:
+            = @account_type.bill_code.blank? ? 'N/A' : @account_type.bill_code
+          %p.lead
+            %strong Corporate Account?
+            = (@account_type.corporate_account?) ? 'Yes' : 'No'
+          %p.lead
             %strong Minimum Maintained Balance:
             = @account_type.MinMaintainBal.blank? ? number_to_currency(0) : number_to_currency(@account_type.MinMaintainBal)
           %p.lead
