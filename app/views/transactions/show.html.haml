@@ -157,12 +157,6 @@
                   = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
 
               - if current_user.administrator?
-                %p.lead
-                  Tran Code:
-                  = @transaction.tran_code
-                %p.lead
-                  Sec Tran Code:
-                  = @transaction.sec_tran_code
                 -#
                   %p.lead
                     To wallet type:

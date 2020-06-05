@@ -181,6 +181,10 @@ class Transaction < ActiveRecord::Base
     type == "Purchase"
   end
   
+  def transfer?
+    type == "Transfer"
+  end
+  
   def wire_transfer?
     type == "Wire Transfer"
   end
@@ -380,6 +384,14 @@ class Transaction < ActiveRecord::Base
     from_account_customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
   end
   
+  def source
+    if transfer?
+      from_account.customers.first.Registration_Source unless from_account.blank? or from_account.customers.blank?
+    elsif reversal?
+      to_account.customers.first.Registration_Source unless to_account.blank? or to_account.customers.blank?
+    end
+  end
+  
   def reverse
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { TranID: tranID })
@@ -550,7 +562,7 @@ class Transaction < ActiveRecord::Base
   
   def self.to_csv
     require 'csv'
-    attributes = %w{tranID date_time Description dev_id error_code tran_code sec_tran_code from_acct_id to_acct_id amt_req amt_auth ChpFee}
+    attributes = %w{tranID date_time Description dev_id error_code tran_code sec_tran_code from_acct_id to_acct_id source amt_req amt_auth ChpFee}
     
     CSV.generate(headers: true) do |csv|
       csv << attributes
