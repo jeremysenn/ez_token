@@ -181,6 +181,10 @@ class Transaction < ActiveRecord::Base
     type == "Purchase"
   end
   
+  def transfer?
+    type == "Transfer"
+  end
+  
   def wire_transfer?
     type == "Wire Transfer"
   end
