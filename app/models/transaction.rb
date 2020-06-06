@@ -354,13 +354,13 @@ class Transaction < ActiveRecord::Base
   
   def to_account_customer
     unless to_account.blank?
-      to_account.customer
+      to_account.customers.first unless to_account.customers.blank?
     end
   end
   
   def from_account_customer
     unless from_account.blank?
-      from_account.customer
+      from_account.customers.first unless from_account.customers.blank?
     end
   end
   
