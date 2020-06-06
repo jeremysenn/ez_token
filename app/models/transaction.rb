@@ -380,6 +380,14 @@ class Transaction < ActiveRecord::Base
     from_account_customers.map{|customer| "#{customer.full_name}"}.join(", ").html_safe
   end
   
+  def source
+    if transfer?
+      from_account.customers.first.Registration_Source unless from_account.blank? or from_account.customers.blank?
+    elsif reversal?
+      to_account.customers.first.Registration_Source unless to_account.blank? or to_account.customers.blank?
+    end
+  end
+  
   def reverse
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { TranID: tranID })
