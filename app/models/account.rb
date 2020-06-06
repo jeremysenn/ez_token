@@ -412,6 +412,11 @@ class Account < ActiveRecord::Base
     customer.NameL unless customer.blank?
   end
   
+  def source
+    customer = customers.first
+    customer.Registration_Source unless customer.blank?
+  end
+  
   def encrypt_account_number
     unless self.ActNbr.blank?
       encrypted = Decrypt.encryption(self.ActNbr) # Encrypt the account_number
