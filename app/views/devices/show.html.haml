@@ -59,22 +59,22 @@
                     %i.fa.fa-money.margin-r-5
                     Total
                   .pull-right= number_to_currency(@transactions_total)
-                -# unless @withdrawal_transactions.blank?
-                %li.list-group-item
-                  %b
-                    Dispensed
-                  %br
-                  Bin 1
-                  .pull-right= @bin1_dispensed
-                  %br
-                  Bin 2
-                  .pull-right= @bin2_dispensed
-                  %br
-                  Bin 3
-                  .pull-right= @bin3_dispensed
-                  %br
-                  Bin 4
-                  .pull-right= @bin4_dispensed
+                - unless @withdrawal_transactions.blank?
+                  %li.list-group-item
+                    %b
+                      Dispensed
+                    %br
+                    Bin 1
+                    .pull-right= @bin1_dispensed
+                    %br
+                    Bin 2
+                    .pull-right= @bin2_dispensed
+                    %br
+                    Bin 3
+                    .pull-right= @bin3_dispensed
+                    %br
+                    Bin 4
+                    .pull-right= @bin4_dispensed
                 -#
                   %li.list-group-item
                     %b 
