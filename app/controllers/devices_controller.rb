@@ -56,9 +56,17 @@ class DevicesController < ApplicationController
     @transactions_count = @withdrawal_transactions.count unless @withdrawal_transactions.blank?
     @transactions_total = 0
     @transactions_fee_total = 0
+    @bin1_dispensed = 0
+    @bin2_dispensed = 0
+    @bin3_dispensed = 0
+    @bin4_dispensed = 0
     @withdrawal_transactions.each do |transaction|
       @transactions_total = @transactions_total + transaction.amt_auth unless transaction.amt_auth.blank?
       @transactions_fee_total = @transactions_fee_total + transaction.ChpFee unless transaction.ChpFee.blank? or transaction.ChpFee.zero?
+      @bin1_dispensed = @bin1_dispensed + transaction.cassette_1_disp unless transaction.cassette_1_disp.blank?
+      @bin2_dispensed = @bin2_dispensed + transaction.cassette_2_disp unless transaction.cassette_2_disp.blank?
+      @bin3_dispensed = @bin3_dispensed + transaction.cassette_3_disp unless transaction.cassette_3_disp.blank?
+      @bin4_dispensed = @bin4_dispensed + transaction.cassette_4_disp unless transaction.cassette_4_disp.blank?
     end
     @transactions_average_amount = @transactions_count.blank? ? 0 : @transactions_total / @transactions_count
     

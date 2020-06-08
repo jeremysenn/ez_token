@@ -59,37 +59,54 @@
                     %i.fa.fa-money.margin-r-5
                     Total
                   .pull-right= number_to_currency(@transactions_total)
+                -# unless @withdrawal_transactions.blank?
+                %li.list-group-item
+                  %b
+                    Dispensed
+                  %br
+                  Bin 1
+                  .pull-right= @bin1_dispensed
+                  %br
+                  Bin 2
+                  .pull-right= @bin2_dispensed
+                  %br
+                  Bin 3
+                  .pull-right= @bin3_dispensed
+                  %br
+                  Bin 4
+                  .pull-right= @bin4_dispensed
                 -#
                   %li.list-group-item
                     %b 
                       %i.fa.fa-gears.margin-r-5
                       Actions
                     -# %a.pull-right And more info
-              - if device_state_descriptions[@device.online] == "Ready" or device_state_descriptions[@device.online] == "Down"
-                %a.btn.btn-default.btn-block{"data-target" => "#commands-modal", "data-toggle" => "modal", :type => "button"}
-                  %b
-                    %i.fa.fa-arrows-alt
-                    Commands
-                %a.btn.btn-default.btn-block{"data-target" => "#replenish-modal", "data-toggle" => "modal", :type => "button"}
-                  %b
-                    %i.fa.fa-inbox
-                    Replenish
-                -#
-                  %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
-                    %b Add Cash
-                  %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
-                    %b Reset Cash
-                  - unless @bin_5_denomination.blank? and @bin_6_denomination.blank? and @bin_7_denomination.blank? and @bin_8_denomination.blank?
-                    %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
-                      %b Add Coin
-                    %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
-                      %b Reset Coin
-                  %a.btn.btn-default.btn-block{href: cash_position_device_path(@device), target: '_blank;', :type => "button"}
-                    %b Cash Position
-              - else
-                %p.text-danger
-                  %i.fa.fa-warning
-                  Waiting for ATM to be ready...
+              %li.list-group-item
+                - if device_state_descriptions[@device.online] == "Ready" or device_state_descriptions[@device.online] == "Down"
+                  %a.btn.btn-default.btn-block{"data-target" => "#commands-modal", "data-toggle" => "modal", :type => "button"}
+                    %b
+                      %i.fa.fa-arrows-alt
+                      Commands
+                  %a.btn.btn-default.btn-block{"data-target" => "#replenish-modal", "data-toggle" => "modal", :type => "button"}
+                    %b
+                      %i.fa.fa-inbox
+                      Replenish
+                  -#
+                    %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
+                      %b Add Cash
+                    %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
+                      %b Reset Cash
+                    - unless @bin_5_denomination.blank? and @bin_6_denomination.blank? and @bin_7_denomination.blank? and @bin_8_denomination.blank?
+                      %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
+                        %b Add Coin
+                      %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
+                        %b Reset Coin
+                    %a.btn.btn-default.btn-block{href: cash_position_device_path(@device), target: '_blank;', :type => "button"}
+                      %b Cash Position
+                - else
+                  %p.text-danger
+                    %i.fa.fa-warning
+                    Waiting for ATM to be ready...
               
               = render partial: 'commands_modal'
               = render partial: 'replenish_modal'
