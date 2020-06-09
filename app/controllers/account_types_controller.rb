@@ -80,7 +80,7 @@ class AccountTypesController < ApplicationController
       params.fetch(:account_type, {}).permit(:AccountTypeDesc, :CompanyNumber, :CanFundByACH, :CanFundByCC, :CanFundByCash, :CanWithdraw, 
         :WithdrawAll, :CanPull, :CanRequestPmtBySearch, :CanRequestPmtByScan, :CanSendPmt, :CanBePulledBySearch, :CanBePulledByScan, :CanBePushedByScan, 
         :MinMaintainBal, :contract_id, :date_of_birth_required, :social_security_number_required, :DefaultMinBal, :clear_balances_bill_externally, 
-        :hide_pull_payment_from_holder, :bill_code)
+        :hide_pull_payment_from_holder, :bill_code, :CorpAcctFlag)
     end
     
 end
