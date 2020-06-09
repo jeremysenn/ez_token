@@ -10,6 +10,8 @@
         .row
           .col-xs-12.col-sm-6
             = f.input :AccountTypeDesc, as: :string, label: 'Description', required: true
+          .col-xs-12.col-sm-4
+            = f.input :bill_code, as: :string, label: 'Bill Code'
         - unless current_user.super?
           = f.input :CompanyNumber, as: :hidden, :input_html => { :value => "#{@account_type.new_record? ? current_user.company.id : @account_type.CompanyNumber}" }
         - else

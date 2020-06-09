@@ -48,7 +48,7 @@
           .row
             .col-xs-12.col-sm-6
               = f.input :can_quick_pay, as: :boolean, label: 'Quick Pay'
-              = f.input :quick_pay_account_type_id, collection: @company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Quick Pay Wallet Type", prompt: "Select type", wrapper_html: { style: "#{@company.can_quick_pay? ? 'display:block;' : 'display:none;'}" }
+              = f.input :quick_pay_account_type_id, collection: @company.account_types.not_corporate.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Quick Pay Wallet Type", prompt: "Select type", wrapper_html: { style: "#{@company.can_quick_pay? ? 'display:block;' : 'display:none;'}" }
       .form-actions
         = link_to 'Cancel', :back, class: "btn btn-default"
         %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 

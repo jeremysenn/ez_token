@@ -395,7 +395,7 @@
                       %tbody
                         -# @payment_transactions.each do |payment_transaction|
                         - @payment_and_fee_transactions.each do |transaction|
-                          %tr{class: transaction.reversed? ? 'table-danger' : ''}
+                          %tr{class: transaction.reversal? ? 'table-danger' : ''}
                             %td
                               =# payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
                               = link_to transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), transaction

@@ -33,6 +33,8 @@ class Account < ActiveRecord::Base
   scope :active, -> { where(Active: 1) }
   scope :customer, -> { where.not(CustomerID: nil) }
   scope :with_balance, -> { where.not(Balance: [0,nil]) }
+  scope :corporate, -> { where(Active: true).joins(:account_type).where('AccountTypes.CorpAcctFlag = ?', 1) }
+  
   
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true

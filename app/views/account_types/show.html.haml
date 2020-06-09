@@ -15,6 +15,12 @@
             %strong Description:
             = @account_type.description
           %p.lead
+            %strong Bill Code:
+            = @account_type.bill_code.blank? ? 'N/A' : @account_type.bill_code
+          %p.lead
+            %strong Corporate Account?
+            = (@account_type.corporate_account?) ? 'Yes' : 'No'
+          %p.lead
             %strong Minimum Maintained Balance:
             = @account_type.MinMaintainBal.blank? ? number_to_currency(0) : number_to_currency(@account_type.MinMaintainBal)
           %p.lead
@@ -80,7 +86,7 @@
 
           .box-footer
             = link_to 'Back', :back, class: 'btn btn-default'
-            - if current_user.can_edit_wallet_types?
+            - if current_user.can_edit_wallet_types? and not @account_type.corporate_account?
               = link_to 'Edit', edit_account_type_path(@account_type, company_id: current_user.company_id), class: 'btn btn-primary'
               - if @accounts.blank?
                 .pull-right

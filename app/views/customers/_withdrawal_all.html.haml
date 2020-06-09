@@ -24,7 +24,7 @@
             %i.fa.fa-print
             Print
         - else
-          - if current_user.devices.count > 1
+          - if not current_user.devices.blank? and current_user.devices.count > 1
             .dropdown
               %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
                 %i.fa.fa-print

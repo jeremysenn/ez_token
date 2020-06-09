@@ -157,12 +157,6 @@
                   = "#{@transaction.ChpFee.blank? ? 'N/A' : number_to_currency(@transaction.ChpFee)}"
 
               - if current_user.administrator?
-                %p.lead
-                  Tran Code:
-                  = @transaction.tran_code
-                %p.lead
-                  Sec Tran Code:
-                  = @transaction.sec_tran_code
                 -#
                   %p.lead
                     To wallet type:
@@ -281,13 +275,14 @@
                         %i.fa.fa-print
                         Print Barcode
               -# if @transaction.from_account_customer == current_user.customer
-              - if @transaction.from_account_customers.include?(current_user.customer)
-                .pull-right
-                  %a{href: dispute_transaction_path(@transaction, phone: current_user.phone), class: 'btn btn-danger btn-sm'}
-                    Dispute
-              - if current_user.can_reverse_transactions? and @transaction.can_reverse?
-                - if @reversal_transaction.blank? and not @transaction.reversal?
+              - unless current_user.super?
+                - if @transaction.from_account_customers.include?(current_user.customer)
                   .pull-right
-                    %a{href: reverse_transaction_path(@transaction), class: 'btn btn-danger btn-sm', data: {confirm: 'Are you sure you want to reverse this transaction?', disable_with: "<i class='fa fa-spinner fa-spin'></i> Reverse"}}
-                      %i.fa.fa-warning
-                      Reverse
+                    %a{href: dispute_transaction_path(@transaction, phone: current_user.phone), class: 'btn btn-danger btn-sm'}
+                      Dispute
+                - if current_user.can_reverse_transactions? and @transaction.can_reverse?
+                  - if @reversal_transaction.blank? and not @transaction.reversal?
+                    .pull-right
+                      %a{href: reverse_transaction_path(@transaction), class: 'btn btn-danger btn-sm', data: {confirm: 'Are you sure you want to reverse this transaction?', disable_with: "<i class='fa fa-spinner fa-spin'></i> Reverse"}}
+                        %i.fa.fa-warning
+                        Reverse

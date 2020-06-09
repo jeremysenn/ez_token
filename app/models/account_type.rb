@@ -7,6 +7,9 @@ class AccountType < ActiveRecord::Base
   belongs_to :company, :foreign_key => "CompanyNumber"
   belongs_to :contract
   
+  scope :corporate, -> { where(CorpAcctFlag: 1) }
+  scope :not_corporate, -> { where(CorpAcctFlag: [nil,0]) }
+  
   #############################
   #     Instance Methods      #
   #############################
@@ -93,6 +96,10 @@ class AccountType < ActiveRecord::Base
   
   def clear_balances_and_bill_externally?
     self.clear_balances_bill_externally == 1
+  end
+  
+  def corporate_account?
+    self.CorpAcctFlag == true or self.CorpAcctFlag == 1
   end
   
   def default_minimum_balance
