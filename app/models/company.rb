@@ -205,7 +205,7 @@ class Company < ActiveRecord::Base
   
   def accounts_balance_total
     sum = 0
-    account_types.each do |account_type|
+    account_types.not_corporate.each do |account_type|
       sum = account_type.accounts_cash_total + sum
     end
     sum = transaction_account.balance + sum unless transaction_account.blank?

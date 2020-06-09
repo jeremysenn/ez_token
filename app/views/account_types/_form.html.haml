@@ -7,6 +7,7 @@
           <button type="button" class="close" data-dismiss="alert">×</button>
           = "#{attr} #{msg}" if @account_type.errors[attr].first == msg
       .form-inputs
+        = f.input :CorpAcctFlag, as: :hidden, :input_html => { :value => 0 }
         .row
           .col-xs-12.col-sm-6
             = f.input :AccountTypeDesc, as: :string, label: 'Description', required: true
