@@ -15,7 +15,7 @@ class AccountsController < ApplicationController
     unless @events.blank?
       @event_id = params[:event_id] #||= @events.first.id
     end
-    account_records = current_user.super? ? Account.all : current_user.company.accounts
+    account_records = current_user.super? ? Account.not_corporate : current_user.company.accounts.not_corporate
     accounts = @type_id.blank? ? account_records.where(Active: @active) : account_records.where(ActTypeID: @type_id, Active: @active)
     unless params[:q].blank?
       @q = params[:q]
@@ -246,7 +246,7 @@ class AccountsController < ApplicationController
       @event_id = params[:event_id] #||= @events.first.id
       @event = Event.find(@event_id) unless @event_id.blank?
     end
-    account_records = current_user.super? ? (@sign == 'Negative' ? Account.where("Balance < ?", 0) : Account.where("Balance > ?", 0)) : (@sign == 'Negative' ? current_user.company.accounts.where("Balance < ?", 0) : current_user.company.accounts.where("Balance > ?", 0))
+    account_records = current_user.super? ? (@sign == 'Negative' ? Account.not_corporate.where("Balance < ?", 0) : Account.not_corporate.where("Balance > ?", 0)) : (@sign == 'Negative' ? current_user.company.accounts.not_corporate.where("Balance < ?", 0) : current_user.company.accounts.not_corporate.where("Balance > ?", 0))
     accounts = @type_id.blank? ? account_records : account_records.where(ActTypeID: @type_id)
     @total_accounts_results = @event_id.blank? ? accounts : accounts.joins(:events).where(events: {id: @event_id})
 #    @total_accounts_results = @total_accounts_results.joins(:customer).order("customer.NameL ASC")
