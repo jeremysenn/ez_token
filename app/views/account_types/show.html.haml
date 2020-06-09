@@ -86,7 +86,7 @@
 
           .box-footer
             = link_to 'Back', :back, class: 'btn btn-default'
-            - if current_user.can_edit_wallet_types?
+            - if current_user.can_edit_wallet_types? and not @account_type.corporate_account?
               = link_to 'Edit', edit_account_type_path(@account_type, company_id: current_user.company_id), class: 'btn btn-primary'
               - if @accounts.blank?
                 .pull-right

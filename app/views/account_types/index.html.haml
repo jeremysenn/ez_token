@@ -81,7 +81,7 @@
                     -# %td= account_type.social_security_number_required? ? "<i class='fa fa-check'></i>".html_safe : "<i class='fa fa-ban'></i>".html_safe
                     %td
                       = link_to 'Show', account_type_path(account_type, company_id: current_user.company_id), class: 'btn btn-default btn-sm'
-                      - unless account_type.heavy_metal_debit? or account_type.company_account?
+                      - unless account_type.heavy_metal_debit? or account_type.company_account? or account_type.corporate_account?
                         = link_to "Edit", edit_account_type_path(account_type, company_id: current_user.company_id), class: 'btn btn-primary btn-sm' if current_user.can_edit_wallet_types?
       -#
         .row

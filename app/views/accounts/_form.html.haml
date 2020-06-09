@@ -14,7 +14,7 @@
           = "#{attr} #{msg}" if @account.errors[attr].first == msg
       .form-inputs
         - if current_user.can_edit_accounts?
-          = f.input :ActTypeID, collection: current_user.company.account_types.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
+          = f.input :ActTypeID, collection: current_user.company.account_types.not_corporate.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
           =# f.input :Balance, as: :decimal, label: 'Balance', required: true
           = f.input :MinBalance, as: :decimal, required: true, label: "Minimum Balance" do
             .row
