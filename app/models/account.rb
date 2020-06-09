@@ -33,8 +33,8 @@ class Account < ActiveRecord::Base
   scope :active, -> { where(Active: 1) }
   scope :customer, -> { where.not(CustomerID: nil) }
   scope :with_balance, -> { where.not(Balance: [0,nil]) }
-  scope :corporate, -> { where(Active: true).joins(:account_type).where('AccountTypes.CorpAcctFlag = ?', 1) }
-  
+  scope :corporate, -> { joins(:account_type).where('AccountTypes.CorpAcctFlag = ?', 1) }
+  scope :not_corporate, -> { joins(:account_type).where('AccountTypes.CorpAcctFlag = ?', 0) }
   
 #  validates :ActNbr, confirmation: true
 #  validates :ActNbr_confirmation, presence: true
@@ -381,6 +381,10 @@ class Account < ActiveRecord::Base
   
   def primary?
     (customer_card.CDType == "IND" or customer_card.CDType == "IDX" or customer_card.CDType == "IDO")  unless customer_card.blank?
+  end
+  
+  def corporate_account?
+    account_type.corporate_account?
   end
   
   def name
