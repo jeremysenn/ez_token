@@ -15,7 +15,7 @@ class AccountsController < ApplicationController
     unless @events.blank?
       @event_id = params[:event_id] #||= @events.first.id
     end
-    account_records = current_user.super? ? Account.not_corporate : current_user.company.accounts.not_corporate
+    account_records = current_user.super? ? Account.all : current_user.company.accounts
     accounts = @type_id.blank? ? account_records.where(Active: @active) : account_records.where(ActTypeID: @type_id, Active: @active)
     unless params[:q].blank?
       @q = params[:q]
