@@ -5,7 +5,7 @@ class AccountType < ActiveRecord::Base
   
   has_many :accounts, :foreign_key => "ActTypeID"
   belongs_to :company, :foreign_key => "CompanyNumber"
-  belongs_to :contract
+  belongs_to :contract, optional: true
   
   scope :corporate, -> { where(CorpAcctFlag: 1) }
   scope :not_corporate, -> { where(CorpAcctFlag: [nil,0]) }

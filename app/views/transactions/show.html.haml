@@ -276,7 +276,7 @@
                         Print Barcode
               -# if @transaction.from_account_customer == current_user.customer
               - unless current_user.super?
-                - if @transaction.from_account_customers.include?(current_user.customer)
+                - if @transaction.from_account_customers and @transaction.from_account_customers.include?(current_user.customer)
                   .pull-right
                     %a{href: dispute_transaction_path(@transaction, phone: current_user.phone), class: 'btn btn-danger btn-sm'}
                       Dispute
