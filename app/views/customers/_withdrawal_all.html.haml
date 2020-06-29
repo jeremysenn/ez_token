@@ -35,7 +35,7 @@
                   %li
                     %a{href: barcode_customer_path(@customer.id, device_id: device.id)}
                       = device.description
-          - elsif current_user.devices.count == 1
+          - elsif not current_user.devices.blank? and current_user.devices.count == 1
             %a.btn.btn-default{href: barcode_customer_path(@customer.id, device_id: current_user.devices.first.id)}
               %i.fa.fa-print
               Print
