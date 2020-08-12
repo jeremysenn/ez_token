@@ -24,7 +24,7 @@
             - unless @ach_log.decoded_csv_report.blank?
               .table-responsive
                 %table.table
-                  - CSV.parse(@ach_log.decoded_csv_report.tr("\r", ''), skip_blanks: true).each_with_index do |row, index|
+                  - CSV.parse(@ach_log.decoded_csv_report.tr("\r", '')).each_with_index do |row, index|
                     - if index == 0
                       %tr
                         - row.each do |element|
