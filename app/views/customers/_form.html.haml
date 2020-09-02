@@ -37,8 +37,8 @@
           / /.modal-dialog
         / /.modal
         - if current_user.can_edit_accounts?
-          =# f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? current_user.company.id : @customer.CompanyNumber}" }
-          = f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 7 : @customer.CompanyNumber}" }
+          = f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? current_user.company.id : @customer.CompanyNumber}" }
+          =# f.input :CompanyNumber, :as => :hidden, :input_html => { :value => "#{@customer.new_record? ? 7 : @customer.CompanyNumber}" }
           = f.input :LangID, :as => :hidden, :input_html => { :value => 1 }
           = f.input :NameF, label: 'First Name', required: true
           = f.input :NameL, label: 'Last Name', required: true
