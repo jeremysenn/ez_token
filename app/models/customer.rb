@@ -45,7 +45,7 @@ class Customer < ActiveRecord::Base
 #  validates :PhoneMobile, uniqueness: {allow_blank: true} #uniqueness: true, presence: true
   validates :PhoneMobile, uniqueness: {allow_blank: true}
   validates :Email, uniqueness: {allow_blank: true}
-  validates :Registration_Source, scope: :CompanyNumber, uniqueness: {allow_blank: true} #, presence: true
+  validates :Registration_Source, uniqueness: {scope: :CompanyNumber, allow_blank: true} #, presence: true
 #  validates :PhoneMobile, presence: true
 #  validates_uniqueness_of :Email
 #  validates_uniqueness_of :PhoneMobile
