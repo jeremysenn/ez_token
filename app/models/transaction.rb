@@ -238,7 +238,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def error?
-    error_code and error_code > 0
+    (error_code and error_code > 0) or ((withdrawal? or withdrawal_all?) and tran_status != 12)
   end
   
   
