@@ -141,12 +141,13 @@
               %p.lead
                 Code:
                 = @transaction.error_code_long_description
-              %p.lead
-                Status Number:
-                = @transaction.tran_status
-              %p.lead
-                Status:
-                = @transaction.status_long_description
+              - if @transaction.withdrawal? or @transaction.withdrawal_all?
+                %p.lead
+                  Status Number:
+                  = @transaction.tran_status
+                %p.lead
+                  Status:
+                  = @transaction.status_long_description
               %p.lead
                 Receipt Number:
                 - if not @to_customer.blank? and @to_customer.anonymous?
