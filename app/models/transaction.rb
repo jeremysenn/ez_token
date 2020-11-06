@@ -417,7 +417,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def reversal_transaction
-    Transaction.where(OrigTranID: tranID, tran_code: ["CRED", "CRED "], sec_tran_code: ["TFR", "TFR "], error_code: 0).or(Transaction.where(OrigTranID: tranID, tran_code: ["TFR", "TFR "], sec_tran_code: ["CRED", "CRED "], error_code: 0)).first
+    Transaction.where(OrigTranID: tranID, tran_code: ["CRED", "CRED "], sec_tran_code: ["TFR", "TFR "], error_code: 0).or(Transaction.where(OrigTranID: tranID, tran_code: ["TFR", "TFR "], sec_tran_code: ["CRED", "CRED "], error_code: 0)).or(Transaction.where(OrigTranID: tranID, tran_code: ["DEP", "DEP "], sec_tran_code: ["REFD", "REFD "], error_code: 0)).first
   end
   
   def original_transaction
