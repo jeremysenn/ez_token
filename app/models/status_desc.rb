@@ -6,7 +6,7 @@ class StatusDesc < ActiveRecord::Base
   def self.wsdl_find_by_status(status)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:do_query, message: {Query: "SELECT TOP 1 [status_desc].* FROM [status_desc] WHERE [status_desc].[status] = N'#{status}'"})
-    Rails.logger.debug "**StatusDesc.wsdl_find_by_status response body: #{response.body}"
+#    Rails.logger.debug "**StatusDesc.wsdl_find_by_status response body: #{response.body}"
     if response.success?
       unless response.body[:do_query_response].blank? or response.body[:do_query_response][:return].to_i > 0
         xml_string = response.body[:do_query_response][:return]

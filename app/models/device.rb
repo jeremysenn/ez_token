@@ -598,31 +598,31 @@ class Device < ActiveRecord::Base
   def send_atm_reset_command
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:send_atm_command, message: {DevID: self.id, Command: "atmReset"})
-    Rails.logger.debug "** device.send_atm_reset_command response body: #{response.body}"
+#    Rails.logger.debug "** device.send_atm_reset_command response body: #{response.body}"
   end
   
   def send_atm_load_command
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:send_atm_command, message: {DevID: self.id, Command: "atmLoad"})
-    Rails.logger.debug "** device.send_atm_load_command response body: #{response.body}"
+#    Rails.logger.debug "** device.send_atm_load_command response body: #{response.body}"
   end
   
   def send_atm_up_command
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:send_atm_command, message: {DevID: self.id, Command: "atmUp"})
-    Rails.logger.debug "** device.send_atm_up_command response body: #{response.body}"
+#    Rails.logger.debug "** device.send_atm_up_command response body: #{response.body}"
   end
   
   def send_atm_down_command
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:send_atm_command, message: {DevID: self.id, Command: "atmDown"})
-    Rails.logger.debug "** device.send_atm_down_command response body: #{response.body}"
+#    Rails.logger.debug "** device.send_atm_down_command response body: #{response.body}"
   end
   
   def send_atm_disconnect_command
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:send_atm_command, message: {DevID: self.id, Command: "atmDisconnect"})
-    Rails.logger.debug "** device.send_atm_disconnect_command response body: #{response.body}"
+#    Rails.logger.debug "** device.send_atm_disconnect_command response body: #{response.body}"
   end
   
   def add_cash(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
@@ -646,7 +646,7 @@ class Device < ActiveRecord::Base
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:reset_cash, message: {DevID: self.id, Bin1: bin_1, Bin2: bin_2, Bin3: bin_3, Bin4: bin_4, Bin5: bin_5, Bin6: bin_6,
         Bin7: bin_7, Bin8: bin_8})
-    Rails.logger.debug "** device.reset_cash response body: #{response.body}"
+#    Rails.logger.debug "** device.reset_cash response body: #{response.body}"
 
     if response.success?
       unless response.body[:reset_cash_response].blank? or response.body[:reset_cash_response][:return] != true
@@ -663,7 +663,7 @@ class Device < ActiveRecord::Base
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:add_coin, message: {DevID: self.id, Bin1: bin_1, Bin2: bin_2, Bin3: bin_3, Bin4: bin_4, Bin5: bin_5, Bin6: bin_6,
         Bin7: bin_7, Bin8: bin_8})
-    Rails.logger.debug "** device.add_coin response body: #{response.body}"
+#    Rails.logger.debug "** device.add_coin response body: #{response.body}"
 
     if response.success?
       unless response.body[:add_coin_response].blank? or response.body[:add_coin_response][:return] != true
@@ -680,7 +680,7 @@ class Device < ActiveRecord::Base
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:reset_coin, message: {DevID: self.id, Bin1: bin_1, Bin2: bin_2, Bin3: bin_3, Bin4: bin_4, Bin5: bin_5, Bin6: bin_6,
         Bin7: bin_7, Bin8: bin_8})
-    Rails.logger.debug "** device.reset_coin response body: #{response.body}"
+#    Rails.logger.debug "** device.reset_coin response body: #{response.body}"
 
     if response.success?
       unless response.body[:reset_coin_response].blank? or response.body[:reset_coin_response][:return] != true
@@ -696,7 +696,7 @@ class Device < ActiveRecord::Base
   def get_term_totals
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:get_term_totals, message: {DevID: self.id})
-    Rails.logger.debug "** device.get_term_totals response body: #{response.body}"
+#    Rails.logger.debug "** device.get_term_totals response body: #{response.body}"
 
     if response.success?
 #      unless response.body[:get_term_totals_response].blank? or response.body[:get_term_totals_response][:return] != true 
@@ -721,7 +721,7 @@ class Device < ActiveRecord::Base
   def self.wsdl_find_all
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:do_query, message: {Query: "SELECT * FROM DEVICES"})
-    Rails.logger.debug "**Device.wsdl_find_all response body: #{response.body}"
+#    Rails.logger.debug "**Device.wsdl_find_all response body: #{response.body}"
     if response.success?
       unless response.body[:do_query_response].blank? or response.body[:do_query_response][:return].to_i > 0
         xml_string = response.body[:do_query_response][:return]
@@ -746,7 +746,7 @@ class Device < ActiveRecord::Base
   def self.find_by_id(id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:do_query, message: {Query: "SELECT [devices].* FROM [devices] WHERE [devices].[dev_id] = N'#{id}'"})
-    Rails.logger.debug "**Device.find_by_id response body: #{response.body}"
+#    Rails.logger.debug "**Device.find_by_id response body: #{response.body}"
     if response.success?
       unless response.body[:do_query_response].blank? or response.body[:do_query_response][:return].to_i > 0
         xml_string = response.body[:do_query_response][:return]

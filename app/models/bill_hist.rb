@@ -88,7 +88,7 @@ class BillHist < ActiveRecord::Base
   def self.wsdl_find_all_by_device_id(dev_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:do_query, message: {Query: "SELECT [bill_hist].* FROM [bill_hist] WHERE [bill_hist].[dev_id] = #{dev_id}"})
-    Rails.logger.debug "**BillHist.wsdl_find_all_by_device_id response body: #{response.body}"
+#    Rails.logger.debug "**BillHist.wsdl_find_all_by_device_id response body: #{response.body}"
     if response.success?
       unless response.body[:do_query_response].blank? or response.body[:do_query_response][:return].to_i > 0
         xml_string = response.body[:do_query_response][:return]
@@ -113,7 +113,7 @@ class BillHist < ActiveRecord::Base
   def self.wsdl_find_all_by_device_id_and_cut_date(device_id, cut_date)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:do_query, message: {Query: "SELECT [bill_hist].* FROM [bill_hist] WHERE [bill_hist].[dev_id] = #{device_id} AND [bill_hist].[cut_dt] = N'#{cut_date}'"})
-    Rails.logger.debug "**BillHist.wsdl_find_all_by_device_id_and_cut_date response body: #{response.body}"
+#    Rails.logger.debug "**BillHist.wsdl_find_all_by_device_id_and_cut_date response body: #{response.body}"
     if response.success?
       unless response.body[:do_query_response].blank? or response.body[:do_query_response][:return].to_i > 0
         xml_string = response.body[:do_query_response][:return]
@@ -138,7 +138,7 @@ class BillHist < ActiveRecord::Base
   def self.wsdl_find_last_20_by_device_id(dev_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:do_query, message: {Query: "SELECT TOP 20 [bill_hist].* FROM [bill_hist] WHERE [bill_hist].[dev_id] = #{dev_id} ORDER BY cut_dt desc"})
-    Rails.logger.debug "**BillHist.wsdl_find_all_by_device_id response body: #{response.body}"
+#    Rails.logger.debug "**BillHist.wsdl_find_all_by_device_id response body: #{response.body}"
     if response.success?
       unless response.body[:do_query_response].blank? or response.body[:do_query_response][:return].to_i > 0
         xml_string = response.body[:do_query_response][:return]
@@ -163,7 +163,7 @@ class BillHist < ActiveRecord::Base
   def self.wsdl_find_last_5_distinct_by_device_id(dev_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:do_query, message: {Query: "SELECT DISTINCT TOP 5 cut_dt FROM [bill_hist] WHERE [bill_hist].[dev_id] = #{dev_id} ORDER BY cut_dt desc"})
-    Rails.logger.debug "**BillHist.wsdl_find_all_by_device_id response body: #{response.body}"
+#    Rails.logger.debug "**BillHist.wsdl_find_all_by_device_id response body: #{response.body}"
     if response.success?
       unless response.body[:do_query_response].blank? or response.body[:do_query_response][:return].to_i > 0
         xml_string = response.body[:do_query_response][:return]
