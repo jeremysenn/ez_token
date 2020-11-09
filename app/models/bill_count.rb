@@ -48,7 +48,7 @@ class BillCount < ActiveRecord::Base
   def self.find_all_by_device_id(device_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:do_query, message: {Query: "SELECT [bill_counts].* FROM [bill_counts] WHERE [bill_counts].[dev_id] = #{device_id}"})
-    Rails.logger.debug "**BillCount.find_all_by_device_id response body: #{response.body}"
+#    Rails.logger.debug "**BillCount.find_all_by_device_id response body: #{response.body}"
     if response.success?
       unless response.body[:do_query_response].blank? or response.body[:do_query_response][:return].to_i > 0
         xml_string = response.body[:do_query_response][:return]
@@ -73,7 +73,7 @@ class BillCount < ActiveRecord::Base
   def self.find_by_device_id_and_cassette_id(device_id, cassette_id)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:do_query, message: {Query: "SELECT [bill_counts].* FROM [bill_counts] WHERE [bill_counts].[dev_id] = #{device_id} AND [bill_counts].[cassette_id] = #{cassette_id}"})
-    Rails.logger.debug "**BillCount.find_by_device_id_and_cassette_id response body: #{response.body}"
+#    Rails.logger.debug "**BillCount.find_by_device_id_and_cassette_id response body: #{response.body}"
     if response.success?
       unless response.body[:do_query_response].blank? or response.body[:do_query_response][:return].to_i > 0
         xml_string = response.body[:do_query_response][:return]

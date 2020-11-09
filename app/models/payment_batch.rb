@@ -47,7 +47,7 @@ class PaymentBatch < ActiveRecord::Base
     begin
       response = client.call(:process_payment_batch, message: { BatchNbr: self.BatchNbr})
       if response.success?
-        Rails.logger.debug "************** payment_batch.process response body: #{response.body}"
+#        Rails.logger.debug "************** payment_batch.process response body: #{response.body}"
         unless response.body[:process_payment_batch_response].blank?
           self.processed_status = response.body[:process_payment_batch_response][:return]
           return response.body[:process_payment_batch_response][:return]

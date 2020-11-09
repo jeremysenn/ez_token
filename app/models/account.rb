@@ -477,7 +477,7 @@ class Account < ActiveRecord::Base
   def ezcash_one_sided_credit_transaction_web_service_call(amount)
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:ez_cash_txn, message: { ToActID: self.ActID, Amount: amount})
-    Rails.logger.debug "Response body: #{response.body}"
+#    Rails.logger.debug "Response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
         return response.body[:ez_cash_txn_response][:tran_id]
@@ -649,7 +649,7 @@ class Account < ActiveRecord::Base
     response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, 
         ToActID: self.ActID, Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, 
         Note: note, ReceiptNbr: receipt_number, UserID: user_id, ToCustID: to_customer_id})
-    Rails.logger.debug "************** Account one_time_payment response body: #{response.body}"
+#    Rails.logger.debug "************** Account one_time_payment response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
         unless to_customer.blank? or to_customer.phone.blank?
@@ -676,7 +676,7 @@ class Account < ActiveRecord::Base
     response = client.call(:ez_cash_txn, message: { FromActID: company.transaction_account.blank? ? nil : company.transaction_account.id, ToActID: self.ActID, 
         Amount: amount, Fee: 0, FeeActId: company.fee_account.blank? ? nil : company.fee_account.id, Note: note, 
         ReceiptNbr: receipt_number, dev_id: nil, UserID: user_id, ToCustID: to_customer_id})
-    Rails.logger.debug "************** Account one_time_payment_with_no_text_message response body: #{response.body}"
+#    Rails.logger.debug "************** Account one_time_payment_with_no_text_message response body: #{response.body}"
     if response.success?
       unless response.body[:ez_cash_txn_response].blank? or response.body[:ez_cash_txn_response][:return].to_i > 0
         return response.body[:ez_cash_txn_response]
@@ -705,7 +705,7 @@ class Account < ActiveRecord::Base
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:get_customer_barcode_png, message: {ActID: self.ActID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: 0})
     
-    Rails.logger.debug "Account withdraw_all_barcode_png response body: #{response.body}"
+#    Rails.logger.debug "Account withdraw_all_barcode_png response body: #{response.body}"
     
     unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
       return response.body[:get_customer_barcode_png_response][:return]
@@ -718,7 +718,7 @@ class Account < ActiveRecord::Base
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:get_account_barcode, message: { ActID: self.ActID, Scale: 5, amount: amount})
     
-    Rails.logger.debug "Account withdraw_barcode response body: #{response.body}"
+#    Rails.logger.debug "Account withdraw_barcode response body: #{response.body}"
     
     unless response.body[:get_account_barcode_response].blank? or response.body[:get_account_barcode_response][:return].blank?
       return response.body[:get_account_barcode_response][:return]
@@ -915,7 +915,7 @@ class Account < ActiveRecord::Base
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:bill_members, message: { EventID: event_id, ClubActID: club_account_id, RunTransactions: run_transactions_boolean})
     
-    Rails.logger.debug "Account.bill_members response body: #{response.body}"
+#    Rails.logger.debug "Account.bill_members response body: #{response.body}"
     
     unless response.body[:bill_members_response].blank? or response.body[:bill_members_response][:return].blank?
 #      return response.body[:bill_members_response][:return]
