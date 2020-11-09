@@ -12,10 +12,12 @@
               Account
           - if @device.blank?
             %th{:scope => "col"} 
-              - unless @type == 'Withdrawal'
-                To
-              - else
-                Device
+              To
+              -#
+                - unless @type == 'Withdrawal'
+                  To
+                - else
+                  Device
           %th Type
           %th{:scope => "col"} Event
           -# %th{:scope => "col"} Ref
@@ -89,7 +91,7 @@
               - else
                 = "#{transaction.amt_auth.blank? ? number_to_currency(0) : number_to_currency(transaction.amt_auth)}"
             %td
-              - unless to_customers.blank? or transaction.to_account.balance.blank? or transaction.to_account.balance.zero?
+              - unless to_customers.blank? or transaction.to_account.balance.blank? or transaction.to_account.balance.zero? or transaction.reversal?
                 - print_amount = transaction.to_account.withdrawal_all? ? transaction.to_account.available_balance : transaction.amt_auth
                 - if current_user.admin? or (current_user.collaborator? and current_user.devices.blank?) or current_user.super?
                   - to_customers.each do |to_customer|

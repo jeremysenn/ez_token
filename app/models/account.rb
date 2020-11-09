@@ -164,8 +164,13 @@ class Account < ActiveRecord::Base
     return transactions
   end
   
+  def withdrawal_reversals
+    transactions = Transaction.where(to_acct_id: id, tran_code: ['DEP', 'DEP '], sec_tran_code: ['REFD', 'REFD '])
+    return transactions
+  end
+  
   def withdrawals
-    withdrawal_transactions + withdrawal_all_transactions
+    withdrawal_transactions + withdrawal_all_transactions + withdrawal_reversals
   end
   
   def credit_transactions

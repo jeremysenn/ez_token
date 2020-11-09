@@ -395,9 +395,13 @@
                       %tbody
                         -# @payment_transactions.each do |payment_transaction|
                         - @payment_and_fee_transactions.each do |transaction|
-                          %tr{class: transaction.reversal? ? 'table-danger' : ''}
+                          %tr{class: transaction.reversal? ? 'table-danger' : transaction.error? ? 'table-warning' : ''}
                             %td
                               =# payment_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d")
+                              - if transaction.reversal?
+                                %i.fa.fa-reply.text-danger{"data-toggle" => "tooltip", :title => "Reversal", "data-placement" => "right"}
+                              - if transaction.error?
+                                %i.fa.fa-warning.text-danger{"data-toggle" => "tooltip", :title => "Error: #{transaction.error_code_long_description}", "data-placement" => "right"}
                               = link_to transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), transaction
                             -#
                               %td= "#{payment_transaction.Description.blank? ? 'N/A' : truncate(payment_transaction.Description, length: 8, omission: '')}"
@@ -498,8 +502,13 @@
                           %th Amount
                       %tbody
                         - @withdrawal_transactions.each do |withdrawal_transaction|
-                          %tr
-                            %td= link_to withdrawal_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), withdrawal_transaction
+                          %tr{class: withdrawal_transaction.reversal? ? 'table-danger' : withdrawal_transaction.error? ? 'table-warning' : ''}
+                            %td
+                              - if withdrawal_transaction.reversal?
+                                %i.fa.fa-reply.text-danger{"data-toggle" => "tooltip", :title => "Reversal", "data-placement" => "right"}
+                              - if withdrawal_transaction.error?
+                                %i.fa.fa-warning.text-danger{"data-toggle" => "tooltip", :title => "Error: #{withdrawal_transaction.error_code_long_description}", "data-placement" => "right"}
+                              = link_to withdrawal_transaction.date_time.in_time_zone(current_user.time_zone).strftime("%^b %d"), withdrawal_transaction
                             %td= "#{withdrawal_transaction.Description.blank? ? 'N/A' : truncate(withdrawal_transaction.Description, length: 8, omission: '')}"
                             %td= number_to_currency(withdrawal_transaction.amt_auth)
                   .pull-right= paginate @withdrawal_transactions, param_name: 'withdrawals'
