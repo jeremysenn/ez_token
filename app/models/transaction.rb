@@ -490,8 +490,11 @@ class Transaction < ActiveRecord::Base
       if tran_status == 12
         return false
       else
-        unless reversed? # If a withdrawal has been reversed, do not allow it to be reversed again
-          return true
+        # tran_status 11 means ezcash has not yet gotten a response from the ATM, so may not have dispensed anything
+        if tran_status == 11
+          unless reversed? # If a withdrawal has been reversed already, do not allow it to be reversed again
+            return true
+          end
         end
       end
     end
