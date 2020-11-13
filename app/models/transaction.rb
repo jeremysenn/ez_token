@@ -483,17 +483,19 @@ class Transaction < ActiveRecord::Base
   end
   
   def can_reverse?
-    unless withdrawal? or withdrawal_all?
-      return true
-    else
-      # tran_status of 12 means the withdrawal went through successfully, so should not be able to reverse
-      if tran_status == 12
-        return false
+    unless self.amt_auth.blank? or self.amt_auth.zero?
+      unless withdrawal? or withdrawal_all?
+        return true
       else
-        # tran_status 11 means ezcash has not yet gotten a response from the ATM, so may not have dispensed anything
-        if tran_status == 11
-          unless reversed? # If a withdrawal has been reversed already, do not allow it to be reversed again
-            return true
+        # tran_status of 12 means the withdrawal went through successfully, so should not be able to reverse
+        if tran_status == 12
+          return false
+        else
+          # tran_status 11 means ezcash has not yet gotten a response from the ATM, so may not have dispensed anything
+          if tran_status == 11
+            unless reversed? # If a withdrawal has been reversed already, do not allow it to be reversed again
+              return true
+            end
           end
         end
       end
