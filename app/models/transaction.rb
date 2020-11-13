@@ -483,7 +483,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def can_reverse?
-    unless self.amt_auth.blank? or self.amt_auth == 0
+    unless self.amt_auth.blank? or self.amt_auth.zero?
       unless withdrawal? or withdrawal_all?
         return true
       else
