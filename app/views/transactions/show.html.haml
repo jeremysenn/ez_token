@@ -113,6 +113,9 @@
                 Secondary Tran Code:
                 = @transaction.sec_tran_code
               %p.lead
+                Type:
+                = @transaction.type
+              %p.lead
                 From Cust ID:
                 - unless @transaction.FromCustID.blank? or @transaction.FromCustID.zero? or (@transaction.from_customer.present? and @transaction.from_customer.anonymous?)
                   = link_to @transaction.FromCustID, customer_path(@transaction.FromCustID) unless @transaction.FromCustID.blank?

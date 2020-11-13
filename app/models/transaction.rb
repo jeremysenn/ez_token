@@ -14,7 +14,7 @@ class Transaction < ActiveRecord::Base
   belongs_to :event, optional: true
   belongs_to :user, optional: true
   
-  scope :withdrawals, -> { where(tran_code: ["WDL", "WDL ", "ALL", "All "], sec_tran_code: ["TFR", "", "ALL", "All ", "CASH", "CASH "]) }
+  scope :withdrawals, -> { where(tran_code: ["WDL", "WDL ", "ALL", "All ", "DEP", "DEP "], sec_tran_code: ["TFR", "", "ALL", "All ", "CASH", "CASH ", "REFD", "REFD "]) }
   scope :transfers, -> { where(tran_code: ["CARD", "TFR"], sec_tran_code: ["TFR", "CARD"]) }
   scope :reversals, -> { where(tran_code: ["CRED", "TFR"], sec_tran_code: ["TFR", "CRED"]) }
   scope :one_sided_credits, -> { where(tran_code: ["DEP"], sec_tran_code: ["REFD"]) }
@@ -89,7 +89,7 @@ class Transaction < ActiveRecord::Base
         return "Money Order"
       elsif ((tran_code.strip == "WDL" or tran_code.strip == "ALL") and (sec_tran_code.blank? or sec_tran_code.strip == "TFR" or sec_tran_code.strip == "CASH"))
         return "Withdrawal"
-      elsif (tran_code.strip == "WDL" and sec_tran_code.strip == "REVT")
+      elsif ((tran_code.strip == "WDL" and sec_tran_code.strip == "REVT") or (tran_code.strip == "DEP" and sec_tran_code.strip == "REFD"))
         return "Reverse Withdrawal"
       elsif ((tran_code.strip == "WDL" or tran_code.strip == "ALL") and (sec_tran_code.strip == "TFR" or sec_tran_code.strip == "ALL"))
         return "Withdrawal All"
@@ -234,7 +234,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def reversal?
-    type == "Account Credit" or type == "Fee Credit"
+    type == "Account Credit" or type == "Fee Credit" or type == "Reverse Withdrawal"
   end
   
   def error?
@@ -490,7 +490,12 @@ class Transaction < ActiveRecord::Base
       if tran_status == 12
         return false
       else
-        return true
+        # tran_status 11 means ezcash has not yet gotten a response from the ATM, so may not have dispensed anything
+        if tran_status == 11
+          unless reversed? # If a withdrawal has been reversed already, do not allow it to be reversed again
+            return true
+          end
+        end
       end
     end
   end
