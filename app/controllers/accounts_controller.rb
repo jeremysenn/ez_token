@@ -1,6 +1,6 @@
 class AccountsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_account, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message]
+  before_action :set_account, only: [:show, :edit, :update, :destroy, :one_time_payment, :send_barcode_link_sms_message, :transactions]
   load_and_authorize_resource
 
   # GET /accounts
@@ -310,6 +310,24 @@ class AccountsController < ApplicationController
         else
           redirect_to balances_accounts_path(event_id: params[:event_id], type_id: params[:type_id]), alert: 'There was a problem calling BillMembers - missing parameters.'
         end
+      }
+    end
+  end
+  
+  # GET /accounts/1/transactions
+  def transactions
+    @type = params[:type] ||= 'All'
+    if @type == 'Withdrawal'
+      # For collaborators, not event-specific, but device-specific
+      @transactions = @account.transactions.withdrawals
+    elsif @type == 'Transfer'
+      @transactions = @account.transactions.transfers
+    else
+      @transactions = @account.transactions.not_fees
+    end
+    respond_to do |format|
+      format.csv { 
+        send_data @transactions.to_csv, filename: "#{@account.id}_#{@type}.csv" 
       }
     end
   end
