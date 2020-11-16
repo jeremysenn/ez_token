@@ -90,6 +90,7 @@ Rails.application.routes.draw do
       get 'one_time_payment'
       get 'withdraw_barcode'
       get 'send_barcode_link_sms_message'
+      get 'transactions'
     end
     collection do
       post 'twilio_send_sms_message'

@@ -378,6 +378,13 @@
               #payments.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                 -# unless @payment_transactions.blank?
                 - unless @payment_and_fee_transactions.blank?
+                  - unless browser.device.mobile? or @account.blank?
+                    %br
+                    %a{href: transactions_account_path(@account.id, format: "csv", :type => 'Transfer'), class: 'btn btn-sm btn-info'}
+                      %i.fa.fa-download
+                      CSV
+                    %br
+                    %br
                   .table-responsive
                     -# %table.table.table-striped{class: "#{browser.device.mobile? ? 'table-sm' : ''}"}
                     %table.table.table-striped
@@ -493,6 +500,13 @@
 
               #withdrawals.tab-pane.fade{"aria-labelledby" => "profile-tab", :role => "tabpanel"}
                 - unless @withdrawal_transactions.blank?
+                  - unless browser.device.mobile? or @account.blank?
+                    %br
+                    %a{href: transactions_account_path(@account.id, format: "csv", :type => 'Withdrawal'), class: 'btn btn-sm btn-info'}
+                      %i.fa.fa-download
+                      CSV
+                    %br
+                    %br
                   .table-responsive
                     %table.table.table-striped{class: "#{browser.device.mobile? ? 'table-sm' : ''}"}
                       %thead
