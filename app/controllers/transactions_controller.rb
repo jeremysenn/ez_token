@@ -230,8 +230,9 @@ class TransactionsController < ApplicationController
         from_customer_id = params[:from_customer_id] unless params[:from_customer_id].blank?
       else
         from_account_id = params[:from_customer_account].split(':').last
+        from_account = Account.find(from_account_id)
         from_customer_name = params[:from_customer_account].split(':').first.strip
-        customer = Customer.where("CONCAT(NameF, ' ', NameL) like ?", from_customer_name).first
+        customer = from_account.customers.where("CONCAT(NameF, ' ', NameL) like ?", from_customer_name).first unless from_account.blank?
         from_customer_id = customer.id unless customer.blank?
       end
     end
