@@ -63,7 +63,8 @@ class TwilioController < ApplicationController
 #              message.body("There was a problem creating a Wallet for #{event.title}.")
 #            end
             ### End Put all of this into background process
-          
+          else
+            message.body("No open event found.")
           end
         else
           unless event.blank?
