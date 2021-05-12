@@ -12,7 +12,7 @@
           .input-group
             %p= select_tag :device_id, options_for_select(@devices.map{ |device| ["#{device.id} - #{device.description}", device.id] }, @device.id), onchange: "this.form.submit();", class: "form-control input-lg"
           - if current_user.can_quick_pay_customers?
-            .inline
+            .input-group
               %a.btn.bg-green{href: '#', "data-toggle" => "modal", "data-target" => "#quick_pay", style: 'color: white;'}
                 %i.fa.fa-dollar
                 Pay
