@@ -515,7 +515,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def from_customer
-    Customer.find(self.FromCustID) unless self.FromCustID.blank? or self.FromCustID.zero?
+    Customer.find_by(CustomerID: self.FromCustID) unless self.FromCustID.blank? or self.FromCustID.zero?
   end
   
   #############################
