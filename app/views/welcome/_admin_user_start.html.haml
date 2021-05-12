@@ -11,7 +11,7 @@
           - unless @devices.count > 4
             .btn-group
               - @devices.each do |device|
-                %a.btn{href: root_path(device_id: device.id), class: "#{@device.id == device.id ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> #{device.description}"}}
+                %a.btn{href: root_path(device_id: device.id), class: "#{(@device and @device.id == device.id) ? 'btn-info' : 'btn-default'}", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> #{device.description}"}}
                   %i.fa.fa-money
                   = device.description
           - else
