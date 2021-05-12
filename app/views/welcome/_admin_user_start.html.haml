@@ -159,7 +159,7 @@
                     %br
                     .box.box-success
                       .box-header.with_border
-                        - unless @devices.blank?
+                        - unless @devices.blank? or @device.blank?
                           .table-responsive
                             %table.table.table-condensed.table-bordered
                               %thead
