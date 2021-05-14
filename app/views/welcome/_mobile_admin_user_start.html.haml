@@ -6,11 +6,21 @@
       = render 'shared/flash_messages'
     %h1
       = current_user.company.name
-      %small Dashboard
+      %small 
+        Dashboard
+        
       - unless @devices.blank?
         = form_tag root_path, id: 'device_selection_form', method: 'get', class: 'form-inline' do |f|
           .input-group
             %p= select_tag :device_id, options_for_select(@devices.map{ |device| ["#{device.id} - #{device.description}", device.id] }, @device.id), onchange: "this.form.submit();", class: "form-control input-lg"
+            - if current_user.can_quick_pay_customers?
+              &nbsp;
+              &nbsp;
+              .pull-right
+                %a.btn.bg-green{href: '#', "data-toggle" => "modal", "data-target" => "#quick_pay", style: 'color: white;'}
+                  %i.fa.fa-dollar
+                  Pay
+              = render partial: "quick_pay"
       = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: 'form-inline' do |f|
         .input-group
           = hidden_field_tag :type, 'Transfer'

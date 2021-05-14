@@ -213,7 +213,7 @@ class TransactionsController < ApplicationController
       redirect_to barcode_customer_path(@customer.id, amount: @amount, device_id: @device_id, transaction_id: transaction_id)
     else
       error_description = ErrorDesc.find_by(error_code: error_code)
-      redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
+      redirect_back fallback_location: root_path, alert: "There was a problem creating the Quick Pay. Error code #{error_code}: #{error_description.blank? ? 'Unknown' : error_description.long_desc}"
     end
   end
   
