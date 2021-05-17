@@ -17,7 +17,7 @@
           - unless @account.corporate_account?
             = f.input :ActTypeID, collection: current_user.company.account_types.not_corporate.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
           - else
-            = @account.account_type.description
+            %p= @account.account_type.description
           =# f.input :Balance, as: :decimal, label: 'Balance', required: true
           - if @account == current_user.company.transaction_account or @account == current_user.company.fee_account or current_user.super?
             = f.input :MinBalance, as: :decimal, required: true, label: "Balance" do

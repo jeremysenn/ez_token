@@ -389,7 +389,7 @@ class Account < ActiveRecord::Base
   end
   
   def corporate_account?
-    account_type.corporate_account?
+    account_type.blank? or account_type.corporate_account?
   end
   
   def name
