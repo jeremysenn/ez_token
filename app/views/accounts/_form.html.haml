@@ -14,7 +14,10 @@
           = "#{attr} #{msg}" if @account.errors[attr].first == msg
       .form-inputs
         - if current_user.can_edit_accounts?
-          = f.input :ActTypeID, collection: current_user.company.account_types.not_corporate.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
+          - unless @account.corporate_account?
+            = f.input :ActTypeID, collection: current_user.company.account_types.not_corporate.map{|at| [at.AccountTypeDesc, at.id]}, as: :select, label: "Type", prompt: "Select type", required: true
+          - else
+            = @account.account_type.description
           =# f.input :Balance, as: :decimal, label: 'Balance', required: true
           - if @account == current_user.company.transaction_account or @account == current_user.company.fee_account or current_user.super?
             = f.input :MinBalance, as: :decimal, required: true, label: "Balance" do
@@ -51,9 +54,10 @@
                       %span.input-group-text $
                     = f.input_field :Balance, as: :string, class: "form-control"
           =# f.input :AbleToDelete, as: :boolean, label: "Can delete"
-          %label.control-label Holders
-          = f.select :customer_ids, options_from_collection_for_select(current_user.company.customers, "id", "full_name", @account.customer_ids), {}, { multiple: true, style: 'width:100%;', :class => "form-control select2_customers"}
-          %br
+          - unless @account.corporate_account?
+            %label.control-label Holders
+            = f.select :customer_ids, options_from_collection_for_select(current_user.company.customers, "id", "full_name", @account.customer_ids), {}, { multiple: true, style: 'width:100%;', :class => "form-control select2_customers"}
+            %br
           - unless @account == current_user.company.transaction_account or @account == current_user.company.fee_account
             - unless @events.blank?
               = f.input :event_ids, label: 'Events' do
