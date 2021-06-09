@@ -34,11 +34,17 @@
                   - else
                     = account_type.description
                 %td= number_to_currency(account_type.accounts_cash_total)
-            - unless @company.TxnActID.blank?
+            -#
+              - unless @company.TxnActID.blank?
+                %tr.table-info
+                  %td 
+                    %strong Company Account
+                  %td= number_to_currency(@company.transaction_account.balance)
+            - @company.devices.each do |device|
               %tr.table-info
                 %td 
-                  %strong Company Account
-                %td= number_to_currency(@company.transaction_account.balance)
+                  %strong= device.description
+                %td= number_to_currency(device.remaining)
             - unless @company.FeeActID.blank?
               %tr.table-info
                 %td 
