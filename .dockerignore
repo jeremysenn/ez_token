@@ -1,0 +1,41 @@
+# ignore .git folders
+.git
+.gitignore
+
+Dockerfile
+*docker-compose.yml
+.dockerignore
+
+# Ignore all logfiles and tempfiles.
+*/log/*
+*/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+config/initializers/secret_token.rb
+config/master.key
+#config/application.yml
+
+.env
+
+## Environment normalization:
+#/.bundle
+#/vendor/bundle
+
+#.rvmrc
+
+### Ruby ###
+#*.gem
+#/.config
+#/InstalledFiles
+#/pkg/
+#/spec/reports/
+#/spec/examples.txt
+#/test/tmp/
+#/test/version_tmp/
+
+#.ruby-version
+#.ruby-gemset
+
+# OS X
+.DS_Store

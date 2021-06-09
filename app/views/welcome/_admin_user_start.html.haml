@@ -6,7 +6,7 @@
         = render 'shared/flash_messages'
       %h1
         = current_user.company.name
-        %small Dashboard
+        -# %small Dashboard
         - unless @devices.blank?
           - unless @devices.count > 4
             .btn-group
@@ -53,8 +53,8 @@
             .box.box-primary{"data-widget" => "box-widget"}
               .box-header.with-border
                 %h3.box-title 
-                  %i.fa.fa-bars
-                  Details
+                  -# %i.fa.fa-bars
+                  Device
                 .box-tools.pull-right
               - unless @device.blank?
                 .box-body.no-padding
@@ -62,7 +62,7 @@
                     %table.table.table-condensed.table-bordered
                       %thead
                         %tr
-                          %th{:scope => "col"} ID
+                          -# %th{:scope => "col"} ID
                           %th{:scope => "col"} Name
                           %th{:scope => "col"} State
                           %th{:scope => "col"} Status
@@ -70,8 +70,8 @@
                           %th
                       %tbody
                         %tr
-                          %td= link_to @device.id, @device
-                          %td= @device.description
+                          -# %td= link_to @device.id, @device
+                          %td= link_to @device.description, @device
                           %td
                             = (@device.online.blank? or device_state_descriptions[@device.online].blank?) ? 'N/A' : "#{device_state_descriptions[@device.online].truncate(15)}"
                           %td
@@ -135,64 +135,66 @@
           .col-md-6
             .box.box-warning{"data-widget" => "box-widget"}
               -#
-                .box-header.with-border
-                  %h3.box-title 
-                    %i.fa.fa-inbox
-                    Bins
-                  .box-tools.pull-right
+              .box-header.with-border
+                %h3.box-title 
+                  Details
+                .box-tools.pull-right
               .box-body
-                %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-                  %li.nav-item
-                    %a#bins-tab.nav-link.active{"aria-controls" => "bins", "aria-selected" => "true", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
-                      %i.fa.fa-inbox
-                      Bins
-                  %li.nav-item
-                    %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
-                      %i.fa.fa-signal
-                      = "Statuses"
-                  %li.nav-item
-                    %a#cuts-tab.nav-link{"aria-controls" => "cuts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cuts", :role => "tab"} 
-                      %i.fa.fa-credit-card
-                      = "Cuts"
-                #myTabContent.tab-content
-                  #bins.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                    %br
-                    .box.box-success
-                      .box-header.with_border
-                        - unless @devices.blank? or @device.blank?
-                          .table-responsive
-                            %table.table.table-condensed.table-bordered
-                              %thead
-                                %tr
-                                  - @device.denoms.each do |denom|
-                                    - unless denom.denomination.zero?
-                                      %th{:scope => "col"}
-                                        = "#{denom.cassette_id}: "
-                                        = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
-                              %tbody
-                                = render partial: "devices/bin_details", locals: {device: @device}
-                        - else
-                          &nbsp;
-                          None
-                  #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                    %br
-                    .row
-                      .col-md-12
-                        .box.box-success
-                          .box-header.with_border
-                            .box-tools.pull-right
-                              %button.btn.btn-box-tool{id: 'box_tool_collapse', "data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
-                                %i.fa.fa-minus
-                              %button.btn.btn-box-tool{id: 'box_tool_remove', "data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
-                                %i.fa.fa-times
-                            .box-title
-                              ATM
-                          .box-body
-                            = render partial: "dev_statuses/index"
-                          .box-footer
-                            .pull-right= paginate @dev_statuses, :param_name => "dev_statuses_page" unless @dev_statuses.blank?
-                  #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                    = render partial: "devices/cuts"
+                -#
+                  %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+                    %li.nav-item
+                      %a#bins-tab.nav-link.active{"aria-controls" => "bins", "aria-selected" => "true", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
+                        %i.fa.fa-inbox
+                        Bins
+                  -#
+                    %li.nav-item
+                      %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
+                        %i.fa.fa-signal
+                        = "Statuses"
+                    %li.nav-item
+                      %a#cuts-tab.nav-link{"aria-controls" => "cuts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cuts", :role => "tab"} 
+                        %i.fa.fa-credit-card
+                        = "Cuts"
+                  #myTabContent.tab-content
+                    #bins.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                      %br
+                      .box.box-success
+                        .box-header.with_border
+                - unless @devices.blank? or @device.blank?
+                  .table-responsive
+                    %table.table.table-condensed.table-bordered
+                      %thead
+                        %tr
+                          - @device.denoms.each do |denom|
+                            - unless denom.denomination.zero?
+                              %th{:scope => "col"}
+                                = "#{denom.cassette_id}: "
+                                = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
+                      %tbody
+                        = render partial: "devices/bin_details", locals: {device: @device}
+                - else
+                  &nbsp;
+                  None
+                  -#
+                    #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                      %br
+                      .row
+                        .col-md-12
+                          .box.box-success
+                            .box-header.with_border
+                              .box-tools.pull-right
+                                %button.btn.btn-box-tool{id: 'box_tool_collapse', "data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                                  %i.fa.fa-minus
+                                %button.btn.btn-box-tool{id: 'box_tool_remove', "data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+                                  %i.fa.fa-times
+                              .box-title
+                                ATM
+                            .box-body
+                              = render partial: "dev_statuses/index"
+                            .box-footer
+                              .pull-right= paginate @dev_statuses, :param_name => "dev_statuses_page" unless @dev_statuses.blank?
+                    #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                      = render partial: "devices/cuts"
                 .box-footer
                   -#
                     .pull-right= paginate @customers, param_name: 'result1'
@@ -203,8 +205,8 @@
               .box.box-success
                 .box-header.with-border
                   %h3.box-title 
-                    %i.fa.fa-bolt
-                    EZcash
+                    -# %i.fa.fa-bolt
+                    Report
                   .box-tools.pull-right
                     - unless @devices.blank?
                       = form_tag root_path, :method => 'get', :class => "form-inline" do
@@ -216,30 +218,42 @@
                         = button_tag(:type => 'submit', :class => 'btn btn-primary btn-sm', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
                           Go
                 .box-body
-                  %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-                    -#
-                      %li.nav-item
-                        %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "false", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
-                          %i.fa.fa-arrows-h
-                          Transactions
-                      %li.nav-item
-                        %a#chart-tab.nav-link.active{"aria-controls" => "chart", "aria-selected" => "true", "data-toggle" => "tab", :href => "#chart", :role => "tab"} 
-                          %i.fa.fa-area-chart
-                          Chart
-                  #myTabContent.tab-content
-                    -#
-                      #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                        %br
-                        - unless @transactions.blank?
-                          %p
-                            %a{href: transactions_path(format: "csv", :type => 'All', 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date,), class: 'btn btn-info btn-sm'}
-                              %i.fa.fa-download
-                              Download CSV
-                        = render partial: "transactions/index"
+                  -#
+                    %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+                      -#
+                        %li.nav-item
+                          %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "false", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
+                            %i.fa.fa-arrows-h
+                            Transactions
+                        %li.nav-item
+                          %a#chart-tab.nav-link.active{"aria-controls" => "chart", "aria-selected" => "true", "data-toggle" => "tab", :href => "#chart", :role => "tab"} 
+                            %i.fa.fa-area-chart
+                            Chart
+                    #myTabContent.tab-content
+                      -#
+                        #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                          %br
+                          - unless @transactions.blank?
+                            %p
+                              %a{href: transactions_path(format: "csv", :type => 'All', 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date,), class: 'btn btn-info btn-sm'}
+                                %i.fa.fa-download
+                                Download CSV
+                          = render partial: "transactions/index"
+                        #chart.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                          %br
+                          .chart
+                            %canvas#myChart{:style => "height: 180px; width: 763px;", :height => "360", :width => "1526"}
+
+                  - unless @device.blank? or @start_date.blank? or @end_date.blank?
                     #chart.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                       %br
                       .chart
                         %canvas#myChart{:style => "height: 180px; width: 763px;", :height => "360", :width => "1526"}
+                  - else
+                    %p.text-center 
+                      %i.fa.fa-bar-chart.fa-4x
+                      %br
+                      Choose a start and end date to report on
 
                 / /.box-body
               / /.box
@@ -252,7 +266,7 @@
 :javascript
   $('[data-toggle="popover"]').popover();
 
-- if current_user.can_view_atms?
+- if current_user.can_view_atms? and not @device.blank? and not (@start_date.blank? or @end_date.blank?)
   :javascript
     $(document).on("turbolinks:load", function() {
       if ($('#myChart').length) {

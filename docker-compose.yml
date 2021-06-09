@@ -1,0 +1,11 @@
+version: '3.1'
+
+services:
+  ezcashtoken:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+    #image: tranact/ezcash_token_app:development
+    image: tranact/ezcash_token_app:local_docker_development

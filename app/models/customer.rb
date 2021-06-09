@@ -640,6 +640,30 @@ class Customer < ActiveRecord::Base
     end
   end
   
+  def quick_pay(amount, note, receipt_number, event_id, device_id, user_id)
+    from_account_id = company.transaction_account.blank? ? nil : company.transaction_account.id
+    from_account = Account.find_by(ActID: from_account_id)
+    to_account_id = accounts.first.id
+    to_account = Account.find(to_account_id)
+    fee_account_id = company.fee_account.blank? ? nil : company.fee_account.id
+    # Create transfer transaction
+    transaction = Transaction.create(amt_req: amount, amt_auth: amount, Note: note, tran_code: 'TFR', sec_tran_code: 'CARD', Description: "Transfer from #{company.CompanyName}", DevCompanyNbr: company.CompanyNumber,
+      from_acct_id: from_account_id, to_acct_id: to_account_id, receipt_nbr: receipt_number, event_id: event_id, dev_id: device_id, user_id: user_id, FeedActID: from_account_id, error_code: 0)
+    # Create fee transaction
+    # Transfer money between accounts
+    unless from_account.blank?
+      unless from_account.available_balance < amount
+        from_account.update_attribute('Balance', from_account.Balance - amount)
+        to_account.update_attribute('Balance', to_account.Balance + amount)
+      else
+        transaction.update_attributes(amt_auth: 0, error_code: 905) # Insufficient funds
+      end
+    else
+      transaction.update_attributes(amt_auth: 0, error_code: 901) # From account invalid
+    end
+    # Transfer fee between accounts
+  end
+  
   def barcode
     client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
     response = client.call(:get_customer_barcode, message: { CustomerID: self.CustomerID})

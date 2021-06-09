@@ -44,11 +44,12 @@
                 %td 
                   %strong Fee Account
                 %td= number_to_currency(@company.fee_account.balance)
-          %tfoot
-            %tr
-              %td
-              %td
-                %strong= "Total: #{number_to_currency(@company.accounts_balance_total)}"
+          -#
+            %tfoot
+              %tr
+                %td
+                %td
+                  %strong= "Total: #{number_to_currency(@company.accounts_balance_total)}"
             
     - else
       .col-sm-12

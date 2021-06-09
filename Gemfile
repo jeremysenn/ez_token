@@ -6,10 +6,15 @@ git_source(:github) do |repo_name|
 end
 
 #ruby '2.5.0'
-ruby '2.5.3'
+#ruby '2.5.3'
+#ruby '2.6.3'
+ruby '2.7.1'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.5'
-#ruby-gemset=payment_atm
+#gem 'rails', '~> 6.0.3', '>= 6.0.3.2'
+#gem 'rails', '~> 6.1.3', '>= 6.1.3.2'
+##ruby-gemset=payment_atm
+#ruby-gemset=ez_token
 
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
@@ -19,12 +24,13 @@ gem 'puma', '~> 3.7'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Bootstrap 4 Ruby Gem for Rails / Sprockets and Compass. 
-gem 'bootstrap'
+gem 'bootstrap', '~> 4.0'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
-gem 'therubyracer', platforms: :ruby
+#gem 'therubyracer', platforms: :ruby
+gem 'mini_racer'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
@@ -57,7 +63,9 @@ gem "figaro"
 
 # Connect to MS SQL Database
 gem 'tiny_tds' 
-gem 'activerecord-sqlserver-adapter', :github => 'rails-sqlserver/activerecord-sqlserver-adapter', :branch => 'master'
+#gem 'activerecord-sqlserver-adapter', :github => 'rails-sqlserver/activerecord-sqlserver-adapter', :branch => 'master'
+gem 'activerecord-sqlserver-adapter'
+#gem 'activerecord-sqlserver-adapter', '~> 6'
 
 # Do some browser detection with Ruby. Includes ActionController integration.
 gem 'browser'
