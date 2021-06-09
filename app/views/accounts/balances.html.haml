@@ -110,16 +110,15 @@
                           %td
                             = link_to "Show", account, class: 'btn btn-default btn-sm'
                             =# link_to "Edit", edit_account_path(account), class: 'btn btn-primary btn-sm'
-                    -#
-                      %tfoot
-                        %tr
-                          %td
-                          %td
-                          %td
-                          %td
-                          %td
-                            %strong= "Total: #{number_to_currency(@balances_sum)}"
-                          %td
+                    %tfoot
+                      %tr
+                        %td
+                        %td
+                        %td
+                        %td
+                        %td
+                          %strong= "Total: #{number_to_currency(@balances_sum)}"
+                        %td
               - else
                 %h3.text-center None found
 
