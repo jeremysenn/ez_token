@@ -199,6 +199,8 @@ class TransactionsController < ApplicationController
 #      response_code = response[:return]
       @transaction = @customer.quick_pay(@amount, @note, @receipt_number, @event_id, @device_id, current_user.id)
       response_code = @transaction.error_code
+      # Amount set to zero so that withdrawal all with barcode.
+      @customer_barcode = CustomerBarcode.create(CustomerID: @customer.id, date_time: Time.now, CompanyNumber: current_user.company_id, Barcode: SecureRandom.random_number(10**10).to_s, TranID: @transaction.id, Used: 0, amount: 0, ActID: @account.id, DevID: @device_id)
     end
     unless response_code.blank? or response_code.to_i > 0
 #      transaction_id = response[:tran_id]
@@ -210,7 +212,7 @@ class TransactionsController < ApplicationController
         error_code = 999
       end
     end
-    unless transaction_id.blank?
+    unless transaction_id.blank? or @customer_barcode.blank?
 #      redirect_back fallback_location: root_path, notice: 'Quick Pay submitted.'
 #      redirect_to barcode_customer_path(@customer), notice: 'Quick Pay submitted.'
       unless @file_upload.blank?

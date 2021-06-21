@@ -670,37 +670,67 @@ class Customer < ActiveRecord::Base
   end
   
   def barcode
-    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:get_customer_barcode, message: { CustomerID: self.CustomerID})
-#    Rails.logger.debug "barcode response body: #{response.body}"
-    unless response.body[:get_customer_barcode_response].blank? or response.body[:get_customer_barcode_response][:return].blank?
-      return response.body[:get_customer_barcode_response][:return]
+#    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#    response = client.call(:get_customer_barcode, message: { CustomerID: self.CustomerID})
+#    unless response.body[:get_customer_barcode_response].blank? or response.body[:get_customer_barcode_response][:return].blank?
+#      return response.body[:get_customer_barcode_response][:return]
+#    else
+#      return ""
+#    end
+    
+    require 'barby'
+    require 'barby/barcode'
+    require 'barby/barcode/qr_code'
+    require 'barby/outputter/png_outputter'
+    customer_barcode = CustomerBarcode.where(CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, amount: 0, Used: 0).last
+    unless customer_barcode.blank?
+      barcode = Barby::QrCode.new(customer_barcode.Barcode, level: :q, size: 5)
+      base64_output = Base64.encode64(barcode.to_png({ xdim: 5 }))
+      return "data:image/png;base64,#{base64_output}"
     else
       return ""
     end
   end
   
   def barcode_png
-    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: 0})
+#    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#    response = client.call(:get_customer_barcode_png, message: { CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: 0})
+#    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+#      return response.body[:get_customer_barcode_png_response][:return]
+#    else
+#      return ""
+#    end
     
-#    Rails.logger.debug "barcode_png response body: #{response.body}"
-    
-    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
-      return response.body[:get_customer_barcode_png_response][:return]
+    require 'barby'
+    require 'barby/barcode'
+    require 'barby/barcode/qr_code'
+    require 'barby/outputter/png_outputter'
+    customer_barcode = CustomerBarcode.where(CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, amount: 0, Used: 0).last
+    unless customer_barcode.blank?
+      barcode = Barby::QrCode.new(customer_barcode.Barcode, level: :q, size: 5)
+      return Base64.encode64(barcode.to_png({ xdim: 5 }))
     else
       return ""
     end
   end
   
   def barcode_png_by_device(device_id)
-    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:get_customer_barcode_png, message: {DevID: device_id, CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: 0})
+#    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#    response = client.call(:get_customer_barcode_png, message: {DevID: device_id, CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, Scale: 5, amount: 0})
+#    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
+#      return response.body[:get_customer_barcode_png_response][:return]
+#    else
+#      return ""
+#    end
     
-#    Rails.logger.debug "barcode_png response body: #{response.body}"
-    
-    unless response.body[:get_customer_barcode_png_response].blank? or response.body[:get_customer_barcode_png_response][:return].blank?
-      return response.body[:get_customer_barcode_png_response][:return]
+    require 'barby'
+    require 'barby/barcode'
+    require 'barby/barcode/qr_code'
+    require 'barby/outputter/png_outputter'
+    customer_barcode = CustomerBarcode.where(CustomerID: self.CustomerID, CompanyNumber: self.CompanyNumber, amount: 0, Used: 0, DevID: device_id).last
+    unless customer_barcode.blank?
+      barcode = Barby::QrCode.new(customer_barcode.Barcode, level: :q, size: 5)
+      return Base64.encode64(barcode.to_png({ xdim: 5 }))
     else
       return ""
     end

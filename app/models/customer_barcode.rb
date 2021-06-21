@@ -6,6 +6,8 @@ class CustomerBarcode < ActiveRecord::Base
   belongs_to :customer, :foreign_key => 'CustomerID'
   belongs_to :company, :foreign_key => 'CompanyNumber'
   
+  validates_uniqueness_of :Barcode, scope: :CustomerID
+  
   #############################
   #     Instance Methods      #
   #############################
