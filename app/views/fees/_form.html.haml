@@ -1,0 +1,21 @@
+.box.box-primary
+  .box-body
+    = simple_form_for(@fee) do |f|
+      = f.error_notification
+      - @fee.errors.each do |attr, msg|
+        .alert.alert-danger
+          <button type="button" class="close" data-dismiss="alert">×</button>
+          = "#{attr} #{msg}" if @fee.errors[attr].first == msg
+      .form-inputs
+        = f.input :company_id, as: :hidden, :input_html => { :value => current_user.company_id }
+        = f.input :name, as: :string, label: 'Name', required: true
+        = f.input :description, as: :string, label: 'Description'
+        = f.input :device_id, collection: current_user.company.devices.map{|d| [d.description, d.dev_id]}, as: :select, selected: @fee.device_id, label: "Device", include_blank: 'None'
+        = f.input :fee_type, collection: ['Fixed', 'Percentage'], as: :select, selected: 'Fixed', label: "Fee Type"
+        = f.input :transfer_type, collection: ['Transfer', 'Quick Pay', 'Withdrawal'], as: :select, selected: 'Transfer', label: "Transaction Type"
+        = f.input :active, as: :boolean, inline_label: 'Active'
+        = f.input :amount, label: 'Amount', required: true
+      .form-actions
+        = link_to 'Cancel', :back, class: "btn btn-default"
+        %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i> Save"}} 
+          Save

@@ -132,6 +132,13 @@ class Ability
         ach_log.company == user.company
       end
       
+      # Fees
+      ############
+      can :manage, Fee do |fee|
+        fee.company == user.company
+      end
+      can :create, Fee
+      
     elsif user.collaborator?
       
       # Customers

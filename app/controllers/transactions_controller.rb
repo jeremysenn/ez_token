@@ -195,13 +195,20 @@ class TransactionsController < ApplicationController
       @customer = Customer.create(CompanyNumber: current_user.company_id, LangID: 1, Active: 1, GroupID: 15)
       @account = Account.create(CompanyNumber: current_user.company_id, ActNbr: @receipt_number, Balance: 0, MinBalance: 0, ActTypeID: current_user.company.quick_pay_account_type_id)
       @customer.accounts << @account
-      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id, @from_customer_id, @to_customer_id, current_user.id)
-      response_code = response[:return]
+#      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id, @from_customer_id, @to_customer_id, current_user.id)
+#      response_code = response[:return]
+      @transaction = @customer.quick_pay(@amount, @note, @receipt_number, @event_id, @device_id, current_user.id)
+      response_code = @transaction.error_code
     end
-    unless response_code.to_i > 0
-      transaction_id = response[:tran_id]
+    unless response_code.blank? or response_code.to_i > 0
+#      transaction_id = response[:tran_id]
+      transaction_id = @transaction.id
     else
-      error_code = response_code
+      unless response_code.blank?
+        error_code = response_code
+      else
+        error_code = 999
+      end
     end
     unless transaction_id.blank?
 #      redirect_back fallback_location: root_path, notice: 'Quick Pay submitted.'

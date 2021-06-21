@@ -22,6 +22,7 @@ class Company < ActiveRecord::Base
   has_many :contracts
   has_one :twilio_number
   has_many :ach_logs, through: :events
+  has_many :fees
   
   after_create_commit :create_transaction_and_fee_accounts, :create_default_contract_and_account_type
   

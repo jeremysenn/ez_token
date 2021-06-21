@@ -1,0 +1,39 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h3 Fee Details
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-body
+          %p.lead
+            %strong Name:
+            = @fee.name
+          %p.lead
+            %strong Description:
+            = @fee.description
+          %p.lead
+            %strong Device:
+            = @fee.device.blank? ? 'None' : @fee.device.description
+          %p.lead
+            %strong Fee Type:
+            = @fee.fee_type
+          %p.lead
+            %strong Transaction Type:
+            = @fee.transfer_type
+          %p.lead
+            %strong Active:
+            = @fee.active? ? 'Yes' : 'No'
+          %p.lead
+            %strong Amount:
+            = @fee.amount
+
+          .box-footer
+            = link_to 'Back', :back, class: 'btn btn-default'
+            = link_to 'Edit', edit_fee_path(@fee), class: 'btn btn-primary'
+            .pull-right
+              = link_to 'Delete', @fee, :method => :delete, class: 'btn btn-danger btn-sm', :data => { :confirm => 'Are you sure you want to delete?' }
+            

@@ -1,0 +1,39 @@
+.content-wrapper
+  .container
+    / Content Header (Page header)
+    %section.content-header
+      = render 'shared/flash_messages'
+      %h1
+        Fees
+        %small= link_to 'New', new_fee_path, class: 'btn bg-orange'
+
+    / Main content
+    %section.content
+      / Default box
+      .box.box-primary
+        .box-header.with-border
+          %h3.box-title 
+          .box-tools.pull-right
+            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+              %i.fa.fa-minus
+            %button.btn.btn-box-tool{"data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+              %i.fa.fa-times
+        - unless @fees.blank?
+          .box-body.no-padding
+            %table.table.table-condensed
+              %thead
+                %tr
+                  %th{:scope => "col"} Name
+                  %th{:scope => "col"} Description
+                  %th
+              %tbody
+                - @fees.each do |fee|
+                  %tr
+                    %td= fee.name
+                    %td= fee.description
+                    %td
+                      = link_to 'Show', fee, class: 'btn btn-secondary btn-sm'
+                      = link_to "Edit", edit_fee_path(fee), class: 'btn btn-primary btn-sm'
+        - else
+          .box-body
+            %p No Fees Yet

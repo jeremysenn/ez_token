@@ -645,18 +645,19 @@ class Customer < ActiveRecord::Base
     from_account = Account.find_by(ActID: from_account_id)
     to_account_id = accounts.first.id
     to_account = Account.find(to_account_id)
+    requested_amount = amount.to_d
     fee_account_id = company.fee_account.blank? ? nil : company.fee_account.id
     fee_amount = 0
     # Create transfer transaction
-    transaction = Transaction.create(amt_req: amount, amt_auth: amount, ChpFee: fee_amount, Note: note, tran_code: 'TFR', sec_tran_code: 'CARD', 
+    transaction = Transaction.create(amt_req: requested_amount, amt_auth: requested_amount, ChpFee: fee_amount, Note: note, tran_code: 'TFR', sec_tran_code: 'CARD', 
       Description: "Transfer from #{company.CompanyName}", DevCompanyNbr: company.CompanyNumber, from_acct_id: from_account_id, to_acct_id: to_account_id, 
       receipt_nbr: receipt_number, event_id: event_id, dev_id: device_id, user_id: user_id, FeedActID: from_account_id, error_code: 0)
     # Create fee transaction
     # Transfer money between accounts
     unless from_account.blank?
-      unless from_account.available_balance < amount
-        from_account.update_attribute('Balance', from_account.Balance - (amount + fee_amount))
-        to_account.update_attribute('Balance', to_account.Balance + amount)
+      unless from_account.available_balance < requested_amount
+        from_account.update_attribute('Balance', from_account.Balance - (requested_amount + fee_amount))
+        to_account.update_attribute('Balance', to_account.Balance + requested_amount)
       else
         transaction.update_attributes(amt_auth: 0, error_code: 905) # Insufficient funds
       end
@@ -664,6 +665,8 @@ class Customer < ActiveRecord::Base
       transaction.update_attributes(amt_auth: 0, error_code: 901) # From account invalid
     end
     # Transfer fee between accounts
+    
+    return transaction
   end
   
   def barcode

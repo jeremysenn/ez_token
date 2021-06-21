@@ -103,6 +103,8 @@ Rails.application.routes.draw do
   
   resources :groups
   
+  resources :fees
+  
   resources :companies do 
     member do
       get 'cash_position'

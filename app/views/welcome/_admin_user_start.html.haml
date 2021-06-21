@@ -141,60 +141,58 @@
                 .box-tools.pull-right
               .box-body
                 -#
-                  %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-                    %li.nav-item
-                      %a#bins-tab.nav-link.active{"aria-controls" => "bins", "aria-selected" => "true", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
-                        %i.fa.fa-inbox
-                        Bins
-                  -#
-                    %li.nav-item
-                      %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
-                        %i.fa.fa-signal
-                        = "Statuses"
-                    %li.nav-item
-                      %a#cuts-tab.nav-link{"aria-controls" => "cuts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cuts", :role => "tab"} 
-                        %i.fa.fa-credit-card
-                        = "Cuts"
-                  #myTabContent.tab-content
-                    #bins.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                      %br
-                      .box.box-success
-                        .box-header.with_border
-                - unless @devices.blank? or @device.blank?
-                  .table-responsive
-                    %table.table.table-condensed.table-bordered
-                      %thead
-                        %tr
-                          - @device.denoms.each do |denom|
-                            - unless denom.denomination.zero?
-                              %th{:scope => "col"}
-                                = "#{denom.cassette_id}: "
-                                = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
-                      %tbody
-                        = render partial: "devices/bin_details", locals: {device: @device}
-                - else
-                  &nbsp;
-                  None
-                  -#
-                    #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                      %br
-                      .row
-                        .col-md-12
-                          .box.box-success
-                            .box-header.with_border
-                              .box-tools.pull-right
-                                %button.btn.btn-box-tool{id: 'box_tool_collapse', "data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
-                                  %i.fa.fa-minus
-                                %button.btn.btn-box-tool{id: 'box_tool_remove', "data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
-                                  %i.fa.fa-times
-                              .box-title
-                                ATM
-                            .box-body
-                              = render partial: "dev_statuses/index"
-                            .box-footer
-                              .pull-right= paginate @dev_statuses, :param_name => "dev_statuses_page" unless @dev_statuses.blank?
-                    #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                      = render partial: "devices/cuts"
+                %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+                  %li.nav-item
+                    %a#bins-tab.nav-link.active{"aria-controls" => "bins", "aria-selected" => "true", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
+                      %i.fa.fa-inbox
+                      Bins
+                  %li.nav-item
+                    %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
+                      %i.fa.fa-signal
+                      = "Statuses"
+                  %li.nav-item
+                    %a#cuts-tab.nav-link{"aria-controls" => "cuts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cuts", :role => "tab"} 
+                      %i.fa.fa-credit-card
+                      = "Cuts"
+                #myTabContent.tab-content
+                  #bins.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                    %br
+                    .box.box-success
+                      .box-header.with_border
+                    - unless @devices.blank? or @device.blank?
+                      .table-responsive
+                        %table.table.table-condensed.table-bordered
+                          %thead
+                            %tr
+                              - @device.denoms.each do |denom|
+                                - unless denom.denomination.zero?
+                                  %th{:scope => "col"}
+                                    = "#{denom.cassette_id}: "
+                                    = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
+                          %tbody
+                            = render partial: "devices/bin_details", locals: {device: @device}
+                    - else
+                      &nbsp;
+                      None
+                  #statuses.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                    %br
+                    .row
+                      .col-md-12
+                        .box.box-success
+                          .box-header.with_border
+                            .box-tools.pull-right
+                              %button.btn.btn-box-tool{id: 'box_tool_collapse', "data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
+                                %i.fa.fa-minus
+                              %button.btn.btn-box-tool{id: 'box_tool_remove', "data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
+                                %i.fa.fa-times
+                            .box-title
+                              ATM
+                          .box-body
+                            = render partial: "dev_statuses/index"
+                          .box-footer
+                            .pull-right= paginate @dev_statuses, :param_name => "dev_statuses_page" unless @dev_statuses.blank?
+                  #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                    = render partial: "devices/cuts"
                 .box-footer
                   -#
                     .pull-right= paginate @customers, param_name: 'result1'
