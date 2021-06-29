@@ -27,7 +27,7 @@ class AccountsController < ApplicationController
 #      @total_accounts_results = @event_id.blank? ? accounts.distinct : accounts.joins(:events).where(events: {id: @event_id}).distinct
 #      @total_accounts_results = @total_accounts_results.joins(:customers)#.order("customer.NameL ASC")
 #      @accounts = @total_accounts_results.page(params[:page]).per(20)
-      @accounts = []
+      @accounts = nil
     end
     respond_to do |format|
       format.html {}
@@ -39,7 +39,7 @@ class AccountsController < ApplicationController
         unless @total_accounts_results.blank?
           @accounts = @total_accounts_results.collect{ |account| {id: account.CustomerID, text: account.customer_user_name} }.uniq
         else
-          @accounts = []
+          @accounts = nil
         end
         Rails.logger.info "results: {#{@accounts}}"
         render json: {results: @accounts}
