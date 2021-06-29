@@ -198,11 +198,12 @@ class TransactionsController < ApplicationController
 #      response = @customer.one_time_payment_with_no_text_message(@amount, @note, @receipt_number, @event_id, @device_id, @from_customer_id, @to_customer_id, current_user.id)
 #      response_code = response[:return]
       @transaction = @customer.quick_pay(@amount, @note, @receipt_number, @event_id, @device_id, current_user.id)
-      response_code = @transaction.error_code
+      response_code = @transaction.error_code unless @transaction.blank?
       # Amount set to zero so that withdrawal all with barcode.
-      @customer_barcode = CustomerBarcode.create(CustomerID: @customer.id, date_time: Time.now, CompanyNumber: current_user.company_id, Barcode: SecureRandom.random_number(10**10).to_s, TranID: @transaction.id, Used: 0, amount: 0, ActID: @account.id, DevID: @device_id)
+      
     end
     unless response_code.blank? or response_code.to_i > 0
+      @customer_barcode = CustomerBarcode.create(CustomerID: @customer.id, date_time: Time.now, CompanyNumber: current_user.company_id, Barcode: SecureRandom.random_number(10**10).to_s, TranID: @transaction.id, Used: 0, amount: 0, ActID: @account.id, DevID: @device_id)
 #      transaction_id = response[:tran_id]
       transaction_id = @transaction.id
     else

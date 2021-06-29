@@ -69,13 +69,14 @@
           .box-header.with-border
             -# %h5.text-muted
             %h3.box-title
-              - if not @account.active?
-                %strong.text-danger 
-                  %i.fa.fa-warning
-                  Inactive
-                %br
-              %i.fa.fa-google-wallet
-              = @account.account_type.blank? ? 'Wallet' : "#{@account.account_type.description} Wallet"
+              - unless @account.blank?
+                - if not @account.active?
+                  %strong.text-danger 
+                    %i.fa.fa-warning
+                    Inactive
+                  %br
+                %i.fa.fa-google-wallet
+                = @account.account_type.blank? ? 'Wallet' : "#{@account.account_type.description} Wallet"
           .box-tools.pull-right
             -#
               %a.btn.btn-box-tool{href: edit_customer_path(@customer), :type => "button"}

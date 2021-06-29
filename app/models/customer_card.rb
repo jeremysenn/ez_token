@@ -1,5 +1,7 @@
 class CustomerCard < ActiveRecord::Base
   
+  ### HABTM Join Table between Customers and Accounts ###
+  
   establish_connection :ez_cash
   self.primary_key = 'CardID'
   self.table_name= 'CustomerCards'

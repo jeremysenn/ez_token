@@ -14,7 +14,7 @@ Dockerfile
 
 config/initializers/secret_token.rb
 config/master.key
-#config/application.yml
+config/application.yml
 
 .env
 
