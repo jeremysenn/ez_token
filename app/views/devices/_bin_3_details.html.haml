@@ -1,0 +1,52 @@
+- if (device.bill_count_3_exists? and (device.bill_count_3.status == 1 or device.bill_count_3.status == 2))
+  %td{class: 'bg-danger disabled'}
+    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_3.status_description}"}
+      = device.bin_3_count
+      %br
+      = number_to_currency(0, strip_insignificant_zeros: true)
+    %p
+      %small
+        %strong Start
+        = device.bill_count_3.host_start_count
+        %br
+        %strong Added
+        = device.bill_count_3.added_count
+        %br
+        %strong Cycle
+        = device.bill_count_3.host_cycle_count
+- elsif (device.bill_count_3_exists? and device.bill_count_3.status == 4)
+  %td{class: 'bg-warning disabled'}
+    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_3.status_description}"}
+      = device.bin_3_count
+      %br
+      = number_to_currency(device.bin_3_total_amount)
+    %p
+      %small
+        %strong Start
+        = device.bill_count_3.host_start_count
+        %br
+        %strong Added
+        = device.bill_count_3.added_count
+        %br
+        %strong Cycle
+        = device.bill_count_3.host_cycle_count
+- else
+  -# unless device.bin_3_count.nil? or device.bin_3_denom.blank?
+  - if device.bill_count_3_exists?
+    %td{class: 'bin'}
+      = device.bin_3_count
+      %br
+      = number_to_currency(device.bin_3_total_amount)
+      %p
+        %small
+          %strong Start
+          = device.bill_count_3.host_start_count
+          %br
+          %strong Added
+          = device.bill_count_3.added_count
+          %br
+          %strong Cycle
+          = device.bill_count_3.host_cycle_count
+
+:javascript
+  $('[data-toggle="tooltip"]').tooltip()

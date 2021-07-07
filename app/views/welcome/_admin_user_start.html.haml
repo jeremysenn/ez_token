@@ -49,7 +49,7 @@
                   %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
                     Go
         .row
-          .col-md-6
+          .col-md-4
             .box.box-primary{"data-widget" => "box-widget"}
               .box-header.with-border
                 %h3.box-title 
@@ -132,7 +132,7 @@
                       .pull-right= paginate @customers, param_name: 'result1'
               - else
                 %p None
-          .col-md-6
+          .col-md-8
             .box.box-warning{"data-widget" => "box-widget"}
               -#
               .box-header.with-border
@@ -163,12 +163,43 @@
                       .table-responsive
                         %table.table.table-condensed.table-bordered
                           %thead
-                            %tr
-                              - @device.denoms.each do |denom|
-                                - unless denom.denomination.zero?
-                                  %th{:scope => "col"}
-                                    = "#{denom.cassette_id}: "
-                                    = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
+                            - @device.bill_counts.order(:cassette_nbr).each do |bc|
+                              %th{:scope => "col"}
+                                = "#{bc.cassette_nbr}: "
+                                = number_to_currency(bc.denomination, strip_insignificant_zeros: true)
+                            -#
+                              - if @device.bill_count_1_exists?
+                                %th{:scope => "col"}
+                                  = "1: "
+                                  = number_to_currency(@device.bin_1_denom.denomination, strip_insignificant_zeros: true)
+                              - if @device.bill_count_2_exists?
+                                %th{:scope => "col"}
+                                  = "2: "
+                                  = number_to_currency(@device.bin_2_denom.denomination, strip_insignificant_zeros: true)
+                              - if @device.bill_count_3_exists?
+                                %th{:scope => "col"}
+                                  = "3: "
+                                  = number_to_currency(@device.bin_3_denom.denomination, strip_insignificant_zeros: true)
+                              - if @device.bill_count_4_exists?
+                                %th{:scope => "col"}
+                                  = "4: "
+                                  = number_to_currency(@device.bin_4_denom.denomination, strip_insignificant_zeros: true)
+                              - if @device.bill_count_5_exists?
+                                %th{:scope => "col"}
+                                  = "5: "
+                                  = number_to_currency(@device.bin_5_denom.denomination, strip_insignificant_zeros: true)
+                              - if @device.bill_count_6_exists?
+                                %th{:scope => "col"}
+                                  = "6: "
+                                  = number_to_currency(@device.bin_6_denom.denomination, strip_insignificant_zeros: true)
+                              - if @device.bill_count_7_exists?
+                                %th{:scope => "col"}
+                                  = "7: "
+                                  = number_to_currency(@device.bin_7_denom.denomination, strip_insignificant_zeros: true)
+                              - if @device.bill_count_8_exists?
+                                %th{:scope => "col"}
+                                  = "8: "
+                                  = number_to_currency(@device.bin_8_denom.denomination, strip_insignificant_zeros: true)
                           %tbody
                             = render partial: "devices/bin_details", locals: {device: @device}
                     - else
@@ -196,65 +227,66 @@
                 .box-footer
                   -#
                     .pull-right= paginate @customers, param_name: 'result1'
-        - if current_user.can_view_atms?
-          .row  
-            .col-md-12
-              / Transactions and ATM transfers and withdrawals chart
-              .box.box-success
-                .box-header.with-border
-                  %h3.box-title 
-                    -# %i.fa.fa-bolt
-                    Report
-                  .box-tools.pull-right
-                    - unless @devices.blank?
-                      = form_tag root_path, :method => 'get', :class => "form-inline" do
-                        = hidden_field_tag 'device_id', @device.id unless @device.blank?
-                        = text_field_tag :start_date, nil, :placeholder => "Start", value: @start_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                        To
-                        = text_field_tag :end_date, nil, :placeholder => "End", value: @end_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
-                        &nbsp;
-                        = button_tag(:type => 'submit', :class => 'btn btn-primary btn-sm', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
-                          Go
-                .box-body
-                  -#
-                    %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
-                      -#
-                        %li.nav-item
-                          %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "false", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
-                            %i.fa.fa-arrows-h
-                            Transactions
-                        %li.nav-item
-                          %a#chart-tab.nav-link.active{"aria-controls" => "chart", "aria-selected" => "true", "data-toggle" => "tab", :href => "#chart", :role => "tab"} 
-                            %i.fa.fa-area-chart
-                            Chart
-                    #myTabContent.tab-content
-                      -#
-                        #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                          %br
-                          - unless @transactions.blank?
-                            %p
-                              %a{href: transactions_path(format: "csv", :type => 'All', 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date,), class: 'btn btn-info btn-sm'}
-                                %i.fa.fa-download
-                                Download CSV
-                          = render partial: "transactions/index"
-                        #chart.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                          %br
-                          .chart
-                            %canvas#myChart{:style => "height: 180px; width: 763px;", :height => "360", :width => "1526"}
+        -#
+          - if current_user.can_view_atms?
+            .row  
+              .col-md-12
+                / Transactions and ATM transfers and withdrawals chart
+                .box.box-success
+                  .box-header.with-border
+                    %h3.box-title 
+                      -# %i.fa.fa-bolt
+                      Report
+                    .box-tools.pull-right
+                      - unless @devices.blank?
+                        = form_tag root_path, :method => 'get', :class => "form-inline" do
+                          = hidden_field_tag 'device_id', @device.id unless @device.blank?
+                          = text_field_tag :start_date, nil, :placeholder => "Start", value: @start_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                          To
+                          = text_field_tag :end_date, nil, :placeholder => "End", value: @end_date, class: "input-sm", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
+                          &nbsp;
+                          = button_tag(:type => 'submit', :class => 'btn btn-primary btn-sm', data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}) do
+                            Go
+                  .box-body
+                    -#
+                      %ul#myTab.nav.nav-tabs.nav-fill{:role => "tablist"}
+                        -#
+                          %li.nav-item
+                            %a#transactions-tab.nav-link.active{"aria-controls" => "transactions", "aria-selected" => "false", "data-toggle" => "tab", :href => "#transactions", :role => "tab"} 
+                              %i.fa.fa-arrows-h
+                              Transactions
+                          %li.nav-item
+                            %a#chart-tab.nav-link.active{"aria-controls" => "chart", "aria-selected" => "true", "data-toggle" => "tab", :href => "#chart", :role => "tab"} 
+                              %i.fa.fa-area-chart
+                              Chart
+                      #myTabContent.tab-content
+                        -#
+                          #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                            %br
+                            - unless @transactions.blank?
+                              %p
+                                %a{href: transactions_path(format: "csv", :type => 'All', 'transaction[start_date]' => @start_date, 'transaction[end_date]' => @end_date,), class: 'btn btn-info btn-sm'}
+                                  %i.fa.fa-download
+                                  Download CSV
+                            = render partial: "transactions/index"
+                          #chart.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                            %br
+                            .chart
+                              %canvas#myChart{:style => "height: 180px; width: 763px;", :height => "360", :width => "1526"}
 
-                  - unless @device.blank? or @start_date.blank? or @end_date.blank?
-                    #chart.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                      %br
-                      .chart
-                        %canvas#myChart{:style => "height: 180px; width: 763px;", :height => "360", :width => "1526"}
-                  - else
-                    %p.text-center 
-                      %i.fa.fa-bar-chart.fa-4x
-                      %br
-                      Choose a start and end date to report on
+                    - unless @device.blank? or @start_date.blank? or @end_date.blank?
+                      #chart.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                        %br
+                        .chart
+                          %canvas#myChart{:style => "height: 180px; width: 763px;", :height => "360", :width => "1526"}
+                    - else
+                      %p.text-center 
+                        %i.fa.fa-bar-chart.fa-4x
+                        %br
+                        Choose a start and end date to report on
 
-                / /.box-body
-              / /.box
+                  / /.box-body
+                / /.box
 
 - unless @customer_id.blank?
   :javascript
@@ -264,83 +296,84 @@
 :javascript
   $('[data-toggle="popover"]').popover();
 
-- if current_user.can_view_atms? and not @device.blank? and not (@start_date.blank? or @end_date.blank?)
-  :javascript
-    $(document).on("turbolinks:load", function() {
-      if ($('#myChart').length) {
-        var ctx = document.getElementById("myChart").getContext("2d");
+-#
+  - if current_user.can_view_atms? and not @device.blank? and not (@start_date.blank? or @end_date.blank?)
+    :javascript
+      $(document).on("turbolinks:load", function() {
+        if ($('#myChart').length) {
+          var ctx = document.getElementById("myChart").getContext("2d");
 
-        const colors = {
-          green: {
-            fill: '#e0eadf',
-            stroke: '#5eb84d',
-          },
-          lightBlue: {
-            stroke: '#6fccdd',
-          },
-          darkBlue: {
-            fill: '#92bed2',
-            stroke: '#3282bf',
-          },
-          purple: {
-            fill: '#8fa8c8',
-            stroke: '#75539e',
-          },
-          red: {
-            fill: '#f26868',
-            stroke: '#ff0000',
-          },
-        };
+          const colors = {
+            green: {
+              fill: '#e0eadf',
+              stroke: '#5eb84d',
+            },
+            lightBlue: {
+              stroke: '#6fccdd',
+            },
+            darkBlue: {
+              fill: '#92bed2',
+              stroke: '#3282bf',
+            },
+            purple: {
+              fill: '#8fa8c8',
+              stroke: '#75539e',
+            },
+            red: {
+              fill: '#f26868',
+              stroke: '#ff0000',
+            },
+          };
 
-        const transferred = #{@transfers_week_data};
-        const withdrawn = #{@withdrawals_week_data};
-        const reversed = #{@reversals_week_data};
-        const xData = #{raw @week_of_dates_data.uniq};
+          const transferred = #{@transfers_week_data};
+          const withdrawn = #{@withdrawals_week_data};
+          const reversed = #{@reversals_week_data};
+          const xData = #{raw @week_of_dates_data.uniq};
 
-        const myChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: xData,
-            datasets: [{
-              label: "Withdrawn",
-              fill: true,
-              backgroundColor: colors.green.fill,
-              pointBackgroundColor: colors.green.stroke,
-              borderColor: colors.green.stroke,
-              pointHighlightStroke: colors.green.stroke,
-              borderCapStyle: 'butt',
-              data: withdrawn,
-            }, {
-              label: "Transferred",
-              fill: true,
-              backgroundColor: colors.darkBlue.fill,
-              pointBackgroundColor: colors.darkBlue.stroke,
-              borderColor: colors.darkBlue.stroke,
-              pointHighlightStroke: colors.darkBlue.stroke,
-              data: transferred,
-            }, {
-              label: "Reversed",
-              fill: true,
-              backgroundColor: colors.red.fill,
-              pointBackgroundColor: colors.red.stroke,
-              borderColor: colors.red.stroke,
-              pointHighlightStroke: colors.red.stroke,
-              data: reversed,
-            }]
-          },
-          options: {
-            responsive: true,
-            // Can't just use `stacked: true` like the docs say
-            scales: {
-              yAxes: [{
-                //stacked: true,
-                stacked: false,
+          const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: xData,
+              datasets: [{
+                label: "Withdrawn",
+                fill: true,
+                backgroundColor: colors.green.fill,
+                pointBackgroundColor: colors.green.stroke,
+                borderColor: colors.green.stroke,
+                pointHighlightStroke: colors.green.stroke,
+                borderCapStyle: 'butt',
+                data: withdrawn,
+              }, {
+                label: "Transferred",
+                fill: true,
+                backgroundColor: colors.darkBlue.fill,
+                pointBackgroundColor: colors.darkBlue.stroke,
+                borderColor: colors.darkBlue.stroke,
+                pointHighlightStroke: colors.darkBlue.stroke,
+                data: transferred,
+              }, {
+                label: "Reversed",
+                fill: true,
+                backgroundColor: colors.red.fill,
+                pointBackgroundColor: colors.red.stroke,
+                borderColor: colors.red.stroke,
+                pointHighlightStroke: colors.red.stroke,
+                data: reversed,
               }]
             },
-            animation: {
-              duration: 750,
-            },
-          }
-        });
-      }
-    });
+            options: {
+              responsive: true,
+              // Can't just use `stacked: true` like the docs say
+              scales: {
+                yAxes: [{
+                  //stacked: true,
+                  stacked: false,
+                }]
+              },
+              animation: {
+                duration: 750,
+              },
+            }
+          });
+        }
+      });

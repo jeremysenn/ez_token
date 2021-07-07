@@ -173,6 +173,38 @@ class Device < ActiveRecord::Base
     BillCount.find_by_dev_id_and_cassette_id(id, "A")
   end
   
+  def bill_count_1_exists?
+    BillCount.where(dev_id: id, cassette_id: "1").exists?
+  end
+  
+  def bill_count_2_exists?
+    BillCount.where(dev_id: id, cassette_id: "2").exists?
+  end
+  
+  def bill_count_3_exists?
+    BillCount.where(dev_id: id, cassette_id: "3").exists?
+  end
+  
+  def bill_count_4_exists?
+    BillCount.where(dev_id: id, cassette_id: "4").exists?
+  end
+  
+  def bill_count_5_exists?
+    BillCount.where(dev_id: id, cassette_id: "5").exists?
+  end
+  
+  def bill_count_6_exists?
+    BillCount.where(dev_id: id, cassette_id: "6").exists?
+  end
+  
+  def bill_count_7_exists?
+    BillCount.where(dev_id: id, cassette_id: "7").exists?
+  end
+  
+  def bill_count_8_exists?
+    BillCount.where(dev_id: id, cassette_id: "8").exists?
+  end
+  
   def bill_count(cassette_id)
     case cassette_id
     when 1
@@ -415,35 +447,35 @@ class Device < ActiveRecord::Base
   end
   
   def bin_1_denom
-    denoms.where(cassette_id: "1").where.not(denomination: 0).first
+    denoms.where(cassette_id: "1").first
   end
   
   def bin_2_denom
-    denoms.where(cassette_id: "2").where.not(denomination: 0).first
+    denoms.where(cassette_id: "2").first
   end
   
   def bin_3_denom
-    denoms.where(cassette_id: "3").where.not(denomination: 0).first
+    denoms.where(cassette_id: "3").first
   end
   
   def bin_4_denom
-    denoms.where(cassette_id: "4").where.not(denomination: 0).first
+    denoms.where(cassette_id: "4").first
   end
   
   def bin_5_denom
-    denoms.where(cassette_id: "5").where.not(denomination: 0).first
+    denoms.where(cassette_id: "5").first
   end
   
   def bin_6_denom
-    denoms.where(cassette_id: "6").where.not(denomination: 0).first
+    denoms.where(cassette_id: "6").first
   end
   
   def bin_7_denom
-    denoms.where(cassette_id: "7").where.not(denomination: 0).first
+    denoms.where(cassette_id: "7").first
   end
   
   def bin_8_denom
-    denoms.where(cassette_id: "8").where.not(denomination: 0).first
+    denoms.where(cassette_id: "8").first
   end
   
   def bin_1_denomination

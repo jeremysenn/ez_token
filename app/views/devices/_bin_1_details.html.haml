@@ -1,0 +1,53 @@
+- if (device.bill_count_1_exists? and (device.bill_count_1.status == 1 or device.bill_count_1.status == 2))
+  %td{class: 'bg-danger disabled'}
+    =# link_to device.bin_1_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"
+    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"}
+      = device.bin_1_count
+      %br
+      = number_to_currency(0, strip_insignificant_zeros: true)
+    %p
+      %small
+        %strong Start
+        = device.bill_count_1.host_start_count
+        %br
+        %strong Added
+        = device.bill_count_1.added_count
+        %br
+        %strong Cycle
+        = device.bill_count_1.host_cycle_count
+- elsif (device.bill_count_1_exists? and device.bill_count_1.status == 4)
+  %td{class: 'bg-warning disabled'}
+    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"}
+      = device.bin_1_count
+      %br
+      = number_to_currency(device.bin_1_total_amount)
+    %p
+      %small
+        %strong Start
+        = device.bill_count_1.host_start_count
+        %br
+        %strong Added
+        = device.bill_count_1.added_count
+        %br
+        %strong Cycle
+        = device.bill_count_1.host_cycle_count
+- else
+  -# unless device.bin_1_count.nil? or device.bin_1_denom.blank?
+  - if device.bill_count_1_exists?
+    %td{class: 'bin'}
+      = device.bin_1_count
+      %br
+      = number_to_currency(device.bin_1_total_amount)
+      %p
+        %small
+          %strong Start
+          = device.bill_count_1.host_start_count
+          %br
+          %strong Added
+          = device.bill_count_1.added_count
+          %br
+          %strong Cycle
+          = device.bill_count_1.host_cycle_count
+
+:javascript
+  $('[data-toggle="tooltip"]').tooltip()

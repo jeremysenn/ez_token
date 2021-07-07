@@ -17,7 +17,13 @@ class BillCount < ActiveRecord::Base
   end
   
   def denomination
-    Denom.find_by_dev_id_and_cassette_id(dev_id, cassette_id).denomination
+#    Denom.find_by_dev_id_and_cassette_id(dev_id, cassette_id).denomination
+    denom = Denom.where(dev_id: dev_id, cassette_id: cassette_id).first
+    unless denom.blank?
+      return denom.denomination
+    else
+      return 0
+    end
   end
   
   def status_description
@@ -38,6 +44,14 @@ class BillCount < ActiveRecord::Base
       return 'Unknown'
     else
       return 'Unknown'
+    end
+  end
+  
+  def total_amount
+    unless count.blank? or denomination.blank?
+      return (count * denomination).round
+    else
+      return 0
     end
   end
   

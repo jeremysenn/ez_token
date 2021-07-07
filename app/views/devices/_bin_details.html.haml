@@ -1,154 +1,80 @@
--# if @bin_1_column_count.nil? or @bin_1_column_count > 0
-- if (device.bill_count_1.present? and device.bill_count_1.status == 1)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_1_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"
-- elsif (device.bill_count_1.present? and device.bill_count_1.status == 2)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_1_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"
-- elsif (device.bill_count_1.present? and device.bill_count_1.status == 4)
-  %td{class: 'bg-warning disabled'}
-    =# link_to device.bin_1_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"
-    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"}
-      = device.bin_1_count
-      %br
-      = number_to_currency(device.bin_1_total_amount)
-- else
-  - unless device.bin_1_count.nil? or device.bin_1_denom.blank?
-    %td{class: 'bin'}
-      = device.bin_1_count
-      %br
-      = number_to_currency(device.bin_1_total_amount)
+-#
+  = render partial: 'devices/bin_1_details', locals: {device: device}
+  = render partial: 'devices/bin_2_details', locals: {device: device}
+  = render partial: 'devices/bin_3_details', locals: {device: device}
+  = render partial: 'devices/bin_4_details', locals: {device: device}
+  = render partial: 'devices/bin_5_details', locals: {device: device}
+  = render partial: 'devices/bin_6_details', locals: {device: device}
+  = render partial: 'devices/bin_7_details', locals: {device: device}
+  = render partial: 'devices/bin_8_details', locals: {device: device}
 
--# if @bin_2_column_count.nil? or @bin_2_column_count > 0
-- if (device.bill_count_2.present? and device.bill_count_2.status == 1)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_2_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_2.status_description}"
-- elsif (device.bill_count_2.present? and device.bill_count_2.status == 2)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_2_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_2.status_description}"
-- elsif (device.bill_count_2.present? and device.bill_count_2.status == 4)
-  %td{class: 'bg-warning disabled'}
-    =# link_to device.bin_2_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_2.status_description}"
-    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_2.status_description}"}
-      = device.bin_2_count
+- device.bill_counts.each do |bc|
+  %td{class: "#{(bc.status == 1 or bc.status == 2) ? 'bg-danger' : ''} #{bc.status == 4 ? 'bg-warning' : ''}" }
+    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{bc.status_description}"}
+      = bc.count
       %br
-      = number_to_currency(device.bin_2_total_amount)
-- else
-  - unless device.bin_2_count.nil? or device.bin_2_denom.blank?
-    %td{class: 'bin'}
-      = device.bin_2_count
-      %br
-      = number_to_currency(device.bin_2_total_amount)
-
--# if @bin_3_column_count.nil? or @bin_3_column_count > 0
-- if (device.bill_count_3.present? and device.bill_count_3.status == 1)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_3_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_3.status_description}"
-- elsif (device.bill_count_3.present? and device.bill_count_3.status == 2)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_3_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_3.status_description}"
-- elsif (device.bill_count_3.present? and device.bill_count_3.status == 4)
-  %td{class: 'bg-warning disabled'}
-    =# link_to device.bin_3_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_3.status_description}"
-    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_3.status_description}"}
-      = device.bin_3_count
-      %br
-      = number_to_currency(device.bin_3_total_amount)
-- else
-  - unless device.bin_3_count.nil? or device.bin_3_denom.blank?
-    %td{class: 'bin'}
-      = device.bin_3_count
-      %br
-      = number_to_currency(device.bin_3_total_amount)
-
--# if @bin_4_column_count.nil? or @bin_4_column_count > 0
-- if (device.bill_count_4.present? and device.bill_count_4.status == 1)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_4_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_4.status_description}"
-- elsif (device.bill_count_4.present? and device.bill_count_4.status == 2)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_4_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_4.status_description}"
-- elsif (device.bill_count_4.present? and device.bill_count_4.status == 4)
-  %td{class: 'bg-warning disabled'}
-    =# link_to device.bin_4_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_4.status_description}"
-    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_4.status_description}"}
-      = device.bin_4_count
-      %br
-      = number_to_currency(device.bin_4_total_amount)
-- else
-  - unless device.bin_4_count.nil? or device.bin_4_denom.blank?
-    %td{class: 'bin'}
-      = device.bin_4_count
-      %br
-      = number_to_currency(device.bin_4_total_amount)
-
--# if @bin_5_column_count.nil? or @bin_5_column_count > 0
-- if (device.bill_count_5.present? and device.bill_count_5.status == 1)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_5_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_5.status_description}"
-- elsif (device.bill_count_5.present? and device.bill_count_5.status == 2)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_5_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_5.status_description}"
-- elsif (device.bill_count_5.present? and device.bill_count_5.status == 4)
-  %td{class: 'bg-warning disabled'}
-    =# link_to device.bin_5_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_5.status_description}"
-    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_5.status_description}"}
-      = device.bin_5_count
-      %br
-      = number_to_currency(device.bin_5_total_amount)
-- else
-  - unless device.bin_5_count.nil? or device.bin_5_denom.blank?
-    %td{class: 'bin'}
-      = device.bin_5_count
-      %br
-      = number_to_currency(device.bin_5_total_amount)
-
--# if @bin_6_column_count.nil? or @bin_6_column_count > 0
-- if (device.bill_count_6.present? and device.bill_count_6.status == 1)
-  %td{class: 'bg-danger-disabled'}= link_to device.bin_6_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_6.status_description}"
-- elsif (device.bill_count_6.present? and device.bill_count_6.status == 2)
-  %td{class: 'bg-danger-disabled'}= link_to device.bin_6_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_6.status_description}"
-- elsif (device.bill_count_6.present? and device.bill_count_6.status == 4)
-  %td{class: 'bg-warning disabled'}
-    =# link_to device.bin_6_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_6.status_description}"
-    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_6.status_description}"}
-      = device.bin_6_count
-      %br
-      = number_to_currency(device.bin_6_total_amount)
-- else
-  - unless device.bin_6_count.nil? or device.bin_6_denom.blank?
-    %td{class: 'bin'}
-      = device.bin_6_count
-      %br
-      = number_to_currency(device.bin_6_total_amount)
-
--# if @bin_7_column_count.nil? or @bin_7_column_count > 0
-- if (device.bill_count_7.present? and device.bill_count_7.status == 1)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_7_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_7.status_description}"
-- elsif (device.bill_count_7.present? and device.bill_count_7.status == 2)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_7_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_7.status_description}"
-- elsif (device.bill_count_7.present? and device.bill_count_7.status == 4)
-  %td{class: 'bg-warning disabled'}
-    =# link_to device.bin_7_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_7.status_description}"
-    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_7.status_description}"}
-      = device.bin_7_count
-      %br
-      = number_to_currency(device.bin_7_total_amount)
-- else
-  - unless device.bin_7_count.nil? or device.bin_7_denom.blank?
-    %td{class: 'bin'}
-      = device.bin_7_count
-      %br
-      = number_to_currency(device.bin_7_total_amount)
-
--# if @bin_8_column_count.nil? or @bin_8_column_count > 0
-- if (device.bill_count_8.present? and device.bill_count_8.status == 1)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_8_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_8.status_description}"
-- elsif (device.bill_count_8.present? and device.bill_count_8.status == 2)
-  %td{class: 'bg-danger disabled'}= link_to device.bin_8_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_8.status_description}"
-- elsif (device.bill_count_8.present? and device.bill_count_8.status == 4)
-  %td{class: 'bg-warning disabled'}
-    =# link_to device.bin_8_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_8.status_description}"
-    %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_8.status_description}"}
-      = device.bin_8_count
-      %br
-      = number_to_currency(device.bin_8_total_amount)
-- else
-  - unless device.bin_8_count.nil? or device.bin_8_denom.blank?
-    %td{class: 'bin'}
-      = device.bin_8_count
-      %br
-      = number_to_currency(device.bin_8_total_amount)
+      = number_to_currency(bc.total_amount, strip_insignificant_zeros: true)
+    %p
+      %small
+        %strong Start
+        = bc.host_start_count
+        %br
+        %strong Added
+        = bc.added_count
+        %br
+        %strong Cycle
+        = bc.host_cycle_count
+  -#
+    - if (device.bill_count_1_exists? and (device.bill_count_1.status == 1 or device.bill_count_1.status == 2))
+      %td{class: 'bg-danger disabled'}
+        =# link_to device.bin_1_count, '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"
+        %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"}
+          = device.bin_1_count
+          %br
+          = number_to_currency(0, strip_insignificant_zeros: true)
+        %p
+          %small
+            %strong Start
+            = device.bill_count_1.host_start_count
+            %br
+            %strong Added
+            = device.bill_count_1.added_count
+            %br
+            %strong Cycle
+            = device.bill_count_1.host_cycle_count
+    - elsif (device.bill_count_1_exists? and device.bill_count_1.status == 4)
+      %td{class: 'bg-warning disabled'}
+        %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{device.bill_count_1.status_description}"}
+          = device.bin_1_count
+          %br
+          = number_to_currency(device.bin_1_total_amount)
+        %p
+          %small
+            %strong Start
+            = device.bill_count_1.host_start_count
+            %br
+            %strong Added
+            = device.bill_count_1.added_count
+            %br
+            %strong Cycle
+            = device.bill_count_1.host_cycle_count
+    - else
+      -# unless device.bin_1_count.nil? or device.bin_1_denom.blank?
+      - if device.bill_count_1_exists?
+        %td{class: 'bin'}
+          = device.bin_1_count
+          %br
+          = number_to_currency(device.bin_1_total_amount)
+          %p
+            %small
+              %strong Start
+              = device.bill_count_1.host_start_count
+              %br
+              %strong Added
+              = device.bill_count_1.added_count
+              %br
+              %strong Cycle
+              = device.bill_count_1.host_cycle_count
 
 :javascript
   $('[data-toggle="tooltip"]').tooltip()

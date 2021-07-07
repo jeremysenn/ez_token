@@ -1,5 +1,5 @@
 .content-wrapper
-  .container
+  .container-fluid
     / Content Header (Page header)
     %section.content-header
       = render 'shared/flash_messages'
@@ -36,36 +36,49 @@
                         %th{:scope => "col"} Name
                         %th{:scope => "col"} State
                         %th{:scope => "col"} Status
-                        - device.denoms.each do |denom|
-                          - unless denom.denomination.zero?
-                            %th{:scope => "col"}
-                              = "#{denom.cassette_id}: "
-                              = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
                         -#
-                          -# if @bin_1_column_count > 0
-                          - if device.bin_1_count != nil
-                            %th{:scope => "col"} 1
-                          -# if @bin_2_column_count > 0
-                          - if device.bin_2_count != nil
-                            %th{:scope => "col"} 2
-                          -# if @bin_3_column_count > 0
-                          - if device.bin_3_count != nil
-                            %th{:scope => "col"} 3
-                          -# if @bin_4_column_count > 0
-                          - if device.bin_4_count != nil
-                            %th{:scope => "col"} 4
-                          -# if @bin_5_column_count > 0
-                          - if device.bin_5_count != nil
-                            %th{:scope => "col"} 5
-                          -# if @bin_6_column_count > 0
-                          - if device.bin_6_count != nil
-                            %th{:scope => "col"} 6
-                          -# if @bin_7_column_count > 0
-                          - if device.bin_7_count != nil
-                            %th{:scope => "col"} 7
-                          -# if @bin_8_column_count > 0
-                          - if device.bin_8_count != nil
-                            %th{:scope => "col"} 8
+                          - device.denoms.each do |denom|
+                            - unless denom.denomination.zero?
+                              %th{:scope => "col"}
+                                = "#{denom.cassette_id}: "
+                                = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
+                        - device.bill_counts.order(:cassette_nbr).each do |bc|
+                          %th{:scope => "col"}
+                            = "#{bc.cassette_nbr}: "
+                            = number_to_currency(bc.denomination, strip_insignificant_zeros: true)
+                        -#
+                          - if device.bill_count_1_exists?
+                            %th{:scope => "col"}
+                              = "1: "
+                              = number_to_currency(device.bin_1_denom.denomination, strip_insignificant_zeros: true)
+                          - if device.bill_count_2_exists?
+                            %th{:scope => "col"}
+                              = "2: "
+                              = number_to_currency(device.bin_2_denom.denomination, strip_insignificant_zeros: true)
+                          - if device.bill_count_3_exists?
+                            %th{:scope => "col"}
+                              = "3: "
+                              = number_to_currency(device.bin_3_denom.denomination, strip_insignificant_zeros: true)
+                          - if device.bill_count_4_exists?
+                            %th{:scope => "col"}
+                              = "4: "
+                              = number_to_currency(device.bin_4_denom.denomination, strip_insignificant_zeros: true)
+                          - if device.bill_count_5_exists?
+                            %th{:scope => "col"}
+                              = "5: "
+                              = number_to_currency(device.bin_5_denom.denomination, strip_insignificant_zeros: true)
+                          - if device.bill_count_6_exists?
+                            %th{:scope => "col"}
+                              = "6: "
+                              = number_to_currency(device.bin_6_denom.denomination, strip_insignificant_zeros: true)
+                          - if device.bill_count_7_exists?
+                            %th{:scope => "col"}
+                              = "7: "
+                              = number_to_currency(device.bin_7_denom.denomination, strip_insignificant_zeros: true)
+                          - if device.bill_count_8_exists?
+                            %th{:scope => "col"}
+                              = "8: "
+                              = number_to_currency(device.bin_8_denom.denomination, strip_insignificant_zeros: true)
                         %th{:scope => "col"} Remaining
                     %tbody
                       -# @devices.each do |device|

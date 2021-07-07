@@ -40,78 +40,78 @@ class WelcomeController < ApplicationController
           @cut_transactions = @device.transactions.cuts.where(date_time: 1.months.ago..Time.now).select(:date_time, :amt_auth).distinct.order("date_time DESC")
           @add_transactions = @device.transactions.adds.where(date_time: 1.months.ago..Time.now)
           @withdrawal_transactions = @device.transactions.withdrawals.where(date_time: 1.months.ago..Time.now)
-          unless @start_date.blank? or @end_date.blank?
-            # Withdrawals Info
-            @withdrawals = @device.transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
-            @withdrawals_week_data = []
-            grouped_withdrawals = @withdrawals.group_by{ |t| t.date_time.beginning_of_day }
-            (@start_date.to_date..@end_date.to_date).each do |date|
-              withdrawals_group_total = 0
-              grouped_withdrawals.each do |group, withdrawals|
-                if date.beginning_of_day == group
-                  withdrawals.each do |withdrawals|
-                    withdrawals_group_total = withdrawals_group_total + withdrawals.amt_auth.to_f
-                  end
-                end
-              end
-              @withdrawals_week_data << withdrawals_group_total
-            end
-            @withdrawals_count = @withdrawals.count
-            @withdrawals_amount = 0
-            @withdrawals.each do |withdrawal_transaction|
-              @withdrawals_amount = @withdrawals_amount + withdrawal_transaction.amt_auth unless withdrawal_transaction.amt_auth.blank?
-            end
-          
-            @separate_coin_device = @device.coin_device
-            @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 1.months.ago..Time.now)
-
-            transactions = current_user.collaborator? ? current_user.company.transactions.where(event_id: current_user.admin_event_ids, date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
-            @transactions = transactions.order("#{transactions_sort_column} #{transactions_sort_direction}")
-
-            # Transfers Info
-            @transfers = transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
-            @transfers_week_data = []
-            grouped_transfers = @transfers.group_by{ |t| t.date_time.beginning_of_day }
-            (@start_date.to_date..@end_date.to_date).each do |date|
-              transfers_group_total = 0
-              grouped_transfers.each do |group, transfers|
-                if date.beginning_of_day == group
-                  transfers.each do |transfer|
-                    transfers_group_total = transfers_group_total + transfer.amt_auth.to_f
-                  end
-                end
-              end
-              @transfers_week_data << transfers_group_total
-            end
-            @transfers_count = @transfers.count
-            @transfers_amount = 0
-            @transfers.each do |transfer_transaction|
-              @transfers_amount = @transfers_amount + transfer_transaction.amt_auth unless transfer_transaction.amt_auth.blank?
-            end
-
-            # Reversals Info
-            @reversals = transactions.reversals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
-            @reversals_week_data = []
-            grouped_reversals = @reversals.group_by{ |t| t.date_time.beginning_of_day }
-            (@start_date.to_date..@end_date.to_date).each do |date|
-              reversals_group_total = 0
-              grouped_reversals.each do |group, reversals|
-                if date.beginning_of_day == group
-                  reversals.each do |reversal|
-                    reversals_group_total = reversals_group_total + reversal.amt_auth.to_f
-                  end
-                end
-              end
-              @reversals_week_data << reversals_group_total
-            end
-            @reversals_count = @reversals.count
-            @reversals_amount = 0
-            @reversals.each do |reversal_transaction|
-              @reversals_amount = @reversals_amount + reversal_transaction.amt_auth unless reversal_transaction.amt_auth.blank?
-            end
-
-            @week_of_dates_data = (@start_date.to_date..@end_date.to_date).map{ |date| date.strftime('%-m/%-d') }
-          end # End unless @start_date.blank? or @end_date.blank?
+#          unless @start_date.blank? or @end_date.blank?
+#            # Withdrawals Info
+#            @withdrawals = @device.transactions.withdrawals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
+#            @withdrawals_week_data = []
+#            grouped_withdrawals = @withdrawals.group_by{ |t| t.date_time.beginning_of_day }
+#            (@start_date.to_date..@end_date.to_date).each do |date|
+#              withdrawals_group_total = 0
+#              grouped_withdrawals.each do |group, withdrawals|
+#                if date.beginning_of_day == group
+#                  withdrawals.each do |withdrawals|
+#                    withdrawals_group_total = withdrawals_group_total + withdrawals.amt_auth.to_f
+#                  end
+#                end
+#              end
+#              @withdrawals_week_data << withdrawals_group_total
+#            end
+#            @withdrawals_count = @withdrawals.count
+#            @withdrawals_amount = 0
+#            @withdrawals.each do |withdrawal_transaction|
+#              @withdrawals_amount = @withdrawals_amount + withdrawal_transaction.amt_auth unless withdrawal_transaction.amt_auth.blank?
+#            end
+#          
+#            @separate_coin_device = @device.coin_device
+#            @coin_add_transactions = @device.transactions.coin_adds.where(date_time: 1.months.ago..Time.now)
+#
+#            transactions = current_user.collaborator? ? current_user.company.transactions.where(event_id: current_user.admin_event_ids, date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day) : current_user.company.transactions.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day)
+#            @transactions = transactions.order("#{transactions_sort_column} #{transactions_sort_direction}")
+#
+#            # Transfers Info
+#            @transfers = transactions.transfers.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
+#            @transfers_week_data = []
+#            grouped_transfers = @transfers.group_by{ |t| t.date_time.beginning_of_day }
+#            (@start_date.to_date..@end_date.to_date).each do |date|
+#              transfers_group_total = 0
+#              grouped_transfers.each do |group, transfers|
+#                if date.beginning_of_day == group
+#                  transfers.each do |transfer|
+#                    transfers_group_total = transfers_group_total + transfer.amt_auth.to_f
+#                  end
+#                end
+#              end
+#              @transfers_week_data << transfers_group_total
+#            end
+#            @transfers_count = @transfers.count
+#            @transfers_amount = 0
+#            @transfers.each do |transfer_transaction|
+#              @transfers_amount = @transfers_amount + transfer_transaction.amt_auth unless transfer_transaction.amt_auth.blank?
+#            end
+#
+#            # Reversals Info
+#            @reversals = transactions.reversals.where(date_time: @start_date.to_date.beginning_of_day..@end_date.to_date.end_of_day).order("date_time DESC")
+#            @reversals_week_data = []
+#            grouped_reversals = @reversals.group_by{ |t| t.date_time.beginning_of_day }
+#            (@start_date.to_date..@end_date.to_date).each do |date|
+#              reversals_group_total = 0
+#              grouped_reversals.each do |group, reversals|
+#                if date.beginning_of_day == group
+#                  reversals.each do |reversal|
+#                    reversals_group_total = reversals_group_total + reversal.amt_auth.to_f
+#                  end
+#                end
+#              end
+#              @reversals_week_data << reversals_group_total
+#            end
+#            @reversals_count = @reversals.count
+#            @reversals_amount = 0
+#            @reversals.each do |reversal_transaction|
+#              @reversals_amount = @reversals_amount + reversal_transaction.amt_auth unless reversal_transaction.amt_auth.blank?
+#            end
+#
+#            @week_of_dates_data = (@start_date.to_date..@end_date.to_date).map{ |date| date.strftime('%-m/%-d') }
+#          end # End unless @start_date.blank? or @end_date.blank?
         end # End unless @device.blank?
         
       elsif current_user.basic?
