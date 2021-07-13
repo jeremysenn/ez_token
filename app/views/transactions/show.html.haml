@@ -64,10 +64,9 @@
                   - else
                     = @transaction.from_account.company.name unless @transaction.from_account.blank?
               - unless @transaction.amt_auth.blank? or @transaction.ChpFee.blank?
-                - unless @transaction.Note.blank?
-                  %p.lead
-                    Note:
-                    = @transaction.Note
+                %p.lead
+                  Note:
+                  = @transaction.Note
                 %p.lead
                   Total:
                   = number_to_currency(@transaction.amt_auth + @transaction.ChpFee)

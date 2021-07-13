@@ -1,103 +1,121 @@
 %br
 - unless @cut_transactions.blank?
   - @cut_transactions.each_with_index do |transaction, index|
-    .box.box-success{"data-widget" => "box-widget"}
-      .box-header.with-border
-        %h3.box-title
-          =# "#{transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')} - Current" if index == 0
-          = "#{transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')}" if index == 0
-          = "#{transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')} - #{@cut_transactions[index - 1].date_time.strftime('%-m/%-d/%y %H:%M:%S')}" unless index == 0
-          =# "#{bill_hist.cut_dt.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%y %H:%M:%S')} - #{@bill_hists[index - 1].cut_dt.in_time_zone(current_user.time_zone).strftime('%-m/%-d/%y %H:%M:%S')}" unless index == 0
-        .box-tools.pull-right
-          %button.btn.btn-box-tool{id: 'box_tool_collapse', "data-toggle" => "tooltip", "data-widget" => "collapse", :title => "Collapse", :type => "button"}
-            %i.fa.fa-minus
-          %button.btn.btn-box-tool{id: 'box_tool_remove', "data-toggle" => "tooltip", "data-widget" => "remove", :title => "Remove", :type => "button"}
-            %i.fa.fa-times
-      .box-body.no-padding
-        .table-responsive
-          %table.table.table-striped.table-hover.table_condensed
-            %thead
-              %tr
-                %th
-                %th Start
-                %th Added
-                %th Dispensed
-                %th Remaining
-            %tbody
-              %tr
-                - if index == 0
-                  - start_total = transaction.amt_auth unless transaction.amt_auth.blank?
-                  - add_total = 0
-                  - coin_add_total = 0
-                  - dispensed_total = @device.withdrawal_transactions_total_amount_authorized_date_span(transaction.date_time, Time.now)
-                  - first_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..Time.now).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.first
-                  - last_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..Time.now).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.last
-                  %td
-                    - @add_transactions.where(date_time: transaction.date_time..Time.now).each do |add_transaction|
-                      - add_total += add_transaction.amt_auth unless add_transaction.amt_auth.blank?
-                      %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
-                        Cash Add
-                        = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
-                      -#
-                        Cash Add
-                        %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
-                          = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+    - unless index == 0
+      .box{"data-widget" => "box-widget"}
+        .box-header.with-border
+          %h3.box-title
+            = "#{transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')} - #{@cut_transactions[index - 1].date_time.strftime('%-m/%-d/%y %H:%M:%S')}" unless index == 0
+          .box-tools.pull-right
+            %button.btn.btn-default.btn-sm{id: "device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_dollar_amount_button", onclick: "$('.device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_dollar_amount').show(); $('.device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_count').hide(); $(this).hide(); $('#device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_count_button').show();", :type => "button"}
+              %i.fa.fa-dollar
+              Dollar Amount
+            %button.btn.btn-default.btn-sm{id: "device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_count_button", onclick: "$('.device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_dollar_amount').hide(); $('.device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_count').show(); $(this).hide(); $('#device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_dollar_amount_button').show();", :type => "button", style: "display: none;"}
+              %i.fa.fa-hashtag
+              Bill Count
+            %button.btn.btn-box-tool{id: "device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_expand_bin_details", onclick: "$('.device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_bin_details').fadeIn(); $(this).hide(); $('#device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_collapse_bin_details').show();", :type => "button"}
+              %i.fa.fa-angle-down
+              Details
+            %button.btn.btn-box-tool{id: "device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_collapse_bin_details", onclick: "$('.device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_bin_details').fadeOut(); $(this).hide(); $('#device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_expand_bin_details').show();", :type => "button", style: "display: none;"}
+              %i.fa.fa-angle-up
+              Details
+        .box-body.no-padding
+          .table-responsive
+            %table.table.table-striped.table_condensed.table-borderless
+              %tbody
+                - bill_hists = @device.bill_hists.where(cut_dt: transaction.date_time).order("cut_dt ASC")
+                %tr{class: "device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_bin_details", style: "display: none;"}
+                  %td{style: 'width: 10%;'}
+                    .pull-right
                       %br
-                    - @coin_add_transactions.where(date_time: transaction.date_time..Time.now).each do |coin_add_transaction|
-                      - coin_add_total += coin_add_transaction.amt_auth unless coin_add_transaction.amt_auth.blank?
-                      %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: coin_add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
-                        Coin Add
-                        = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
-                      -#
-                        Coin Add
-                        %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(coin_add_transaction.amt_auth)}", "data-placement" => "right"}
-                          = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                      %strong Start
                       %br
-                  %td
-                    - unless first_bill_hist.blank? and transaction.amt_auth.blank?
-                      = number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
-                  %td= number_to_currency(add_total)
-                  %td= number_to_currency(dispensed_total)
-                  %td= number_to_currency(@device.remaining)
-                - else
-                  - start_total = transaction.amt_auth unless transaction.amt_auth.blank?
-                  - add_total = 0
-                  - coin_add_total = 0
-                  - first_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..@cut_transactions[index - 1].date_time).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.first
-                  - last_bill_hist = @device.bill_hists.where("cut_dt >= ? AND cut_dt < ?", transaction.date_time, @cut_transactions[index - 1].date_time).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.last
-                  -# dispensed_total = @device.withdrawal_transactions_total_amount_authorized_date_span(transaction.date_time, last_bill_hist.cut_dt)
-                  - dispensed_total = 0
-                  %td
-                    - @add_transactions.where("date_time >= ? AND date_time < ?", transaction.date_time, @cut_transactions[index - 1].date_time).each do |add_transaction|
-                      - add_total += add_transaction.amt_auth unless add_transaction.amt_auth.blank?
-                      %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
-                        Cash Add
-                        = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
-                      -#
-                        Cash Add
-                        %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
-                          = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                      %strong Added
                       %br
-                    - @coin_add_transactions.where("date_time >= ? AND date_time < ?", transaction.date_time, @cut_transactions[index - 1].date_time).each do |coin_add_transaction|
-                      - coin_add_total += coin_add_transaction.amt_auth unless coin_add_transaction.amt_auth.blank?
-                      %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: coin_add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
-                        Coin Add
-                        = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
-                      %br
-                  %td
-                    =# number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
-                    = number_to_currency(BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt))
-                  %td= number_to_currency(add_total)
-                  %td
-                    - @withdrawal_transactions.where("date_time >= ? AND date_time < ?", transaction.date_time, @cut_transactions[index - 1].date_time).each do |withdrawal_transaction|
-                      - dispensed_total += withdrawal_transaction.amt_auth unless withdrawal_transaction.amt_auth.blank?
-                    =# number_to_currency(last_bill_hist.blank? ? BillHist.device_host_bill_dispensed(@device.id, first_bill_hist.cut_dt) : BillHist.device_host_bill_dispensed_in_date_span(@device.id, first_bill_hist.cut_dt, last_bill_hist.cut_dt))
-                    = number_to_currency(dispensed_total)
-                  %td
-                    =# number_to_currency(BillHist.device_old_start_total(@device.id, @cut_transactions[index - 1].date_time) + (last_bill_hist.blank? ? 0 : BillHist.added(last_bill_hist.cut_dt)) - dispensed_total)
-                    = number_to_currency(BillHist.device_old_start_total(@device.id, @cut_transactions[index - 1].date_time) + add_total - dispensed_total)
+                      %strong Dispensed
+                  = render partial: "devices/bill_hist_details", locals: {device: @device, bill_hists: bill_hists}
+                %tr
+                  %td{style: 'width: 10%;', class: "device_#{@device.id}_bill_hist_#{transaction.date_time.to_s.parameterize.underscore}_bin_details", style: 'display:none;'}
+                    .pull-right
+                      %strong Remaining
+                    = render partial: 'devices/bill_hist_basics', locals: {device: @device, bill_hists: bill_hists}
+                  -#
+                    - if index == 0
+                      - start_total = transaction.amt_auth unless transaction.amt_auth.blank?
+                      - add_total = 0
+                      - coin_add_total = 0
+                      - dispensed_total = @device.withdrawal_transactions_total_amount_authorized_date_span(transaction.date_time, Time.now)
+                      - first_bill_hist = bill_hists.uniq { |bill_hist| bill_hist.cut_dt }.first
+                      - last_bill_hist = bill_hists.uniq { |bill_hist| bill_hist.cut_dt }.last
+                      %td
+                        %strong Remaining
+                        = render partial: 'devices/bill_hist_basics', locals: {device: @device, bill_hists: bill_hists}
+                        - @add_transactions.where(date_time: transaction.date_time..Time.now).each do |add_transaction|
+                          - add_total += add_transaction.amt_auth unless add_transaction.amt_auth.blank?
+                          %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
+                            Cash Add
+                            = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                          -#
+                            Cash Add
+                            %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
+                              = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                          %br
+                        - @coin_add_transactions.where(date_time: transaction.date_time..Time.now).each do |coin_add_transaction|
+                          - coin_add_total += coin_add_transaction.amt_auth unless coin_add_transaction.amt_auth.blank?
+                          %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: coin_add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
+                            Coin Add
+                            = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                          -#
+                            Coin Add
+                            %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(coin_add_transaction.amt_auth)}", "data-placement" => "right"}
+                              = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                          %br
+                      %td
+                        - unless first_bill_hist.blank? and transaction.amt_auth.blank?
+                          = number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
+                      %td= number_to_currency(add_total)
+                      %td= number_to_currency(dispensed_total)
+                      %td= number_to_currency(@device.remaining)
+                    - else
+                      - start_total = transaction.amt_auth unless transaction.amt_auth.blank?
+                      - add_total = 0
+                      - coin_add_total = 0
+                      -# bill_hists = @device.bill_hists.where(cut_dt: transaction.date_time).order("cut_dt ASC")
+                      - first_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..@cut_transactions[index - 1].date_time).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.first
+                      - last_bill_hist = @device.bill_hists.where(cut_dt: transaction.date_time..@cut_transactions[index - 1].date_time).order("cut_dt ASC").uniq { |bill_hist| bill_hist.cut_dt }.last
+                      -# dispensed_total = @device.withdrawal_transactions_total_amount_authorized_date_span(transaction.date_time, last_bill_hist.cut_dt)
+                      - dispensed_total = 0
+                      %td
+                        - @add_transactions.where("date_time >= ? AND date_time < ?", transaction.date_time, @cut_transactions[index - 1].date_time).each do |add_transaction|
+                          - add_total += add_transaction.amt_auth unless add_transaction.amt_auth.blank?
+                          %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
+                            Cash Add
+                            = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                          -#
+                            Cash Add
+                            %span.text-primary{"data-toggle" => "tooltip", :title => "#{number_to_currency(add_transaction.amt_auth)}", "data-placement" => "right"}
+                              = add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                          %br
+                        - @coin_add_transactions.where("date_time >= ? AND date_time < ?", transaction.date_time, @cut_transactions[index - 1].date_time).each do |coin_add_transaction|
+                          - coin_add_total += coin_add_transaction.amt_auth unless coin_add_transaction.amt_auth.blank?
+                          %a{"data-html" => "true", "data-content" => "#{render partial: 'devices/add_details', locals: {transaction: coin_add_transaction}}", "data-toggle" => "popover", "data-trigger" => "focus", :role => "button", :tabindex => "0", :title => "Add Details"} 
+                            Coin Add
+                            = coin_add_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                          %br
+                      %td
+                        =# number_to_currency(transaction.amt_auth.blank? ? BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt) : transaction.amt_auth)
+                        = number_to_currency(BillHist.device_new_start_total(@device.id, first_bill_hist.cut_dt))
+                      %td= number_to_currency(add_total)
+                      %td
+                        - @withdrawal_transactions.where("date_time >= ? AND date_time < ?", transaction.date_time, @cut_transactions[index - 1].date_time).each do |withdrawal_transaction|
+                          - dispensed_total += withdrawal_transaction.amt_auth unless withdrawal_transaction.amt_auth.blank?
+                        =# number_to_currency(last_bill_hist.blank? ? BillHist.device_host_bill_dispensed(@device.id, first_bill_hist.cut_dt) : BillHist.device_host_bill_dispensed_in_date_span(@device.id, first_bill_hist.cut_dt, last_bill_hist.cut_dt))
+                        = number_to_currency(dispensed_total)
+                      %td
+                        =# number_to_currency(BillHist.device_old_start_total(@device.id, @cut_transactions[index - 1].date_time) + (last_bill_hist.blank? ? 0 : BillHist.added(last_bill_hist.cut_dt)) - dispensed_total)
+                        = number_to_currency(BillHist.device_old_start_total(@device.id, @cut_transactions[index - 1].date_time) + add_total - dispensed_total)
 - else
-  None
+  No Cuts
                     
 -#
   - unless @bill_hists.blank?

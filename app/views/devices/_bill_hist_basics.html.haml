@@ -1,0 +1,9 @@
+- bill_hists.each do |bh|
+  - unless bh.denomination.zero?
+    - count = bh.old_start + bh.old_added - bh.old_host_cyc
+    - amount = count * bh.denomination
+    %td
+      %div{class: "device_#{device.id}_bill_hist_#{bh.cut_dt.to_s.parameterize.underscore}_count" }
+        = count
+      %div{class: "device_#{device.id}_bill_hist_#{bh.cut_dt.to_s.parameterize.underscore}_dollar_amount", style: 'display:none;'}
+        = number_to_currency(amount, strip_insignificant_zeros: true)

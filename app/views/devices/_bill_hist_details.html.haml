@@ -1,0 +1,21 @@
+- bill_hists.each do |bh|
+  - unless bh.denomination.zero?
+    %td
+      %div{class: "device_#{device.id}_bill_hist_#{bh.cut_dt.to_s.parameterize.underscore}_count"}
+        %strong
+          %u= number_to_currency(bh.denomination, strip_insignificant_zeros: true)
+        %br
+        = bh.old_start
+        %br
+        = bh.old_added
+        %br
+        = "(#{bh.old_host_cyc})"
+      %div{class: "device_#{device.id}_bill_hist_#{bh.cut_dt.to_s.parameterize.underscore}_dollar_amount", style: 'display:none;'}
+        %strong
+          %u= number_to_currency(bh.denomination, strip_insignificant_zeros: true)
+        %br
+        = number_to_currency(bh.old_start * bh.denomination, strip_insignificant_zeros: true)
+        %br
+        = number_to_currency(bh.old_added * bh.denomination, strip_insignificant_zeros: true)
+        %br
+        = "(#{number_to_currency(bh.old_host_cyc * bh.denomination, strip_insignificant_zeros: true)})"

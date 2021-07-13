@@ -640,15 +640,33 @@ class Device < ActiveRecord::Base
   end
   
   def send_atm_up_command
-    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:send_atm_command, message: {DevID: self.id, Command: "atmUp"})
-#    Rails.logger.debug "** device.send_atm_up_command response body: #{response.body}"
+#    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#    response = client.call(:send_atm_command, message: {DevID: self.id, Command: "atmUp"})
+
+    api_url = "#{ENV['EZCASH_WSDL_URL']}"
+    payload = {
+      "DeviceId" => self.id,
+      "Command" => "UP"
+      }
+    json_encoded_payload = JSON.generate(payload)
+    response = RestClient::Request.execute(method: :post, url: api_url, verify_ssl: false, headers: {:content_type => 'application/json', :Accept => "application/json"}, payload: json_encoded_payload)
+    json_response = JSON.parse response
+    return json_response['Message']
   end
   
   def send_atm_down_command
-    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:send_atm_command, message: {DevID: self.id, Command: "atmDown"})
-#    Rails.logger.debug "** device.send_atm_down_command response body: #{response.body}"
+#    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#    response = client.call(:send_atm_command, message: {DevID: self.id, Command: "atmDown"})
+
+    api_url = "#{ENV['EZCASH_WSDL_URL']}"
+    payload = {
+      "DeviceId" => self.id,
+      "Command" => "DOWN"
+      }
+    json_encoded_payload = JSON.generate(payload)
+    response = RestClient::Request.execute(method: :post, url: api_url, verify_ssl: false, headers: {:content_type => 'application/json', :Accept => "application/json"}, payload: json_encoded_payload)
+    json_response = JSON.parse response
+    return json_response['Message']
   end
   
   def send_atm_disconnect_command
@@ -675,20 +693,38 @@ class Device < ActiveRecord::Base
   end
   
   def reset_cash(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)
-    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
-    response = client.call(:reset_cash, message: {DevID: self.id, Bin1: bin_1, Bin2: bin_2, Bin3: bin_3, Bin4: bin_4, Bin5: bin_5, Bin6: bin_6,
-        Bin7: bin_7, Bin8: bin_8})
+#    client = Savon.client(wsdl: "#{ENV['EZCASH_WSDL_URL']}")
+#    response = client.call(:reset_cash, message: {DevID: self.id, Bin1: bin_1, Bin2: bin_2, Bin3: bin_3, Bin4: bin_4, Bin5: bin_5, Bin6: bin_6,
+#        Bin7: bin_7, Bin8: bin_8})
 #    Rails.logger.debug "** device.reset_cash response body: #{response.body}"
+#    if response.success?
+#      unless response.body[:reset_cash_response].blank? or response.body[:reset_cash_response][:return] != true
+#        return true
+#      else
+#        return nil
+#      end
+#    else
+#      return nil
+#    end
 
-    if response.success?
-      unless response.body[:reset_cash_response].blank? or response.body[:reset_cash_response][:return] != true
-        return true
-      else
-        return nil
+    datetime = Time.now
+    Transaction.create(cassette_1_disp: bin_1, cassette_2_disp: bin_2, cassette_3_disp: bin_3, cassette_4_disp: bin_4, date_time: datetime, tran_code: "CUT", dev_id: self.dev_id)
+    self.bill_counts.each do |bill_count|
+      if bill_count.cassette_id == '1'
+        BillHist.create(cassette_id: '1', old_start: bill_count.host_start_count, new_start: bin_1, old_added: bill_count.added_count, old_host_cyc: bill_count.host_cycle_count, cut_dt: datetime, dev_id: self.dev_id)
+        bill_count.update_attributes(host_start_count: bin_1, host_cyle_count: 0, dev_start_count: 0, dev_cycle_count: 0, dev_divert_count: 0, added_count: 0, old_added: 0)
+      elsif bill_count.cassette_id == '2'
+        BillHist.create(cassette_id: '2', old_start: bill_count.host_start_count, new_start: bin_2, old_added: bill_count.added_count, old_host_cyc: bill_count.host_cycle_count, cut_dt: datetime, dev_id: self.dev_id)
+        bill_count.update_attributes(host_start_count: bin_2, host_cyle_count: 0, dev_start_count: 0, dev_cycle_count: 0, dev_divert_count: 0, added_count: 0, old_added: 0) 
+      elsif bill_count.cassette_id == '3'
+        BillHist.create(cassette_id: '3', old_start: bill_count.host_start_count, new_start: bin_3, old_added: bill_count.added_count, old_host_cyc: bill_count.host_cycle_count, cut_dt: datetime, dev_id: self.dev_id)
+        bill_count.update_attributes(host_start_count: bin_3, host_cyle_count: 0, dev_start_count: 0, dev_cycle_count: 0, dev_divert_count: 0, added_count: 0, old_added: 0)
+      elsif bill_count.cassette_id == '4'
+        BillHist.create(cassette_id: '4', old_start: bill_count.host_start_count, new_start: bin_4, old_added: bill_count.added_count, old_host_cyc: bill_count.host_cycle_count, cut_dt: datetime, dev_id: self.dev_id)
+        bill_count.update_attributes(host_start_count: bin_4, host_cyle_count: 0, dev_start_count: 0, dev_cycle_count: 0, dev_divert_count: 0, added_count: 0, old_added: 0)
       end
-    else
-      return nil
     end
+    return true
   end
   
   def add_coin(bin_1, bin_2, bin_3, bin_4, bin_5, bin_6, bin_7, bin_8)

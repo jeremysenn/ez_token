@@ -1,0 +1,10 @@
+- device.bill_counts.each do |bc|
+  - unless bc.denomination.zero?
+    %td{class: "#{(bc.status == 1 or bc.status == 2) ? 'bg-danger' : ''} #{bc.status == 4 ? 'bg-warning' : ''}" }
+      %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{bc.status_description}", class: "device_#{device.id}_bill_count" }
+        = bc.count
+      %a{href: '#', "data-toggle" => "tooltip", "data-placement" => "right", "title" => "#{bc.status_description}", class: "device_#{device.id}_dollar_amount", style: 'display:none;'}
+        = number_to_currency(bc.total_amount, strip_insignificant_zeros: true)
+
+:javascript
+  $('[data-toggle="tooltip"]').tooltip()

@@ -19,18 +19,12 @@
     %section.content
       / Default box
       .row
-        .col-md-3
-          .box.box-primary
+        .col-md-2
+          .box{class: "#{@device.online == 0 ? 'box-success' : @device.online == 1 ? 'box-danger' : 'box-warning'}"}
             .box-body.box-profile{id: "atm_profile_box"}
               %h3.profile-username.text-center= "ATM: #{device_state_descriptions[@device.online]}"
 
               %ul.list-group.list-group-unbordered
-                -#
-                  %li.list-group-item
-                    %b 
-                      %i.fa.fa-bolt.margin-r-5
-                      Transactions in 30 days
-                    %a.pull-right= @withdrawal_transactions.count
                 %li.list-group-item
                   %b 
                     %i.fa.fa-signal.margin-r-5
@@ -38,13 +32,6 @@
                   - unless @most_recent_dev_status.blank?
                     %a.btn.btn-sm.bg-green.pull-right{"data-content" => "#{@most_recent_dev_status.status_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0"} 
                       = @most_recent_dev_status.status
-                      -#
-                        - if @device.critical_status?
-                          %a.btn.btn-xs.btn-danger{"data-content" => "#{@device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{@device.caution_status_description}"} 
-                        - elsif @device.caution_status?
-                          %a.btn.btn-xs.btn-warning{"data-content" => "#{@device.caution_status_description}", "data-toggle" => "popover", "data-trigger" => "focus",:tabindex => "0", :title => "#{@device.caution_status_description}"} 
-                        - else
-                          = @device.status_string
                 %li.list-group-item
                   %b 
                     Withdrawals
@@ -76,12 +63,6 @@
                     %br
                     Bin 4
                     .pull-right= @bin4_dispensed
-                -#
-                  %li.list-group-item
-                    %b 
-                      %i.fa.fa-gears.margin-r-5
-                      Actions
-                    -# %a.pull-right And more info
                 %li.list-group-item
                   - if device_state_descriptions[@device.online] == "Ready" or device_state_descriptions[@device.online] == "Down"
                     %a.btn.btn-default.btn-block{"data-target" => "#commands-modal", "data-toggle" => "modal", :type => "button"}
@@ -92,18 +73,6 @@
                       %b
                         %i.fa.fa-inbox
                         Replenish
-                    -#
-                      %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-cash-modal", "data-toggle" => "modal", :type => "button"}
-                        %b Add Cash
-                      %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-cash-modal", "data-toggle" => "modal", :type => "button"}
-                        %b Reset Cash
-                      - unless @bin_5_denomination.blank? and @bin_6_denomination.blank? and @bin_7_denomination.blank? and @bin_8_denomination.blank?
-                        %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#add-coin-modal", "data-toggle" => "modal", :type => "button"}
-                          %b Add Coin
-                        %a.btn.btn-default.btn-block{class: "replenish_command_button", "data-device-id" => @device.id, "data-target" => "#reset-coin-modal", "data-toggle" => "modal", :type => "button"}
-                          %b Reset Coin
-                      %a.btn.btn-default.btn-block{href: cash_position_device_path(@device), target: '_blank;', :type => "button"}
-                        %b Cash Position
                   - else
                     %p.text-danger
                       %i.fa.fa-warning
@@ -116,8 +85,8 @@
               = render partial: 'add_coin_modal'
               = render partial: 'reset_coin_modal'
 
-        .col-md-9
-          .box.box-primary
+        .col-md-10
+          .box{class: "#{@device.online == 0 ? 'box-success' : @device.online == 1 ? 'box-danger' : 'box-warning'}"}
             .box-header.with-border
               = form_tag device_path(@device), :method => 'get', :class => "form-inline" do
                 = text_field_tag :start_date, nil, :placeholder => "Start Date", value: "#{@start_date.blank? ? Date.today : @start_date}", class: "form-control input-lg", 'data-provide' => 'datepicker', 'data-date-format' => "yyyy-mm-dd", 'data-date-autoclose' => true, readonly: true
@@ -136,19 +105,17 @@
                   %a#statuses-tab.nav-link{"aria-controls" => "statuses", "aria-selected" => "false", "data-toggle" => "tab", :href => "#statuses", :role => "tab"} 
                     %i.fa.fa-signal
                     = "Statuses" unless browser.device.mobile?
+                -# unless @cut_transactions.blank?
                 %li.nav-item
                   %a#cuts-tab.nav-link{"aria-controls" => "cuts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cuts", :role => "tab"} 
-                    %i.fa.fa-credit-card
-                    = "Cuts" unless browser.device.mobile?
-                %li.nav-item
-                  %a#bins-tab.nav-link{"aria-controls" => "bins", "aria-selected" => "false", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
                     %i.fa.fa-inbox
                     = "Bins" unless browser.device.mobile?
+                -# if @cut_transactions.blank?
                 -#
                   %li.nav-item
-                    %a#accounts-tab.nav-link{"aria-controls" => "accounts", "aria-selected" => "false", "data-toggle" => "tab", :href => "#accounts", :role => "tab"} 
-                      %i.fa.fa-info-circle
-                      = "Acounts" unless browser.device.mobile?
+                    %a#bins-tab.nav-link{"aria-controls" => "bins", "aria-selected" => "false", "data-toggle" => "tab", :href => "#bins", :role => "tab"} 
+                      %i.fa.fa-inbox
+                      = "Bins" unless browser.device.mobile?
               #myTabContent.tab-content
                 #transactions.tab-pane.fade.show.active{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   = render partial: "transactions/index"
@@ -165,7 +132,7 @@
                   %br
                   .row
                     .col-md-6
-                      .box.box-success
+                      .box
                         .box-header.with_border
                           .box-title
                             ATM
@@ -179,78 +146,104 @@
                             %p.text-center= link_to "Load More...", device_path(@device, :dev_statuses_page => @dev_statuses.next_page, start_date: @start_date, end_date: @end_date), :class => 'load-more-dev-statuses btn btn-default', :remote => true, :onclick => "$(this).hide(); $('#dev_statuses_spinner').show();" if @dev_statuses.next_page
                           
                     .col-md-6
-                      .box.box-warning
+                      .box
                         .box-header.with_border
                           .box-title
                             Cassettes
                         .box-body
                           = render partial: "cassettes"
                   =# paginate @dev_statuses, param_name: 'dev_statuses_page'
-                  
+                -# unless @cut_transactions.blank?
                 #cuts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                  = render partial: "cuts"
-                -#
-                  #accounts.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
-                    Accounts
-                  .box.box-primary{"data-widget" => "box-widget"}
-                #bins.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
                   %br
-                  .box.box-warning
+                  -# Current Cycle #-
+                  .box
                     .box-header.with-border
-                      .box-title
-                        Host
-                      .box-body
+                      -# last_cut_transaction = @cut_transactions.last unless @cut_transactions.blank?
+                      %h3.box-title
+                        =# last_cut_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                        Current
+                      .box-tools.pull-right
+                        %button.btn.btn-default.btn-sm{id: "device_#{@device.id}_dollar_amount_button", onclick: "$('.device_#{@device.id}_dollar_amount').show(); $('.device_#{@device.id}_bill_count').hide(); $(this).hide(); $('#device_#{@device.id}_bill_count_button').show();", :type => "button"}
+                          %i.fa.fa-dollar
+                          Dollar Amount
+                        %button.btn.btn-default.btn-sm{id: "device_#{@device.id}_bill_count_button", onclick: "$('.device_#{@device.id}_dollar_amount').hide(); $('.device_#{@device.id}_bill_count').show(); $(this).hide(); $('#device_#{@device.id}_dollar_amount_button').show();", :type => "button", style: "display: none;"}
+                          %i.fa.fa-hashtag
+                          Bill Count
+                        %button.btn.btn-box-tool{id: "device_#{@device.id}_expand_bin_details", onclick: "$('.device_#{@device.id}_bin_details').fadeIn(); $(this).hide(); $('#device_#{@device.id}_collapse_bin_details').show();", :type => "button"}
+                          %i.fa.fa-angle-up
+                          Details
+                        %button.btn.btn-box-tool{id: "device_#{@device.id}_collapse_bin_details", onclick: "$('.device_#{@device.id}_bin_details').fadeOut(); $(this).hide(); $('#device_#{@device.id}_expand_bin_details').show();", :type => "button", style: "display: none;"}
+                          %i.fa.fa-angle-down
+                          Details
+                    .box-body.no-padding
+                      .table-responsive
+                        %table.table.table-striped.table-condensed.table-borderless
+                          %tbody
+                            %tr{class: "device_#{@device.id}_bin_details", style: "display: none;"}
+                              %td{style: 'width: 10%;'}
+                                .pull-right
+                                  %br
+                                  %strong Start
+                                  %br
+                                  %strong Added
+                                  %br
+                                  %strong Dispensed
+                              = render partial: "devices/bin_details", locals: {device: @device}
+                            %tr
+                              -#
+                                %td= @device.id
+                                %td= @device.description
+                              %td{style: 'width: 10%;', class: "device_#{@device.id}_bin_details", style: 'display:none;'}
+                                .pull-right
+                                  %strong Remaining
+                              = render partial: "devices/bin_basics", locals: {device: @device}
+                  = render partial: "cuts"
+                -# if @cut_transactions.blank?
+                -#
+                  #bins.tab-pane.fade.show{"aria-labelledby" => "home-tab", :role => "tabpanel"}
+                    %br
+                    .box
+                      .box-header.with-border
+                        -# last_cut_transaction = @cut_transactions.last unless @cut_transactions.blank?
+                        %h3.box-title
+                          =# last_cut_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
+                          Current
+                        .box-tools.pull-right
+                          %button.btn.btn-default.btn-sm{id: "device_#{@device.id}_dollar_amount_button", onclick: "$('.device_#{@device.id}_dollar_amount').show(); $('.device_#{@device.id}_bill_count').hide(); $(this).hide(); $('#device_#{@device.id}_bill_count_button').show();", :type => "button"}
+                            %i.fa.fa-dollar
+                            Dollar Amount
+                          %button.btn.btn-default.btn-sm{id: "device_#{@device.id}_bill_count_button", onclick: "$('.device_#{@device.id}_dollar_amount').hide(); $('.device_#{@device.id}_bill_count').show(); $(this).hide(); $('#device_#{@device.id}_dollar_amount_button').show();", :type => "button", style: "display: none;"}
+                            %i.fa.fa-hashtag
+                            Bill Count
+                          %button.btn.btn-box-tool{id: "device_#{@device.id}_expand_bin_details", onclick: "$('.device_#{@device.id}_bin_details').fadeIn(); $(this).hide(); $('#device_#{@device.id}_collapse_bin_details').show();", :type => "button"}
+                            %i.fa.fa-angle-up
+                            Details
+                          %button.btn.btn-box-tool{id: "device_#{@device.id}_collapse_bin_details", onclick: "$('.device_#{@device.id}_bin_details').fadeOut(); $(this).hide(); $('#device_#{@device.id}_expand_bin_details').show();", :type => "button", style: "display: none;"}
+                            %i.fa.fa-angle-down
+                            Details
+                      .box-body.no-padding
                         .table-responsive
-                          %table.table.table-striped.table-condensed.table-bordered
-                            %thead
-                              %tr
-                                -#
-                                  - @device.denoms.each do |denom|
-                                    - unless denom.denomination.zero?
-                                      %th{:scope => "col"}
-                                        = "#{denom.cassette_id}: "
-                                        = number_to_currency(denom.denomination, strip_insignificant_zeros: true)
-                                -# if @device.bin_1_count != 0 and @device.bin_1_count != nil
-                                - @device.bill_counts.order(:cassette_nbr).each do |bc|
-                                  %th{:scope => "col"}
-                                    = "#{bc.cassette_nbr}: "
-                                    = number_to_currency(bc.denomination, strip_insignificant_zeros: true)
-                                -#
-                                  - if @device.bill_count_1_exists?
-                                    %th{:scope => "col"}
-                                      = "1: "
-                                      = number_to_currency(@device.bin_1_denom.denomination, strip_insignificant_zeros: true)
-                                  - if @device.bill_count_2_exists?
-                                    %th{:scope => "col"}
-                                      = "2: "
-                                      = number_to_currency(@device.bin_2_denom.denomination, strip_insignificant_zeros: true)
-                                  - if @device.bill_count_3_exists?
-                                    %th{:scope => "col"}
-                                      = "3: "
-                                      = number_to_currency(@device.bin_3_denom.denomination, strip_insignificant_zeros: true)
-                                  - if @device.bill_count_4_exists?
-                                    %th{:scope => "col"}
-                                      = "4: "
-                                      = number_to_currency(@device.bin_4_denom.denomination, strip_insignificant_zeros: true)
-                                  - if @device.bill_count_5_exists?
-                                    %th{:scope => "col"}
-                                      = "5: "
-                                      = number_to_currency(@device.bin_5_denom.denomination, strip_insignificant_zeros: true)
-                                  - if @device.bill_count_6_exists?
-                                    %th{:scope => "col"}
-                                      = "6: "
-                                      = number_to_currency(@device.bin_6_denom.denomination, strip_insignificant_zeros: true)
-                                  - if @device.bill_count_7_exists?
-                                    %th{:scope => "col"}
-                                      = "7: "
-                                      = number_to_currency(@device.bin_7_denom.denomination, strip_insignificant_zeros: true)
-                                  - if @device.bill_count_8_exists?
-                                    %th{:scope => "col"}
-                                      = "8: "
-                                      = number_to_currency(@device.bin_8_denom.denomination, strip_insignificant_zeros: true)
+                          %table.table.table-striped.table-condensed.table-borderless
                             %tbody
+                              %tr{class: "device_#{@device.id}_bin_details", style: "display: none;"}
+                                %td{style: 'width: 10%;'}
+                                  .pull-right
+                                    %br
+                                    %strong Start
+                                    %br
+                                    %strong Added
+                                    %br
+                                    %strong Dispensed
+                                = render partial: "devices/bin_details", locals: {device: @device}
                               %tr
-                                = render partial: "devices/bin_details", locals: {device: @device}  
+                                -#
+                                  %td= @device.id
+                                  %td= @device.description
+                                %td{style: 'width: 10%;', class: "device_#{@device.id}_bin_details", style: 'display:none;'}
+                                  .pull-right
+                                    %strong Remaining
+                                = render partial: "devices/bin_basics", locals: {device: @device}  
                   - unless @term_totals.blank?
                     .box.box-warning
                       .box-header.with-border
