@@ -152,7 +152,6 @@
                   = @transaction.status_long_description
               %p.lead
                 Receipt Number:
-                -# if not @to_customer.blank? and @to_customer.anonymous?
                 = "#{@transaction.receipt_nbr.blank? ? 'N/A' : @transaction.receipt_nbr}"
               %p.lead
                 Amount Requested:
