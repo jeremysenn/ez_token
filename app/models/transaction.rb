@@ -569,7 +569,7 @@ class Transaction < ActiveRecord::Base
   
   def self.to_csv
     require 'csv'
-    attributes = %w{tranID date_time Description dev_id error_code tran_code sec_tran_code from_acct_id to_acct_id source amt_req amt_auth ChpFee}
+    attributes = %w{tranID date_time Description dev_id error_code tran_code sec_tran_code from_acct_id to_acct_id source amt_req amt_auth ChpFee receipt_nbr Note}
     
     CSV.generate(headers: true) do |csv|
       csv << attributes
