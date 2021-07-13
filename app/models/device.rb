@@ -223,8 +223,8 @@ class Device < ActiveRecord::Base
       bill_count_7
     when 8
       bill_count_8
-    when a
-      bill_count_a
+#    when a
+#      bill_count_a
     else
       nil
     end
