@@ -22,17 +22,30 @@
     / Main content
     %section.content
       - if current_user.can_view_atms?
-        - @devices.each do |device|
-          .row
-            .col-md-12
-              .box{class: "#{device.online == 0 ? 'box-success' : device.online == 1 ? 'box-danger' : 'box-warning'}", "data-widget" => "box-widget"}
-                .box-body.no-padding
+        .card
+          .card-header
+            %h3.card-title
+              = current_user.company.name
+              %a.btn.btn-primary{href: root_path, data: {disable_with: "<i class='fa fa-refresh fa-spin'></i>"}}
+                %i.fa.fa-refresh
+            - if current_user.can_quick_pay_customers?
+              .card-tools.pull-right
+                %a.btn.bg-green{href: '#', "data-toggle" => "modal", "data-target" => "#quick_pay", style: 'color: white;'}
+                  %i.fa.fa-dollar
+                  Quick Pay
+                = render partial: "quick_pay"
+          .card-body
+            - @devices.each do |device|
+              .row
+                .col-md-12
+                  -#
+                    .box{class: "#{device.online == 0 ? 'box-success' : device.online == 1 ? 'box-danger' : 'box-warning'}", "data-widget" => "box-widget"}
+                      .box-body.no-padding
                   - last_cut_transaction = device.transactions.cuts.last unless device.transactions.cuts.blank?
                   .table-responsive
-                    %table.table.table-striped.table-condensed.table-borderless
+                    %table.table.table-striped.table-condensed.table-bordered
                       %tbody
                         %tr{class: "device_#{device.id}_bin_details", style: "display: none;"}
-                          %td
                           %td
                           %td{style: 'width: 10%;'}
                             .pull-right
@@ -46,10 +59,9 @@
                           %td
                           %td
                         %tr
-                          %td= link_to device.id, device
                           %td
-                            = device.description
-                            %div{class: "device_#{device.id}_bin_details", style: 'display:none;'}
+                            = link_to "#{device.id} #{device.description}", device, class: "btn btn-lg #{device.online == 0 ? 'btn-success' : device.online == 1 ? 'btn-danger' : 'btn-warning'}"
+                            %div.pull-right.inline{class: "device_#{device.id}_bin_details", style: 'display:none;'}
                               = last_cut_transaction.date_time.strftime('%-m/%-d/%y %H:%M:%S')
                           %td{style: 'width: 10%;'}
                             .pull-right{class: "device_#{device.id}_bin_details", style: 'display:none;'}

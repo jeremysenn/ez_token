@@ -9,25 +9,26 @@
       %small 
         Dashboard
         
-      - unless @devices.blank?
-        = form_tag root_path, id: 'device_selection_form', method: 'get', class: 'form-inline' do |f|
-          .input-group
-            %p= select_tag :device_id, options_for_select(@devices.map{ |device| ["#{device.id} - #{device.description}", device.id] }, @device.id), onchange: "this.form.submit();", class: "form-control input-lg"
-            - if current_user.can_quick_pay_customers?
-              &nbsp;
-              &nbsp;
-              .pull-right
-                %a.btn.bg-green{href: '#', "data-toggle" => "modal", "data-target" => "#quick_pay", style: 'color: white;'}
-                  %i.fa.fa-dollar
-                  Pay
-              = render partial: "quick_pay"
-      = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: 'form-inline' do |f|
+    - unless @devices.blank?
+      = form_tag root_path, id: 'device_selection_form', method: 'get', class: 'form-inline pull-left' do |f|
         .input-group
-          = hidden_field_tag :type, 'Transfer'
-          = search_field_tag :transaction_id, params[:transaction_id], :placeholder => "Transfer ID or Reference #", class: "form-control", autofocus: true, style: "width: 200px;"
-          .input-group-append
-            %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
-              %i.fa.fa-search
+          %p= select_tag :device_id, options_for_select(@devices.map{ |device| ["#{device.id} - #{device.description}", device.id] }, @device.id), onchange: "this.form.submit();", class: "form-control input-lg"
+      - if current_user.can_quick_pay_customers?
+        &nbsp;
+        &nbsp;
+        .inline.pull-right
+          %a.btn.bg-green{href: '#', "data-toggle" => "modal", "data-target" => "#quick_pay", style: 'color: white;'}
+            %i.fa.fa-dollar
+            Pay
+        = render partial: "quick_pay"
+    = form_tag transactions_path, id: 'transfers_search_form', method: 'get', class: '' do |f|
+      .input-group
+        = hidden_field_tag :type, 'Transfer'
+        = search_field_tag :transaction_id, params[:transaction_id], :placeholder => "Transfer ID or Reference #", class: "form-control", autofocus: true, style: "width: 200px;"
+        .input-group-append
+          %button.btn.btn-primary{:type => "submit", data: {disable_with: "<i class='fa fa-spinner fa-spin'></i>"}}
+            %i.fa.fa-search
+
   / Main content
   %section.content
     .row
@@ -126,7 +127,7 @@
                 %br
                 .box.box-success
                   .box-header.with_border
-                    - unless @devices.blank?
+                    - unless @devices.blank? or @device.blank?
                       .table-responsive
                         %table.table.table-condensed.table-bordered
                           %thead
@@ -137,10 +138,11 @@
                           %tbody
                             - @device.denoms.each_with_index do |denom, index|
                               - unless denom.denomination.zero?
+                                - bill_count = @device.bill_count(index + 1)
                                 %tr
                                   %td= number_to_currency(denom.denomination, strip_insignificant_zeros: true)
                                   %td= @device.bin_count(index + 1)
-                                  %td= @device.bill_count(index + 1).status_description
+                                  %td= bill_count.status_description unless bill_count.blank?
                     - else
                       &nbsp;
                       None
@@ -249,68 +251,70 @@
 :javascript
   $('[data-toggle="popover"]').popover();
 
-  $(document).on("turbolinks:load", function() {
-    if ($('#myChart').length) {
-      var ctx = document.getElementById("myChart").getContext("2d");
+-#
+  :javascript
+    $(document).on("turbolinks:load", function() {
+      if ($('#myChart').length) {
+        var ctx = document.getElementById("myChart").getContext("2d");
 
-      const colors = {
-        green: {
-          fill: '#e0eadf',
-          stroke: '#5eb84d',
-        },
-        lightBlue: {
-          stroke: '#6fccdd',
-        },
-        darkBlue: {
-          fill: '#92bed2',
-          stroke: '#3282bf',
-        },
-        purple: {
-          fill: '#8fa8c8',
-          stroke: '#75539e',
-        },
-      };
+        const colors = {
+          green: {
+            fill: '#e0eadf',
+            stroke: '#5eb84d',
+          },
+          lightBlue: {
+            stroke: '#6fccdd',
+          },
+          darkBlue: {
+            fill: '#92bed2',
+            stroke: '#3282bf',
+          },
+          purple: {
+            fill: '#8fa8c8',
+            stroke: '#75539e',
+          },
+        };
 
-      const transferred = #{@transfers_week_data};
-      const withdrawn = #{@withdrawals_week_data};
-      const xData = #{raw @week_of_dates_data.uniq};
+        const transferred = #{@transfers_week_data};
+        const withdrawn = #{@withdrawals_week_data};
+        const xData = #{raw @week_of_dates_data.uniq};
 
-      const myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: xData,
-          datasets: [{
-            label: "Withdrawn",
-            fill: true,
-            backgroundColor: colors.green.fill,
-            pointBackgroundColor: colors.green.stroke,
-            borderColor: colors.green.stroke,
-            pointHighlightStroke: colors.green.stroke,
-            borderCapStyle: 'butt',
-            data: withdrawn,
-          }, {
-            label: "Transferred",
-            fill: true,
-            backgroundColor: colors.darkBlue.fill,
-            pointBackgroundColor: colors.darkBlue.stroke,
-            borderColor: colors.darkBlue.stroke,
-            pointHighlightStroke: colors.darkBlue.stroke,
-            data: transferred,
-          }]
-        },
-        options: {
-          responsive: true,
-          // Can't just use `stacked: true` like the docs say
-          scales: {
-            yAxes: [{
-              //stacked: true,
-              stacked: false,
+        const myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: xData,
+            datasets: [{
+              label: "Withdrawn",
+              fill: true,
+              backgroundColor: colors.green.fill,
+              pointBackgroundColor: colors.green.stroke,
+              borderColor: colors.green.stroke,
+              pointHighlightStroke: colors.green.stroke,
+              borderCapStyle: 'butt',
+              data: withdrawn,
+            }, {
+              label: "Transferred",
+              fill: true,
+              backgroundColor: colors.darkBlue.fill,
+              pointBackgroundColor: colors.darkBlue.stroke,
+              borderColor: colors.darkBlue.stroke,
+              pointHighlightStroke: colors.darkBlue.stroke,
+              data: transferred,
             }]
           },
-          animation: {
-            duration: 750,
-          },
-        }
-      });
-    }
-  });
+          options: {
+            responsive: true,
+            // Can't just use `stacked: true` like the docs say
+            scales: {
+              yAxes: [{
+                //stacked: true,
+                stacked: false,
+              }]
+            },
+            animation: {
+              duration: 750,
+            },
+          }
+        });
+      }
+    });
